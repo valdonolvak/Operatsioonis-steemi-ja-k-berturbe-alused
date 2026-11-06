@@ -63,6 +63,19 @@ Allikate seis: 6. november 2026. Ajakohased faktid (versioonid, kuupäevad, uued
 - [Apple Platform Security](https://support.apple.com/guide/security/welcome/web)
 - [Filesystem Hierarchy Standard](https://refspecs.linuxfoundation.org/fhs.shtml)
 
+**Küberturve ja krüptograafia (ptk 24–31)**
+
+- Nolvak, V. [Peamised küberohud](https://github.com/valdonolvak/kyberturvalisus/blob/main/K%C3%BCberturbe_alused/Peamised%20k%C3%BCberohud%20teooria%2C%20r%C3%BCndevektorid%20ja%20praktika.md) ja [Küberhügieeni 12 põhimõtet](https://github.com/valdonolvak/kyberturvalisus/blob/main/K%C3%BCberh%C3%BCgieeni%2012%20p%C3%B5him%C3%B5tet%20%E2%80%93%20%C3%B5ppematerjal%20n%C3%A4idete%20ja%20anal%C3%BC%C3%BCsiga.md) – GitHub
+- [Andmete kaitsmine krüpteerimise abil](https://courses.cs.ut.ee/2020/infsec/spring/Main/Loeng-AndmeteKrypteerimine) ja [Avaliku võtme krüptograafia](https://courses.cs.ut.ee/2022/infsec/spring/Main/PKI) – Tartu Ülikool
+- [Differences between hashing, encryption and salting](https://thecyphere.com/blog/difference-hashing-encryption-salting/) – The Cyphere
+- [Diffie–Hellmani võtmevahetus](https://et.wikipedia.org/wiki/Diffie-Hellmani_v%C3%B5tmevahetus) – Vikipeedia
+- [MITRE ATT&CK](https://attack.mitre.org/) · [OWASP Top 10](https://owasp.org/Top10/) · [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- NIST: [FIPS 197 (AES)](https://csrc.nist.gov/pubs/fips/197/final), [FIPS 203 (ML-KEM)](https://csrc.nist.gov/pubs/fips/203/final), [FIPS 204 (ML-DSA)](https://csrc.nist.gov/pubs/fips/204/final), [SP 800-57](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final)
+- [RFC 8446: TLS 1.3](https://www.rfc-editor.org/rfc/rfc8446)
+- [EL-i postkvantkrüptograafia tegevuskava](https://digital-strategy.ec.europa.eu/en/library/coordinated-implementation-roadmap-transition-post-quantum-cryptography) – Euroopa Komisjon
+- [Küberturvalisuse seadus](https://www.riigiteataja.ee/akt/kyberturvalisuse-seadus) · [E-ITS](https://eits.ria.ee/) · [id.ee](https://www.id.ee/)
+- Singh, S. (1999). *The Code Book*. Fourth Estate.
+
 ---
 
 [← Sõnastik](sonastik.md) · [Sisukord](../README.md)

@@ -1,4 +1,4 @@
-[← 22. UUS: Küberturve tänapäeva Windowsis](22-kuberturve.md) · [Sisukord](../README.md) · [Valikküsimuste vastused →](vastused.md)
+[← 22. UUS: Küberturve tänapäeva Windowsis](22-kuberturve.md) · [Sisukord](../README.md) · [24. UUS: Küberturbe põhimõisted ja ründevektorid →](24-kuberturbe-pohimoisted.md)
 
 ## 23. UUS: Windows, Linux ja macOS võrdluses
 
@@ -148,4 +148,4 @@ Võrdle tulemusi PowerShelli vastavate käskudega tabelist 23.7. Kui sul on ligi
 
 ---
 
-[← 22. UUS: Küberturve tänapäeva Windowsis](22-kuberturve.md) · [Sisukord](../README.md) · [Valikküsimuste vastused →](vastused.md)
+[← 22. UUS: Küberturve tänapäeva Windowsis](22-kuberturve.md) · [Sisukord](../README.md) · [24. UUS: Küberturbe põhimõisted ja ründevektorid →](24-kuberturbe-pohimoisted.md)

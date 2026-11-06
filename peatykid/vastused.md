@@ -1,4 +1,4 @@
-[← 23. UUS: Windows, Linux ja macOS võrdluses](23-windows-linux-macos.md) · [Sisukord](../README.md) · [Sõnastik →](sonastik.md)
+[← 31. UUS: Küberturbe õigus- ja juhtimisraamistik](31-oigus-ja-juhtimisraamistik.md) · [Sisukord](../README.md) · [Sõnastik →](sonastik.md)
 
 ## Valikküsimuste vastused
 
@@ -27,6 +27,14 @@
 | 21. Tehisintellekt | 1c, 2b, 3b, 4c |
 | 22. Küberturve | 1b, 2b, 3c, 4a, 5b |
 | 23. Windows, Linux ja macOS | 1a, 2c, 3d, 4b, 5c |
+| 24. Põhimõisted ja ründevektorid | 1b, 2c, 3a, 4d, 5c |
+| 25. Krüptograafia ajalugu | 1c, 2a, 3d, 4b |
+| 26. Sümmeetriline krüpteerimine | 1d, 2b, 3a, 4c |
+| 27. Räsimine ja paroolid | 1b, 2d, 3a, 4c |
+| 28. Asümmeetriline krüptograafia | 1a, 2c, 3d, 4b |
+| 29. Digiallkiri, PKI ja TLS | 1c, 2a, 3b, 4d |
+| 30. Postkvantkrüptograafia | 1c, 2a, 3b, 4d |
+| 31. Õigus- ja juhtimisraamistik | 1b, 2d, 3a, 4c |
 
 **Lisa ülesanne 9.4 vastus (Round Robin, kvant 2 ms, A = 8, B = 4, C = 2, järjekord A, B, C):** täitmise järjekord A(0–2), B(2–4), C(4–6, lõpeb), A(6–8), B(8–10, lõpeb), A(10–14, lõpeb). Ooteajad (lõppaeg miinus töö pikkus): A = 14 − 8 = 6, B = 10 − 4 = 6, C = 6 − 2 = 4; keskmine 5,3 ms.
 
@@ -46,4 +54,4 @@ Märkus õpetajale: õige vastus on sageli variant b. Testide kasutamisel Moodle
 
 ---
 
-[← 23. UUS: Windows, Linux ja macOS võrdluses](23-windows-linux-macos.md) · [Sisukord](../README.md) · [Sõnastik →](sonastik.md)
+[← 31. UUS: Küberturbe õigus- ja juhtimisraamistik](31-oigus-ja-juhtimisraamistik.md) · [Sisukord](../README.md) · [Sõnastik →](sonastik.md)

@@ -52,6 +52,20 @@
 | VBS | Virtualization-based Security | hüperviisoriga isoleeritud turvakiht |
 | võidujooks | race condition | tulemus sõltub lõimede ajastusest |
 | ülesannete vahetus, mitmeülesandelisus | multitasking | mitme programmi samaaegne töö |
+| asümmeetriline krüptograafia | public-key cryptography | võtmepaar: avalik võti ja privaatvõti |
+| autentimissilt | authentication tag | AEAD-režiimi kontrollväärtus, mis avastab muudatused |
+| digiallkiri | digital signature | privaatvõtmega tehtud allkiri dokumendi räsist |
+| edasine salastatus | forward secrecy | vana liiklus jääb kaitstuks ka pärast privaatvõtme leket |
+| HMAC | hash-based message authentication code | salajase võtmega arvutatud räsi |
+| hübriidkrüpteerimine | hybrid encryption | asümmeetriline võtmevahetus + sümmeetriline krüpteerimine |
+| postkvantkrüptograafia | post-quantum cryptography (PQC) | kvantarvuti vastu kindlad algoritmid (ML-KEM, ML-DSA) |
+| räsifunktsioon | hash function | ühesuunaline, fikseeritud pikkusega andmete sõrmejälg |
+| ründevektor | attack vector | tee, mida mööda ründaja süsteemi jõuab |
+| sertifikaat | certificate (X.509) | CA allkirjastatud seos avaliku võtme ja nime vahel |
+| sool | salt | juhuslik väärtus, mis lisatakse paroolile enne räsimist |
+| sümmeetriline krüptograafia | symmetric cryptography | sama võti krüpteerimiseks ja dekrüpteerimiseks |
+| šifritekst | ciphertext | krüpteeritud, ilma võtmeta loetamatud andmed |
+| võtmevahetus | key exchange | ühise saladuse loomine avalikus võrgus (DH, ML-KEM) |
 
 ---
 

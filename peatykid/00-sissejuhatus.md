@@ -6,12 +6,13 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 
 **Sihtrühm.** Kutse- ja kõrghariduse IT-erialade õppijad (IT-süsteemide spetsialist, nooremspetsialist, administraator), samuti täiskasvanud õppijad, kes tahavad mõista, mis toimub Windowsi „kapoti all“. Eeldatakse arvuti tavakasutaja oskusi; programmeerimise kogemus tuleb kasuks, kuid pole vajalik.
 
-**Ülesehitus.** Peatükid 1–19 vastavad algse raamatu sisukorrale. Peatükid 20–23 on uued:
+**Ülesehitus.** Peatükid 1–19 vastavad algse raamatu sisukorrale. Peatükid 20–31 on uued:
 
 - 20 – virtualiseerimine, konteinerid ja Windowsi alamsüsteem Linuxile (WSL);
 - 21 – tehisintellekt operatsioonisüsteemis (NPU, Copilot+ arvutid, kohalikud mudelid, AI-agendid);
 - 22 – küberturve tänapäeva Windowsis (ohumaastik, karmistamine, E-ITS, AI-ga seotud riskid).
 - 23 – Windows, Linux ja macOS võrdluses (arhitektuur, failisüsteemid, õigused, tarkvara, käsurea vasted).
+- 24–31 – III osa „Küberturbe alused“: põhimõisted ja ründevektorid, krüptograafia ajalugu, sümmeetriline krüpteerimine, räsid ja paroolid, asümmeetriline krüptograafia, digiallkiri ja TLS, postkvantkrüptograafia ning õigus- ja juhtimisraamistik. Praktilised tööd tehakse WSL-is (ptk 20.5).
 
 **Iga peatüki lõpus** on:
 
