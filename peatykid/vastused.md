@@ -23,7 +23,7 @@
 | 17. Võrk | 1b, 2b, 3b, 4b |
 | 18. Turvalisus | 1b, 2b, 3b, 4a, 5b |
 | 19. Krahhid | 1b, 2b, 3b, 4c |
-| 20. Virtualiseerimine | 1c, 2b, 3b, 4a |
+| 20. Virtualiseerimine | 1c, 2b, 3b, 4a, 5c, 6d |
 | 21. Tehisintellekt | 1c, 2b, 3b, 4c |
 | 22. Küberturve | 1b, 2b, 3c, 4a, 5b |
 | 23. Windows, Linux ja macOS | 1a, 2c, 3d, 4b, 5c |

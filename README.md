@@ -45,7 +45,7 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 
 ## Joonised
 
-Joonised on interaktiivsena Claude Docs dokumendis; Markdownis on nende asukoht märgitud kujul „📊 Joonis: …“. Pildina lisamiseks salvesta joonis PNG-na kausta `pildid/` ja asenda märge reaga `![kirjeldus](../pildid/fail.png)`.
+Kõik 35 joonist on kaustas [`pildid/`](pildid/) PNG-failidena (nt `15-b.png` = peatüki 15 teine joonis) ja need kuvatakse peatükkide sees.
 
 ## Testid Google Formsis
 

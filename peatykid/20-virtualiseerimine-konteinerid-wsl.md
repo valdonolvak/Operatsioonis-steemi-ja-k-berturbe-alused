@@ -55,12 +55,137 @@ Konteinereid hallatakse Dockeri või containerd abil ja orkestreeritakse **Kuber
 
 ### 20.5 Windowsi alamsüsteem Linuxile (WSL)
 
-- **WSL 1** (2016) – Linuxi süsteemikutsed tõlgiti Windowsi tuumas (`lxcore.sys`, pico-protsessid);
-- **WSL 2** (2019) – päris Linuxi tuum kerges Hyper-V VM-is; täielik ühilduvus, kiire failisüsteem Linuxi poolel;
-- **WSLg** – Linuxi graafilised rakendused Windowsi aknas;
-- **GPU-kiirendus** – nt masinõppe (CUDA) jaoks.
+**WSL** (Windows Subsystem for Linux) võimaldab käitada Windowsis Linuxi distributsiooni – Ubuntu, Debiani, Kali Linuxi jt – ilma eraldi virtuaalmasinat seadistamata ja ilma arvutit kaheks süsteemiks jagamata (dual boot). Linuxi käsud, `apt`, bash-skriptid, konteinerid ja arendustööriistad töötavad kõrvuti Windowsi programmidega ning mõlemad pooled näevad teineteise faile. IT-õppes on WSL kiireim viis saada Linuxi käsurida igasse klassiarvutisse.
 
-Mai 2025 Build-konverentsil avaldas Microsoft WSL-i lähtekoodi GitHubis; avatud on käsureatööriistad, taustateenused ja Linuxi poole deemonid, kuid mõned Windowsi komponendid (nt `lxcore.sys`) jäävad suletuks ([BleepingComputer](https://bleepingcomputer.com/news/microsoft/microsoft-open-sources-windows-subsystem-for-linux-at-build-2025)).
+#### 20.5.1 Versiooniajalugu
+
+![WSL-i ajajoon · 2016–2026](../pildid/20-b.png)
+
+Joonis: WSL 1 ilmus 2016. aastal tõlkekihina, WSL 2 tõi 2020. aastal päris Linuxi tuuma. Hilisemad muudatused (WSLg, systemd, peegelvõrk, konteinerid) on ehitatud WSL 2 peale ([Wikipedia](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)).
+
+Sõna „versioon“ tähendab WSL-i puhul kaht eri asja:
+
+- **arhitektuuri versioon** – WSL 1 või WSL 2. Seda näitab käsu `wsl -l -v` veerg VERSION ja seda saab iga distributsiooni jaoks eraldi valida;
+- **WSL-i rakenduse versioon** – nt 2.6 või 3.0.1. Alates 2022. aastast tuleb WSL Microsoft Store’ist või GitHubist ja uueneb käsuga `wsl --update`, Windowsist eraldi. Seda näitab `wsl --version`.
+
+WSL 3.0.1 (29.09.2026) tõi üldkasutusse **WSL-i konteinerid** ja käsu `wslc`; uut „WSL 3“ arhitektuuri ei ole, kõik töötab endiselt WSL 2 peal ([GitHub: WSL 3.0.1](https://github.com/microsoft/WSL/releases/tag/3.0.1)).
+
+#### 20.5.2 WSL 1 ja WSL 2 erinevused
+
+![WSL 1 ja WSL 2 arhitektuur · tõlkekiht ja kerge VM](../pildid/20-c.png)
+
+Joonis: WSL 1-s töötab Linuxi rakendus otse Windowsi tuuma peal ja draiver `lxcore.sys` tõlgib iga Linuxi süsteemikutse NT-tuuma kutseks. WSL 2-s töötab Microsofti kohandatud päris Linuxi tuum kerges utiliit-VM-is, mis kasutab sama hüperviisorit nagu Hyper-V ja VBS (ptk 4). Windows ise on juurpartitsioon.
+
+| Omadus | WSL 1 | WSL 2 |
+| --- | --- | --- |
+| Tuum | tõlkekiht `lxcore.sys` NT-tuumas | päris Linuxi tuum kerges VM-is |
+| Süsteemikutsete ühilduvus | osaline | täielik |
+| Docker, systemd, tuumamoodulid | ei toimi | toimivad |
+| Failid Linuxi poolel | NTFS-il, aeglasemad | `ext4.vhdx` virtuaalkettal, kiired |
+| Windowsi failid (`/mnt/c`) | kiired | aeglasemad, üle VM-i piiri |
+| Võrk | sama IP-aadress kui Windowsil | vaikimisi NAT, soovi korral peegelvõrk (mirrored) |
+| Virtualiseerimise tugi | pole vaja | vajalik (VT-x / AMD-V, Virtual Machine Platform) |
+| Graafika ja GPU | ei | WSLg ja GPU-kiirendus |
+
+Uued distributsioonid paigaldatakse vaikimisi WSL 2-na ([Microsoft Learn: Comparing WSL versions](https://learn.microsoft.com/windows/wsl/compare-versions)). WSL 1 on mõistlik siis, kui virtualiseerimist pole võimalik kasutada (nt vanem virtuaalmasin ilma pesastatud virtualiseerimiseta) või kui töötad peamiselt Windowsi failidega. Versiooni saab muuta: `wsl --set-version Ubuntu 1` või `wsl --set-version Ubuntu 2`.
+
+#### 20.5.3 Failid ja võrk WSL 2-s
+
+![failid ja võrk WSL 2-s · /home, /mnt/c, wsl.localhost, localhost](../pildid/20-d.png)
+
+Joonis: Windows näeb Linuxi faile Exploreris aadressil `\\wsl.localhost\Ubuntu` ja Linux näeb Windowsi kettaid kaustas `/mnt/c`. Mõlemal juhul liiguvad failid üle VM-i piiri 9P-protokolliga, mis on aeglasem kui otse ext4-lt lugemine. Seepärast hoia Linuxi tööriistadega (git, npm, kompileerimine) töödeldavad projektid Linuxi kodukaustas.
+
+Kasulikud võtted:
+
+- `explorer.exe .` avab Linuxi praeguse kausta Windowsi Exploreris;
+- `code .` avab kausta VS Code’is (WSL-laiendusega);
+- Windowsi programme saab käivitada Linuxist (`notepad.exe fail.txt`) ja Linuxi käske Windowsist (`wsl ls -la`).
+
+Kogu WSL 2 VM-i seadistab fail `%UserProfile%\.wslconfig`, ühe distributsiooni seadeid fail `/etc/wsl.conf`:
+
+```ini
+# %UserProfile%\.wslconfig – kogu WSL 2
+[wsl2]
+memory=4GB
+processors=2
+networkingMode=mirrored
+```
+
+```ini
+# /etc/wsl.conf – üks distributsioon
+[boot]
+systemd=true
+```
+
+Muudatused rakenduvad pärast käsku `wsl --shutdown` ja WSL-i uuesti käivitamist.
+
+#### 20.5.4 Juhend: Ubuntu paigaldamine
+
+**Eeldused:**
+
+- Windows 11 või Windows 10 versioon 2004 või uuem (järk 19041+);
+- protsessori virtualiseerimine on UEFI-s lubatud. Kontroll: tegumihaldur → *Jõudlus* → *CPU* → *Virtualiseerimine: lubatud*;
+- kui Windows ise töötab virtuaalmasinas, peab olema sisse lülitatud pesastatud virtualiseerimine (VMware: `vhv.enable = "TRUE"`; Hyper-V: `Set-VMProcessor -VMName <nimi> -ExposeVirtualizationExtensions $true`);
+- administraatoriõigused.
+
+**Sammud:**
+
+1. Ava PowerShell või Terminal administraatorina ja käivita `wsl --install`. Käsk lülitab sisse vajalikud Windowsi osad (Virtual Machine Platform), paigaldab WSL-i, Linuxi tuuma ja vaikimisi Ubuntu ([Microsoft Learn: Install WSL](https://learn.microsoft.com/windows/wsl/install)).
+2. Kui küsitakse, taaskäivita arvuti.
+3. Ubuntu avaneb ja küsib uut **UNIX-i kasutajanime ja parooli**. Need ei pea olema samad mis Windowsi omad. Parooli tippimisel ekraanile midagi ei ilmu – see on Linuxis tavaline.
+4. Uuenda paketid: `sudo apt update && sudo apt full-upgrade -y`.
+5. Kontrolli Windowsi poolel: `wsl -l -v` peab näitama Ubuntu olekut ja versiooni 2; `wsl --version` näitab WSL-i ja tuuma versiooni.
+6. Kontrolli Linuxi poolel: `cat /etc/os-release` ja `uname -r`.
+
+Kindla versiooni paigaldamiseks vaata nimekirja `wsl --list --online` ja vali sealt, nt `wsl --install -d Ubuntu-24.04`. Pärast paigaldust tekib Windows Terminali menüüsse Ubuntu profiil.
+
+#### 20.5.5 Juhend: Kali Linuxi paigaldamine
+
+**Kali Linux** on küberturbe ja läbistustestimise distributsioon. Kasuta selle tööriistu ainult oma õppelaboris või süsteemides, mille omanik on andnud kirjaliku loa: võõra süsteemi skannimine või ründamine on seadusevastane. Microsoft Defender võib osa tööriistu ohtlikuks pidada ja karantiini panna. Ära lülita selle pärast tööarvutis viirusetõrjet välja – kasuta eraldi õppe-VM-i.
+
+1. Ava PowerShell administraatorina ja käivita `wsl --install -d kali-linux`.
+2. Loo Kali kasutajanimi ja parool.
+3. Uuenda: `sudo apt update && sudo apt full-upgrade -y`.
+4. WSL-i Kali on algul minimaalne, ilma tööriistadeta. Paigalda tavaline komplekt `sudo apt install -y kali-linux-default` või ainult vajalikud tööriistad, nt `sudo apt install -y nmap`.
+5. Graafiline töölaud **Win-KeX**: `sudo apt install -y kali-win-kex`. Käivita aknarežiimis helitoega `kex --win -s`; Windowsi töölauaga ühendatult `kex --sl -s`; RDP kaudu `kex --esm -s`. Aknarežiimist väljud klahviga F8 ([Kali: Win-KeX](https://www.kali.org/docs/wsl/win-kex/)).
+6. Windowsist saab Kali käivitada ka otse: `wsl -d kali-linux`.
+
+Võrgu eripära: WSL 2 vaikimisi NAT-võrgus on Kali Windowsi taga eraldi alamvõrgus. Kui õppelabori harjutus eeldab, et Kali on samas kohtvõrgus, lülita `.wslconfig`-is sisse `networkingMode=mirrored` või kasuta eraldi virtuaalmasinat.
+
+#### 20.5.6 Igapäevased WSL-i käsud
+
+| Käsk | Mida teeb |
+| --- | --- |
+| `wsl --list --online` | saadaval distributsioonid |
+| `wsl -l -v` | paigaldatud distributsioonid, olek ja versioon |
+| `wsl -d kali-linux` | käivitab kindla distributsiooni |
+| `wsl --set-default Ubuntu` | määrab vaikimisi distributsiooni |
+| `wsl --set-version Ubuntu 2` | teisendab WSL 1 ↔ WSL 2 |
+| `wsl --terminate Ubuntu` | peatab ühe distributsiooni |
+| `wsl --shutdown` | peatab kõik distributsioonid ja WSL 2 VM-i |
+| `wsl --export Ubuntu D:\varu\ubuntu.tar` | salvestab distributsiooni tõmmisfailiks |
+| `wsl --import Ubuntu2 D:\WSL\Ubuntu2 D:\varu\ubuntu.tar` | taastab või kloonib tõmmisfailist |
+| `wsl --unregister Ubuntu` | kustutab distributsiooni koos kõigi failidega |
+| `wsl --update` | uuendab WSL-i ja Linuxi tuuma |
+| `wsl --version` | näitab WSL-i, tuuma ja WSLg versiooni |
+
+#### 20.5.7 Levinud vead
+
+| Viga | Põhjus | Lahendus |
+| --- | --- | --- |
+| `0x80370102` | virtualiseerimine on UEFI-s välja lülitatud või VM-is puudub pesastatud virtualiseerimine | lülita sisse Intel VT-x / AMD-V või pesastatud virtualiseerimine |
+| `0x8007019e` | WSL-i Windowsi osa pole sisse lülitatud | käivita `wsl --install` administraatorina ja taaskäivita |
+| Protsess *VmmemWSL* võtab palju mälu | WSL 2 VM hoiab mälu vahemäluna | piira mälu `.wslconfig`-is (`memory=`) või käivita `wsl --shutdown` |
+| `git` või `npm` on väga aeglane | projekt asub `/mnt/c` all | kopeeri projekt Linuxi kodukausta |
+| Kali tööriistad kaovad | Defender paneb need karantiini | kasuta eraldi õppe-VM-i |
+
+#### 20.5.8 WSL-i konteinerid, haldus ja turve
+
+WSL 3.0 käsk `wslc` ehitab ja käitab Linuxi konteinereid otse Windowsis, ilma Docker Desktopita. Lisaks on olemas Windowsi API, mille kaudu rakendused saavad konteinereid ise käivitada ([Windows Developer Blog](https://blogs.windows.com/windowsdeveloper/2026/09/29/wsl-containers-now-generally-available/)).
+
+Organisatsioonis on WSL ka ründepind: Linuxi poolel töötavad protsessid ei pruugi tavalisele viirusetõrjele nähtavad olla. Seepärast saab Intune’iga WSL-i või WSL-i konteinerid keelata ja lubada ainult heakskiidetud konteineriregistreid. Microsoft Defender for Endpointi WSL-i lisand näitab Linuxi poole ja konteinerite protsesse, faile ja võrguühendusi koos Windowsi hosti sündmustega ([BleepingComputer](https://bleepingcomputer.com/news/microsoft/microsoft-is-rolling-out-linux-container-support-to-wsl)).
+
+Mai 2025 Build-konverentsil avaldas Microsoft suurema osa WSL-i lähtekoodist GitHubis. Mõned Windowsi komponendid, nt WSL 1 draiver `lxcore.sys`, on endiselt suletud ([BleepingComputer](https://bleepingcomputer.com/news/microsoft/microsoft-open-sources-windows-subsystem-for-linux-at-build-2025)).
 
 ### 20.6 Pilvearvutid
 
@@ -84,6 +209,7 @@ Mai 2025 Build-konverentsil avaldas Microsoft WSL-i lähtekoodi GitHubis; avatud
 - 1. tüüpi hüperviisor töötab otse riistvaral; Hyper-V muudab Windowsi juurpartitsiooniks.
 - Konteinerid jagavad tuuma, VM-idel on oma tuum; Windows pakub mõlemat ja ka Hyper-V-isoleeritud konteinereid.
 - WSL 2 ja Windows Sandbox on igapäevased virtualiseerimise rakendused kliendis.
+- WSL 2 käitab päris Linuxi tuuma kerges VM-is. Hoia projektifailid Linuxi kodukaustas; distributsiooni (nt Ubuntu, Kali Linux) paigaldab käsk `wsl --install -d <nimi>`.
 
 ### Kontrollküsimused
 
@@ -95,6 +221,8 @@ Mai 2025 Build-konverentsil avaldas Microsoft WSL-i lähtekoodi GitHubis; avatud
 6. Milleks sobib Windows Sandbox?
 7. Mis vahe on WSL 1-l ja WSL 2-l?
 8. Mis on Windows 365 Cloud PC eelised ja riskid?
+9. Miks on WSL 2-s projektifailide hoidmine kaustas `/home` kiirem kui kaustas `/mnt/c`?
+10. Mis vahe on WSL-i arhitektuuri versioonil (WSL 1 või WSL 2) ja WSL-i rakenduse versioonil (nt 3.0)?
 
 ### Valikküsimused
 
@@ -102,6 +230,8 @@ Mai 2025 Build-konverentsil avaldas Microsoft WSL-i lähtekoodi GitHubis; avatud
 2. Mis kasutab WSL 2? a) tõlget Windowsi tuumas b) päris Linuxi tuuma kerges VM-is c) Dockerit d) Cygwinit
 3. Mis juhtub Windows Sandboxi andmetega pärast sulgemist? a) salvestatakse OneDrive’i b) kustutatakse c) kopeeritakse hostile d) krüpteeritakse
 4. Mis Windowsi mehhanism on protsessi isolatsiooniga konteineri aluseks? a) tööobjekt b) kiud c) postkastipesa d) register
+5. Kus töötavad Linuxi tööriistad WSL 2-s failidega kõige kiiremini? a) kaustas /mnt/c/Users b) võrgukaustas c) Linuxi kodukaustas /home d) USB-pulgal
+6. Milline käsk paigaldab Kali Linuxi WSL-i? a) apt install kali b) winget install wsl c) wsl --set-version kali 2 d) wsl --install -d kali-linux
 
 ### Praktiline ülesanne
 
