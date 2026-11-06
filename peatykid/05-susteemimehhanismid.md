@@ -15,7 +15,7 @@ Et ISR oleks lühike, lükkab Windows aeganeelava töö edasi:
 - **DPC** (Deferred Procedure Call) – täidetakse peagi madalamal IRQL-il;
 - **APC** (Asynchronous Procedure Call) – täidetakse kindla lõime kontekstis, nt S/V lõpetamisel.
 
-> 📊 **Joonis:** katkestuse töötlus · seade, ISR, DPC, lõim
+![katkestuse töötlus · seade, ISR, DPC, lõim](../pildid/05-a.png)
 
 Joonis: ISR töötab kõrgel IRQL-il ja lükkab töö DPC-sse, mis omakorda äratab andmeid ootava lõime. Nii ei blokeeri üks seade pikalt teisi katkestusi.
 

@@ -16,7 +16,7 @@ Kolm levinumat operatsioonisüsteemi lahendavad samu ülesandeid (protsessid, m�
 - **Linux** (1991, Linus Torvalds) – Unixi-laadne monoliitne tuum, mis on avaldatud GPL-litsentsiga; tööriistad suures osas GNU projektist.
 - **macOS** (2001, varem Mac OS X) – pärineb NeXTSTEP-ist; tuum XNU ühendab Machi mikrotuuma ja BSD Unixi; on sertifitseeritud UNIX.
 
-> 📊 **Joonis:** Windows, Linux ja macOS · kihid kõrvuti
+![Windows, Linux ja macOS · kihid kõrvuti](../pildid/23-a.png)
 
 Joonis: kõigil kolmel on rakendused, kasutajaruumi teegid ja teenused, tuum, draiverid ja riistvara. Suurim erinevus on tuumas ja selles, kas draiverid töötavad tuumas (Windows, Linux) või kasutajaruumis (macOS DriverKit).
 
@@ -41,7 +41,7 @@ Joonis: kõigil kolmel on rakendused, kasutajaruumi teegid ja teenused, tuum, dr
 
 Windowsis on iga köide eraldi tähe all ja süsteemifailid on kaustas `C:\Windows`. Linuxis ja macOS-is on üks puu ning kaustadel on kindel tähendus (Filesystem Hierarchy Standard).
 
-> 📊 **Joonis:** failipuud · Windows, Linux ja macOS
+![failipuud · Windows, Linux ja macOS](../pildid/23-b.png)
 
 | Otstarve | Windows | Linux | macOS |
 | --- | --- | --- | --- |
@@ -58,7 +58,7 @@ Windowsis on iga köide eraldi tähe all ja süsteemifailid on kaustas `C:\Windo
 
 Unixi süsteemides on igal failil omanik, rühm ja kolm õiguste kolmikut (*read, write, execute*) omanikule, rühmale ja teistele. Windowsi ACL on paindlikum: igale kasutajale või rühmale saab anda eri õigusi ning keelavaid kirjeid. Linux ja macOS toetavad ka ACL-e, kuid neid kasutatakse harvem.
 
-> 📊 **Joonis:** õigused · Unixi rwx ja Windowsi ACL
+![õigused · Unixi rwx ja Windowsi ACL](../pildid/23-c.png)
 
 Joonis: `chmod 750` annab omanikule kõik õigused, rühmale lugemise ja käivitamise ning ülejäänutele mitte midagi. Windowsis saavutab sama kahe ACL-i kirjega.
 
@@ -66,7 +66,7 @@ Joonis: `chmod 750` annab omanikule kõik õigused, rühmale lugemise ja käivit
 
 Linuxi distributsioonides tuleb peaaegu kogu tarkvara allkirjastatud **hoidlatest** läbi paketihalduri, mis uuendab ühe käsuga nii OS-i kui ka rakendusi. Windowsis on traditsiooniliselt iga programm ise vastutanud oma uuenduste eest; **winget** ja Microsoft Store toovad Windowsi Linuxile lähemale. macOS-is on App Store, tootjate `.pkg`-paigaldajad ja arendajate seas populaarne Homebrew.
 
-> 📊 **Joonis:** tarkvara paigaldus · allikas, tööriist, kontroll, uuendused
+![tarkvara paigaldus · allikas, tööriist, kontroll, uuendused](../pildid/23-d.png)
 
 Joonis: Linuxi distributsioonid uuendavad kõike ühe tööriistaga; Windowsis ja macOS-is uuendab OS ennast ise, kuid paljud rakendused vajavad eraldi uuendamist – seetõttu on paikamata rakendused Windowsis sage ründetee.
 

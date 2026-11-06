@@ -17,7 +17,7 @@ Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused, teenused 
 
 Kihid ülalt alla:
 
-> 📊 **Joonis:** Windowsi arhitektuur · VTL 0 ja VTL 1, hüperviisor, riistvara
+![Windowsi arhitektuur · VTL 0 ja VTL 1, hüperviisor, riistvara](../pildid/04-a.png)
 
 Joonis: tavaline Windows (vasakul) ja turvaline maailm (paremal) töötavad hüperviisori peal; isegi tuumarežiimi pahavara ei näe VTL 1 mälu. Sama sisu on all tabelina.
 

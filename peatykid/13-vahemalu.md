@@ -19,7 +19,7 @@
 
 Iga tase on vahemälu järgmisele. OS haldab peamiselt RAM-i kui ketta- ja võrguandmete vahemälu; protsessori vahemälusid haldab riistvara.
 
-> 📊 **Joonis:** mäluhierarhia · registritest pilveni, ligikaudsed pöördumisajad
+![mäluhierarhia · registritest pilveni, ligikaudsed pöördumisajad](../pildid/13-a.png)
 
 Joonis (ei ole mõõtkavas): ülemised tasemed haldab protsessor ise; OS-i vahemäluhaldur kasutab RAM-i ketta- ja võrguandmete vahemäluna.
 

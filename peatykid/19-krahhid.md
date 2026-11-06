@@ -33,7 +33,7 @@ Microsoft vastas **Windowsi töökindluse algatusega** (Windows Resiliency Initi
 - **viirusetõrje viimine tuumast välja** – Microsoft töötab koos turvatootjatega (Microsoft Virus Initiative), et nende tarkvara saaks töötada kasutajarežiimis ([heise](https://heise.de/-10462904));
 - rangemad nõuded tootjate uuenduste järk-järgulisele levitamisele ja mäluturvalise koodi kasutamine.
 
-> 📊 **Joonis:** krahh ja taastumine · bugcheck, mälutõmmis, Windows RE, QMR
+![krahh ja taastumine · bugcheck, mälutõmmis, Windows RE, QMR](../pildid/19-a.png)
 
 Joonis: kui Windows käivitub, analüüsitakse tõmmist WinDbg-ga; kui ei käivitu (nt CrowdStrike’i juhtumi moodi käivitustsükkel), avab Windows RE kiire masinataaste, mis laadib paranduse võrgust ilma, et IT-tugi peaks kohale tulema.
 

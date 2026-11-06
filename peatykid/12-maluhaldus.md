@@ -21,7 +21,7 @@ Mäluhaldus annab igale protsessile oma privaatse virtuaalse aadressiruumi, vast
 
 **Virtuaalmälu** (virtual memory) annab programmile mulje pidevast suurest mälust. Iga virtuaalaadress tõlgitakse füüsiliseks aadressiks **lehetabelite** abil. x64 protsessor kasutab 4-tasemelisi lehetabeleid (48-bitine aadress, 256 TB) ja uuemad serveriprotsessorid 5-tasemelisi (57-bitine aadress). Viimased tõlked hoitakse kiires vahemälus **TLB** (Translation Lookaside Buffer).
 
-> 📊 **Joonis:** virtuaalmälu · kahe protsessi lehed, RAM-i raamid ja lehefail
+![virtuaalmälu · kahe protsessi lehed, RAM-i raamid ja lehefail](../pildid/12-a.png)
 
 Joonis: lehetabel tõlgib iga protsessi lehe eraldi; sama DLL võib olla mõlemal, kuid RAM-is üks kord. Kettale viidud lehe juurde tekib leheviga, reserveeritud lehel füüsilist mälu pole.
 
@@ -32,7 +32,7 @@ Kui programm pöördub lehe poole, mis pole füüsilises mälus, tekib **lehevig
 
 **Lehekülje suurused:** tavaline 4 KB, suur leht 2 MB, hiiglaslik 1 GB. Suured lehed vähendavad TLB-möödalaskmisi andmebaasides ja virtuaalmasinates.
 
-> 📊 **Joonis:** aadressi tõlkimine · neli lehetabeli taset ja TLB
+![aadressi tõlkimine · neli lehetabeli taset ja TLB](../pildid/12-b.png)
 
 Joonis: virtuaalaadress jaguneb viieks osaks. Neli esimest on indeksid nelja taseme lehetabelitesse, viimane on nihe lehe sees. Kuna iga möödalask nõuab nelja lisapöördumist mällu, on TLB jõudluse jaoks hädavajalik.
 

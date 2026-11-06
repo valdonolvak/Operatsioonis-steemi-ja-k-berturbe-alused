@@ -12,7 +12,7 @@ Lõimed teevad sageli **koostööd**: üks toodab andmeid, teine tarbib (tootja�
 
 Lõimed võivad ka **konkureerida** sama ressursi pärast (fail, mälupiirkond, printer). Klassikaline näide: kaks lõime suurendavad sama loendurit. Tehe `x = x + 1` koosneb kolmest sammust – loe, liida, kirjuta. Kui lõimed vahelduvad sammude vahel, läheb üks suurendus kaduma.
 
-> 📊 **Joonis:** võidujooks · kaks lõime suurendavad sama muutujat, aeg kulgeb alla
+![võidujooks · kaks lõime suurendavad sama muutujat, aeg kulgeb alla](../pildid/08-a.png)
 
 Joonis: aeg kulgeb ülalt alla. Vasakul loevad mõlemad lõimed vana väärtuse 5 ja kirjutavad 6; paremal laseb lukk lõimel B alustada alles siis, kui A on lõpetanud.
 

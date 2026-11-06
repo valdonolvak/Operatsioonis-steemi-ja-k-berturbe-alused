@@ -29,7 +29,7 @@ NT turvakomponendid:
 
 **Turvakirjeldaja** (security descriptor) on igal objektil: omanik, **DACL** (kes mida tohib – ACE-de loend „luba“/„keela“) ja **SACL** (mida auditeerida). Juurdepääsu kontrollil võrdleb SRM tokenit DACL-iga; esimene sobiv keelav ACE võidab.
 
-> 📊 **Joonis:** juurdepääsu kontroll · token, turvakirjeldaja, SRM, tulemus ja audit
+![juurdepääsu kontroll · token, turvakirjeldaja, SRM, tulemus ja audit](../pildid/18-a.png)
 
 Joonis: SRM võrdleb tokeni SID-e DACL-i kirjetega; Mari on Õpetajate rühmas ja saab muutmisõiguse, õpilase puhul võidaks keelav kirje. SACL määrab, mida turvalogisse kirjutatakse.
 
@@ -48,7 +48,7 @@ Joonis: SRM võrdleb tokeni SID-e DACL-i kirjetega; Mari on Õpetajate rühmas j
 - **Measured Boot ja TPM** – käivitusahela mõõtmised salvestatakse TPM-i, BitLocker ja kaugkinnitus (attestation) kasutavad neid;
 - **Microsoft Pluton** – protsessorisse integreeritud turvaprotsessor, mille püsivara uuendatakse Windows Update’i kaudu ([Redmond Magazine](https://redmondmag.com/articles/2022/04/07/microsoft-outlines-new-security-protections-coming-to--windows-11.aspx)).
 
-> 📊 **Joonis:** turvaline käivitus · Secure Boot, Measured Boot, TPM, BitLocker, kaugkinnitus
+![turvaline käivitus · Secure Boot, Measured Boot, TPM, BitLocker, kaugkinnitus](../pildid/18-b.png)
 
 Joonis: Secure Boot peatab allkirjata koodi, Measured Boot salvestab iga sammu räsi TPM-i. Kui keegi muudab alglaadurit, ei klapi mõõtmised – BitLocker küsib taastevõtit ja Intune märgib seadme mitteühilduvaks.
 

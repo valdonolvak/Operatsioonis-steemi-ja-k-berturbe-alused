@@ -31,7 +31,7 @@ VMware ja Hyper-V kooseksisteerivad: kui Windowsis on hüperviisor (Hyper-V, VBS
 
 **Konteiner** isoleerib rakenduse koos sõltuvustega, kuid jagab hosti OS-tuuma. Konteiner käivitub sekunditega ja on VM-ist palju väiksem.
 
-> 📊 **Joonis:** virtuaalmasinad ja konteinerid · kus asub tuum
+![virtuaalmasinad ja konteinerid · kus asub tuum](../pildid/20-a.png)
 
 Joonis: iga VM kannab oma OS-i ja tuuma; konteinerid sisaldavad ainult rakendust ja teeke ning kasutavad hosti tuuma. Hyper-V isolatsiooniga konteiner saab oma kerge tuuma, olles nende kahe vahepealne.
 

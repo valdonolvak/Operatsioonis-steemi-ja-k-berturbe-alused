@@ -69,7 +69,7 @@ Tavaline faili lugemine:
 5. Kettadraiver programmeerib kontrolleri, kontroller teeb DMA ja annab katkestuse.
 6. ISR → DPC → IRP lõpetatakse ja tulemus jõuab rakenduseni.
 
-> 📊 **Joonis:** faili lugemine · IRP draiverite pinus, vahemälu otsetee ja lõpetamine
+![faili lugemine · IRP draiverite pinus, vahemälu otsetee ja lõpetamine](../pildid/14-a.png)
 
 Joonis: kui andmed on vahemälus, lõpeb päring kohe; muidu liigub IRP draiverite pinus alla seadmeni ning lõpetatakse katkestuse ja DPC kaudu.
 

@@ -27,7 +27,7 @@ Registri juurvõtmed:
 | HKEY\_CLASSES\_ROOT | HKCR | failitüübid ja COM-klassid |
 | HKEY\_CURRENT\_CONFIG | HKCC | jooksev riistvaraprofiil |
 
-> 📊 **Joonis:** registri puu · juurvõtmed, HKLM tarud, Services ja Run
+![registri puu · juurvõtmed, HKLM tarud, Services ja Run](../pildid/06-a.png)
 
 Joonis: HKLM koosneb taru-failidest kaustas `System32\config`; Run- ja Services-võtmed on esimesed kohad, mida turvaanalüüsil vaadatakse.
 

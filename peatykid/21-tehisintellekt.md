@@ -53,7 +53,7 @@ Juhtum näitab OS-i turvapõhimõtteid praktikas: vaikimisi väljas, minimaalne 
 
 Microsoft ise hoiatab: agentidega kaasneb **kaudne viipesüst** (cross-prompt injection, XPIA) – dokumenti või kasutajaliidesesse peidetud pahatahtlik tekst võib agendi juhised üle kirjutada ja panna ta andmeid lekitama või pahavara paigaldama; mudelid võivad ka **hallutsineerida** ([ARY News / Microsoft](https://arynews.tv/microsoft-issues-security-warning-over-new-ai-features-in-windows-11)).
 
-> 📊 **Joonis:** kaudne viipesüst (XPIA) · ründe käik ja OS-i kaitsekihid
+![kaudne viipesüst (XPIA) · ründe käik ja OS-i kaitsekihid](../pildid/21-a.png)
 
 Joonis: agent ei erista kasutaja palvet ja dokumendis olevat teksti alati; seetõttu peab kahju piirama OS – eraldi konto, kinnitus ja logi.
 

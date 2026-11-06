@@ -19,7 +19,7 @@ Tuumas kirjeldab protsessi struktuur **EPROCESS**, kasutajarežiimis **PEB** (Pr
 
 **Protsessi loomine** (`CreateProcess`) käib etappidena: avatakse EXE-fail, luuakse protsessiobjekt ja aadressiruum, luuakse esimene lõim, teavitatakse alamsüsteemi (csrss.exe), laaditakse vajalikud DLL-id ja algab täitmine. Turvakontrollid (Smart App Control, Defender, AppLocker / App Control for Business) saavad käivitamise selles etapis peatada.
 
-> 📊 **Joonis:** protsessi loomine · kuus etappi
+![protsessi loomine · kuus etappi](../pildid/07-a.png)
 
 Joonis: juba esimeses etapis saab turvatarkvara käivituse peatada; teises etapis saavad draiverid ja EDR teate uuest protsessist, mistõttu jääb iga käivitus turvalogidesse.
 
@@ -39,7 +39,7 @@ Lõimel on oma **registrite olek**, **kaks pinu** (kasutaja- ja tuumapinu), **pr
 
 Lõime põhiolekud: **valmis** (ready, ootab protsessorit), **töötab** (running), **ootel** (waiting, ootab sündmust, nt S/V lõppu), **lõpetatud** (terminated). Planeerija liigutab lõime nende olekute vahel (ptk 9).
 
-> 📊 **Joonis:** lõime olekud · valmis, töötab, ootel, lõpetatud
+![lõime olekud · valmis, töötab, ootel, lõpetatud](../pildid/07-b.png)
 
 Joonis: lõim ei lähe ootelt otse tööle – kui sündmus saabub, muutub ta valmis-olekusse ja ootab, kuni planeerija ta valib.
 

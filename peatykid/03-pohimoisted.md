@@ -38,7 +38,7 @@ Protsessoril on privileegitasemed. Windows kasutab kahte:
 
 Rakendus läheb tuumarežiimi ainult **süsteemikutse** (system call) kaudu, mis kontrollib parameetreid ja õigusi. Kui kasutajarežiimi programm jookseb kokku, lõpetatakse ainult see protsess; vigane draiver tuumarežiimis võib peatada kogu süsteemi.
 
-> 📊 **Joonis:** faili avamise teekond · kasutajarežiimist tuumarežiimi ja tagasi
+![faili avamise teekond · kasutajarežiimist tuumarežiimi ja tagasi](../pildid/03-a.png)
 
 Joonis: Windows API funktsioon jõuab ntdll.dll kaudu süsteemikutseni; tuumas kontrollitakse õigusi ja rakendus saab tagasi ainult pideme, mitte otseligipääsu.
 

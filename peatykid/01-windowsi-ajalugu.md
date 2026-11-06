@@ -16,7 +16,7 @@ Windows 1.0 (1985) kuni Windows 3.x olid graafilised kasutajaliidesed, mis töö
 
 Windows NT (New Technology) loodi nullist, juhiks Dave Cutler. Eesmärgid olid töökindlus, turvalisus, kaasaskantavus eri protsessoriarhitektuuridele ja mitme kasutaja tugi. NT 3.1 ilmus 1993. NT-l on kasutajarežiim ja tuumarežiim, mälukaitse, ACL-ipõhine õiguste süsteem ning failisüsteem NTFS.
 
-> 📊 **Joonis:** Windowsi kaks arendusliini · DOS-liin lõppes 2000, NT-liin jätkub
+![Windowsi kaks arendusliini · DOS-liin lõppes 2000, NT-liin jätkub](../pildid/01-a.png)
 
 Joonis: DOS-põhine liin lõppes Windows ME-ga; Windows XP-st alates kasutavad ka koduarvutid NT-tuuma, millel põhineb ka Windows 11.
 

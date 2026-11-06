@@ -36,7 +36,7 @@ HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koos
 | RAID 6 | topeltpaarsus | 2 ketast | (n−2)/n |
 | RAID 10 | peegeldatud triibud | 1 ketas paari kohta | 50% |
 
-> 📊 **Joonis:** GPT-ketta partitsioonid ning RAID 1 ja RAID 5 andmepaigutus
+![GPT-ketta partitsioonid ning RAID 1 ja RAID 5 andmepaigutus](../pildid/16-a.png)
 
 Joonis: RAID 1 hoiab igast plokist kahte koopiat; RAID 5 jaotab andmed ja paarsuse (p) kolmele kettale, nii et ükskõik millise ketta sisu saab ülejäänutest taastada.
 

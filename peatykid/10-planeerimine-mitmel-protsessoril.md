@@ -26,7 +26,7 @@ Lisaks võib kiibis olla GPU ja NPU, mida OS haldab eraldi planeerijatega (GPU-p
 
 Serverites on tavaline **NUMA** (Non-Uniform Memory Access): kahe- või neljapesalises serveris on igal protsessoril oma mälukanalid. Kui lõim töötab sõlmes 0, aga tema andmed on sõlme 1 mälus, on iga pöördumine aeglasem. Windows ja Hyper-V püüavad hoida lõime ja tema mälu samas sõlmes.
 
-> 📊 **Joonis:** hübriidprotsessor ja NUMA · kuhu planeerija lõime paneb
+![hübriidprotsessor ja NUMA · kuhu planeerija lõime paneb](../pildid/10-a.png)
 
 Joonis: sülearvutis valib planeerija tuuma tüübi (P või E), serveris NUMA-sõlme – lõim ja tema mälu peaksid asuma samas sõlmes.
 

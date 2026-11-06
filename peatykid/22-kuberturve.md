@@ -30,7 +30,7 @@ Eesti kontekstis on RIA küberintsidentide käsitlemise osakond (CERT-EE) korduv
 
 Windowsi null-usalduse ehituskivid: TPM ja Pluton (seadme identiteet), Secure Boot ja kaugkinnitus (seadme seisund), Windows Hello (kasutaja identiteet), BitLocker (andmed), VBS (isolatsioon), Intune’i vastavuspoliitika (tingimuslik juurdepääs).
 
-> 📊 **Joonis:** null-usalduse otsus · signaalid, poliitika ja tulemused
+![null-usalduse otsus · signaalid, poliitika ja tulemused](../pildid/22-a.png)
 
 Joonis: sama kasutaja võib saada eri tulemuse: kooli hallatud sülearvutist täieliku ligipääsu, kodusest tahvelarvutist ainult veebiversiooni ja tundmatust riigist vana seadmega keelu.
 
@@ -92,7 +92,7 @@ Etapid NIST-i raamistiku järgi:
 4. **likvideerimine ja taastamine** – eemalda püsivus (Run-võtmed, teenused, ajastatud ülesanded – ptk 6), taasta puhtast tõmmisest või varukoopiast;
 5. **järeltegevus** – õppetunnid, parandused.
 
-> 📊 **Joonis:** intsidendile reageerimise tsükkel · viis etappi
+![intsidendile reageerimise tsükkel · viis etappi](../pildid/22-b.png)
 
 Joonis: järeltegevuse õppetunnid parandavad ettevalmistust – iga lahendatud intsident peaks muutma järgmise tuvastamise kiiremaks.
 

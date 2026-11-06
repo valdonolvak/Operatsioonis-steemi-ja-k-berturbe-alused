@@ -28,7 +28,7 @@ Coffmani järgi (1971) tekib ummik ainult siis, kui kehtivad kõik neli tingimus
 
 Olukorda saab kujutada **ressursijaotuse graafina**: sõlmed on lõimed ja ressursid, nooled näitavad „hoiab“ ja „ootab“. Tsükkel graafis tähendab (üheeksemplariliste ressursside korral) ummikut.
 
-> 📊 **Joonis:** ressursijaotuse graaf · kolm lõime ja kolm ressurssi tsüklis
+![ressursijaotuse graaf · kolm lõime ja kolm ressurssi tsüklis](../pildid/11-a.png)
 
 Joonis: T1 ootab printerit, mida hoiab T2; T2 ootab skannerit, mida hoiab T3; T3 ootab faili, mida hoiab T1. Tsükli saab murda, kui kõik võtavad ressursid samas järjekorras.
 

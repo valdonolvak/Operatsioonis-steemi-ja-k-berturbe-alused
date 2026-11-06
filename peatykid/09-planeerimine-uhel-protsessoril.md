@@ -35,7 +35,7 @@ Eelistavas (preemptive) süsteemis võib OS lõime igal hetkel peatada. Algoritm
 | FCFS | A, B, C | 0 / 8 / 12 | 6,7 ms |
 | SJF | C, B, A | 6 / 2 / 0 | 2,7 ms |
 
-> 📊 **Joonis:** Gantti diagramm · FCFS, SJF ja Round Robin samade töödega
+![Gantti diagramm · FCFS, SJF ja Round Robin samade töödega](../pildid/09-a.png)
 
 Joonis: SJF laseb lühikesed tööd ette ja vähendab keskmist ooteaega; Round Robin vahetab töid iga 2 ms järel, mis teeb süsteemi reageerivaks, kuid lisab kontekstivahetusi.
 

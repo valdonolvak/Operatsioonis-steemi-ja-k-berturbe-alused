@@ -31,7 +31,7 @@ Tänapäeva arvuti on keerukam:
 | Turvalisus | autentimine, õigused, auditilogid | turvaviitemonitor (SRM), LSASS |
 | Kasutajaliides | graafiline kest, käsurealõikesüsteem | Explorer, PowerShell, Windows Terminal |
 
-> 📊 **Joonis:** arvutisüsteemi kihid · kasutaja, rakendused, OS, riistvara
+![arvutisüsteemi kihid · kasutaja, rakendused, OS, riistvara](../pildid/02-a.png)
 
 Joonis: rakendus ei pöördu kunagi otse riistvara poole – kõik käib OS-i kaudu, mis jagab ressursse ja kaitseb programme.
 

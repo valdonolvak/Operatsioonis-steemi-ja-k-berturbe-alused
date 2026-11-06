@@ -35,7 +35,7 @@ Windowsi võrgupinu on kihiline: rakendused kasutavad API-sid (Winsock, WinHTTP,
 - **AFD** (`afd.sys`) – Winsocki tuumapoolne osa;
 - **jõudlusfunktsioonid** – RSS (vastuvõtu jagamine tuumade vahel), RSC, kontrollsummade ja TCP segmenteerimise mahalaadimine võrgukaardile, RDMA (SMB Direct).
 
-> 📊 **Joonis:** Windowsi võrgupinu · kihid ja OSI mudeli vasted
+![Windowsi võrgupinu · kihid ja OSI mudeli vasted](../pildid/17-a.png)
 
 Joonis: rakenduse andmed liiguvad API kaudu tuuma TCP/IP pinusse; WFP kontrollib iga ühendust enne, kui NDIS-draiverid selle võrgukaardile annavad.
 
@@ -45,7 +45,7 @@ Joonis: rakenduse andmed liiguvad API kaudu tuuma TCP/IP pinusse; WFP kontrollib
 
 Microsoft avaldas 2026. aasta alguses kolmeetapilise plaani NTLM-i vaikimisi keelamiseks: 1) parem auditeerimine Windows 11 24H2 ja Server 2025-s; 2) 2026. aasta teisel poolel uued võimalused **IAKerb** ja **Local KDC**, mis katavad olukorrad, kus seni langeti NTLM-ile tagasi; 3) järgmises Windows Serveri versioonis ja vastavas kliendis on võrgu-NTLM vaikimisi keelatud, kuid poliitikaga taaslubatav ([The Hacker News](https://thehackernews.com/2026/02/microsoft-begins-ntlm-phase-out-with.html), [Petri](https://petri.com/microsoft-disable-ntlm-default-windows/)). Administraator peaks juba praegu auditeerima, millised rakendused NTLM-i kasutavad.
 
-> 📊 **Joonis:** Kerberos ja NTLM · kuidas klient serverile end tõestab
+![Kerberos ja NTLM · kuidas klient serverile end tõestab](../pildid/17-b.png)
 
 Joonis: Kerberose korral saab klient domeenikontrollerilt ajapiiranguga pileti ja esitab selle serverile; NTLM-i korral vastab klient serveri väljakutsele parooli räsi abil, mida ründaja saab vahendada (relee) või murda.
 

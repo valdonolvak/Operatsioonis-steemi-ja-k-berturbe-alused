@@ -4,7 +4,7 @@
 
 **Failisüsteem** (file system) korraldab, kuidas failid ja kaustad kettale salvestatakse, leitakse ja kaitstakse. Windows 11 süsteemiketas on NTFS; välised kandjad on sageli exFAT või FAT32; serverites ja arendajate Dev Drive’il kasutatakse ReFS-i.
 
-> 📊 **Joonis:** salvestuse kihid · ketas, partitsioonitabel, partitsioon, köide, failisüsteem, failid
+![salvestuse kihid · ketas, partitsioonitabel, partitsioon, köide, failisüsteem, failid](../pildid/15-a.png)
 
 Joonis: failisüsteem on üks kiht kuuest. Kui „ketas ei avane“, tuleb kindlaks teha, millises kihis viga on – ketas, partitsioon, köide (nt lukus BitLocker) või failisüsteem.
 
@@ -28,11 +28,11 @@ Joonis: failisüsteem on üks kiht kuuest. Kui „ketas ei avane“, tuleb kindl
 - **muudatuste päevik** (USN Journal) – varundus- ja indekseerimisprogrammid saavad teada, mis muutus;
 - **varikoopiad** (Volume Shadow Copy) – hetkeseisud varunduseks ja „Eelmised versioonid“.
 
-> 📊 **Joonis:** NTFS-i MFT · väikese ja suure faili kirje
+![NTFS-i MFT · väikese ja suure faili kirje](../pildid/15-b.png)
 
 Joonis: iga fail on MFT kirje, mis koosneb atribuutidest. Väikese faili sisu ($DATA) on kirje sees; suure faili $DATA sisaldab ainult jooksude loendit ehk viiteid kettal olevatele klastritele.
 
-> 📊 **Joonis:** NTFS-i logimine · toitekatkestus ja taastamine
+![NTFS-i logimine · toitekatkestus ja taastamine](../pildid/15-c.png)
 
 Joonis: NTFS kirjutab kavatsuse enne muudatust logisse. Pärast katkestust loeb ta logi ja kas tühistab pooleli jäänud tehingu või viib selle lõpuni – seetõttu ei pea NTFS-i puhul pärast iga krahhi `chkdsk`-i tegema, nagu FAT-i puhul.
 
@@ -45,7 +45,7 @@ Joonis: NTFS kirjutab kavatsuse enne muudatust logisse. Pärast katkestust loeb 
 - **plokkide kloonimine** – suure faili koopia tehakse hetkega, viidates samadele plokkidele (kasulik Hyper-V ja varunduse jaoks);
 - Windows Server 2025-s **dedubleerimine ja tihendamine** kõigis väljaannetes ([HKU AI Hub / Microsoft](https://aihub.hkuspace.hku.hk/2024/11/04/windows-server-2025-now-generally-available-with-advanced-security-improved-performance-and-cloud-agility/)).
 
-> 📊 **Joonis:** ReFS · plokkide kloonimine ja kirjutamisel kopeerimine
+![ReFS · plokkide kloonimine ja kirjutamisel kopeerimine](../pildid/15-d.png)
 
 Joonis: 100 GB virtuaalketta koopia tekib ReFS-il sekundiga, sest koopia viitab samadele plokkidele. Kui koopiat muudetakse, kirjutatakse muudetud plokk uude kohta ja algne fail jääb puutumata. Sama põhimõtet kasutavad ka Linuxi Btrfs ja macOS-i APFS.
 
@@ -79,7 +79,7 @@ OneDrive kasutab **Cloud Files API**-t: failid on kettal kohtäitjatena (placeho
 | ReFS | serverid, Dev Drive | jah | kirjutamisel kopeerimine | terviklikkusvood, plokkide kloonimine |
 | UDF / ISO 9660 | DVD, ISO-tõmmised | ei | ei | ainult lugemiseks tõmmistes |
 
-> 📊 **Joonis:** failisüsteemi valik · kuus tavalist olukorda
+![failisüsteemi valik · kuus tavalist olukorda](../pildid/15-e.png)
 
 Joonis: süsteemikettale NTFS, eemaldatavale kandjale exFAT, EFI-partitsioonile FAT32 ja suurtele serveriköidetele ReFS.
 
