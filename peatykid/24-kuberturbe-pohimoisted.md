@@ -409,6 +409,8 @@ Tänapäeva lähenemine lisab sellele **eelduse, et rikkumine on juba toimunud**
 
 ### Kontrollküsimused
 
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/24-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 1. Too näide rünnetest, mis rikuvad konfidentsiaalsust, terviklust ja käideldavust.
 2. Too näide olukorrast, kus konfidentsiaalsus ja käideldavus on vastuolus.
 3. Mis vahe on ohul, nõrkusel, ekspluidil ja riskil? Selgita oma näite abil.
