@@ -18,6 +18,8 @@ Asümmeetriline krüptograafia lahendab võtmejagamise, kuid jätab ühe küsimu
 
 Joonis: allkirjastaja arvutab dokumendist räsi ja allkirjastab selle oma privaatvõtmega. Kontrollija arvutab sama räsi uuesti ja kontrollib allkirja allkirjastaja avaliku võtmega. Kui dokumendis muutub kas või üks bait, räsid ei klapi ja allkiri on kehtetu.
 
+> 🖱️ **Proovi ise:** [digiallkiri brauseris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#allkiri). Allkirjasta leping päris ECDSA-võtmega, muuda seda ründajana ja vaata, mida kontroll avastab.
+
 **Allkirjastamine:**
 
 1. Arvuta dokumendi räsi, nt SHA-256.
@@ -57,6 +59,8 @@ Joonis: usaldusahel. Brauser ei tunne www.kool.ee serverit, kuid usaldab juur-CA
 
 Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoiatuslehte. Hoiatuse eiramine tähendab, et sa ei tea enam, kellega suhtled – see on täpselt olukord, mida MITM-ründaja vajab.
 
+> 🖱️ **Proovi ise:** [sertifikaadi kontroll](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#sert). Läbi stsenaariumid (aegunud, vale domeen, iseallkirjastatud, DigiNotar, tulemüür, õngitsusleht) ja vaata, milline kuuest kontrollist ebaõnnestub.
+
 **Kuidas CA veendub, et domeen kuulub taotlejale?** Kolm valideerimistaset:
 
 | Tase | Mida kontrollitakse | Näide |
@@ -88,6 +92,8 @@ Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoi
 Joonis: TLS 1.3 käepigistus. Brauser saadab oma võtmejagamise kohe esimeses sõnumis. Pärast serveri vastust on mõlemal sama seansivõti ja ülejäänud käepigistus, sh serveri sertifikaat, liigub juba krüpteeritult.
 
 Käepigistus samm-sammult:
+
+> 🖱️ **Proovi ise:** [TLS 1.3 käepigistus](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#tls). Liigu sõnum sõnumi haaval ja vaata, mida pealtkuulaja näeb ning milline sõnum avastab rünnaku.
 
 1. **ClientHello** – brauser saadab toetatud šifrikomplektid, juhusliku arvu, domeeninime (SNI, et server teaks, millist sertifikaati näidata) ja oma ajutise võtmejagamise (key share), nt X25519 või X25519MLKEM768.
 2. **ServerHello** – server valib šifrikomplekti ja saadab oma võtmejagamise. Mõlemad arvutavad nüüd sama jagatud saladuse (Diffie–Hellman, ptk 28.2) ja tuletavad sellest HKDF-iga seansivõtmed.
@@ -142,6 +148,8 @@ Allkiri tõendab, **kes** faili tegi, mitte seda, et fail on ohutu. Ka pahavara 
 - ID-kaardi privaatvõtmed on kiibis: PIN1 autentimiseks, PIN2 allkirjastamiseks.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Kirjelda digiallkirja andmise ja kontrollimise samme.
 2. Miks allkirjastatakse dokumendi räsi, mitte dokument ise?
