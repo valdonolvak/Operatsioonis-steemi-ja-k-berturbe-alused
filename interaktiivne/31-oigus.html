@@ -42,11 +42,32 @@ button:hover{background:var(--card)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:6px;border-bottom:1px solid var(--border);vertical-align:top}
 th{font-weight:500;color:var(--muted)}
-#rtab td select{height:36px;padding:4px 4px;font-size:15px;width:auto;min-width:56px}
-#rtab td select.k{min-width:146px}
-#rtab td.res{min-width:118px;line-height:1.9}
+#rtab td select{-webkit-appearance:none;-moz-appearance:none;appearance:none;height:36px;padding:0 22px 0 10px;font-size:16px;line-height:36px;width:64px;min-width:64px;max-width:64px;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6a65'/%3E%3C/svg%3E") no-repeat right 8px center;color:var(--text);text-overflow:clip}
+#rtab td select.k{width:160px;min-width:160px;max-width:160px}
+#rtab td select:disabled{opacity:.6}
+#rtab th.n{width:72px}
+#rtab td.res{min-width:104px;line-height:2}
 #rtab td.num{white-space:nowrap}
-.risktable{min-width:760px}
+.risktable{min-width:820px}
+.crit{width:100%;font-size:14px;border-collapse:collapse}
+.crit td,.crit th{padding:6px;border-bottom:1px solid var(--border);vertical-align:top}
+.crit td:first-child{white-space:nowrap;font-weight:500}
+details.help{background:var(--card);border-radius:12px;padding:.75rem 1.25rem;margin:0 0 12px}
+details.help summary{cursor:pointer;font-weight:500}
+details.help h3{margin:1rem 0 .3rem}
+#rtab tr.sel td{background:var(--accent-bg)}
+#rtab td.name{cursor:pointer}
+#rtab td.name:hover b{text-decoration:underline}
+.matrix .cell{cursor:pointer}
+.matrix .cell.sel{outline:3px solid var(--accent);outline-offset:1px}
+.expl{border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin:12px 0}
+.expl h3{margin:0 0 .5rem}
+.expl .step{display:grid;grid-template-columns:120px 1fr;gap:4px 12px;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:15px}
+.expl .step:last-child{border-bottom:0}
+.expl .lab{color:var(--muted);font-size:13px}
+.expl .crt{color:var(--muted);font-size:13px;display:block}
+.addrow{display:flex;gap:8px;margin:8px 0 0;flex-wrap:wrap}
+.addrow input{flex:1;min-width:200px}
 .scrollhint{display:none;font-size:13px;color:var(--muted);margin:0 0 4px}
 @media (max-width:800px){.scrollhint{display:block}}
 .matrix{display:grid;grid-template-columns:70px repeat(3,1fr);gap:4px;max-width:520px;margin:1rem 0}
@@ -127,9 +148,23 @@ th{font-weight:500;color:var(--muted)}
 
 <!-- ================= 3 ================= -->
 <h2 id="risk">3. Riskimaatriks ja riskide käsitlemine</h2>
-<p>Riski suurus = <b>tõenäosus × mõju</b>, mõlemad skaalal 1–3. Tulemus 1–2 on madal, 3–4 keskmine ja 6–9 kõrge risk. Hinda iga riski praegust olukorda, vali käsitlemise viis ja määra, milliseks muutuvad tõenäosus ja mõju pärast meetmeid. Maatriksil on katkendjoonega ring praegune risk ja täisjoonega ring jääkrisk.</p>
-<p class="scrollhint">Tabel on lai: keri seda sõrmega külgsuunas.</p><div class="card" style="overflow-x:auto"><table class="risktable"><thead><tr><th>#</th><th>Risk</th><th>Tõenäosus</th><th>Mõju</th><th>Käsitlus</th><th>Uus T</th><th>Uus M</th><th>Jääkrisk</th></tr></thead><tbody id="rtab"></tbody></table></div>
+<p>Riski suurus = <b>tõenäosus × mõju</b>, mõlemad skaalal 1–3. Tulemus 1–2 on madal, 3–4 keskmine ja 6–9 kõrge risk. Hinda iga riski praegust olukorda, vali käsitlemise viis ja määra, milliseks muutuvad tõenäosus ja mõju pärast meetmeid. Maatriksil on katkendjoonega ring praegune risk ja täisjoonega ring jääkrisk. <b>Klõpsa riski nimel</b>, et näha, miks just selline hinnang anti, või <b>klõpsa maatriksi lahtril</b>, et näha, mida see väärtus tähendab.</p>
+<details class="help" open>
+<summary>Kuidas tõenäosust ja mõju hinnata?</summary>
+<p class="why">Et kaks inimest hindaksid sama riski ühtemoodi, lepitakse kriteeriumid enne kokku. Allolevad on näide kooli või väikese organisatsiooni jaoks.</p>
+<h3>Tõenäosus: kui tõenäoline on, et see juhtub järgmise aasta jooksul?</h3>
+<table class="crit"><tbody id="tcrit"></tbody></table>
+<h3>Mõju: kui suur on kahju, kui see juhtub?</h3>
+<p class="why" style="margin-top:0">Vaata käideldavust, konfidentsiaalsust ja rahalist või õiguslikku kahju. Hinne määratakse <b>kõige suurema</b> mõju järgi.</p>
+<table class="crit"><tbody id="mcrit"></tbody></table>
+<h3>Riskitase: mida teha?</h3>
+<table class="crit"><tbody id="acrit"></tbody></table>
+</details>
+<p class="scrollhint">Tabel on lai: keri seda sõrmega külgsuunas.</p><div class="card" style="overflow-x:auto"><table class="risktable"><thead><tr><th>#</th><th>Risk</th><th class="n">Tõenäosus</th><th class="n">Mõju</th><th>Käsitlus</th><th class="n" title="Tõenäosus pärast meetmeid">Uus T</th><th class="n" title="Mõju pärast meetmeid">Uus M</th><th>Jääkrisk</th></tr></thead><tbody id="rtab"></tbody></table></div>
+<div class="addrow"><input id="newRisk" placeholder="Lisa oma risk, nt „Kooli Wi-Fi parool on seinal“" aria-label="Uue riski kirjeldus"><button id="addRisk">Lisa risk</button></div>
+<div class="err" id="addErr"></div>
 <div class="matrix" id="matrix"></div>
+<div class="expl" id="rexpl"></div>
 <div id="rout"></div>
 
 <script>
@@ -209,52 +244,126 @@ function runT(){
 ['found','sent','q1','q2','q3','q4','q5'].forEach(i=>{$(i).addEventListener('input',runT);$(i).addEventListener('change',runT)});
 
 /* ===== 3. risk ===== */
+const TCRIT={1:['madal','harv','Võib juhtuda harvem kui kord mitme aasta jooksul. Ründeks on vaja erioskusi või füüsilist ligipääsu. Tugevad meetmed on juba olemas.'],
+ 2:['keskmine','võimalik','Võib juhtuda umbes kord aastas. Nõrkus on teada, kuid süsteem ei ole otse internetis või osa kaitset on olemas.'],
+ 3:['kõrge','tõenäoline','Juhtub mitu korda aastas või on juba juhtunud. Süsteem on internetis, ekspluit on avalik või rünne käib automaatselt.']};
+const MCRIT={1:['väike','Katkestus kuni mõni tund, töö saab jätkuda muul viisil. Isikuandmeid ei puuduta. Kahju jääb eelarve piiresse ega paista väljapoole.'],
+ 2:['keskmine','Katkestus kuni tööpäev, osa tööst seisab. Piiratud hulga tavaliste isikuandmete leke, AKI teavitamine võib olla vajalik. Märgatav rahaline kahju või ettekirjutuse oht.'],
+ 3:['suur','Mitme päeva seisak või andmed kaovad jäädavalt. Eriliigiliste andmete (tervis), paroolide või paljude inimeste andmete leke. Suur rahaline kahju, trahv, meediakajastus või oht inimeste tervisele.']};
+const ACT={lo:'Madal risk (1–2): võib aktsepteerida. Jälgitakse korralise ülevaatuse käigus.',
+ mi:'Keskmine risk (3–4): meetmed lisatakse tegevuskavasse kindla tähtaja ja vastutajaga.',
+ hi:'Kõrge risk (6–9): juhtkonda teavitatakse kohe ja meetmed rakendatakse esimesena. Aktsepteerida saab ainult juhtkonna põhjendatud otsusega.'};
+const KEXPL={'Vähendamine':'Rakendatakse meetmeid, mis vähendavad tõenäosust, mõju või mõlemat. Mõtle, kumba meede mõjutab: MFA ja paikamine vähendavad tõenäosust, varukoopia ja krüpteerimine mõju.',
+ 'Vältimine':'Loobutakse tegevusest, mis riski tekitab. Risk kaob, kuid koos sellega kaob ka tegevuse kasu.',
+ 'Jagamine':'Osa kahjust kantakse kolmandale osapoolele (kindlustus, leping, teenusepakkuja). Rünnaku tõenäosus tavaliselt ei muutu ja töö võib ikkagi seista.',
+ 'Aktsepteerimine':'Meetmeid ei rakendata. Juhtkond kinnitab allkirjaga, et teab riski ja kannab seda.'};
 const RISKS=[
- {n:'Lunavara krüpteerib failiserveri',t:3,m:3,k:'Vähendamine',t2:2,m2:1,hint:'MFA ja võrgust eraldatud varukoopia: rünne võib õnnestuda, aga andmed saab taastada.'},
- {n:'Internetis paikamata VPN-seade',t:3,m:3,k:'Vähendamine',t2:1,m2:3,hint:'Paikamine vähendab tõenäosust, kuid sissetungi mõju jääb samaks.'},
- {n:'Vana raamatupidamisprogramm, mida ei saa paigata',t:2,m:2,k:'Vältimine',t2:0,m2:0,hint:'Programmist loobutakse, seega risk kaob koos tegevusega.'},
- {n:'Pilveteenuse pikk katkestus',t:1,m:3,k:'Jagamine',t2:1,m2:2,hint:'Leping ja küberkindlustus kannavad osa rahalisest kahjust, kuid töö seisab ikkagi.'},
- {n:'Kooli sööklamenüü lehe rikkumine',t:2,m:1,k:'Aktsepteerimine',t2:2,m2:1,hint:'Väike mõju: kaitse oleks kahjust kallim. Juhtkond kinnitab otsuse.'}
+ {n:'Lunavara krüpteerib failiserveri',t:3,m:3,k:'Vähendamine',t2:2,m2:1,hint:'MFA, koolitus ja võrgust eraldatud varukoopia.',
+  wt:'Lunavara on üks sagedasemaid intsidente. Failiserver on kõigile tööjaamadele nähtav ja nakatamiseks piisab ühest õngitsuskirjast.',
+  wm:'Kõik ühiskaustad krüpteeritakse ja töö seisab päevi. Kui varukoopia on samas võrgus, võivad andmed kaduda jäädavalt.',
+  wa:'MFA ja koolitus vähendavad tõenäosust ühe astme võrra (2). Võrgust eraldatud ja testitud varukoopia muudab mõju väikeseks (1): failid taastatakse tundidega ja andmeid ei kao.'},
+ {n:'Internetis paikamata VPN-seade',t:3,m:3,k:'Vähendamine',t2:1,m2:3,hint:'Paikamine päevade jooksul ja haldusliides internetist peidetud.',
+  wt:'Seade on internetis, nõrkus on avalikult teada (KEV-loetelus) ja skannerid leiavad selle tundidega.',
+  wm:'VPN-i kaudu pääseb otse sisevõrku, nii et ründaja saab ligi kõigile süsteemidele ja andmetele.',
+  wa:'Paikamine viib tõenäosuse 1-ni. Mõju jääb 3-ks: kui keegi siiski sisse pääseb, on kahju sama suur. Mõju vähendaks võrgu segmentimine.'},
+ {n:'Vana raamatupidamisprogramm, mida ei saa paigata',t:2,m:2,k:'Vältimine',t2:0,m2:0,hint:'Asendatakse toetatud programmiga.',
+  wt:'Programm on paikamata, kuid töötab ainult sisevõrgus ja seda kasutab vähe inimesi. Rünne on võimalik, aga mitte igapäevane.',
+  wm:'Raamatupidamisandmed ja töötajate palgad: piiratud hulga isikuandmete leke või tööpäevane katkestus.',
+  wa:'Programm asendatakse toetatud versiooniga ja vana eemaldatakse. Risk kaob, sest ohtlikku tegevust enam pole.'},
+ {n:'Pilveteenuse pikk katkestus',t:1,m:3,k:'Jagamine',t2:1,m2:2,hint:'Teenusetaseme leping (SLA) ja küberkindlustus.',
+  wt:'Suured pilveteenused on väga töökindlad ja mitmepäevane katkestus on harv.',
+  wm:'Kui e-post ja failid on ainult pilves, seisab kogu töö.',
+  wa:'Leping ja kindlustus hüvitavad osa rahalisest kahjust, nii et mõju langeb 2-le. Töö seisab ikkagi, seega jagamine üksi mõju ei kaota. Tõenäosust see ei muuda.'},
+ {n:'Kooli sööklamenüü lehe rikkumine',t:2,m:1,k:'Aktsepteerimine',t2:2,m2:1,hint:'Juhtkond kinnitab otsuse.',
+  wt:'Lehel on vana sisuhaldussüsteem ja lihtsate lehtede rikkumist juhtub aeg-ajalt.',
+  wm:'Lehel on ainult avalik menüü. Kahju on väike ja leht parandatakse tunniga.',
+  wa:'Kaitse (eraldi server, pidev hooldus) oleks kahjust kallim. Juhtkond aktsepteerib madala riski ja leht taastatakse vajadusel varukoopiast.'},
+ {n:'Võltsarve või „juhi“ maksepalve raamatupidajale (BEC)',t:3,m:2,k:'Vähendamine',t2:1,m2:2,hint:'Makse kinnitatakse helistades teadaolevale numbrile.',
+  wt:'Selliseid kirju tuleb mitu korda aastas ja tehisintellekt teeb need veatus keeles usutavaks (ptk 24.5).',
+  wm:'Ühe ülekandega võib kaduda kümneid tuhandeid eurosid. Märgatav kahju, kuid isikuandmeid see ei puuduta.',
+  wa:'Reegel: iga uus pangakonto või kiireloomuline makse kinnitatakse teise kanali kaudu. Kiri võib ikka tulla, aga makse jääb tegemata: tõenäosus 1. Mõju jääb samaks (2), kui makse siiski tehakse.'},
+ {n:'Krüpteerimata mälupulk õpilaste hinnetega kaob',t:2,m:2,k:'Vähendamine',t2:2,m2:1,hint:'BitLocker To Go või krüpteerimata USB-le kirjutamise keelamine.',
+  wt:'Õpetajad kannavad faile kaasas ja mälupulk kaob umbes kord aastas.',
+  wm:'Õpilaste nimed ja hinded: piiratud hulga isikuandmete leke. AKI teavitamine on tõenäoliselt vajalik.',
+  wa:'Pulk võib ikka kaduda (tõenäosus 2), kuid leidja ei saa andmeid lugeda: mõju 1. Hea näide meetmest, mis vähendab mõju, mitte tõenäosust.'}
 ];
+RISKS.forEach(r=>r.o={t:r.t,m:r.m,k:r.k,t2:r.t2,m2:r.m2});
+let selR=0, selCell=null;
 const lvl=s=>s===0?['–','']:s<=2?['madal','lo']:s<=4?['keskmine','mi']:['kõrge','hi'];
 const opt=(v,sel,txt)=>'<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(txt||v)+'</option>';
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function drawCrit(){
+  $('tcrit').innerHTML=[1,2,3].map(v=>'<tr><td>'+v+' – '+TCRIT[v][0]+'</td><td>'+TCRIT[v][2]+'</td></tr>').join('');
+  $('mcrit').innerHTML=[1,2,3].map(v=>'<tr><td>'+v+' – '+MCRIT[v][0]+'</td><td>'+MCRIT[v][1]+'</td></tr>').join('');
+  $('acrit').innerHTML='<tr><td><span class="pill lo">1–2</span></td><td>'+ACT.lo.replace(/^[^:]+: /,'')+'</td></tr><tr><td><span class="pill mi">3–4</span></td><td>'+ACT.mi.replace(/^[^:]+: /,'')+'</td></tr><tr><td><span class="pill hi">6–9</span></td><td>'+ACT.hi.replace(/^[^:]+: /,'')+'</td></tr>';
+}
 function drawRisks(){
-  $('rtab').innerHTML=RISKS.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.n+'<br><small style="color:var(--muted)">'+r.hint+'</small></td>'+
+  $('rtab').innerHTML=RISKS.map((r,i)=>'<tr'+(i===selR?' class="sel"':'')+'><td>'+(i+1)+'</td><td class="name" data-i="'+i+'"><b style="font-weight:500">'+esc(r.n)+'</b><br><small style="color:var(--muted)">'+esc(r.hint||'Sinu lisatud risk: hinda tõenäosust ja mõju kriteeriumide järgi.')+'</small></td>'+
    '<td class="num"><select data-i="'+i+'" data-f="t" aria-label="Tõenäosus">'+[1,2,3].map(v=>opt(v,r.t)).join('')+'</select></td>'+
    '<td class="num"><select data-i="'+i+'" data-f="m" aria-label="Mõju">'+[1,2,3].map(v=>opt(v,r.m)).join('')+'</select></td>'+
    '<td><select class="k" data-i="'+i+'" data-f="k" aria-label="Käsitlus">'+['Vähendamine','Vältimine','Jagamine','Aktsepteerimine'].map(v=>opt(v,r.k)).join('')+'</select></td>'+
-   '<td class="num"><select data-i="'+i+'" data-f="t2" aria-label="Uus tõenäosus"'+(r.k==='Vältimine'?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.t2)).join(''))+'</select></td>'+
-   '<td class="num"><select data-i="'+i+'" data-f="m2" aria-label="Uus mõju"'+(r.k==='Vältimine'?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.m2)).join(''))+'</select></td>'+
+   '<td class="num"><select data-i="'+i+'" data-f="t2" aria-label="Uus tõenäosus"'+((r.k==='Vältimine'||r.k==='Aktsepteerimine')?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.t2)).join(''))+'</select></td>'+
+   '<td class="num"><select data-i="'+i+'" data-f="m2" aria-label="Uus mõju"'+((r.k==='Vältimine'||r.k==='Aktsepteerimine')?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.m2)).join(''))+'</select></td>'+
    '<td id="res'+i+'" class="res"></td></tr>').join('');
-  $('rtab').querySelectorAll('select').forEach(s=>s.onchange=()=>{const r=RISKS[+s.dataset.i],f=s.dataset.f;
+  $('rtab').querySelectorAll('select').forEach(s=>s.onchange=()=>{const i=+s.dataset.i,r=RISKS[i],f=s.dataset.f;
+    selR=i; selCell=null;
     r[f]= f==='k'? s.value : +s.value;
     if(f==='k'){ if(s.value==='Vältimine'){r.t2=0;r.m2=0} else { if(r.t2===0){r.t2=r.t;r.m2=r.m} if(s.value==='Aktsepteerimine'){r.t2=r.t;r.m2=r.m} } drawRisks(); return; }
     if((f==='t'||f==='m')&&r.k==='Aktsepteerimine'){r.t2=r.t;r.m2=r.m; drawRisks(); return;}
-    runRisk(); });
+    drawRisks(); });
+  $('rtab').querySelectorAll('td.name').forEach(td=>td.onclick=()=>{selR=+td.dataset.i;selCell=null;drawRisks();});
   runRisk();
+}
+function explainRisk(i){
+  const r=RISKS[i], s0=r.t*r.m, s1=r.t2*r.m2, L0=lvl(s0), L1=lvl(s1);
+  const changed=r.o&&(r.t!==r.o.t||r.m!==r.o.m||r.k!==r.o.k||r.t2!==r.o.t2||r.m2!==r.o.m2);
+  const own=!r.wt;
+  let h='<h3>Risk '+(i+1)+': '+esc(r.n)+'</h3>';
+  h+='<div class="step"><div class="lab">Tõenäosus '+r.t+'</div><div><b>'+TCRIT[r.t][0]+' – '+TCRIT[r.t][1]+'.</b> '+(own||r.t!==r.o.t?'<span class="crt">Kriteerium: '+TCRIT[r.t][2]+'</span>':'')+(own?'<i>Põhjenda ise: millised kriteeriumi tunnused sinu riskile sobivad?</i>':(r.t===r.o.t?r.wt:'<i>Muutsid näite hinnangut (näites '+r.o.t+'). Kas kriteeriumi tunnused sobivad?</i>'))+'</div></div>';
+  h+='<div class="step"><div class="lab">Mõju '+r.m+'</div><div><b>'+MCRIT[r.m][0]+'.</b> '+(own||r.m!==r.o.m?'<span class="crt">Kriteerium: '+MCRIT[r.m][1]+'</span>':'')+(own?'<i>Põhjenda ise: mis on suurim kahju, kui see juhtub?</i>':(r.m===r.o.m?r.wm:'<i>Muutsid näite hinnangut (näites '+r.o.m+'). Kas kriteeriumi tunnused sobivad?</i>'))+'</div></div>';
+  h+='<div class="step"><div class="lab">Risk</div><div>'+r.t+' × '+r.m+' = <span class="pill '+L0[1]+'">'+s0+' '+L0[0]+'</span><span class="crt">'+ACT[L0[1]]+'</span></div></div>';
+  h+='<div class="step"><div class="lab">Käsitlus</div><div><b>'+r.k+'.</b> '+KEXPL[r.k]+'</div></div>';
+  h+='<div class="step"><div class="lab">Jääkrisk</div><div>'+(s1===0?'Risk kaob.':r.t2+' × '+r.m2+' = <span class="pill '+L1[1]+'">'+s1+' '+L1[0]+'</span>')+' '+(own?'':(changed?'<span class="crt">Näites oli: '+r.o.k+(r.o.t2?', jääkrisk '+r.o.t2+' × '+r.o.m2+' = '+(r.o.t2*r.o.m2):', risk kaob')+'.</span>':'<span class="crt">'+r.wa+'</span>'))+(s1>0&&s1<s0?'<span class="crt">Muutus: '+(r.t2<r.t?'tõenäosus väheneb '+r.t+' → '+r.t2:'tõenäosus ei muutu')+', '+(r.m2<r.m?'mõju väheneb '+r.m+' → '+r.m2:'mõju ei muutu')+'.</span>':'')+'</div></div>';
+  return h;
+}
+function explainCell(t,m){
+  const s=t*m, L=lvl(s);
+  const here=RISKS.map((r,i)=>({r,i})).filter(x=>(x.r.t===t&&x.r.m===m)||(x.r.t2===t&&x.r.m2===m));
+  let h='<h3>Lahter: tõenäosus '+t+' × mõju '+m+' = '+s+' ('+L[0]+')</h3>';
+  h+='<div class="step"><div class="lab">Tõenäosus '+t+'</div><div><b>'+TCRIT[t][0]+' – '+TCRIT[t][1]+'.</b> '+TCRIT[t][2]+'</div></div>';
+  h+='<div class="step"><div class="lab">Mõju '+m+'</div><div><b>'+MCRIT[m][0]+'.</b> '+MCRIT[m][1]+'</div></div>';
+  h+='<div class="step"><div class="lab">Mida teha</div><div>'+ACT[L[1]]+'</div></div>';
+  h+='<div class="step"><div class="lab">Siin on</div><div>'+(here.length?here.map(x=>(x.i+1)+'. '+esc(x.r.n)+' ('+((x.r.t===t&&x.r.m===m)?'praegu':'')+((x.r.t===t&&x.r.m===m)&&(x.r.t2===t&&x.r.m2===m)?' ja ':'')+((x.r.t2===t&&x.r.m2===m)?'jääkrisk':'')+')').join('<br>'):'Ükski risk ei ole praegu selles lahtris.')+'</div></div>';
+  return h;
 }
 function runRisk(){
   const cells={}; const warns=[];
   RISKS.forEach((r,i)=>{
     const s0=r.t*r.m, s1=r.t2*r.m2, L0=lvl(s0), L1=lvl(s1);
-    $('res'+i).innerHTML='<span class="pill '+L0[1]+'">'+s0+'</span> → '+(s1===0?'<span class="pill">0, risk kaob</span>':'<span class="pill '+L1[1]+'">'+s1+' '+L1[0]+'</span>');
-    (cells[r.t+','+r.m]=cells[r.t+','+r.m]||[]).push('<span class="dot before" title="'+r.n+' (praegu)">'+(i+1)+'</span>');
-    if(s1>0) (cells[r.t2+','+r.m2]=cells[r.t2+','+r.m2]||[]).push('<span class="dot" title="'+r.n+' (jääkrisk)">'+(i+1)+'</span>');
+    $('res'+i).innerHTML='<span class="pill '+L0[1]+'">'+s0+'</span> →<br>'+(s1===0?'<span class="pill">0, risk kaob</span>':'<span class="pill '+L1[1]+'">'+s1+' '+L1[0]+'</span>');
+    (cells[r.t+','+r.m]=cells[r.t+','+r.m]||[]).push('<span class="dot before" title="'+esc(r.n)+' (praegu)">'+(i+1)+'</span>');
+    if(s1>0) (cells[r.t2+','+r.m2]=cells[r.t2+','+r.m2]||[]).push('<span class="dot" title="'+esc(r.n)+' (jääkrisk)">'+(i+1)+'</span>');
     if(r.k==='Aktsepteerimine'&&s1>=6) warns.push('<b>Risk '+(i+1)+'</b>: kõrge riski aktsepteerimine. See on lubatud ainult juhtkonna allkirjastatud ja põhjendatud otsusena ning KüTS-i üksuses peab see olema kooskõlas nõutud turvameetmetega.');
-    if(r.k==='Aktsepteerimine'&&(r.t2!==r.t||r.m2!==r.m)) warns.push('<b>Risk '+(i+1)+'</b>: aktsepteerimisel meetmeid ei rakendata, seega jääkrisk on sama mis praegune.');
-    if(r.k==='Vähendamine'&&s1>=s0) warns.push('<b>Risk '+(i+1)+'</b>: vähendamine peab muutma tõenäosust või mõju väiksemaks. Praegu jääkrisk ei vähenenud.');
+    if(r.k==='Vähendamine'&&s1>=s0) warns.push('<b>Risk '+(i+1)+'</b>: vähendamine peab muutma tõenäosust või mõju väiksemaks. Määra „Uus T“ ja „Uus M“ selle järgi, mida meede muudab.');
     if(r.k==='Jagamine'&&r.t2<r.t) warns.push('<b>Risk '+(i+1)+'</b>: jagamine (kindlustus, leping) kannab üle kahju, kuid ei muuda tavaliselt rünnaku tõenäosust.');
   });
   let h='<div class="ax"></div><div class="ax">Mõju 1<br>väike</div><div class="ax">Mõju 2<br>keskmine</div><div class="ax">Mõju 3<br>suur</div>';
-  for(let t=3;t>=1;t--){ h+='<div class="ax">Tõenäosus '+t+'</div>'; for(let m=1;m<=3;m++){ const s=t*m; h+='<div class="cell '+lvl(s)[1]+'">'+(cells[t+','+m]||[]).join('')+'<span class="sc">'+s+'</span></div>'; } }
+  for(let t=3;t>=1;t--){ h+='<div class="ax">Tõenäosus '+t+'<br>'+TCRIT[t][1]+'</div>'; for(let m=1;m<=3;m++){ const s=t*m; h+='<div class="cell '+lvl(s)[1]+(selCell===t+','+m?' sel':'')+'" data-c="'+t+','+m+'" role="button" tabindex="0" aria-label="Tõenäosus '+t+', mõju '+m+'">'+(cells[t+','+m]||[]).join('')+'<span class="sc">'+s+'</span></div>'; } }
   $('matrix').innerHTML=h;
-  $('rout').innerHTML = warns.length? '<div class="verdict warn">'+warns.join('<br>')+'</div>' : '<p class="why">Iga riski juures on valitud käsitlus ja põhjendatud jääkrisk. Päris organisatsioonis kantakse see riskiregistrisse, juhtkond kinnitab jääkriskid ja register vaadatakse üle vähemalt kord aastas ning pärast suuremaid muudatusi või intsidente.</p>';
+  $('matrix').querySelectorAll('.cell').forEach(c=>{const f=()=>{selCell=c.dataset.c;runRisk();};c.onclick=f;c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}}});
+  $('rexpl').innerHTML = selCell ? explainCell(+selCell[0],+selCell[2]) : explainRisk(selR);
+  $('rout').innerHTML = warns.length? '<div class="verdict warn">'+warns.join('<br>')+'</div>' : '<p class="why">Iga riski juures on valitud käsitlus ja põhjendatud jääkrisk. Päris organisatsioonis kantakse see riskiregistrisse koos vastutaja ja tähtajaga, juhtkond kinnitab jääkriskid ja register vaadatakse üle vähemalt kord aastas ning pärast suuremaid muudatusi või intsidente.</p>';
 }
+$('addRisk').onclick=()=>{ const n=$('newRisk').value.trim();
+  if(n.length<5){ $('addErr').textContent='Kirjelda riski vähemalt mõne sõnaga.'; return; }
+  $('addErr').textContent=''; RISKS.push({n,t:2,m:2,k:'Vähendamine',t2:2,m2:2,hint:''}); selR=RISKS.length-1; selCell=null; $('newRisk').value=''; drawRisks(); };
+$('newRisk').addEventListener('input',()=>$('addErr').textContent='');
+$('newRisk').addEventListener('keydown',e=>{if(e.key==='Enter')$('addRisk').click()});
 
 /* start */
 runNIS();
 const now=new Date(); now.setMinutes(0,0,0); $('found').value=toLocal(now); runT();
-drawRisks();
+drawCrit(); drawRisks();
 </script>
 </body>
 </html>
