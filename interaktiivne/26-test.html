@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 26 – test: sümmeetriline krüpteerimine</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/26-summeetriline-kruptograafia.md">← Peatükk 26</a></nav>
+<h1>Test: sümmeetriline krüpteerimine</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on sümmeetrilise krüptograafia peamine probleem?", "o": ["See on aeglane", "See ei tööta failidega", "See vajab kvantarvutit", "Sama võti tuleb turvaliselt mõlemale poolele toimetada"], "c": 3, "e": "Matemaatika on korras ja AES on väga kiire. Raske on võtme üleandmine: kui saadad võtme samas kanalis kui faili, pole krüpteerimisest kasu. Internetis lahendab selle asümmeetriline võtmevahetus (ptk 28)."},
+{"q": "20-liikmeline rühm vajab sümmeetrilise krüptograafiaga 190 võtit. Mitu võtit vajab 50-liikmeline rühm?", "o": ["50", "1225", "2450", "2500"], "c": 1, "e": "Iga paar vajab oma võtit, seega n(n − 1) / 2 = 50 × 49 / 2 = 1225. Valem jagab kahega, sest Mari–Jaan ja Jaan–Mari on sama paar. Võtmete arv kasvab ruutfunktsioonina, seepärast kasutatakse hübriidkrüpteerimist."},
+{"q": "Kuidas lahendab Kerberos domeenis võtmejagamise probleemi?", "o": ["Iga kasutaja saadab võtme e-kirjaga", "Domeenikontroller teab iga kasutaja võtit ja jagab ajutisi seansivõtmeid", "Võtmed on kirjas Active Directory avalikus atribuudis", "Kerberos ei kasuta võtmeid"], "c": 1, "e": "Domeenikontroller on usaldusväärne keskserver. Kasutaja ja teenus ei pea omavahel kunagi võtit vahetama: mõlemad usaldavad domeenikontrollerit, mis annab neile ajutise ühise seansivõtme."},
+{"q": "Milline neist on voošiffer?", "o": ["AES", "ChaCha20", "DES", "3DES"], "c": 1, "e": "ChaCha20 toodab võtmest ja nonce’ist pika võtmevoo, mis XOR-itakse avatekstiga. Seda kasutatakse TLS-is ja WireGuardis seadmetes, millel pole AES-i riistvaratuge. AES, DES ja 3DES on plokkšifrid."},
+{"q": "Kui suur on AES-i plokk?", "o": ["Sõltub võtmest: 128, 192 või 256 bitti", "Alati 128 bitti (16 baiti)", "64 bitti", "256 bitti"], "c": 1, "e": "Plokk on alati 128 bitti. Võti võib olla 128, 192 või 256 bitti ning sellest sõltub ringide arv: vastavalt 10, 12 või 14."},
+{"q": "Miks murti Wi-Fi kaitse WEP?", "o": ["Selle parool oli liiga lühike", "Voošifri RC4 24-bitine IV hakkas korduma, seega kordus ka võtmevoog", "See kasutas AES-i ECB-režiimis", "WEP-il polnud üldse krüpteerimist"], "c": 1, "e": "Voošifril ei tohi võtmevoog kunagi korduda, nagu ühekordsel plokil. 24-bitine IV hakkas kiires võrgus mõne tunni järel korduma ja kogutud liiklusest sai võtme taastada. Hilisemate rünnetega piisab selleks minutitest."},
+{"q": "Milline AES-i ringi samm lisab mittelineaarsuse ehk Shannoni segaduse?", "o": ["SubBytes", "ShiftRows", "MixColumns", "AddRoundKey"], "c": 0, "e": "SubBytes asendab iga baidi S-kasti järgi (nt 53 → ED). Ilma mittelineaarse sammuta saaks AES-i murda lineaarvõrrandite süsteemiga."},
+{"q": "Millised AES-i sammud tekitavad koos hajutuse?", "o": ["SubBytes ja AddRoundKey", "ShiftRows ja MixColumns", "Ainult AddRoundKey", "Ainult SubBytes"], "c": 1, "e": "ShiftRows viib baidid teistesse veergudesse ja MixColumns segab iga veeru neli baiti. Kahe ringi järel mõjutab iga avateksti bitt kõiki 128 šifriteksti bitti. AddRoundKey seob tulemuse võtmega."},
+{"q": "Mis on laviiniefekt?", "o": ["Šifritekst on avatekstist palju pikem", "Ühe avateksti biti muutmisel muutub ligikaudu pool šifriteksti bittidest", "Võti muutub iga ringiga pikemaks", "Krüpteerimine kiireneb iga plokiga"], "c": 1, "e": "Laviiniefekt on hajutuse tagajärg. Šifritekstist ei saa järeldada, kas kaks avateksti on sarnased."},
+{"q": "Kuidas AES-iga krüpteeritud andmeid praktikas murtakse?", "o": ["Toore jõuga, kui arvuti on piisavalt kiire", "Sagedusanalüüsiga", "Võtme kaudu: nõrk parool, lekkinud võti või vale töörežiim", "AES-i on kvantarvutid juba murdnud"], "c": 2, "e": "2¹²⁸ võtme läbiproovimine võtaks triljoneid aastaid ja parim matemaatiline rünne vähendab tööd vaid umbes neli korda. Rünnatakse seda, mis on AES-i ümber."},
+{"q": "Milline AES-i võtmepikkus on soovitatav pikaajaliseks kaitseks, arvestades kvantarvuteid?", "o": ["56 bitti", "64 bitti", "256 bitti", "40 bitti"], "c": 2, "e": "Kvantarvuti Groveri algoritm vähendaks toore jõu töö ruutjuureni, nii et 256-bitine võti jääb endiselt väga tugevaks (ptk 30). 56 ja 40 bitti on toore jõuga murtavad juba tavaarvutiga."},
+{"q": "Miks ei tohi kasutada ECB-režiimi?", "o": ["See on liiga aeglane", "Samad avateksti plokid annavad sama šifriteksti ja muster jääb nähtavaks", "See nõuab 512-bitist võtit", "See töötab ainult Linuxis"], "c": 1, "e": "ECB krüpteerib iga ploki eraldi: Cᵢ = E(K, Pᵢ). ECB-ga krüpteeritud tõmmisel on esialgne kujutis endiselt näha (tuntud „ECB pingviin“)."},
+{"q": "Andmebaasi palgaveerg on krüpteeritud AES-ECB-ga. Mida näeb ründaja võtit teadmata?", "o": ["Mitte midagi", "Kõigi inimeste täpseid palku", "Kellel on sama palk", "Ainult kõige suuremat palka"], "c": 2, "e": "Sama palk annab ECB-s sama šifriteksti. Ründaja ei tea summat, aga näeb võrdsusi. Kui ta teab ühe inimese palka, teab ta kõigi samasuguse šifritekstiga inimeste palka."},
+{"q": "Milline on CBC-režiimi teise ploki valem?", "o": ["C₂ = E(K, P₂)", "C₂ = E(K, P₂ ⊕ IV)", "C₂ = E(K, P₂ ⊕ C₁)", "C₂ = E(K, C₁) ⊕ P₂"], "c": 2, "e": "CBC-s XOR-itakse iga avateksti plokk enne krüpteerimist eelmise šifriplokiga. Esimese ploki puhul kasutatakse IV-d: C₁ = E(K, P₁ ⊕ IV). Viimane variant kirjeldab hoopis CFB-režiimi."},
+{"q": "Mis kehtib CBC-režiimi IV kohta?", "o": ["IV on salajane nagu võti", "IV ei ole saladus, kuid peab olema iga krüpteerimise jaoks uus ja juhuslik", "IV on alati nullid", "IV on sama mis parool"], "c": 1, "e": "IV salvestatakse šifriteksti ette. Selle ülesanne on tagada, et sama faili kaks krüpteerimist annavad erineva šifriteksti."},
+{"q": "Mitu täidisebaiti ja milliste väärtustega lisab PKCS#7 20-baidisele sõnumile (ploki suurus 16 baiti)?", "o": ["4 baiti väärtusega 04", "12 baiti väärtusega 0C", "12 baiti väärtusega 0x12", "16 baiti väärtusega 10"], "c": 1, "e": "20 baiti on üks täisplokk ja 4 baiti. Teise ploki täitmiseks puudub 12 baiti, seega lisatakse 12 baiti väärtusega 12, mis on kuueteistkümnendsüsteemis 0C. Kokku on 32 baiti."},
+{"q": "Krüpteerid AES-CBC ja PKCS#7 täidisega täpselt 16-baidise sõnumi. Kui pikk on šifritekst?", "o": ["16 baiti", "17 baiti", "32 baiti", "48 baiti"], "c": 2, "e": "Kui sõnum on täpselt ploki pikkune, lisatakse terve täidiseplokk 16 baidiga väärtusega 10 (kümnendsüsteemis 16). Nii teab dekrüpteerija alati, mitu baiti eemaldada."},
+{"q": "Mis on täidiseoraakli rünnak (padding oracle)?", "o": ["Ründaja arvab parooli täidise pikkuse järgi", "Server vastab erinevalt, kas täidis oli vale, ja ründaja dekrüpteerib selle info abil šifriteksti bait-baidi haaval", "Ründaja lisab sõnumile liigset täidist, et serverit aeglustada", "Täidis lekitab võtme pikkuse"], "c": 1, "e": "Nii murti 2010. aastal ASP.NET-i krüpteeritud küpsised ja 2014. aastal SSL 3.0 (POODLE). Lahendus on kontrollida terviklust enne dekrüpteerimist ehk kasutada AEAD-režiimi."},
+{"q": "Mida lisab AES-GCM tavalisele krüpteerimisele?", "o": ["Tervikluse kontrolli (autentimissildi)", "Pakkimise", "Digiallkirja", "Võtmevahetuse"], "c": 0, "e": "GCM on CTR + 128-bitine autentimissilt. Kui silt ei klapi, ei anna dekrüpteerija ühtki avateksti baiti välja. Sellist krüpteerimist nimetatakse AEAD-iks."},
+{"q": "Sõnum „Summa: 100“ on krüpteeritud CTR-režiimis ilma autentimissildita. Kas ründaja saab muuta selle „Summa: 900“-ks ilma võtmeta?", "o": ["Ei, krüpteeritud sõnumit ei saa muuta", "Jah, sest šifriteksti biti ümberpööramine muudab sama biti avatekstis", "Ainult siis, kui ta teab IV-d", "Ainult ECB-režiimis"], "c": 1, "e": "See on bitti ümberpöörav rünne (bit-flipping). Krüpteerimine kaitseb konfidentsiaalsust, aga mitte terviklust. Seepärast eelistatakse AEAD-režiime (GCM, ChaCha20-Poly1305)."},
+{"q": "Mis juhtub, kui AES-GCM-is kasutatakse sama võtit ja nonce’i kaks korda?", "o": ["Mitte midagi, nonce ei ole saladus", "Tekib sama võtmevoog: ründaja saab kahe avateksti XOR-i ja võib võltsida sõnumeid", "Krüpteerimine muutub kaks korda aeglasemaks", "Teine sõnum jääb krüpteerimata"], "c": 1, "e": "Nonce ei ole saladus, kuid ei tohi sama võtmega korduda. Viga on sama mis ühekordse ploki korduval kasutamisel (ptk 25). Lisaks saab taastada sildi arvutamise saladuse. Seepärast genereerivad teegid nonce’i ise."},
+{"q": "Fail on krüpteeritud AES-256-ga, mille võti on tuletatud paroolist Kevad2026. Kui tugev on kaitse?", "o": ["Sama tugev kui 256-bitine juhuslik võti", "Sama tugev kui parool: selle leiab sõnastikurünnakuga", "Murdmatu, sest KDF teeb parooli tugevaks", "Nõrgem kui ilma KDF-ita"], "c": 1, "e": "KDF (PBKDF2, scrypt, Argon2) lisab soola ja teeb iga katse aeglaseks, aga nõrka parooli see tugevaks ei tee. Ründaja proovib ikkagi kõige levinumad paroolid ja Kevad2026 on nende seas."},
+{"q": "Miks ei pea BitLockeris PIN-koodi vahetamisel kogu ketast uuesti krüpteerima?", "o": ["BitLocker ei kasuta PIN-i krüpteerimiseks", "Ketast krüpteerib FVEK, mis on kaitstud VMK-ga; uuesti krüpteeritakse ainult VMK", "PIN salvestatakse kettale avatekstina", "Uus PIN kehtib alles järgmisel kuul"], "c": 1, "e": "Võtmehierarhia: FVEK krüpteerib ketast, VMK krüpteerib FVEK-i ja iga kaitsja (TPM, PIN, taasteparool) krüpteerib VMK-d. PIN-i vahetamisel krüpteeritakse uuesti paarsada baiti, mitte terabaidine ketas."},
+{"q": "Miks soovitatakse sülearvutitele BitLockeri puhul TPM + PIN, mitte ainult TPM?", "o": ["Ainult TPM-iga ei saa Windows käivituda", "Ainult TPM-iga käivitub arvuti ise ja füüsilise ligipääsuga ründaja võib võtit TPM-i ja protsessori vaheliselt siinilt pealt kuulata", "PIN teeb krüpteerimise kiiremaks", "TPM ei toeta AES-i"], "c": 1, "e": "TPM annab võtme välja, kui käivitusahel on muutmata. Ilma PIN-ita juhtub see automaatselt ja varastatud arvuti jõuab sisselogimisekraanini ise. PIN tähendab, et võti vabastatakse alles siis, kui inimene annab midagi, mida varas ei tea."},
+{"q": "Milline on BitLockeri vaikimisi krüpteerimisalgoritm?", "o": ["AES-128-ECB", "XTS-AES-128", "RC4", "3DES"], "c": 1, "e": "XTS on kettakrüpteerimise režiim: iga sektor krüpteeritakse oma „puudutusega“ (tweak) ja sektori suurus ei muutu. Kõrgemaks kaitseks saab valida XTS-AES-256."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
