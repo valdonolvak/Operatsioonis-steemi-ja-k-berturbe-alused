@@ -61,27 +61,116 @@ Seadus ei ütle täpselt, millist tulemüüri või parooli pikkust kasutada. See
 
 ### 31.3 Isikuandmete kaitse
 
-**Isikuandmete kaitse üldmäärus** (IKÜM, GDPR) ja Eesti **isikuandmete kaitse seadus** kehtivad kõigile, kes töötlevad isikuandmeid, sh koolidele, KOV-idele ja väikeettevõtetele. **Isikuandmed** on kõik andmed, mille järgi saab inimese tuvastada: nimi, isikukood, e-post, IP-aadress, asukoht, foto, hinded. **Eriliigilised** (tundlikud) andmed on terviseandmed, biomeetria, rahvus, usutunnistus jms, mille kaitse nõuded on rangemad.
+**Isikuandmete kaitse üldmäärus** (IKÜM, inglise keeles GDPR, määrus 2016/679) kehtib kogu EL-is otse ega vaja ülevõtmist. Eesti **isikuandmete kaitse seadus** (IKS) täiendab seda seal, kus üldmäärus jätab liikmesriikidele otsustusruumi. Järelevalvet teeb **Andmekaitse Inspektsioon** (AKI). Nõuded kehtivad kõigile, kes isikuandmeid töötlevad: koolidele, KOV-idele, haiglatele ja ka väikeettevõtetele. Erinevalt KüTS-ist ei sõltu need organisatsiooni suurusest ega sektorist.
 
-Kaks rolli tuleb eristada: **vastutav töötleja** (controller) otsustab, milleks ja kuidas andmeid töödeldakse (nt kool), **volitatud töötleja** (processor) töötleb andmeid vastutava töötleja nimel (nt õppeinfosüsteemi pakkuja või pilveteenus). Nende vahel peab olema leping (IKÜM art 28), mis kirjeldab ka turvameetmeid.
+Miks see IT-spetsialisti puudutab? Peaaegu iga süsteem, mida administraator haldab, sisaldab isikuandmeid: kasutajakontod, e-postkastid, logid, varukoopiad, kaamerasalvestised. Paljud üldmääruse nõuded on sisuliselt tehnilised otsused: millised väljad andmebaasis on, kui kaua logisid hoitakse, kes millele ligi pääseb ja kas varukoopia on krüpteeritud.
 
-Andmetöötluse põhimõtted (art 5), millest paljud on otseselt IT-otsused:
+#### Mis on isikuandmed?
 
-- **seaduslikkus ja läbipaistvus** – andmeid töödeldakse õigusliku aluse alusel ja inimene teab sellest;
-- **eesmärgipärasus** – andmeid kasutatakse ainult kogumise eesmärgil;
-- **võimalikult väheste andmete kogumine** – andmebaasi ei lisata välju „igaks juhuks“;
-- **õigsus** – andmed on ajakohased;
-- **säilitamise piiramine** – vanad andmed kustutatakse, ka varukoopiatest ja logidest;
-- **usaldusväärsus ja konfidentsiaalsus** – sobivad turvameetmed;
-- **vastutus** – töötleja peab suutma nõuete täitmist tõendada.
+**Isikuandmed** on igasugune teave tuvastatud või tuvastatava inimese kohta (art 4). Oluline on sõna *tuvastatav*: piisab, kui inimese saab kindlaks teha teiste andmetega kombineerides.
 
-Turbe seisukohalt on kõige olulisemad:
+| Andmed | Kas isikuandmed? | Selgitus |
+| --- | --- | --- |
+| Nimi, isikukood, e-post `mari.maasikas@kool.ee` | jah | tuvastavad inimese otse |
+| IP-aadress, küpsise ID, seadme ID, auto numbrimärk | jah | inimese saab tuvastada teiste andmetega (nt internetiteenuse pakkuja kaudu) |
+| Logirida `2026-03-02 08:14 mari logis sisse 10.0.5.23` | jah | näitab konkreetse inimese tegevust |
+| Õpilase kood `Õ-4471`, kui koolil on tabel koodi ja nime vastavusega | jah | see on **pseudonüümitud** andmestik: tuvastamine on võimalik lisateabega |
+| Statistika „9.b klassis on 24 õpilast, keskmine hinne 4,1“ | üldjuhul ei | **anonüümsed** andmed, millest inimest tuvastada ei saa |
+| Ettevõtte e-post `info@firma.ee` | üldjuhul ei | ei ole seotud konkreetse inimesega |
 
-- **art 25 – lõimitud ja vaikimisi andmekaitse**: süsteemi kavandatakse algusest peale nii, et see kogub ainult vajalikke andmeid ja piirab ligipääsu;
-- **art 32 – töötlemise turvalisus**: krüpteerimine, pseudonüümimine, konfidentsiaalsus, terviklus, käideldavus ja taastamisvõime ning meetmete regulaarne testimine;
-- **art 33–34 – rikkumisest teavitamine**: Andmekaitse Inspektsioonile 72 tunni jooksul, kui rikkumine võib ohustada inimeste õigusi; inimesi endid, kui risk on kõrge. Kui andmed olid tugevalt krüpteeritud, ei ole inimeste teavitamine üldjuhul vajalik (ptk 26 näide).
+Pseudonüümimine on hea turvameede, kuid pseudonüümitud andmed on endiselt isikuandmed. Anonüümseks muutub andmestik alles siis, kui tuvastamine ei ole mõistlikult võimalik ka teisi andmeid kasutades. Väike rühm on selles mõttes ohtlik: kui klassis on üks 15-aastane ratastooliga õpilane, siis „15-aastane, ratastool, 9.b“ tuvastab ta.
 
-**Isikuandmetega seotud rikkumine** ei ole ainult häkkimine. Rikkumine on ka valele adressaadile saadetud hinnetetabel, kaotatud krüpteerimata mälupulk, lunavara poolt krüpteeritud andmebaas (käideldavuse rikkumine) või kogemata avalikuks jäetud pilvekaust. IKÜM-i trahv võib ulatuda 20 miljoni euroni või 4%-ni ülemaailmsest käibest. Iga rikkumine tuleb dokumenteerida sisemisse registrisse ka siis, kui teavitamiskohustust ei teki.
+**Eriliigilised andmed** (art 9) on terviseandmed, geneetilised ja biomeetrilised andmed (nt sõrmejälg või näokujutis tuvastamiseks), rassiline või etniline päritolu, poliitilised vaated, usulised või maailmavaatelised veendumused, ametiühingusse kuulumine ning seksuaalelu ja sättumus. Neid tohib töödelda ainult erandjuhtudel ja nende kaitse peab olema tugevam. Kooli näited: õpilase tervisekaart, haridusliku erivajaduse andmed, töötaja haiguslehed. **Isikukood** ei ole eriliigiline andmeliik, kuid see seob kokku inimese andmed eri andmebaasides. Selle avaldamist ja asjatut kogumist tuleb vältida.
+
+#### Rollid
+
+| Roll | Kes see on | Kooli näide |
+| --- | --- | --- |
+| Andmesubjekt | inimene, kelle andmeid töödeldakse | õpilane, lapsevanem, töötaja |
+| Vastutav töötleja (controller) | otsustab, milleks ja kuidas andmeid töödeldakse, ja vastutab | kool |
+| Volitatud töötleja (processor) | töötleb andmeid vastutava töötleja nimel ja tema juhiste järgi | õppeinfosüsteemi pakkuja, pilveteenus, IT-hoolduse firma |
+| Alamtöötleja | volitatud töötleja enda teenusepakkuja | õppeinfosüsteemi pakkuja kasutatav andmekeskus |
+| Andmekaitsespetsialist (DPO) | nõustab ja kontrollib organisatsiooni sees | avaliku sektori asutuses kohustuslik |
+| Järelevalveasutus | kontrollib, menetleb kaebusi, määrab karistusi | Andmekaitse Inspektsioon |
+
+Vastutava ja volitatud töötleja vahel peab olema leping (art 28). Selles on kirjas, milliseid andmeid ja millisel eesmärgil töödeldakse, millised on turvameetmed, kas tohib kasutada alamtöötlejaid ja mis saab andmetest lepingu lõppedes. Kui IT-administraator valib uut pilveteenust, on lepingu ja turvameetmete kontroll osa valikust, mitte juristi hilisem töö.
+
+#### Õiguslik alus: miks tohib andmeid töödelda?
+
+Iga töötlemise jaoks peab olema üks kuuest õiguslikust alusest (art 6). Alus määratakse enne töötlemise algust ja seda ei saa hiljem vahetada.
+
+| Alus | Millal | Näide |
+| --- | --- | --- |
+| a) nõusolek | inimene on vabatahtlikult nõustunud | kooli uudiskirja tellimine, õpilase foto kooli Facebooki lehel |
+| b) leping | vajalik lepingu täitmiseks | e-poe tellimuse tarnimine, töötaja palgaarvestus |
+| c) juriidiline kohustus | seadus nõuab | õpilase andmete kandmine EHIS-esse, raamatupidamisdokumentide säilitamine |
+| d) eluliste huvide kaitse | elu või tervise kaitseks | teadvuseta inimese andmed kiirabile |
+| e) avalik ülesanne | asutus täidab seadusest tulenevat ülesannet | kool korraldab õppetööd, KOV menetleb taotlust |
+| f) õigustatud huvi | organisatsiooni huvi kaalub üles inimese huvid | turvalogid sissetungi avastamiseks, videovalve varguste vastu |
+
+**Nõusolek ei ole alati õige valik.** See peab olema vabatahtlik, konkreetne, teadlik ja ühemõtteline ning selle tagasivõtmine peab olema sama lihtne kui andmine (art 7). Töösuhtes ja koolis on osapooled ebavõrdses olukorras: töötaja või õpilane ei pruugi julgeda keelduda. Seepärast toetub kool õppetöö korraldamisel seadusele ja avalikule ülesandele, mitte nõusolekule. Nõusolek sobib lisategevuseks, millest saab ilma tagajärgedeta keelduda. Eestis võib laps alates **13. eluaastast** ise anda nõusoleku talle otse pakutavas infoühiskonna teenuses (nt mängus või rakenduses). Noorema lapse puhul on vaja vanema nõusolekut (IKS § 8).
+
+Õigustatud huvi kasutamiseks tuleb teha ja dokumenteerida **huvide kaalumine**: mis on organisatsiooni huvi, kas töötlemine on selleks vajalik ja kas see ei riiva inimese õigusi ülemäära. Näiteks turvalogide kogumine on põhjendatud, töötajate kõigi veebikülastuste salvestamine ja läbivaatamine üldjuhul mitte.
+
+#### Põhimõtted
+
+Andmetöötluse põhimõtted (art 5) on IT-süsteemi kavandamise nõuded:
+
+| Põhimõte | Mida tähendab | IT-otsus |
+| --- | --- | --- |
+| Seaduslikkus, õiglus ja läbipaistvus | on õiguslik alus ja inimene teab, mis tema andmetega toimub | privaatsusteade veebilehel ja registreerimisvormi juures |
+| Eesmärgipärasus | andmeid kasutatakse ainult kogumise eesmärgil | sissepääsukaardi logisid ei kasutata töötajate tööaja jälgimiseks, kui seda pole ette teatatud |
+| Võimalikult väheste andmete kogumine | ainult vajalikud andmed | vormil pole kohustuslikku isikukoodi välja, kui seda vaja ei ole |
+| Õigsus | andmed on ajakohased | kasutaja saab oma andmeid ise parandada |
+| Säilitamise piiramine | andmeid hoitakse ainult vajaliku aja | logide automaatne kustutamine, varukoopiate aegumine, lahkunud töötaja konto sulgemine |
+| Usaldusväärsus ja konfidentsiaalsus | sobivad turvameetmed | MFA, krüpteerimine, vähimad õigused |
+| Vastutus | nõuete täitmist peab saama tõendada | töötlemise register, riskianalüüs, logid |
+
+Seda koondab **lõimitud ja vaikimisi andmekaitse** (art 25): süsteem kavandatakse algusest peale nii, et see kogub ainult vajalikku ja vaikimisi kõige privaatsema valikuga. Näiteks uue kasutaja profiil ei ole vaikimisi avalik, vaid kasutaja peab selle ise avalikuks muutma.
+
+#### Andmesubjekti õigused
+
+Inimesel on oma andmete üle mitu õigust (art 12–22). Organisatsioon peab vastama ühe kuu jooksul. Keerulisel juhul saab tähtaega pikendada kahe kuu võrra, kuid sellest tuleb inimesele teatada.
+
+| Õigus | Sisu | Mida see IT-le tähendab |
+| --- | --- | --- |
+| Teave (art 13–14) | inimene peab teadma, kes, mida ja miks töötleb | privaatsusteade |
+| Tutvumine (art 15) | saada koopia oma andmetest | andmed peab üles leidma kõigist süsteemidest |
+| Parandamine (art 16) | vigaste andmete parandamine | muutmise võimalus ja muutuste logi |
+| Kustutamine (art 17) | „õigus olla unustatud“, kui alust töötlemiseks enam pole | kustutamine kõigist süsteemidest, sh volitatud töötlejatelt |
+| Piiramine (art 18) | andmeid ei kasutata vaidluse ajal | konto või kirje külmutamine |
+| Ülekantavus (art 20) | saada oma andmed masinloetaval kujul | eksport CSV või JSON vormingus |
+| Vastuväide (art 21) | keelduda nt otseturundusest | turundusloendist eemaldamine |
+| Automatiseeritud otsused (art 22) | õigus inimese otsusele | algoritmi otsust peab saama inimene üle vaadata |
+
+**Kustutamine ja varukoopiad.** Andmeid ei pea igast varukoopiast kohe käsitsi välja otsima. Praktiline lahendus on varukoopiate kindel aegumine (nt 90 päeva) ja reegel, et taastamisel ei taastata uuesti juba kustutatud andmeid. See peab olema kirja pandud ja inimesele selgitatav.
+
+#### Dokumentatsioon
+
+- **Töötlemistoimingute register** (art 30): milliseid andmeid, millisel eesmärgil ja õiguslikul alusel, kellele edastatakse, kui kaua hoitakse ja millised on turvameetmed. See on andmekaitse „varade nimekiri“.
+- **Andmekaitsealane mõjuhinnang** (DPIA, art 35) tehakse enne töötlemist, mis võib inimestele kaasa tuua kõrge riski: ulatuslik videovalve, eriliigiliste andmete ulatuslik töötlemine, profiilianalüüs ja uus tehnoloogia (nt näotuvastus või tehisintellekt õpilaste hindamisel). Mõjuhinnang on sisuliselt riskianalüüs (31.6) inimese vaatest.
+- **Volitatud töötleja lepingud** (art 28) ja nende turvameetmete kontroll.
+- **Rikkumiste register** (art 33 lg 5): iga rikkumine, ka siis, kui teavitamiskohustust ei teki.
+
+**Andmed väljaspool EL-i.** Kui pilveteenus hoiab või töötleb andmeid väljaspool Euroopa Majanduspiirkonda, peab edastamiseks olema alus (art 44–49): Euroopa Komisjoni otsus, et riigi andmekaitse tase on piisav, või lepingus Euroopa Komisjoni standardtingimused koos täiendavate meetmetega. Enne teenuse valimist kontrolli, kus andmed asuvad ja millised alamtöötlejad neid näevad.
+
+#### Töötlemise turvalisus
+
+Artikkel 32 nõuab riskiga sobivaid tehnilisi ja korralduslikke meetmeid. Üldmäärus ei ütle, millist algoritmi kasutada, kuid nimetab eesmärgid, mis on otseselt seotud selle õpiku peatükkidega:
+
+| Art 32 nõue | Tehniline meede | Peatükk |
+| --- | --- | --- |
+| Pseudonüümimine ja krüpteerimine | BitLocker, TLS, krüpteeritud varukoopiad | 26, 29 |
+| Konfidentsiaalsus | vähimad õigused, MFA, paroolide räsimine | 18, 27 |
+| Terviklus | räsid, digiallkiri, muudatuste logi | 27, 29 |
+| Käideldavus ja taastamisvõime | varukoopiad, toimepidevus, harjutatud taastamine | 16, 22 |
+| Meetmete regulaarne testimine | taastamise harjutused, haavatavuste skaneerimine, auditid | 22, 24 |
+
+Hea tava on kasutada **testkeskkonnas** väljamõeldud või pseudonüümitud andmeid. Päris andmebaasi koopia arendaja sülearvutis on levinud rikkumise põhjus.
+
+#### Rikkumine ja teavitamine
+
+**Isikuandmetega seotud rikkumine** on turvanõrkus, mis põhjustab isikuandmete juhusliku või ebaseadusliku hävimise, kaotsimineku, muutmise, loata avalikustamise või neile loata juurdepääsu. See ei ole ainult häkkimine. Rikkumine on ka valele adressaadile saadetud hinnetetabel, kaotatud krüpteerimata mälupulk, lunavara poolt krüpteeritud andmebaas (käideldavuse rikkumine) või kogemata avalikuks jäetud pilvekaust. Iga rikkumine tuleb dokumenteerida sisemisse registrisse ka siis, kui teavitamiskohustust ei teki.
 
 Kuidas otsustada, kellele teatada:
 
@@ -91,7 +180,26 @@ Kuidas otsustada, kellele teatada:
 | Rikkumine võib ohustada inimeste õigusi (nt hinnetetabel saadeti valele vanemale) | jah | jah | ei, kui risk ei ole kõrge |
 | Rikkumine põhjustab tõenäoliselt kõrge riski (nt lekkisid terviseandmed või paroolid) | jah | jah | jah, põhjendamatu viivituseta |
 
-72 tundi hakkab jooksma hetkest, kui organisatsioon saab rikkumisest teada, mitte siis, kui uurimine on lõppenud. Kui kõike ei ole veel teada, esitatakse teave osade kaupa.
+72 tundi hakkab jooksma hetkest, kui organisatsioon saab rikkumisest teada, mitte siis, kui uurimine on lõppenud. Kui kõike ei ole veel teada, esitatakse teave osade kaupa. Teates kirjeldatakse rikkumise olemust, puudutatud inimeste ja andmete kategooriaid ning ligikaudset arvu, andmekaitsespetsialisti kontakti, tõenäolisi tagajärgi ja võetud või kavandatud meetmeid (art 33 lg 3). Inimestele kirjutatakse selges keeles, mis juhtus ja mida nad saavad ise teha, näiteks parooli vahetada või pangakaardi sulgeda.
+
+#### Trahvid ja järelevalve Eestis
+
+Üldmäärus näeb ette kaks trahvimäära: kuni **10 miljonit eurot või 2%** ülemaailmsest aastakäibest näiteks turvameetmete ja rikkumisest teavitamise nõuete eiramise eest ning kuni **20 miljonit eurot või 4%** põhimõtete, õigusliku aluse ja andmesubjekti õiguste rikkumise eest (art 83).
+
+Eesti õigussüsteem ei tunne üldmääruses kirjeldatud haldustrahvi. Seepärast määrab AKI trahvi **väärteomenetluses** ([Legiscope](https://www.legiscope.com/blog/andmekaitse-eestis.html)). Sagedamini teeb AKI ettekirjutusi ja määrab sunniraha. Kaks juhtumit näitavad, et trahvid on siiski tõelised ja et menetluse aeg loeb:
+
+- AKI karistas 2023. aastal Ida-Tallinna Keskhaiglat 200 000 euro suuruse trahviga, kuid Riigikohus lõpetas menetluse, sest väärtegu oli aegunud ([Riigikohus](https://www.riigiteataja.ee/public-api/api/v1/kohtuteave/kohtulahendid/373734680/file));
+- Allium UPI-le määrati klientide andmete lekke eest 3 miljoni euro suurune trahv ja Harju Maakohus jättis ettevõtte kaebuse rahuldamata ([ERR](https://www.err.ee/1610126344/kohus-jattis-rahuldamata-alliumi-kaebuse-miljonitrahvi-tuhistamiseks)).
+
+Lisaks trahvile võib rikkumisest kahju saanud inimene nõuda kahjuhüvitist (art 82) ja maine kahju on sageli suurem kui trahv.
+
+#### Igapäevased olukorrad IT-s
+
+- **Videovalve.** Eesmärk peab olema kindel (nt varguste ennetamine), kaamera ei tohi filmida riietusruume ega tualette, sissepääsu juures on teavitussilt, salvestisi hoitakse piiratud aja ja nende vaatamine logitakse.
+- **Töötaja e-post ja jälgimine.** Töötajal on õigus eraelule ka tööl. Kontrolli reeglid kehtestatakse ette ja kirjalikult. Lahkunud töötaja postkasti ei jäeta lõputult avatuks: sinna seatakse automaatvastus ja hiljem suletakse.
+- **Õpilaste fotod veebis.** Kooli avalikule lehele või sotsiaalmeediasse panekuks on üldjuhul vaja nõusolekut. Siselehel või õppeinfosüsteemis kehtivad teised reeglid.
+- **Logid.** Logides on isikuandmed. Nende kogumine turvalisuse tagamiseks on põhjendatud, kuid neid hoitakse nii kaua, kui vaja (nt 6–12 kuud), ja ligipääs on piiratud.
+- **Uus süsteem.** Enne kasutuselevõttu küsi: milliseid andmeid see kogub, millisel alusel, kus need asuvad (EL-is või väljaspool), kes neid näeb, kui kaua neid hoitakse ja kuidas need kustutatakse.
 
 ### 31.4 Intsidendist teavitamine
 
@@ -181,14 +289,14 @@ Lunaraha maksmist riik ei soovita: see ei taga andmete tagasisaamist ega seda, e
 ### Kokkuvõte
 
 - Küberturvalisuse seadus (NIS2) kehtib Eestis uuel kujul 1. jaanuarist 2026 ja nõuab riskipõhiseid meetmeid, juhtkonna vastutust ja intsidentidest teavitamist.
-- Isikuandmete kaitse nõuab andmete minimeerimist, turvalist töötlemist ja rikkumisest teavitamist 72 tunni jooksul.
+- Isikuandmete kaitse nõuab õiguslikku alust, andmete minimeerimist, turvalist töötlemist, andmesubjekti õiguste tagamist ja rikkumisest teavitamist 72 tunni jooksul. Paljud nõuded on sisuliselt IT-otsused.
 - E-ITS, ISO 27001 ja NIST CSF annavad struktuuri; riskijuhtimine seob tehnika ja juhtimise. Riski saab vähendada, vältida, jagada või aktsepteerida.
 - Teavitamise tähtajad (24 h, 72 h ja lõpparuanne 1 kuu pärast teavitust) tuleb kirjutada intsidendiplaani enne intsidenti.
 - Administraatori õigused on antud tööks: võõraid süsteeme testitakse ainult kirjaliku loaga.
 
 ### Kontrollküsimused
 
-> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-test.html). Test koosneb 30 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Mis muutus Eestis 1. jaanuaril 2026 ja keda see puudutab?
 2. Mis vahe on väga olulisel ja olulisel üksusel?
@@ -202,6 +310,9 @@ Lunaraha maksmist riik ei soovita: see ei taga andmete tagasisaamist ega seda, e
 10. Mis vahe on E-ITS-il ja ISO/IEC 27001-l?
 11. Millised on riski käsitlemise neli valikut? Too igaühe kohta näide.
 12. Millal on turvatestimine seaduslik ja mida teha, kui leiad kogemata võõra süsteemi nõrkuse?
+13. Kas IP-aadress ja pseudonüümitud andmed on isikuandmed? Aga anonüümne statistika? Põhjenda.
+14. Nimeta kuus õiguslikku alust. Miks ei ole nõusolek kooli õppetöö korraldamisel sobiv alus?
+15. Inimene soovib oma andmete koopiat ja hiljem nende kustutamist. Mida peab IT-süsteem selleks võimaldama ja mis saab varukoopiatest?
 
 ### Valikküsimused
 
