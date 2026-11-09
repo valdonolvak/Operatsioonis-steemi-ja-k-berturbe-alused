@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 24 – test: küberturbe põhimõisted ja ründevektorid</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md">← Peatükk 24</a></nav>
+<h1>Test: küberturbe põhimõisted ja ründevektorid</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{q:"Lunavara krüpteerib haigla serverid ja arstid ei pääse patsiendiandmetele ligi. Milline turvaomadus on eelkõige rikutud?",
+ o:["Konfidentsiaalsus","Terviklus","Käideldavus","Mittesalgamine"],c:2,
+ e:"Andmed on olemas, kuid neid ei saa kasutada siis, kui vaja. See on käideldavuse rikkumine. Kui ründaja vedas andmed enne krüpteerimist välja (topeltväljapressimine), on rikutud ka konfidentsiaalsus."},
+{q:"Ründaja muudab märkamatult pangaülekande summat. Milline turvaomadus on rikutud?",
+ o:["Konfidentsiaalsus","Terviklus","Käideldavus","Anonüümsus"],c:1,
+ e:"Terviklus tähendab, et teave on õige ja seda pole muudetud ilma loata. Summa muutmine rikub terviklust, kuigi keegi ei pruukinud andmeid näha."},
+{q:"Milline olukord näitab konfidentsiaalsuse ja käideldavuse vastuolu?",
+ o:["Iga faili avamiseks on vaja juhi eraldi kinnitust, mistõttu töö seisab","Varukoopia tehakse iga päev","Server asub lukustatud ruumis","Kasutaja parool on pikk"],c:0,
+ e:"Väga range konfidentsiaalsus muudab teabe raskesti kättesaadavaks. Vastupidi suurendab andmete hoidmine kümnes kohas käideldavust, aga ka lekkeriski. Turvaarhitekt otsib tasakaalu vastavalt vara väärtusele."},
+{q:"Mis on nõrkus (vulnerability)?",
+ o:["Ründaja","Varukoopia","Süsteemi viga või puudus, mida saab ära kasutada","Turvapoliitika"],c:2,
+ e:"Nõrkus on näiteks vana tarkvaraversioon, nõrk parool või puuduv MFA. Ründaja on oht, ja ekspluit on võte, millega nõrkust kasutatakse."},
+{q:"Mis on ekspluit (exploit)?",
+ o:["Kahju, mis tekib ründe korral","Kood või võte, mis kasutab nõrkust ära","Organisatsioonile väärtuslik vara","Meede, mis vähendab riski"],c:1,
+ e:"Ekspluit on näiteks avalik skript, mis kasutab vana tarkvaraversiooni viga. Kui ekspluit on avalik, kasvab ründe tõenäosus järsult."},
+{q:"Hindad riski skaalal 1–3. Tõenäosus on 3 ja mõju 2. Mis on risk?",
+ o:["5 – keskmine","6 – kõrge","3 – keskmine","2 – madal"],c:1,
+ e:"Risk = tõenäosus × mõju = 3 × 2 = 6. Peatüki skaalal on 1–2 madal, 3–4 keskmine ja 6–9 kõrge risk."},
+{q:"Kas MFA lisamine vähendab riski tõenäosust või mõju?",
+ o:["Tõenäosust","Mõju","Mõlemat võrdselt","Kumbagi"],c:0,
+ e:"MFA teeb sissemurdmise raskemaks, seega väheneb tõenäosus. Andmed on aga endiselt samad, nii et mõju ei muutu. Varukoopia seevastu vähendab mõju: rünne võib õnnestuda, kuid andmed saab taastada."},
+{q:"Mis on nullpäevane nõrkus (zero-day)?",
+ o:["Nõrkus, mis parandatakse samal päeval","Nõrkus, mida kasutatakse enne, kui tootja sellest teab või paiga välja annab","Nõrkus, mille CVSS-hinne on 0","Nõrkus, mis ei ohusta kedagi"],c:1,
+ e:"Nullpäev tähendab, et kaitsjal on olnud paiga tegemiseks null päeva. Selliseid nõrkusi on vähe ja need on ründajatele kallid."},
+{q:"Miks kasutavad ründajad sagedamini juba paigatud nõrkusi kui nullpäevi?",
+ o:["Paigad sisaldavad alati uusi vigu","Paiga ilmumise ja paigaldamise vahel on palju süsteeme endiselt haavatavad","Nullpäevi ei ole tegelikult olemas","Paigatud nõrkuste CVSS-hinne on kõrgem"],c:1,
+ e:"Kui paik ilmub, saab sellest teada ka ründaja ja ekspluit valmib sageli päevadega. Paljud organisatsioonid paigaldavad paiku nädalate või kuude pärast. See vahe on ründaja põhiline võimalus."},
+{q:"Mis on CISA KEV-loetelu?",
+ o:["Kõigi teadaolevate nõrkuste täielik nimekiri","Nõrkused, mida on päriselt rünnetes kasutatud","Nõrkused, mille CVSS-hinne on üle 9","Microsofti kuised turvaparandused"],c:1,
+ e:"KEV (Known Exploited Vulnerabilities) aitab paikamist järjestada. CVSS kirjeldab vea tehnilist raskust, KEV aga seda, et nõrkust kasutatakse päriselt. KEV-loetelus olevad nõrkused tuleb paigata esimesena."},
+{q:"Milline tegevus ei vähenda ründepinda?",
+ o:["Kasutamata portide sulgemine","Kasutamata tarkvara eemaldamine","Lahkunud töötajate kontode sulgemine","RDP lubamine otse internetist, et haldamine oleks lihtsam"],c:3,
+ e:"Internetis avatud RDP on üks levinumaid sissepääse: selle leiab automaatne skanner tunni jooksul. Haldus peaks käima VPN-i või haldusvõrgu kaudu."},
+{q:"Ründaja proovib 5000 kasutajakontol üht parooli <code>Talv2026!</code>. Kuidas seda rünnet nimetatakse?",
+ o:["Toore jõu rünne","Paroolipihustamine","Volituste täitmine","MFA väsitamine"],c:1,
+ e:"Paroolipihustamise korral tehakse igal kontol vaid üks katse, seega kontolukustus ei rakendu. Aitavad lekkinud ja levinud paroolide keelamine, MFA ning ebaõnnestunud sisselogimiste jälgimine üle kõigi kontode."},
+{q:"Ründaja proovib sinu teenuses e-posti ja parooli paare, mis lekkisid teisest teenusest. Mis rünne see on?",
+ o:["Volituste täitmine (credential stuffing)","Paroolipihustamine","Õngitsus","Vahendajarünne"],c:0,
+ e:"Rünne toimib, sest inimesed kasutavad sama parooli mitmes kohas. Aitavad unikaalsed paroolid paroolihalduriga, lekkinud paroolide keelamine ja MFA."},
+{q:"Mis on Cyber Kill Chaini esimene etapp?",
+ o:["Luure","Paigaldamine","Ärakasutamine","Juhtimiskanal"],c:0,
+ e:"Etapid on: luure, relvastamine, kohaletoimetamine, ärakasutamine, paigaldamine, juhtimiskanal ja tegevus eesmärgi nimel. Mida varem kaitsja ründe katkestab, seda vähem kahju."},
+{q:"Kasutaja avab õngitsuskirja manuse ja lubab Wordis makrod. Milline Kill Chaini etapp see on?",
+ o:["Luure","Kohaletoimetamine","Ärakasutamine","Tegevus eesmärgi nimel"],c:2,
+ e:"Kiri ise oli kohaletoimetamine. Makrode lubamine on ärakasutamine: ründaja kood saab käivituda. Kaitse selles etapis on makrode blokeerimine internetist tulnud dokumentides."},
+{q:"Ründaja loob arvutisse ajastatud ülesande, mis käivitab tagaukse ka pärast taaskäivitamist. Milline Kill Chaini etapp see on?",
+ o:["Relvastamine","Paigaldamine","Juhtimiskanal","Luure"],c:1,
+ e:"Paigaldamise etapis jätab ründaja endale püsiva ligipääsu. MITRE ATT&CK-is vastab sellele taktika Persistence. Tuvastada aitavad EDR ja rakenduste lubamisloend."},
+{q:"Mida tähendab MITRE ATT&CK-is taktika?",
+ o:["Ründaja eesmärki antud hetkel (miks)","Konkreetset võtet, nt T1566","Ründerühma nime","Tuvastusreeglit"],c:0,
+ e:"Taktika on eesmärk, näiteks Initial Access või Lateral Movement. Tehnika on viis, kuidas eesmärk saavutatakse, ja sellel on oma tunnus, näiteks T1566 Phishing."},
+{q:"Mis aitab kõige paremini õngitsuse ja MFA-väsitamise vastu?",
+ o:["SMS-kood","Turvaküsimus","FIDO2-turvavõti või pääsuvõti","Pikem parool"],c:2,
+ e:"FIDO2-võti on seotud õige domeeniga. Võltslehel see ei tööta, isegi kui kasutaja lehte ära ei tunne. SMS-koodi saab kasutaja võltslehele sisestada ja ründaja kasutab seda kohe."},
+{q:"Kohviku WiFi-s on ründaja loonud sama nimega võltsvõrgu. Mis kaitseb vahendajaründe eest kõige paremini?",
+ o:["Tugevam WiFi-parool","Krüpteeritud ühendus (HTTPS/TLS, VPN) ja sertifikaadihoiatuste mitte eiramine","Viirusetõrje","Brauseri privaatne režiim"],c:1,
+ e:"TLS-iga näeb vahendaja ainult krüpteeritud baite. Kui ta esitab võltssertifikaadi, hoiatab brauser. Seepärast ei tohi hoiatust eirata. HSTS keelab brauseril sama saidi puhul krüpteerimata HTTP kasutamise."},
+{q:"Mis kaitseb SQL-süsti eest kõige paremini?",
+ o:["Pikem parool","Tulemüür","HTTPS","Parameetritega päringud"],c:3,
+ e:"Tulemüür ja HTTPS lasevad rakendusele jõuda just sellel päringul, mida rakendus ootab. Viga on rakenduse koodis ja parandada tuleb seda."},
+{q:"Miks parameetritega päring (<code>prepare</code> + <code>execute</code>) välistab SQL-süsti?",
+ o:["See eemaldab sisendist ülakomad","Päringu struktuur ja väärtus saadetakse eraldi, väärtust ei parsita SQL-ina","See krüpteerib päringu","See piirab sisendi pikkust"],c:1,
+ e:"Andmebaas parsib päringu kuju kohahoidjaga <code>?</code> enne, kui väärtus kohale jõuab. Väärtus jääb alati andmeks, olgu selles mis tahes märgid. Ülakomade eemaldamine ei ole sama kindel."},
+{q:"Mis kaitseb salvestatud XSS-i eest kõige paremini?",
+ o:["Parameetritega päringud","Väljundi kodeerimine","HTTPS","Tugev parool"],c:1,
+ e:"Parameetritega päring kaitseb andmebaasi, kuid XSS-i korral tõlgendab sisendit brauser. <code>htmlspecialchars()</code> muudab <code>&lt;</code> olemiks <code>&amp;lt;</code> ja brauser näitab seda tekstina."},
+{q:"Miks ei aita XSS-i vastu sõna <code>&lt;script&gt;</code> keelamine?",
+ o:["Brauserid ei toeta enam sõna script","Koodi saab käivitada ka teisiti, nt <code>&lt;img src=x onerror=…&gt;</code>","Keelamine aeglustab lehte","Ründajad ei kasuta kunagi script-silti"],c:1,
+ e:"HTML-is on kümneid sündmusi (<code>onerror</code>, <code>onload</code>, <code>onmouseover</code>), mis käivitavad JavaScripti. Keelatud sõnade nimekiri jääb alati poolikuks. Usaldusväärne lahendus on väljundi kodeerimine."},
+{q:"Skript on lingis <code>?otsing=&lt;script&gt;…</code> ja käivitub ainult sellel, kes lingile klõpsab. Mis XSS-i liik see on?",
+ o:["Salvestatud XSS","Peegeldatud XSS","DOM-põhine XSS","SQL-süst"],c:1,
+ e:"Peegeldatud XSS-i puhul tuleb skript päringust ja leht peegeldab selle kohe vastusesse. Salvestatud XSS jääb andmebaasi ja tabab kõiki vaatajaid. DOM-põhise XSS-i viga on lehe enda JavaScriptis."},
+{q:"Miks ei saa mahupõhist DDoS-rünnet peatada oma tulemüüriga?",
+ o:["Tulemüür ei tunne UDP-protokolli","Võrguühendus saab täis enne, kui liiklus tulemüürini jõuab","DDoS kasutab alati HTTPS-i","Tulemüür lülitub rünnaku ajal välja"],c:1,
+ e:"Kui sissetulev liiklus ületab ühenduse läbilaskevõime, pole oluline, mida tulemüür paketiga teeb. Toru on juba ummistunud. Kaitse peab olema enne sinu ühendust: teenusepakkuja või pilve DDoS-kaitse ja CDN."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
