@@ -153,6 +153,8 @@ Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul
 
 ### Kontrollküsimused
 
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/27-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 1. Nimeta krüptograafilise räsifunktsiooni neli omadust.
 2. Miks on kokkupõrked alati olemas, kuid räsi võib ikkagi olla kokkupõrkekindel?
 3. Selgita sünnipäevaparadoksi. Mitu bitti turvalisust annab SHA-256 kokkupõrgete vastu?
