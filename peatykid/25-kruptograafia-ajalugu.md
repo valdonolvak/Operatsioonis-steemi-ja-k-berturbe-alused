@@ -222,6 +222,8 @@ Base64 tunneb sageli ära: ainult tähed, numbrid, `+` ja `/`, pikkus jagub nelj
 
 ### Kontrollküsimused
 
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/25-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 1. Mis vahe on avatekstil, šifritekstil, algoritmil ja võtmel?
 2. Sõnasta Kerckhoffsi printsiip ja too näide, mis juhtub, kui seda ei järgita.
 3. Mis vahe on transpositsioonil ja asendusel?
