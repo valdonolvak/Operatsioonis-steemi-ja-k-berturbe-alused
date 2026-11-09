@@ -68,6 +68,15 @@ Tavaline kiire räsi (MD5, SHA-256, NT-räsi) on mõeldud kiireks. Hea graafikak
 
 **Arvutame.** Oletame, et ründaja kaardipark proovib kiiret räsi 10¹¹ korda sekundis ja aeglast 10⁴ korda sekundis.
 
+> 🖱️ **Proovi ise:** [murdmisaja kalkulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/27-murdmisaeg.html). Vali märgistik, parooli pikkus ja räsi kiirus ning vaata iga arvutussammu eraldi.
+
+Murdmisaeg arvutatakse kahes sammus.
+
+1. **Võimaluste arv** = märkide arv ^ parooli pikkus. Väiketähti on 26, seega 8 väiketähega paroole on 26⁸ = 208 827 064 576 ≈ 2,1 × 10¹¹. Kui lubatud on kõik klaviatuuri märgid (26 väike- ja 26 suurtähte, 10 numbrit ning 33 erimärki koos tühikuga), on märke 95. Paroolifraasis on „märk“ terve sõna. 7776-sõnaline loend tekib viie täringuviske kombinatsioonidest (6⁵ = 7776), seega 4 juhuslikku sõna annab 7776⁴ ≈ 3,7 × 10¹⁵ võimalust.
+2. **Aeg** = võimaluste arv ÷ katseid sekundis. Kiire räsi korral 2,1 × 10¹¹ ÷ 10¹¹ ≈ 2 sekundit. Aeglase räsi korral 2,1 × 10¹¹ ÷ 10⁴ = 2,1 × 10⁷ sekundit. Sekunditest saad ööpäevad, kui jagad 86 400-ga (sekundeid ööpäevas): 2,1 × 10⁷ ÷ 86 400 ≈ 242 ööpäeva ehk umbes 8 kuud. Aastate saamiseks jaga sekundid 3,15 × 10⁷-ga (sekundeid aastas).
+
+Tabelis on **kogu** võtmeruumi läbimise aeg. Keskmiselt leiab ründaja parooli poole ajaga, sest õige variant võib tulla mis tahes hetkel. Iga lisamärk korrutab aja märkide arvuga: üks väiketäht juurde tähendab 26 korda pikemat aega, üks juhuslik sõna juurde 7776 korda pikemat aega. Seepärast aitab pikkus rohkem kui keerukusreeglid.
+
 | Parool | Võimalusi | Kiire räsi (10¹¹/s) | Aeglane räsi (10⁴/s) |
 | --- | --- | --- | --- |
 | 8 väiketähte | 26⁸ ≈ 2,1 × 10¹¹ | umbes 2 sekundit | umbes 8 kuud |

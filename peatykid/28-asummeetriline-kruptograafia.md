@@ -40,6 +40,28 @@ Asümmeetriline krüptograafia arvutab **moodularitmeetikas** ehk „kellaaritme
 | ECC: ECDH, ECDSA, X25519, Ed25519 | diskreetne logaritm elliptkõveral | võtmevahetus, allkiri; ID-kaart, TLS, SSH |
 | ML-KEM, ML-DSA | võreprobleemid (lattice) | postkvantkrüptograafia (ptk 30) |
 
+#### Kuidas moodularitmeetikat käsitsi arvutada
+
+> 🖱️ **Proovi ise:** [moodularitmeetika, Diffie–Hellmani ja RSA arvutaja](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/28-arvutused.html). Sisesta oma arvud ja vaata iga vahesammu.
+
+**Jagamisjääk.** a mod n on jääk, mis jääb alles, kui a jagada n-ga. Leia, mitu korda n mahub a sisse (jagatise täisosa), korruta see tagasi n-ga ja lahuta a-st:
+
+- 15 625 ÷ 23 = 679,3… → täisosa on 679
+- 679 × 23 = 15 617
+- 15 625 − 15 617 = **8**, seega 15 625 mod 23 = 8
+
+**Võta jääk pärast iga korrutamist.** Suuri astmeid ei pea lõpuni välja arvutama, sest (x × y) mod n = ((x mod n) × (y mod n)) mod n. Kui jääk võetakse vahepeal, jäävad arvud väikeseks ja tulemus on sama.
+
+**Ruutu tõstmise võte** (square-and-multiply). Arvuta järjest ruudud g¹, g², g⁴, g⁸ … (iga järgmine on eelmise ruut) ja korruta kokku need, mille astendajad annavad summana vajaliku astme. Näide: 19⁶ mod 23, kus 6 = 4 + 2.
+
+| Aste | Arvutus | Jääk 23-ga jagamisel |
+| --- | --- | --- |
+| 19² | 19 × 19 = 361 | 361 − 15 × 23 = **16** |
+| 19⁴ | 16 × 16 = 256 | 256 − 11 × 23 = **3** |
+| 19⁶ = 19⁴ × 19² | 3 × 16 = 48 | 48 − 2 × 23 = **2** |
+
+Kolme väikese korrutamisega saime 19⁶ mod 23 = 2, ilma et peaksime arvutama 19⁶ = 47 045 881. Arvuti teeb sama: 3072-bitise astendaja korral kulub umbes 3072 ruutu tõstmist, mitte 2³⁰⁷² korrutamist. Seepärast on astendamine moodulis kiire ka väga suurte arvudega.
+
 ### 28.2 Diffie–Hellmani võtmevahetus
 
 Whitfield Diffie ja Martin Hellman avaldasid 1976. aastal meetodi, mille abil kaks osapoolt saavad avalikus võrgus kokku leppida ühises saladuses, ilma et see saladus kunagi võrgus liiguks ([Wikipedia: Diffie–Hellmani võtmevahetus](https://et.wikipedia.org/wiki/Diffie-Hellmani_v%C3%B5tmevahetus)).
@@ -55,6 +77,15 @@ Arvutame samm-sammult. Avalikud parameetrid on algarv p = 23 ja alus g = 5.
 | 1. Salajane arv | a = 6 | – | b = 15 |
 | 2. Avalik väärtus | A = 5⁶ mod 23 = 8 | A = 8 ja B = 19 liiguvad võrgus | B = 5¹⁵ mod 23 = 19 |
 | 3. Ühine saladus | s = Bᵃ mod 23 = 19⁶ mod 23 = 2 | – | s = Aᵇ mod 23 = 8¹⁵ mod 23 = 2 |
+
+Mari arvutuse 19⁶ mod 23 = 2 tegime käsitsi läbi eespool (28.1). Kontrollime ka Jaani arvutust 8¹⁵ mod 23. Astendaja 15 = 8 + 4 + 2 + 1:
+
+| Aste | Arvutus | Jääk 23-ga jagamisel |
+| --- | --- | --- |
+| 8² | 8 × 8 = 64 | 64 − 2 × 23 = **18** |
+| 8⁴ | 18 × 18 = 324 | 324 − 14 × 23 = **2** |
+| 8⁸ | 2 × 2 = 4 | **4** |
+| 8¹⁵ = 8⁸ × 8⁴ × 8² × 8¹ | 4 × 2 × 18 × 8 = 1152 | 1152 − 50 × 23 = **2** |
 
 Mõlemad said 2, sest (gᵃ)ᵇ = (gᵇ)ᵃ = gᵃᵇ mod p. Pealtkuulaja teab p, g, A ja B. Saladuse arvutamiseks peaks ta leidma a või b, ehk lahendama diskreetse logaritmi. Siin piisab 22 katsest, päris DH-s on p vähemalt 2048-bitine ja elliptkõveral (X25519) 255-bitine.
 
@@ -76,12 +107,36 @@ Joonis: RSA põhimõte nii väikeste arvudega, et neid saab kalkulaatoriga kontr
 1. Vali kaks suurt juhuslikku algarvu p ja q. Näites p = 61 ja q = 53.
 2. Arvuta moodul n = p × q = 3233. See on avalik.
 3. Arvuta φ(n) = (p − 1)(q − 1) = 60 × 52 = 3120. See on salajane, sest selle arvutamiseks on vaja p-d ja q-d.
-4. Vali avalik eksponent e, millel pole φ-ga ühiseid tegureid. Näites e = 17, päris RSA-s peaaegu alati 65 537.
+4. Vali avalik eksponent e, millel pole φ-ga ühiseid tegureid. Näites e = 17: 3120 = 2⁴ × 3 × 5 × 13 ja algarv 17 nende hulgas ei ole, seega sobib. Päris RSA-s on e peaaegu alati 65 537.
 5. Leia privaatne eksponent d, mille korral e × d mod φ = 1. Näites d = 2753, sest 17 × 2753 = 46 801 = 15 × 3120 + 1. Selle leiab laiendatud Eukleidese algoritmiga (Pythonis `pow(17, -1, 3120)`).
+
+**Kuidas d leitakse (laiendatud Eukleidese algoritm).** Otsime d, mille korral 17 × d annab 3120-ga jagades jäägi 1. Kõigepealt jagame jäägiga, kuni jääk on 1:
+
+- 3120 = 183 × 17 + 9
+- 17 = 1 × 9 + 8
+- 9 = 1 × 8 + 1
+
+Seejärel avaldame jäägi 1 alt üles, asendades iga kord eelmise rea jäägi:
+
+- 1 = 9 − 8
+- 1 = 9 − (17 − 9) = 2 × 9 − 17
+- 1 = 2 × (3120 − 183 × 17) − 17 = 2 × 3120 − 367 × 17
+
+Seega −367 × 17 annab 3120-ga jagades jäägi 1. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
 
 Avalik võti on (n = 3233, e = 17), privaatvõti (n = 3233, d = 2753).
 
-**Krüpteerimine:** c = mᵉ mod n. Sõnum m = 65 annab c = 65¹⁷ mod 3233 = 2790.
+**Krüpteerimine:** c = mᵉ mod n. Sõnum m = 65 annab c = 65¹⁷ mod 3233 = 2790. Käsitsi tehakse see ruutu tõstmise võttega, astendaja 17 = 16 + 1:
+
+| Aste | Arvutus | Jääk 3233-ga jagamisel |
+| --- | --- | --- |
+| 65² | 65 × 65 = 4225 | **992** |
+| 65⁴ | 992 × 992 = 984 064 | **1232** |
+| 65⁸ | 1232 × 1232 = 1 517 824 | **1547** |
+| 65¹⁶ | 1547 × 1547 = 2 393 209 | **789** |
+| 65¹⁷ = 65¹⁶ × 65 | 789 × 65 = 51 285 | **2790** |
+
+Dekrüpteerimine 2790²⁷⁵³ mod 3233 käib samamoodi: 2753 = 2048 + 512 + 128 + 64 + 1, seega kulub 11 ruutu tõstmist ja 4 korrutamist. Käsitsi on see tüütu, Pythonis üks rida: `pow(2790, 2753, 3233)`.
 
 **Dekrüpteerimine:** m = cᵈ mod n = 2790²⁷⁵³ mod 3233 = 65.
 
@@ -160,6 +215,8 @@ Kui klient ühendub serveriga esimest korda, näitab ta hoiatust `The authentici
 - Praktikas on krüpteerimine hübriidne: asümmeetriline seansivõti, sümmeetrilised andmed.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/28-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Millise võtmega krüpteerid sõnumi sõbrale ja millisega sõber selle avab? Millise võtmega allkirjastad?
 2. Mis on lõksuuksefunktsioon? Too näide.
