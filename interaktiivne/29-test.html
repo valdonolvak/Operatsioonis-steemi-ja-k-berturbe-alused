@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 29 – test: digiallkiri, sertifikaadid, PKI ja TLS</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/29-digiallkiri-pki-tls.md">← Peatükk 29</a></nav>
+<h1>Test: digiallkiri, sertifikaadid, PKI ja TLS</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Millise võtmega allkirjastatakse dokument digitaalselt?", "o": ["Saaja avaliku võtmega", "AES-võtmega", "Allkirjastaja privaatvõtmega", "Sertifitseerimiskeskuse avaliku võtmega"], "c": 2, "e": "Allkirja saab teha ainult privaatvõtme omanik ja kontrollida igaüks tema avaliku võtmega. Saaja avalikku võtit kasutatakse krüpteerimiseks, mitte allkirjastamiseks."},
+{"q": "Mida teeb allkirja kontrollija kõigepealt?", "o": ["Dekrüpteerib dokumendi", "Arvutab saadud dokumendi räsi ise uuesti", "Küsib allkirjastajalt privaatvõtit", "Kontrollib, kas fail on .asice-laiendiga"], "c": 1, "e": "Kontrollija arvutab räsi ise. Seejärel kontrollib ta allkirjastaja avaliku võtmega, kas allkiri vastab just sellele räsile, ja lõpuks, kas sertifikaat on usaldatud CA-lt ning kehtis allkirjastamise ajal."},
+{"q": "Miks allkirjastatakse dokumendi räsi, mitte dokumenti ennast?", "o": ["Räsi on lühike ja asümmeetrilised tehted on aeglased", "Dokumenti ei saa allkirjastada, sest see on krüpteeritud", "Räsi peidab dokumendi sisu", "Nii on allkiri pikem ja turvalisem"], "c": 0, "e": "Räsi on alati sama pikk (nt 256 bitti), olgu dokument üks lause või gigabaidine fail. Allkiri seob dokumendi siiski täielikult, sest iga muudatus muudab ka räsi."},
+{"q": "Miks peab digiallkirjas kasutatav räsifunktsioon olema kokkupõrkekindel?", "o": ["Muidu oleks allkiri liiga pikk", "Kui ründaja leiab kaks sama räsiga dokumenti, kehtib üks allkiri mõlemale", "Muidu ei saa allkirja kontrollida ilma internetita", "Kokkupõrkekindlus kiirendab allkirjastamist"], "c": 1, "e": "Ründaja laseb allkirjastada süütu dokumendi ja tõstab allkirja pahatahtlikule, millel on sama räsi. Seepärast ei kasutata allkirjades MD5-te ega SHA-1-te (ptk 27)."},
+{"q": "Millist turvaomadust digiallkiri EI anna?", "o": ["Terviklust", "Autentsust", "Mittesalgamist", "Konfidentsiaalsust"], "c": 3, "e": "Allkirjastatud dokument on endiselt kõigile loetav. Kui see peab olema salajane, krüpteeritakse see lisaks saaja avaliku võtmega, nt DigiDoc4-s eraldi CDOC-konteineris."},
+{"q": "Milleks lisatakse digiallkirjale ajatempel ja kehtivuskinnitus (OCSP)?", "o": ["Et allkiri oleks lühem", "Et ka aastate pärast saaks tõestada, et sertifikaat kehtis allkirja andmise hetkel", "Et dokumenti saaks hiljem muuta", "Et allkiri aeguks koos sertifikaadiga"], "c": 1, "e": "Sertifikaat aegub mõne aasta pärast, kuid leping peab kehtima kümneid aastaid. Eesti .asice-konteinerites lisatakse ajatempel ja kehtivuskinnitus automaatselt, nii et allkirja saab kontrollida ka ilma internetita."},
+{"q": "Mida kinnitab TLS-sertifikaat?", "o": ["Et avalik võti kuulub nimetatud domeenile, kinnitatud usaldusväärse CA allkirjaga", "Et veebileht ei sisalda pahavara", "Et server asub Eestis", "Et ühendus on kiire"], "c": 0, "e": "Sertifikaat seob avaliku võtme nimega. Seda, kas lehe sisu on aus või ohutu, sertifikaat ei kinnita."},
+{"q": "Mis on X.509-sertifikaadi SAN-väli (Subject Alternative Name)?", "o": ["Sertifikaadi väljaandja nimi", "Kõik domeenid, mille jaoks sertifikaat kehtib, nt kool.ee ja www.kool.ee", "Sertifikaadi seerianumber", "Privaatvõtme varukoopia"], "c": 1, "e": "Brauser kontrollib, kas aadressiribal olev domeen on SAN-väljas. Metamärk *.kool.ee kehtib www.kool.ee kohta, kuid mitte kool.ee ega a.b.kool.ee kohta."},
+{"q": "Mis on juursertifikaat?", "o": ["Serveri privaatvõti", "Usaldusahela tipus olev CA sertifikaat, mis on OS-i või brauseri usaldushoidlas", "Ajutine seansivõti", "Räsifunktsioon"], "c": 1, "e": "Brauser ei tunne iga serverit eraldi, kuid usaldab juur-CA-d. Kui ahel serveri sertifikaadist vahe-CA kaudu jõuab usaldatud juureni ja kõik allkirjad klapivad, on serveri võti usaldatav."},
+{"q": "Miks hoitakse juur-CA privaatvõtit võrgust eraldatud riistvaras ja sellega allkirjastatakse ainult vahe-CA-sid?", "o": ["Et allkirjastamine oleks kiirem", "Kui juurvõti lekib, saab ründaja välja anda usaldatud sertifikaadi igale domeenile ja juurt on raske välja vahetada", "Juurvõtit ei saa võrgus kasutada", "Nii on sertifikaadid odavamad"], "c": 1, "e": "Juursertifikaat on miljardites seadmetes. Vahe-CA lekke korral saab selle tühistada ja asendada, juur-CA puhul on see palju raskem."},
+{"q": "Millist kontrolli brauser sertifikaadiga EI tee?", "o": ["Kas ahel jõuab usaldatud juur-CA-ni", "Kas sertifikaat kehtib praegu", "Kas domeen on SAN-väljas", "Kas veebilehel pole pahavara"], "c": 3, "e": "Brauser kontrollib ahelat, allkirju, kehtivusaega, nime, kasutusotstarvet ja tühistamist. Lehe sisu ohutust sertifikaat ei kinnita."},
+{"q": "Kuidas kontrollib CA DV-sertifikaadi (domain validated) korral, et taotleja omab domeeni?", "o": ["Taotleja saadab passi koopia", "Taotleja paneb serverisse kindla faili (ACME HTTP-01) või DNS-i kindla kirje (DNS-01)", "CA helistab ettevõtte juhile", "Kontrolli ei tehta"], "c": 1, "e": "DV kontrollib ainult domeeni üle valitsemist. Nii saab tasuta sertifikaadi ka õngitsusleht minu-pank-turvakontroll.com. OV ja EV kontrollivad lisaks organisatsiooni."},
+{"q": "Mis juhtus 2011. aastal Hollandi CA-ga DigiNotar?", "o": ["Selle juurvõti murti kvantarvutiga", "CA-sse murti sisse ja ründajad väljastasid võltssertifikaadi muu hulgas domeenile *.google.com", "See unustas sertifikaate uuendada", "See hakkas väljastama ainult EV-sertifikaate"], "c": 1, "e": "Võltssertifikaadiga kuulati Iraanis pealt sadade tuhandete kasutajate Gmaili-ühendusi. Brauserid eemaldasid DigiNotari usaldushoidlatest ja ettevõte läks pankrotti."},
+{"q": "Milleks on sertifikaatide läbipaistvuse (CT) logid?", "o": ["Need krüpteerivad sertifikaadid", "Iga avalik TLS-sertifikaat kantakse avalikku logisse, kus domeeni omanik näeb, kui keegi on tema nimele sertifikaadi välja võtnud", "Need asendavad usaldushoidla", "Need salvestavad kõigi kasutajate paroole"], "c": 1, "e": "CT loodi pärast DigiNotari juhtumit. Logisid saab vaadata näiteks lehel crt.sh."},
+{"q": "Miks peab TLS-sertifikaatide uuendamine olema automaatne?", "o": ["Automaatsed sertifikaadid on tasuta", "Maksimaalne kehtivus lüheneb (2026. aasta märtsist 200 päeva, 2029. aastaks 47 päeva) ja aegunud sertifikaat põhjustab teenuskatkestuse", "Käsitsi uuendatud sertifikaat on nõrgem", "Seadus keelab käsitsi uuendamise"], "c": 1, "e": "Automaatseks uuendamiseks on ACME-protokoll, nt Let’s Encrypt, certbot ja win-acme. Aegunud sertifikaat on üks sagedasemaid teenuskatkestuste põhjusi."},
+{"q": "Mis on TLS-is sertifikaadi tühistamine (revocation) ja millal seda vaja on?", "o": ["Sertifikaadi uuendamine iga kuu", "Sertifikaadi kehtetuks tunnistamine enne aja lõppu, nt privaatvõtme lekke korral (CRL, OCSP)", "Sertifikaadi kustutamine brauseri vahemälust", "Domeeni müümine"], "c": 1, "e": "Kui serveri privaatvõti lekib, saab ründaja end serverina esitada kuni sertifikaadi aegumiseni. Tühistamine katkestab selle. Lühike kehtivusaeg vähendab tühistamise vajadust."},
+{"q": "Miks vajab TLS 1.3 käepigistus ainult ühte edasi-tagasi sõnumit (TLS 1.2 vajas kahte)?", "o": ["TLS 1.3 ei kasuta krüpteerimist", "Brauser saadab oma ajutise võtmejagamise kohe esimeses sõnumis (ClientHello)", "TLS 1.3 jätab sertifikaadi saatmata", "TLS 1.3 kasutab ainult sümmeetrilist krüptograafiat"], "c": 1, "e": "Pärast ServerHellot on mõlemal pool sama jagatud saladus (Diffie–Hellman). Seepärast liigub juba serveri sertifikaat krüpteeritult."},
+{"q": "Mida tõestab TLS 1.3 sõnum CertificateVerify?", "o": ["Et sertifikaat on kantud CT-logisse", "Et serveril on sertifikaadi privaatvõti: server allkirjastab sellega kogu senise käepigistuse", "Et klient teab parooli", "Et ühendus on kiire"], "c": 1, "e": "Sertifikaat on avalik ja igaüks saab selle kopeerida. Ilma CertificateVerify'ta võiks ründaja saata kellegi teise sertifikaadi. Allkirja saab aga teha ainult privaatvõtme omanik."},
+{"q": "Mida avastab TLS 1.3 sõnum Finished?", "o": ["Kas server on ülekoormatud", "Kas ründaja muutis mõnda käepigistuse sõnumit, nt eemaldas tugevad šifrid", "Kas kasutaja sisestas õige parooli", "Kas sertifikaat on aegunud"], "c": 1, "e": "Mõlemad pooled saadavad HMAC-i kogu käepigistusest. Kui ründaja muutis teel ühtki sõnumit, ei klapi pooltel käepigistuse kokkuvõtted ja ühendus katkestatakse. Nii välditakse allaviimise rünnet."},
+{"q": "Mida näeb pealtkuulaja TLS 1.3 ühenduses?", "o": ["Kogu sisu, sest TLS 1.3 krüpteerib ainult paroole", "Domeeninime (SNI) ClientHellos, kuid mitte serveri sertifikaati ega lehe sisu", "Ainult serveri sertifikaati", "Mitte midagi, isegi IP-aadresse mitte"], "c": 1, "e": "TLS 1.3 krüpteerib ka sertifikaadi. Domeeninimi on ClientHellos siiski näha ning selle peitmiseks on loodud ECH (Encrypted Client Hello). IP-aadressid ja liikluse maht on alati nähtavad."},
+{"q": "Mida teeb HSTS (HTTP Strict Transport Security)?", "o": ["Kiirendab TLS-i käepigistust", "Server ütleb brauserile, et sait on ainult HTTPS-iga, ja brauser ei proovi enam krüpteerimata ühendust", "Krüpteerib küpsised", "Asendab sertifikaadi"], "c": 1, "e": "HSTS takistab allaviimise rünnet, kus vahendaja püüab brauserit hoida krüpteerimata HTTP-ühenduses (ptk 24.7)."},
+{"q": "Ettevõtte tulemüür dekrüpteerib ja kontrollib HTTPS-liiklust (TLS inspection). Miks ei näita brauser seejuures hoiatust?", "o": ["Tulemüür kasutab ründaja sertifikaati", "Tulemüür esitab oma CA allkirjastatud sertifikaadi ja ettevõtte CA on tööjaamade usaldushoidlas", "Tulemüür lülitab brauseri kontrolli välja", "Hoiatust näidatakse alati"], "c": 1, "e": "See on sisuliselt kokkulepitud vahendaja. Arvutis, mille usaldushoidlas ettevõtte CA-d pole, annaks brauser hoiatuse."},
+{"q": "Mida näitab lukuikoon brauseri aadressiribal?", "o": ["Et leht on aus ja kontrollitud", "Et ühendus on krüpteeritud ja serveril on selle domeeni sertifikaat", "Et leht ei sisalda pahavara", "Et organisatsioon on äriregistris"], "c": 1, "e": "Õngitsusleht saab DV-sertifikaadi samamoodi nagu päris pank. Kontrolli alati aadressi."},
+{"q": "Miks on Eesti ID-kaardil kaks eraldi võtmepaari ja PIN-koodi?", "o": ["Üks on varukoopia juhuks, kui teine kaob", "Et pahatahtlik veebileht ei saaks „autentimise“ sildi all lasta allkirjastada lepingu räsi", "Et kaart töötaks kahes riigis", "PIN1 on lühem ja kiirem"], "c": 1, "e": "Autentimisel allkirjastab kaart serveri juhusliku väljakutse PIN1-ga, allkirjastamisel dokumendi räsi PIN2-ga. Kui võti oleks sama, ei saaks kaart neid kahte eristada."},
+{"q": "Milleks on ID-kaardi PIN2?", "o": ["Avab kaardi füüsiliselt", "Logib arvutisse", "Muudab PIN1", "Kinnitab digiallkirja andmise privaatvõtmega"], "c": 3, "e": "PIN ei ole võti, vaid luba kiibile võtit kasutada. Privaatvõti genereeriti kiibis ja seda ei saa välja lugeda. Kolm vale katset lukustavad PIN-i. PIN2-ga antud kvalifitseeritud digiallkiri on eIDAS-i järgi võrdne omakäelise allkirjaga."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>

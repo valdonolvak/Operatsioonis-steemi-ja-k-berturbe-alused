@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 29 – digiallkiri, sertifikaadi kontroll ja TLS 1.3 käepigistus</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mari:#0f6e56;--mari-bg:#e1f5ee;--eve:#993c1d;--eve-bg:#faece7;--srv:#534ab7;--srv-bg:#eeedfe;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806;
+--mari:#9fe1cb;--mari-bg:#085041;--eve:#f5c4b3;--eve-bg:#712b13;--srv:#cecbf6;--srv-bg:#3c3489}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:20px;font-weight:500;margin:2.5rem 0 .5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+h3{font-size:16px;font-weight:500;margin:0 0 .5rem}
+nav a{color:var(--accent);font-size:14px;margin-right:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+label{display:block;font-size:13px;color:var(--muted);margin:0 0 4px}
+input,select,textarea{width:100%;font:inherit;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);padding:6px 10px}
+input[type=checkbox]{width:auto;margin-right:6px}
+textarea{font-family:var(--mono);font-size:14px;min-height:64px;resize:vertical}
+button{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer}
+button:hover{background:var(--card)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.primary{color:#042c53}}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:.5rem 0}
+.card{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin:0 0 12px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.who{border-radius:12px;padding:1rem 1.1rem}
+.mari{background:var(--mari-bg);color:var(--mari)}
+.eve{background:var(--eve-bg);color:var(--eve)}
+.srv{background:var(--srv-bg);color:var(--srv)}
+.hex{font-family:var(--mono);font-size:12px;word-break:break-all;background:var(--bg);color:var(--text);border-radius:6px;padding:4px 8px;margin:4px 0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.verdict{border-radius:8px;padding:.6rem 1rem;margin:.75rem 0 0;font-size:15px}
+.verdict.ok{background:var(--ok-bg)}.verdict.bad{background:var(--bad-bg)}.verdict.warn{background:var(--warn-bg);color:var(--warn)}
+.why{font-size:15px}
+.checks{list-style:none;padding:0;margin:0}
+.checks li{display:flex;gap:10px;padding:.55rem 0;border-bottom:1px solid var(--border)}
+.checks .ic{flex:none;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500}
+.checks .ic.ok{background:var(--ok-bg)}.checks .ic.bad{background:var(--bad-bg)}.checks .ic.skip{background:var(--card);color:var(--muted)}
+.checks b{font-weight:500}
+.checks small{display:block;color:var(--muted);font-size:13px}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.browser{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:12px}
+.bar{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);font-family:var(--mono);font-size:14px}
+.page{padding:1rem;font-size:15px}
+.lock{font-size:16px}
+.tls{display:grid;grid-template-columns:110px 1fr 110px;gap:6px 10px;align-items:center;margin:1rem 0}
+.end{text-align:center;font-size:14px;font-weight:500;border-radius:8px;padding:6px}
+.msg{border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:14px;background:var(--bg);opacity:.35}
+.msg.on{opacity:1}
+.msg.cur{outline:2px solid var(--accent)}
+.msg.fail{border-color:var(--bad-line);background:var(--bad-bg)}
+.msg .dir{font-family:var(--mono);color:var(--muted);font-size:12px}
+.lockpill{display:inline-block;font-size:12px;padding:0 8px;border-radius:10px;margin-left:6px}
+.lockpill.enc{background:var(--ok-bg);color:var(--ok)}.lockpill.open{background:var(--warn-bg);color:var(--warn)}
+.err{color:var(--bad);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/29-digiallkiri-pki-tls.md">← Peatükk 29</a><a href="#allkiri">1. Digiallkiri</a><a href="#sert">2. Sertifikaadi kontroll</a><a href="#tls">3. TLS 1.3</a></nav>
+<h1>Digiallkiri, sertifikaadid ja TLS: proovi ise</h1>
+<p>Sellel lehel on kolm katset. Esimeses teeb brauser päris digiallkirja ja kontrollib seda. Teises kontrollib brauser veebilehe sertifikaati samade sammudega nagu päris brauser. Kolmandas käib TLS 1.3 käepigistus läbi sõnum sõnumi haaval. Igas katses saad mängida ründajat ja vaadata, milline kontroll ta peatab.</p>
+
+<!-- ================= 1 ================= -->
+<h2 id="allkiri">1. Digiallkiri: allkirjastamine ja kontroll</h2>
+<p>Mari allkirjastab lepingu. Brauser loob talle päris võtmepaari (ECDSA, kõver P-256) ja kasutab sama krüptot nagu TLS ja ID-kaart. Allkirjastamisel arvutatakse lepingu SHA-256 räsi ja see allkirjastatakse privaatvõtmega. Jaan saab lepingu, allkirja ja Mari avaliku võtme ning kontrollib, kas allkiri vastab lepingule.</p>
+<div id="nocrypto" class="verdict bad" style="display:none">Sinu brauser ei luba siin krüptot kasutada. WebCrypto töötab ainult HTTPS-lehel (nt GitHub Pages) või aadressil localhost.</div>
+<div class="cols">
+  <div class="who mari">
+    <h3>Mari (allkirjastaja)</h3>
+    <label for="doc" style="color:inherit">Leping</label>
+    <textarea id="doc">Leping: Mari maksab Jaanile 100 eurot.</textarea>
+    <div class="row"><button class="primary" id="signBtn">Allkirjasta</button><button id="newKey">Loo uus võtmepaar</button></div>
+    <div>Avaliku võtme sõrmejälg:</div><div class="hex" id="pubFp">…</div>
+    <div>Lepingu SHA-256 räsi:</div><div class="hex" id="signHash">–</div>
+    <div>Allkiri (64 baiti):</div><div class="hex" id="sigHex">–</div>
+  </div>
+  <div class="who srv">
+    <h3>Jaan (kontrollija)</h3>
+    <label for="recv" style="color:inherit">Saadud leping</label>
+    <textarea id="recv"></textarea>
+    <div style="margin-top:6px">Jaan kontrollib võtmega, mille sõrmejälg on:</div><div class="hex" id="verFp">–</div>
+    <div class="row"><button class="primary" id="verBtn">Kontrolli allkirja</button></div>
+    <div>Jaani arvutatud räsi:</div><div class="hex" id="verHash">–</div>
+    <div id="verOut"></div>
+  </div>
+</div>
+<div class="card eve" style="margin-top:12px">
+  <h3>Eve (ründaja) proovib</h3>
+  <div class="row">
+    <button id="atkEdit">Muuda lepingu summat teel</button>
+    <button id="atkKey">Allkirjasta oma võtmega ja saada Jaanile oma avalik võti</button>
+    <button id="atkReset">Taasta algolukord</button>
+  </div>
+  <p class="why" id="atkExpl" style="color:var(--text)">Allkirjasta kõigepealt leping Mari poolel. Seejärel proovi rünnakuid ja kontrolli igaühe järel allkirja uuesti.</p>
+</div>
+
+<!-- ================= 2 ================= -->
+<h2 id="sert">2. Sertifikaadi kontroll brauseris</h2>
+<p>Kui brauser avab HTTPS-lehe, saadab server oma sertifikaadi. Enne kui brauser näitab lukuikooni, teeb ta kuus kontrolli. Kui ükski ebaõnnestub, näitab brauser hoiatuslehte. Vali stsenaarium või muuda sertifikaadi välju ise.</p>
+<div class="row" id="scen"></div>
+<div class="card">
+  <div class="formgrid">
+    <div><label for="url">Aadressiribal olev domeen</label><input id="url"></div>
+    <div><label for="san">Sertifikaadi SAN (komadega)</label><input id="san"></div>
+    <div><label for="issuer">Väljaandja</label><select id="issuer">
+      <option value="ok">Vahe-CA → usaldatud juur-CA</option>
+      <option value="self">Iseallkirjastatud (omanik ise)</option>
+      <option value="corp">Ettevõtte tulemüüri CA</option>
+      <option value="removed">DigiNotar (eemaldatud usaldushoidlast)</option>
+    </select></div>
+    <div><label for="eku">Kasutusotstarve (EKU)</label><select id="eku">
+      <option value="serverAuth">Serveri autentimine</option>
+      <option value="codeSigning">Koodiallkiri</option>
+      <option value="emailProtection">E-kiri</option>
+    </select></div>
+    <div><label for="nb">Kehtib alates</label><input id="nb" type="date"></div>
+    <div><label for="na">Kehtib kuni</label><input id="na" type="date"></div>
+    <div><label for="today">Tänane kuupäev</label><input id="today" type="date"></div>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <label style="margin:0;color:var(--text)"><input type="checkbox" id="tampered">Sertifikaati on pärast väljaandmist muudetud</label>
+    <label style="margin:0;color:var(--text)"><input type="checkbox" id="revoked">Sertifikaat on tühistatud</label>
+    <label style="margin:0;color:var(--text)"><input type="checkbox" id="corpTrust">Ettevõtte CA on tööjaama usaldushoidlas</label>
+  </div>
+</div>
+<ul class="checks" id="checks"></ul>
+<div class="browser"><div class="bar"><span class="lock" id="lockIc">🔒</span><span id="barUrl"></span></div><div class="page" id="bpage"></div></div>
+<p class="why" id="certExpl"></p>
+
+<!-- ================= 3 ================= -->
+<h2 id="tls">3. TLS 1.3 käepigistus samm-sammult</h2>
+<p>Vajuta „Järgmine“ ja vaata, mis igas sammus liigub. Roheline silt tähendab, et sõnum on juba krüpteeritud ja pealtkuulaja seda ei loe. Kollane silt tähendab, et sõnum on nähtav. Rünnakute lülititega saad vaadata, milline sõnum rünnaku avastab.</p>
+<div class="row">
+  <label style="margin:0;color:var(--text)"><input type="checkbox" id="aDown">Ründaja eemaldab ClientHellost tugevad šifrid</label>
+  <label style="margin:0;color:var(--text)"><input type="checkbox" id="aCert">Ründaja saadab päris serveri sertifikaadi, aga tal pole selle privaatvõtit</label>
+</div>
+<div class="tls" id="tlsGrid"></div>
+<div class="row"><button id="tPrev">← Eelmine</button><button class="primary" id="tNext">Järgmine →</button><button id="tReset">Algusesse</button></div>
+<div class="card"><h3 id="tTitle"></h3><p id="tText" class="why"></p><p id="tEve" class="why"></p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const enc=new TextEncoder();
+const cs=(typeof crypto!=='undefined'&&crypto.subtle)?crypto.subtle:null;
+
+/* ===== 1. digiallkiri ===== */
+const ALG={name:'ECDSA',namedCurve:'P-256'}, SIG={name:'ECDSA',hash:'SHA-256'};
+let mari=null, eve=null, signed=null; /* signed = {sig, key, fp} */
+async function fp(pub){const raw=await cs.exportKey('spki',pub);const h=hex(await cs.digest('SHA-256',raw));return h.slice(0,32).match(/.{2}/g).join(':')}
+async function sha(t){return hex(await cs.digest('SHA-256',enc.encode(t)))}
+async function newMari(){mari=await cs.generateKey(ALG,true,['sign','verify']);mari.fp=await fp(mari.publicKey);$('pubFp').textContent=mari.fp;signed=null;$('sigHex').textContent='–';$('signHash').textContent='–';$('verFp').textContent='–';$('verOut').innerHTML='';$('verHash').textContent='–'}
+async function sign(){
+  const t=$('doc').value; const s=await cs.sign(SIG,mari.privateKey,enc.encode(t));
+  signed={sig:s,key:mari.publicKey,fp:mari.fp};
+  $('signHash').textContent=await sha(t); $('sigHex').textContent=hex(s);
+  $('recv').value=t; $('verFp').textContent=mari.fp; $('verOut').innerHTML=''; $('verHash').textContent='–';
+  $('atkExpl').textContent='Leping on allkirjastatud ja Jaanile saadetud. Vajuta Jaani poolel „Kontrolli allkirja“ või proovi rünnakut.';
+}
+async function verify(){
+  if(!signed){$('verOut').innerHTML='<div class="verdict bad">Mari pole veel midagi allkirjastanud.</div>';return}
+  const t=$('recv').value; $('verHash').textContent=await sha(t);
+  const ok=await cs.verify(SIG,signed.key,signed.sig,enc.encode(t));
+  const sameHash=(await sha(t))===$('signHash').textContent;
+  let h;
+  if(ok&&signed.fp===mari.fp) h='<div class="verdict ok">✓ Allkiri kehtib. Leping on sama, mille allkirjastas Mari võti '+mari.fp.slice(0,11)+'…</div>';
+  else if(ok) h='<div class="verdict warn">⚠ Matemaatiliselt kehtib allkiri, aga võtme sõrmejälg on '+signed.fp.slice(0,11)+'…, mitte Mari oma. Jaan ei tea seda, kui ta ei saa võtit kontrollida.</div>';
+  else h='<div class="verdict bad">✗ Allkiri ei kehti. '+(sameHash?'':'Jaani arvutatud räsi erineb allkirjastatud räsist, seega leping on muutunud.')+'</div>';
+  $('verOut').innerHTML=h;
+}
+$('signBtn').onclick=sign; $('verBtn').onclick=verify; $('newKey').onclick=newMari;
+$('atkEdit').onclick=()=>{ if(!signed){$('atkExpl').textContent='Allkirjasta kõigepealt leping.';return}
+  $('recv').value=$('recv').value.replace(/\d+/,m=>m.replace(/^1/,'9')); verify();
+  $('atkExpl').innerHTML='Eve muutis summat, kuid ei saa allkirja parandada, sest Mari privaatvõtit tal pole. Jaani arvutatud räsi on täiesti erinev (laviiniefekt) ja allkiri ei vasta sellele. <b>Digiallkiri annab tervikluse.</b>'; };
+$('atkKey').onclick=async()=>{ if(!signed){$('atkExpl').textContent='Allkirjasta kõigepealt leping.';return}
+  eve=eve||await cs.generateKey(ALG,true,['sign','verify']); eve.fp=eve.fp||await fp(eve.publicKey);
+  const t=$('doc').value.replace(/\d+/,m=>m.replace(/^1/,'9')); const s=await cs.sign(SIG,eve.privateKey,enc.encode(t));
+  signed={sig:s,key:eve.publicKey,fp:eve.fp}; $('recv').value=t; $('verFp').textContent=eve.fp; await verify();
+  $('atkExpl').innerHTML='Eve kirjutas oma lepingu, allkirjastas selle <b>oma</b> võtmega ja saatis Jaanile oma avaliku võtme Mari nime all. Allkiri kehtib, sest võti ja allkiri sobivad kokku. Allkiri ise ei ütle, <b>kelle</b> võti see on. Selleks on vaja sertifikaati: CA kinnitab oma allkirjaga, et see avalik võti kuulub Marile. Vaata sõrmejälgi: Jaani poolel on teine võti kui Mari poolel. Seda lahendab jaotis 2.'; };
+$('atkReset').onclick=()=>{ if(!signed&&!mari)return; $('doc').value='Leping: Mari maksab Jaanile 100 eurot.'; sign(); };
+
+/* ===== 2. sertifikaadi kontroll ===== */
+const iso=d=>d.toISOString().slice(0,10);
+const TODAY=new Date(); const addD=(n)=>iso(new Date(TODAY.getTime()+n*864e5));
+const SC={
+ 'Korras':{url:'www.kool.ee',san:'kool.ee, www.kool.ee',issuer:'ok',eku:'serverAuth',nb:-30,na:60,tampered:false,revoked:false,corp:false},
+ 'Aegunud':{url:'www.kool.ee',san:'kool.ee, www.kool.ee',issuer:'ok',eku:'serverAuth',nb:-120,na:-3},
+ 'Vale domeen':{url:'kool.ee',san:'www.kool.ee'},
+ 'Metamärk *.kool.ee':{url:'tunniplaan.kool.ee',san:'*.kool.ee'},
+ 'Iseallkirjastatud':{issuer:'self'},
+ 'Tühistatud':{revoked:true},
+ 'Koodiallkirja sertifikaat':{eku:'codeSigning'},
+ 'Muudetud sertifikaat':{tampered:true},
+ 'DigiNotar':{url:'mail.google.com',san:'*.google.com',issuer:'removed'},
+ 'Tulemüür, CA usaldatud':{url:'www.lhv.ee',san:'www.lhv.ee',issuer:'corp',corp:true},
+ 'Tulemüür, CA puudub':{url:'www.lhv.ee',san:'www.lhv.ee',issuer:'corp',corp:false},
+ 'Õngitsusleht':{url:'minu-pank-turvakontroll.com',san:'minu-pank-turvakontroll.com'}
+};
+const EXPL={
+ 'Korras':'Kõik kuus kontrolli õnnestusid. Lukuikoon tähendab, et ühendus on krüpteeritud ja server omab domeeni www.kool.ee sertifikaati.',
+ 'Aegunud':'Sertifikaat aegus. Lühenevate kehtivusaegade tõttu (2029. aastaks 47 päeva) peab uuendamine olema automaatne (ACME, certbot, win-acme). Aegunud sertifikaat on üks sagedasemaid teenuskatkestuste põhjusi.',
+ 'Vale domeen':'Sertifikaat on välja antud ainult www.kool.ee jaoks. Kasutaja avas kool.ee, aga seda nime SAN-väljas pole. Lahendus on lisada sertifikaati mõlemad nimed.',
+ 'Metamärk *.kool.ee':'Metamärk asendab täpselt ühe nimeosa. *.kool.ee kehtib tunniplaan.kool.ee ja www.kool.ee kohta, kuid mitte kool.ee ega a.b.kool.ee kohta. Proovi domeeniväljale kirjutada kool.ee.',
+ 'Iseallkirjastatud':'Sertifikaadi on allkirjastanud omanik ise. Brauser ei saa kontrollida, kas see on päris server või ründaja. Laboris sobib, avalikus teenuses mitte.',
+ 'Tühistatud':'Sertifikaat tunnistati enne aegumist kehtetuks, näiteks privaatvõtme lekke tõttu. Brauser saab seda teada OCSP-päringu või CRL-loendi kaudu.',
+ 'Koodiallkirja sertifikaat':'Sertifikaat on välja antud programmide allkirjastamiseks, mitte veebiserveri jaoks. Kasutusotstarve (EKU) piirab, milleks võtit tohib kasutada.',
+ 'Muudetud sertifikaat':'Keegi muutis sertifikaati pärast väljaandmist (nt lisas oma domeeni). CA allkiri kehtib ainult algsele sisule, seega allkirja kontroll ebaõnnestub. Sertifikaati ei saa võltsida ilma CA privaatvõtmeta.',
+ 'DigiNotar':'2011. aastal murti DigiNotarisse sisse ja väljastati võltssertifikaat *.google.com jaoks. Sertifikaadis endas polnud viga: SAN, aeg ja otstarve olid korras. Brauserid eemaldasid DigiNotari usaldushoidlast, nii et ahel ei jõua enam usaldatud juureni.',
+ 'Tulemüür, CA usaldatud':'Ettevõtte tulemüür dekrüpteerib liiklust ja esitab oma CA allkirjastatud sertifikaadi. Kuna ettevõtte CA on rühmapoliitikaga tööjaama usaldushoidlasse pandud, ei näe kasutaja hoiatust. See on kokkulepitud vahendaja. Kõik kontrollid läbiti, kuid vahel on keegi, kes näeb kogu liiklust.',
+ 'Tulemüür, CA puudub':'Sama tulemüür, aga arvuti (nt õppija oma sülearvuti) ei usalda ettevõtte CA-d. Brauser näeb, et sertifikaat pole avalikult usaldatud CA-lt, ja hoiatab. Täpselt sama näeks ta päris MITM-rünnaku korral.',
+ 'Õngitsusleht':'Kõik kontrollid läbiti ja brauser näitab lukku! Ründaja võttis oma domeenile tasuta DV-sertifikaadi. Sertifikaat tõendab ainult, et server omab domeeni minu-pank-turvakontroll.com. See ei ütle, et tegemist on pangaga. Kontrolli alati aadressi.'
+};
+let curScen='Korras';
+function loadScen(name){
+  curScen=name; const base=SC['Korras'], s=Object.assign({},base,SC[name]);
+  $('url').value=s.url;$('san').value=s.san;$('issuer').value=s.issuer;$('eku').value=s.eku;
+  $('nb').value=addD(s.nb);$('na').value=addD(s.na);$('today').value=iso(TODAY);
+  $('tampered').checked=!!s.tampered;$('revoked').checked=!!s.revoked;$('corpTrust').checked=!!s.corp;
+  document.querySelectorAll('#scen button').forEach(b=>b.classList.toggle('primary',b.textContent===name));
+  checkCert(true);
+}
+function sanMatch(host,pat){ host=host.trim().toLowerCase(); pat=pat.trim().toLowerCase(); if(!host||!pat)return false;
+  if(pat.startsWith('*.')){ const rest=pat.slice(2); const i=host.indexOf('.'); return i>0 && host.slice(i+1)===rest; }
+  return host===pat; }
+function checkCert(fromScen){
+  if(!fromScen){curScen=null;document.querySelectorAll('#scen button').forEach(b=>b.classList.remove('primary'))}
+  const host=$('url').value.trim().toLowerCase(), sans=$('san').value.split(',').map(x=>x.trim()).filter(Boolean);
+  const iss=$('issuer').value, corp=$('corpTrust').checked, today=$('today').value, nb=$('nb').value, na=$('na').value;
+  const C=[];
+  const chainOk = iss==='ok' || (iss==='corp'&&corp);
+  C.push({n:'Ahel jõuab usaldatud juur-CA-ni',ok:chainOk,
+    d: iss==='ok'?'Serveri sertifikaat → vahe-CA → juur-CA, mis on usaldushoidlas.':
+       iss==='self'?'Sertifikaadi väljaandja on omanik ise. Sellist juurt usaldushoidlas pole.':
+       iss==='removed'?'DigiNotar eemaldati 2011. aastal kõigist usaldushoidlatest.':
+       corp?'Ettevõtte CA on rühmapoliitikaga tööjaama usaldushoidlasse lisatud.':'Ettevõtte CA-d selle arvuti usaldushoidlas pole.',code:'ERR_CERT_AUTHORITY_INVALID'});
+  C.push({n:'Kõik allkirjad ahelas kehtivad',ok:!$('tampered').checked,d:$('tampered').checked?'Sertifikaadi sisu muudeti pärast väljaandmist, seega CA allkiri ei vasta enam sisule.':'Iga sertifikaadi allkiri on kontrollitud väljaandja avaliku võtmega.',code:'ERR_CERT_INVALID'});
+  const timeOk = !!(nb&&na&&today) && nb<=today && today<=na;
+  C.push({n:'Kehtivusaeg',ok:timeOk,d:'Kehtib '+nb+' kuni '+na+', täna on '+today+'.'+(timeOk?'':(today>na?' Sertifikaat on aegunud.':' Sertifikaat ei kehti veel. Kontrolli ka arvuti kella.')),code:'ERR_CERT_DATE_INVALID'});
+  const m=sans.find(p=>sanMatch(host,p));
+  C.push({n:'Domeen on SAN-väljas',ok:!!m,d:m?'„'+host+'“ vastab SAN-kirjele „'+m+'“.':'„'+host+'“ ei vasta ühelegi kirjele: '+(sans.join(', ')||'(tühi)')+'.',code:'ERR_CERT_COMMON_NAME_INVALID'});
+  const eku=$('eku').value;
+  C.push({n:'Kasutusotstarve on serveri autentimine',ok:eku==='serverAuth',d:eku==='serverAuth'?'Extended Key Usage: serverAuth.':'Sertifikaat on mõeldud '+(eku==='codeSigning'?'koodi allkirjastamiseks':'e-kirjade jaoks')+', mitte veebiserverile.',code:'ERR_CERT_INVALID'});
+  C.push({n:'Sertifikaat ei ole tühistatud',ok:!$('revoked').checked,d:$('revoked').checked?'OCSP-vastus: revoked. Sertifikaat tunnistati kehtetuks enne aegumist.':'OCSP-vastus: good.',code:'ERR_CERT_REVOKED'});
+  let failed=null;
+  $('checks').innerHTML=C.map((c,i)=>{ let st=c.ok?'ok':'bad'; if(failed!==null) st='skip'; if(!c.ok&&failed===null) failed=i;
+    return '<li><span class="ic '+st+'">'+(st==='ok'?'✓':st==='bad'?'✗':'–')+'</span><div><b>'+(i+1)+'. '+c.n+'</b><small>'+(st==='skip'?'Ei kontrollitud, sest eelmine samm ebaõnnestus. ':'')+c.d+'</small></div></li>'}).join('');
+  $('barUrl').textContent='https://'+(host||'…')+'/';
+  if(failed===null){ $('lockIc').textContent='🔒'; $('bpage').innerHTML='<span class="ok">Leht avaneb.</span> Ühendus on krüpteeritud ja serveril on domeeni <b>'+host+'</b> sertifikaat.'; }
+  else { $('lockIc').textContent='⚠️'; $('bpage').innerHTML='<b class="bad">Teie ühendus ei ole privaatne</b><br>Ründajad võivad üritada varastada teie teavet saidilt '+host+'.<br><span class="mono" style="color:var(--muted)">NET::'+C[failed].code+'</span>'; }
+  $('certExpl').textContent=curScen?EXPL[curScen]:(failed===null?'Kõik kuus kontrolli õnnestusid.':'Kontroll nr '+(failed+1)+' ebaõnnestus. Brauser lõpetab kontrolli esimese vea juures ja näitab hoiatust. Hoiatuse eiramine tähendab, et sa ei tea enam, kellega suhtled.');
+}
+Object.keys(SC).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>loadScen(k);$('scen').appendChild(b)});
+['url','san','issuer','eku','nb','na','today','tampered','revoked','corpTrust'].forEach(i=>$(i).addEventListener('input',()=>checkCert(false)));
+['issuer','eku','tampered','revoked','corpTrust'].forEach(i=>$(i).addEventListener('change',()=>checkCert(false)));
+
+/* ===== 3. TLS 1.3 ===== */
+const STEPS=[
+ {n:'ClientHello',dir:'→',enc:false,t:'1. ClientHello',
+  x:'Brauser saadab toetatud šifrikomplektid, juhusliku arvu, domeeninime (SNI, et server teaks, millist sertifikaati näidata) ja oma ajutise võtmejagamise (key share), nt X25519 või hübriidse X25519MLKEM768. Kuna võtmejagamine on kohe kaasas, piisab TLS 1.3-s ühest edasi-tagasi sõnumist.',
+  e:'Eve näeb kõike: domeeninime, šifrite loendit ja brauseri avalikku võtmejagamist. Viimasest pole tal kasu, sest ta ei tea brauseri salajast arvu (Diffie–Hellman, ptk 28).'},
+ {n:'ServerHello',dir:'←',enc:false,t:'2. ServerHello',
+  x:'Server valib šifrikomplekti ja saadab oma võtmejagamise. Nüüd arvutavad mõlemad sama jagatud saladuse ja tuletavad sellest HKDF-iga seansivõtmed. Alates järgmisest sõnumist on kõik krüpteeritud.',
+  e:'Eve näeb serveri valikut ja avalikku võtmejagamist, kuid jagatud saladust arvutada ei saa.'},
+ {n:'Certificate',dir:'←',enc:true,t:'3. Certificate',
+  x:'Server saadab oma sertifikaadiahela, juba krüpteeritult. Brauser kontrollib seda kuue sammuga (jaotis 2).',
+  e:'Eve ei näe, millist sertifikaati server saatis, sest see on krüpteeritud. TLS 1.2-s oli sertifikaat avatekstina näha.'},
+ {n:'CertificateVerify',dir:'←',enc:true,t:'4. CertificateVerify',
+  x:'Server allkirjastab kogu senise käepigistuse oma privaatvõtmega. See tõendab, et serveril on sertifikaadi privaatvõti. Sertifikaat ise on avalik ja igaüks võib selle kopeerida, allkirja saab aga teha ainult võtme omanik.',
+  e:'Kui Eve esitab päris serveri kopeeritud sertifikaadi, ei suuda ta seda allkirja teha.'},
+ {n:'Finished',dir:'↔',enc:true,t:'5. Finished',
+  x:'Mõlemad saadavad HMAC-i kogu käepigistusest. Kui ründaja muutis teel ükskõik millist sõnumit (nt eemaldas tugevad šifrid, et sundida nõrgemat valikut), arvutavad pooled erineva kokkuvõtte ja ühendus katkestatakse.',
+  e:'Eve ei saa muuta sõnumeid märkamatult, sest HMAC-i arvutamiseks on vaja seansivõtit.'},
+ {n:'Rakenduse andmed',dir:'↔',enc:true,t:'6. Rakenduse andmed',
+  x:'Veebileht, paroolid ja küpsised liiguvad AES-GCM-i või ChaCha20-Poly1305-ga krüpteeritult (ptk 26). Iga kirje on kaitstud autentimissildiga.',
+  e:'Eve näeb IP-aadresse, liikluse mahtu ja aega, kuid mitte sisu. Domeeninimi oli näha ClientHellos (selle peitmiseks on ECH).'}
+];
+let ts=0;
+function renderTLS(){
+  const down=$('aDown').checked, cert=$('aCert').checked;
+  let failAt=-1, reason='';
+  if(cert){failAt=3;reason='CertificateVerify ebaõnnestus: allkiri ei klapi sertifikaadi avaliku võtmega, sest ründajal pole privaatvõtit. Brauser katkestab ühenduse.'}
+  else if(down){failAt=4;reason='Finished ebaõnnestus: brauser arvutas HMAC-i algse ClientHello põhjal, server muudetud ClientHello põhjal. Kokkuvõtted ei klapi ja ühendus katkestatakse. Allaviimise rünne avastati.'}
+  let h='<div class="end mari">Brauser</div><div></div><div class="end srv">Server</div>';
+  STEPS.forEach((s,i)=>{
+    const on=i<=ts, cur=i===ts, fail=failAt===i&&i<=ts, blocked=failAt>=0&&i>failAt;
+    let label=s.n; if(i===0&&down) label+=' <span class="lockpill open">muudetud teel</span>';
+    h+='<div></div><div class="msg'+(on&&!blocked?' on':'')+(cur?' cur':'')+(fail?' fail':'')+'"><span class="dir">'+(s.dir==='→'?'brauser → server':s.dir==='←'?'brauser ← server':'brauser ↔ server')+'</span> <b>'+label+'</b><span class="lockpill '+(s.enc?'enc':'open')+'">'+(s.enc?'krüpteeritud':'nähtav')+'</span>'+(blocked&&on?' <span class="bad">– ei jõua kohale</span>':'')+'</div><div></div>';
+  });
+  $('tlsGrid').innerHTML=h;
+  const s=STEPS[ts];
+  $('tTitle').textContent=s.t;
+  $('tText').textContent=(failAt>=0&&ts>failAt)?'Ühendus katkestati sammul „'+STEPS[failAt].n+'“, seega seda sammu ei toimu.':s.x;
+  $('tEve').innerHTML=(failAt===ts)?'<span class="bad">✗ '+reason+'</span>':'<b>Pealtkuulaja:</b> '+s.e;
+  $('tPrev').disabled=ts===0; $('tNext').disabled=ts===STEPS.length-1;
+}
+$('tNext').onclick=()=>{if(ts<STEPS.length-1){ts++;renderTLS()}};
+$('tPrev').onclick=()=>{if(ts>0){ts--;renderTLS()}};
+$('tReset').onclick=()=>{ts=0;renderTLS()};
+['aDown','aCert'].forEach(i=>$(i).addEventListener('change',renderTLS));
+
+/* start */
+loadScen('Korras'); renderTLS();
+if(cs){ newMari().then(sign); } else { $('nocrypto').style.display='block'; ['signBtn','verBtn','newKey','atkEdit','atkKey','atkReset'].forEach(i=>$(i).disabled=true); }
+</script>
+</body>
+</html>
