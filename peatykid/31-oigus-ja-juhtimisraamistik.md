@@ -242,6 +242,48 @@ Intsidendi ajal on lihtne teavitamine unustada. Seepärast kirjutatakse intsiden
 
 Joonis: riskijuhtimise tsükkel ja lihtne 3 × 3 riskimaatriks. Riskianalüüs (ptk 24.3) seob tehnika juhtimisega: juhtkond ei pea teadma, mis on Kerberos, kuid peab otsustama, kas „andmeleke paikamata VPN-i kaudu“ on vastuvõetav risk.
 
+#### Kuidas tõenäosust ja mõju hinnata
+
+Risk = **tõenäosus × mõju**, mõlemad skaalal 1–3. Et kaks inimest hindaksid sama riski ühtemoodi, lepib organisatsioon enne kokku, mida iga number tähendab. Allolevad kriteeriumid on näide väikese organisatsiooni või kooli jaoks. Suurem organisatsioon kasutab sageli 5-astmelist skaalat ja eurosummasid.
+
+**Tõenäosus** – kui tõenäoline on, et oht realiseerub järgmise aasta jooksul?
+
+| Hinne | Tähendus | Tunnused |
+| --- | --- | --- |
+| 1 – madal | harv | võib juhtuda harvem kui kord mitme aasta jooksul; ründeks on vaja erioskusi või füüsilist ligipääsu; tugevad meetmed on juba olemas |
+| 2 – keskmine | võimalik | võib juhtuda umbes kord aastas; nõrkus on teada, kuid süsteem ei ole otse internetis või osa kaitset on olemas |
+| 3 – kõrge | tõenäoline | juhtub mitu korda aastas või on juba juhtunud; süsteem on internetis, ekspluit on avalik (KEV-loetelus) või rünne käib automaatselt |
+
+**Mõju** – kui suur on kahju, kui oht realiseerub? Hinne määratakse **kõige suurema** mõju järgi: kui käideldavuse mõju on väike, kuid lekivad terviseandmed, on mõju 3.
+
+| Hinne | Käideldavus | Konfidentsiaalsus ja isikuandmed | Raha, õigus ja maine |
+| --- | --- | --- | --- |
+| 1 – väike | katkestus kuni mõni tund, töö saab jätkuda muul viisil | avalik või asutusesisene teave, isikuandmeid ei puuduta | kahju on väike ja jääb eelarve piiresse, väljapoole ei paista |
+| 2 – keskmine | katkestus kuni tööpäev, osa tööst seisab | piiratud hulga tavaliste isikuandmete leke, AKI teavitamine võib olla vajalik | märgatav kahju, kliendid või lapsevanemad saavad teada, ettekirjutuse oht |
+| 3 – suur | mitme päeva seisak või andmed kaovad jäädavalt | eriliigiliste andmete (tervis), paroolide või paljude inimeste andmete leke | suur rahaline kahju või trahv, meediakajastus, oht inimeste tervisele või ohutusele |
+
+Riskitase määrab, kui kiiresti tuleb tegutseda:
+
+| Risk | Tase | Mida teha |
+| --- | --- | --- |
+| 1–2 | madal | võib aktsepteerida; jälgitakse korralise ülevaatuse käigus |
+| 3–4 | keskmine | meetmed lisatakse tegevuskavasse kindla tähtaja ja vastutajaga |
+| 6–9 | kõrge | teavitatakse juhtkonda kohe, meetmed rakendatakse esimesena; aktsepteerida saab ainult juhtkonna põhjendatud otsusega |
+
+**Lahendatud näide.** Kooli õppeinfosüsteemi administraatori kontol on ainult parool ja süsteem on internetis.
+
+- *Tõenäosus 3*: paroolipihustamine ja õngitsus käivad kogu interneti ulatuses automaatselt (ptk 24.5), MFA puudub.
+- *Mõju 3*: administraator näeb ja saab muuta kõigi õpilaste hindeid ja isikuandmeid, sh haridusliku erivajaduse andmeid.
+- Risk = 3 × 3 = **9, kõrge**. Juhtkonda teavitatakse kohe.
+- Käsitlus *vähendamine*: administraatoritele õngitsuskindel MFA ja sisselogimine ainult kooli võrgust või VPN-i kaudu. Tõenäosus langeb 1-ni, mõju jääb 3-ks, sest andmed on endiselt samad. **Jääkrisk = 1 × 3 = 3, keskmine.**
+- Mõju vähendaksid näiteks vähimad õigused (administraator ei vaja igapäevaselt ligipääsu kõigile andmetele) ja muudatuste logi, mille abil saab hinded taastada.
+
+> **Mõjuhinnang ja riski mõju on erinevad asjad.** Riskimaatriksi **mõju** on üks hinne riskianalüüsis. **Andmekaitsealane mõjuhinnang** (DPIA, IKÜM art 35, vt 31.3) on terve dokument, mis tehakse enne kõrge riskiga isikuandmete töötlemist. Sisuliselt on see riskianalüüs inimese vaatest: mitte „mis juhtub kooliga“, vaid „mis juhtub õpilase või töötajaga“.
+
+> 🖱️ **Proovi ise:** [riskimaatriks ja riskiregister](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#risk). Leht näitab iga näidisriski juures, miks just selline tõenäosus ja mõju valiti. Seal saad hinnata ka oma riske.
+
+#### Riski käsitlemine
+
 Kui risk on hinnatud, on selle käsitlemiseks neli võimalust:
 
 | Valik | Tähendus | Näide |
@@ -251,9 +293,7 @@ Kui risk on hinnatud, on selle käsitlemiseks neli võimalust:
 | Jagamine (üleandmine) | osa riskist kantakse kolmandale osapoolele | küberkindlustus, teenuse sisseostmine pilvest |
 | Aktsepteerimine | juhtkond otsustab teadlikult jääkriski kanda | väikese mõjuga süsteem, mille kaitse oleks kahjust kallim |
 
-Jääkriski aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine.
-
-> 🖱️ **Proovi ise:** [riskimaatriks ja riskiregister](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#risk). Hinda näidisriske, vali käsitlemise viis ja vaata, kuidas jääkrisk muutub. Riskide nimekiri (**riskiregister**) vaadatakse üle vähemalt kord aastas ja pärast suuremaid muudatusi või intsidente.
+Jääkriski aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine. Riskide nimekiri (**riskiregister**) vaadatakse üle vähemalt kord aastas ning pärast suuremaid muudatusi või intsidente. Registris on iga riski kohta: kirjeldus, vara, tõenäosus ja mõju koos põhjendusega, käsitlus, meetmed, vastutaja, tähtaeg ja jääkrisk.
 
 Rollid organisatsioonis:
 
