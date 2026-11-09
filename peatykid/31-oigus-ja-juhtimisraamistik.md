@@ -1,4 +1,4 @@
-[← 30. UUS: Postkvantkrüptograafia ja krüptograafia tulevik](30-postkvantkruptograafia.md) · [Sisukord](../README.md) · [Valikküsimuste vastused →](vastused.md)
+[← 30. UUS: Postkvantkrüptograafia ja krüptograafia tulevik](30-postkvantkruptograafia.md) · [Sisukord](../README.md)
 
 ## 31. UUS: Küberturbe õigus- ja juhtimisraamistik
 
@@ -36,7 +36,19 @@ Lisaks puudutab IT-t **tehisintellekti määrus** (AI Act, 2024/1689), mis seab 
 
 Euroopa Liidu **NIS2-direktiiv** (2022/2555) võeti Eestis üle **küberturvalisuse seaduse** (KüTS) muudatustega, mis jõustusid 1. jaanuaril 2026 ([KPMG](https://kpmg.com/ee/et/sundmused/2026/02/kueberturvalisuse-ja-haedaolukorra-seaduse-muudatused.html)). Eestis oli küberturvalisuse seadus juba 2018. aastast, seega NIS2 laiendas olemasolevat raamistikku. Kohustatud üksuste ring kasvas mitme tuhandeni: lisaks elutähtsate teenuste osutajatele ja avalikule sektorile ka näiteks energeetika, transpordi, tervishoiu, joogivee, digitaristu, IT-teenuste, postiteenuste, jäätmekäitluse ja toidutootmise ettevõtted ([Legiscope](https://www.legiscope.com/blog/nis2-eestis.html)).
 
-NIS2 jagab kohustatud organisatsioonid kaheks: **väga olulised üksused** (nt suured energia-, transpordi- ja tervishoiuettevõtted) ja **olulised üksused** (nt keskmise suurusega toidutootjad, postiteenused, digiteenuste pakkujad). Kohustused on sarnased, erinevad järelevalve viis ja trahvide suurus. Enamasti määrab kuuluvuse sektor ja ettevõtte suurus: üldjuhul alates 50 töötajast või 10 miljoni euro käibest. Organisatsioon peab ise hindama, kas ta on kohustatud, ja end RIA juures registreerima.
+NIS2 jagab kohustatud organisatsioonid kaheks: **väga olulised üksused** (nt suured energia-, transpordi- ja tervishoiuettevõtted) ja **olulised üksused** (nt keskmise suurusega toidutootjad, postiteenused, digiteenuste pakkujad). Kohustused on sarnased, erinevad järelevalve viis ja trahvide suurus. Enamasti määrab kuuluvuse sektor ja ettevõtte suurus: üldjuhul alates 50 töötajast või 10 miljoni euro käibest. Organisatsioon peab ise hindama, kas ta on kohustatud, ja end RIA juures registreerima. RIA andmetel puudutab uus seadus ligi 6500 ettevõtet ([KPMG](https://kpmg.com/ee/et/sundmused/2026/02/kueberturvalisuse-ja-haedaolukorra-seaduse-muudatused.html)).
+
+NIS2 üldreegel (art 2–3) seob kuuluvuse sektori ja ettevõtte suurusega. Suuruse määramisel loetakse töötajate arvu ning aastakäivet ja bilansimahtu:
+
+| Ettevõtte suurus | Tingimus | NIS2 I lisa sektor (nt energeetika, transport, tervishoid, joogivesi, digitaristu, IKT-teenuste haldus) | NIS2 II lisa sektor (nt post, jäätmed, toit, keemia, tootmine, digiteenuse pakkujad) |
+| --- | --- | --- | --- |
+| Suur | vähemalt 250 töötajat või käive üle 50 mln € ja bilanss üle 43 mln € | väga oluline üksus | oluline üksus |
+| Keskmine | vähemalt 50 töötajat või käive ja bilanss kumbki üle 10 mln € | oluline üksus | oluline üksus |
+| Väike või mikro | alla 50 töötaja ja käive või bilanss kuni 10 mln € | üldjuhul ei kuulu | üldjuhul ei kuulu |
+
+Suurusest olenemata kuuluvad kohustatute hulka näiteks kvalifitseeritud usaldusteenuse osutajad, tippdomeeni registrid ja DNS-teenuse osutajad, keskvalitsuse asutused ning elutähtsa teenuse osutajad. Tabel on üldistus: lõpliku kuuluvuse määravad KüTS ja RIA.
+
+> 🖱️ **Proovi ise:** [NIS2 kuuluvuse hindaja](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#nis2). Vali sektor ja suurus ning vaata, kas organisatsioon on väga oluline, oluline või ei kuulu üldjuhul kohustatute hulka.
 
 Olulisemad kohustused:
 
@@ -71,18 +83,32 @@ Turbe seisukohalt on kõige olulisemad:
 
 **Isikuandmetega seotud rikkumine** ei ole ainult häkkimine. Rikkumine on ka valele adressaadile saadetud hinnetetabel, kaotatud krüpteerimata mälupulk, lunavara poolt krüpteeritud andmebaas (käideldavuse rikkumine) või kogemata avalikuks jäetud pilvekaust. IKÜM-i trahv võib ulatuda 20 miljoni euroni või 4%-ni ülemaailmsest käibest. Iga rikkumine tuleb dokumenteerida sisemisse registrisse ka siis, kui teavitamiskohustust ei teki.
 
+Kuidas otsustada, kellele teatada:
+
+| Olukord | Sisemine register | Andmekaitse Inspektsioon (72 h) | Andmesubjektid |
+| --- | --- | --- | --- |
+| Rikkumine ei ohusta tõenäoliselt inimeste õigusi (nt kaotati tugevalt krüpteeritud sülearvuti, võti ei lekkinud) | jah | ei | ei |
+| Rikkumine võib ohustada inimeste õigusi (nt hinnetetabel saadeti valele vanemale) | jah | jah | ei, kui risk ei ole kõrge |
+| Rikkumine põhjustab tõenäoliselt kõrge riski (nt lekkisid terviseandmed või paroolid) | jah | jah | jah, põhjendamatu viivituseta |
+
+72 tundi hakkab jooksma hetkest, kui organisatsioon saab rikkumisest teada, mitte siis, kui uurimine on lõppenud. Kui kõike ei ole veel teada, esitatakse teave osade kaupa.
+
 ### 31.4 Intsidendist teavitamine
 
 ![intsidendist teavitamise tähtajad · NIS2, GDPR, CRA](../pildid/31-b.png)
 
-Joonis: teavitamise tähtajad. KüTS-i (NIS2) järgi saadab üksus olulisest intsidendist RIA-le (CERT-EE-le) **varajase hoiatuse 24 tunni** jooksul, **intsidendi teavituse 72 tunni** jooksul ja **lõpparuande ühe kuu** jooksul. Isikuandmetega seotud rikkumisest teavitatakse Andmekaitse Inspektsiooni 72 tunni jooksul. Küberkerksuse määruse (CRA) järgi peavad tootjad alates 11. septembrist 2026 teatama aktiivselt ärakasutatavatest nõrkustest oma toodetes.
+Joonis: teavitamise tähtajad. KüTS-i (NIS2) järgi saadab üksus olulisest intsidendist RIA-le (CERT-EE-le) **varajase hoiatuse 24 tunni** jooksul, **intsidendi teavituse 72 tunni** jooksul ja **lõpparuande ühe kuu** jooksul pärast intsidendi teavitust. Isikuandmetega seotud rikkumisest teavitatakse Andmekaitse Inspektsiooni 72 tunni jooksul. Küberkerksuse määruse (CRA) järgi peavad tootjad alates 11. septembrist 2026 teatama aktiivselt ärakasutatavatest nõrkustest oma toodetes.
 
 | Etapp | Tähtaeg | Sisu |
 | --- | --- | --- |
-| Varajane hoiatus | 24 h teadasaamisest | mis juhtus, kas võib olla pahatahtlik, kas võib mõjutada teisi riike või organisatsioone |
-| Intsidendi teavitus | 72 h | esialgne hinnang: raskusaste, mõju, kompromiteerimise tunnused (IP-aadressid, failide räsid) |
+| Varajane hoiatus | 24 h olulisest intsidendist teadasaamisest | mis juhtus, kas võib olla pahatahtlik, kas võib mõjutada teisi riike või organisatsioone |
+| Intsidendi teavitus | 72 h teadasaamisest | esialgne hinnang: raskusaste, mõju, kompromiteerimise tunnused (IP-aadressid, failide räsid) |
 | Vahearuanne | RIA nõudmisel | olukorra muutused |
-| Lõpparuanne | 1 kuu | põhjus, mõju, rakendatud ja kavandatud meetmed |
+| Lõpparuanne | 1 kuu pärast intsidendi teavitust ([KPMG](https://kpmg.com/ee/et/insights/2026/01/kueberjamadega-pannakse-nueued-juhatuse-pea-pakule.html)) | põhjus, mõju, rakendatud ja kavandatud meetmed |
+
+Näide: oluline intsident avastatakse esmaspäeval kell 8.00 ja intsidendi teavitus saadetakse kolmapäeval kell 15.00. Varajase hoiatuse tähtaeg on teisipäeval kell 8.00, intsidendi teavituse oma neljapäeval kell 8.00 ja lõpparuande oma kuu aega pärast kolmapäevast teavitust. Kui on lekkinud ka isikuandmed, jookseb Andmekaitse Inspektsiooni 72-tunnine tähtaeg paralleelselt ja lõpeb samuti neljapäeval kell 8.00.
+
+> 🖱️ **Proovi ise:** [teavitamise tähtaegade kalkulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#tahtajad). Sisesta avastamise aeg ja vaata, millal on iga tähtaeg ja kellele tuleb teatada.
 
 **Mis on oluline intsident?** NIS2 järgi on intsident oluline, kui see on põhjustanud või võib põhjustada teenuse tõsise häire või rahalise kahju või mõjutada teisi isikuid olulise kahjuga. Kahtluse korral on mõistlikum teatada: RIA saab hoiatada teisi sama ründe sihtmärke ja anda abi. Teavitamine ei ole karistus, vaid osa riiklikust kaitsest.
 
@@ -117,7 +143,9 @@ Kui risk on hinnatud, on selle käsitlemiseks neli võimalust:
 | Jagamine (üleandmine) | osa riskist kantakse kolmandale osapoolele | küberkindlustus, teenuse sisseostmine pilvest |
 | Aktsepteerimine | juhtkond otsustab teadlikult jääkriski kanda | väikese mõjuga süsteem, mille kaitse oleks kahjust kallim |
 
-Jääkriski aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine. Riskide nimekiri (**riskiregister**) vaadatakse üle vähemalt kord aastas ja pärast suuremaid muudatusi või intsidente.
+Jääkriski aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine.
+
+> 🖱️ **Proovi ise:** [riskimaatriks ja riskiregister](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#risk). Hinda näidisriske, vali käsitlemise viis ja vaata, kuidas jääkrisk muutub. Riskide nimekiri (**riskiregister**) vaadatakse üle vähemalt kord aastas ja pärast suuremaid muudatusi või intsidente.
 
 Rollid organisatsioonis:
 
@@ -131,8 +159,9 @@ Rollid organisatsioonis:
 
 Administraatoril on sageli rohkem õigusi kui ükskõik millisel teisel töötajal. Need õigused on antud töö tegemiseks, mitte uudishimu rahuldamiseks.
 
-- **Karistusseadustik** näeb ette vastutuse muu hulgas arvutisüsteemi ebaseadusliku kasutamise (§ 217), arvutiandmetesse sekkumise (§ 206), arvutisüsteemi toimimise takistamise (§ 207) ja arvutikelmuse (§ 213) eest. Ka „hea kavatsusega“ võõra süsteemi skaneerimine või nõrkuse proovimine ilma loata võib olla kuritegu.
-- **Turvatestimine** (penetration test) on lubatud ainult kirjaliku loaga, kus on kirjas ulatus (millised süsteemid), aeg ja meetodid. Kui leiad nõrkuse kogemata, teata sellest omanikule või CERT-EE-le ega proovi seda edasi ära kasutada (vastutustundlik avalikustamine).
+- **Karistusseadustik** näeb ette vastutuse muu hulgas arvutisüsteemi ebaseadusliku kasutamise (§ 217), arvutiandmetesse sekkumise (§ 206), arvutisüsteemi toimimise takistamise (§ 207), pahavara levitamise (§ 208) ja arvutikelmuse (§ 213) eest. Ka „hea kavatsusega“ võõra süsteemi skaneerimine või nõrkuse proovimine ilma loata võib olla kuritegu.
+- **Arvutikuriteo ettevalmistamine** (§ 216¹) – karistatav on ka sellise programmi, seadme või paroolide hankimine, valmistamine ja levitamine, mis on mõeldud eelkõige arvutikuritegude toimepanemiseks, kui eesmärk on kuritegu toime panna või võimaldada seda teisel. Turvatööriistad (nt Nmap, John the Ripper) on laboris õppimiseks lubatud. Nende kasutamine või jagamine võõraste süsteemide ründamiseks ei ole.
+- **Turvatestimine** (penetration test) on lubatud ainult kirjaliku loaga, kus on kirjas ulatus (millised süsteemid), aeg ja meetodid. Kui leiad nõrkuse kogemata, teata sellest omanikule või CERT-EE-le ega proovi seda edasi ära kasutada (vastutustundlik avalikustamine). Kirjelda, mida nägid, kuidas see juhtus ja millal, kuid ära lae alla andmeid „tõenditeks“ ega jaga nõrkust avalikult enne, kui omanikul on olnud aega see parandada.
 - **Töötajate andmed ja kirjavahetus.** Administraator võib näha teiste e-kirju ja faile, kuid neid ei tohi lugeda ilma õigusliku aluse ja organisatsiooni kehtestatud korrata. Iga ligipääs peaks olema põhjendatud ja logitud.
 - **Logid on isikuandmed.** Logides on kasutajanimed, IP-aadressid ja tegevused. Neid hoitakse nii kaua, kui on vajalik, ja ligipääs neile on piiratud.
 
@@ -144,7 +173,7 @@ Toiduainetetootja (KüTS-i mõistes oluline üksus) avastab esmaspäeval kell 8,
 2. **24 h jooksul**: varajane hoiatus RIA-le (CERT-EE). Kas rünne võib olla pahatahtlik ja mõjutada teisi? Jah.
 3. **72 h jooksul**: intsidendi teavitus RIA-le koos esialgse hinnanguga. Failiserveril olid töötajate andmed, kuid kas need lekkisid? Kui ei saa välistada, teavitatakse ka Andmekaitse Inspektsiooni. Kuriteoteade politseile.
 4. **Taastamine**: võrguta varukoopiast (ptk 24 näide), pärast seda, kui sissetungi tee on suletud ja paroolid vahetatud.
-5. **Ühe kuu jooksul**: lõpparuanne RIA-le: põhjus, mõju, rakendatud meetmed.
+5. **Ühe kuu jooksul pärast intsidendi teavitust**: lõpparuanne RIA-le: põhjus, mõju, rakendatud meetmed.
 6. **Järel**: juhtkond vaatab üle riskianalüüsi ja eelarve; töötajad saavad koolituse; MFA ja segmentimine lisatakse tegevuskavasse.
 
 Lunaraha maksmist riik ei soovita: see ei taga andmete tagasisaamist ega seda, et varastatud andmed avaldamata jäävad, ning rahastab järgmisi rünnakuid.
@@ -154,10 +183,12 @@ Lunaraha maksmist riik ei soovita: see ei taga andmete tagasisaamist ega seda, e
 - Küberturvalisuse seadus (NIS2) kehtib Eestis uuel kujul 1. jaanuarist 2026 ja nõuab riskipõhiseid meetmeid, juhtkonna vastutust ja intsidentidest teavitamist.
 - Isikuandmete kaitse nõuab andmete minimeerimist, turvalist töötlemist ja rikkumisest teavitamist 72 tunni jooksul.
 - E-ITS, ISO 27001 ja NIST CSF annavad struktuuri; riskijuhtimine seob tehnika ja juhtimise. Riski saab vähendada, vältida, jagada või aktsepteerida.
-- Teavitamise tähtajad (24 h, 72 h, 1 kuu) tuleb kirjutada intsidendiplaani enne intsidenti.
+- Teavitamise tähtajad (24 h, 72 h ja lõpparuanne 1 kuu pärast teavitust) tuleb kirjutada intsidendiplaani enne intsidenti.
 - Administraatori õigused on antud tööks: võõraid süsteeme testitakse ainult kirjaliku loaga.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Mis muutus Eestis 1. jaanuaril 2026 ja keda see puudutab?
 2. Mis vahe on väga olulisel ja olulisel üksusel?
@@ -206,7 +237,7 @@ Vasta: milline oli Lynise hardening index? Milline leid on kõige suurema riskig
 
 **1. Kas meie organisatsioon on KüTS-i subjekt?** Vali Eesti organisatsioon (kool, KOV, haigla, ettevõte). Uuri RIA NIS2 lehelt, kas see kuulub olulise või väga olulise üksuse hulka, ja selgita, millised kohustused sellest tulenevad. **Esita:** 1 lk analüüs koos allikaviidetega.
 
-**2. Intsidendi teavitamise plaan.** Koosta leheküljeline juhend, mida organisatsioon teeb intsidendi esimese 72 tunni jooksul: kes otsustab intsidendi olulisuse, kes teavitab RIA-d ja Andmekaitse Inspektsiooni, millised andmed kogutakse ja kuidas säilitatakse tõendeid. Kasuta näidet 31.6-st. **Esita:** juhend ja kontaktide tabel (rollid, mitte päris nimed).
+**2. Intsidendi teavitamise plaan.** Koosta leheküljeline juhend, mida organisatsioon teeb intsidendi esimese 72 tunni jooksul: kes otsustab intsidendi olulisuse, kes teavitab RIA-d ja Andmekaitse Inspektsiooni, millised andmed kogutakse ja kuidas säilitatakse tõendeid. Kasuta peatüki näidet „Lunavara väikeses tootmisettevõttes“. **Esita:** juhend ja kontaktide tabel (rollid, mitte päris nimed).
 
 ### Viited
 
@@ -216,11 +247,13 @@ Vasta: milline oli Lynise hardening index? Milline leid on kõige suurema riskig
 - Euroopa Parlament ja nõukogu. [Määrus (EL) 2024/2847 (küberkerksuse määrus, CRA)](https://eur-lex.europa.eu/eli/reg/2024/2847/oj).
 - RIA. [E-ITS – Eesti infoturbestandard](https://eits.ria.ee/).
 - KPMG Eesti (2026). [Küberturvalisuse ja hädaolukorra seaduse muudatused](https://kpmg.com/ee/et/sundmused/2026/02/kueberturvalisuse-ja-haedaolukorra-seaduse-muudatused.html).
+- KPMG Eesti (2026). [Küberjamadega pannakse nüüd juhatuse pea pakule](https://kpmg.com/ee/et/insights/2026/01/kueberjamadega-pannakse-nueued-juhatuse-pea-pakule.html).
+- [Karistusseadustik](https://www.riigiteataja.ee/akt/karistusseadustik). Riigi Teataja.
 - Legiscope (2026). [NIS2 Eestis 2026: küberturvalisuse seadus ja RIA järelevalve](https://www.legiscope.com/blog/nis2-eestis.html).
 - NIST. [Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework) (2024).
 
-> 📝 **Test:** selle peatüki Google Formsi test luuakse skriptiga [`google-forms/looVormid.gs`](../google-forms/looVormid.gs).
+> 🧪 **Test:** [peatüki 31 interaktiivne test](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-test.html).
 
 ---
 
-[← 30. UUS: Postkvantkrüptograafia ja krüptograafia tulevik](30-postkvantkruptograafia.md) · [Sisukord](../README.md) · [Valikküsimuste vastused →](vastused.md)
+[← 30. UUS: Postkvantkrüptograafia ja krüptograafia tulevik](30-postkvantkruptograafia.md) · [Sisukord](../README.md)
