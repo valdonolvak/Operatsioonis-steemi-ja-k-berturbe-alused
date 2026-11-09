@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 27 – test: räsimine, sool ja paroolide hoidmine</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/27-rasimine-ja-paroolid.md">← Peatükk 27</a></nav>
+<h1>Test: räsimine, sool ja paroolide hoidmine</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on räsifunktsiooni peamine omadus?", "o": ["Räsist saab võtmega avateksti tagasi", "Räsist ei saa sisendit tagasi arvutada ja väike muutus sisendis muudab kogu räsi", "Räsi on alati sisendist pikem", "Räsi sõltub kellaajast"], "c": 1, "e": "Räsi on fikseeritud pikkusega „sõrmejälg“: SHA-256 annab alati 256 bitti, olgu sisend üks sõna või gigabaidine fail. Võtit räsimine ei kasuta, seega pole ka midagi, millega räsi „avada“."},
+{"q": "Mida tähendab räsifunktsiooni ühesuunalisus (preimage resistance)?", "o": ["Räsi teades ei saa leida sisendit", "Antud faili jaoks ei saa leida teist faili sama räsiga", "Ei saa leida ükskõik milliseid kahte sisendit sama räsiga", "Räsi arvutatakse alati vasakult paremale"], "c": 0, "e": "Teine variant kirjeldab teise sisendi suhtes kindlust (second preimage resistance) ja kolmas kokkupõrkekindlust. Hea räsifunktsioon peab vastama kõigile kolmele nõudele ja lisaks olema laviiniefektiga."},
+{"q": "Mida tähendab kokkupõrkekindlus (collision resistance)?", "o": ["Räsi teades ei saa leida sisendit", "Ei saa leida ükskõik milliseid kahte erinevat sisendit sama räsiga", "Kaks faili ei saa kunagi olla sama suurusega", "Räsi ei muutu, kui sisendit muuta"], "c": 1, "e": "Erinevalt teise sisendi rünnakust võib ründaja siin valida mõlemad sisendid ise. See on lihtsam ülesanne ja seepärast murtakse esimesena just kokkupõrkekindlus, nagu juhtus MD5 ja SHA-1-ga."},
+{"q": "Kas SHA-256 korral on olemas kaks erinevat sisendit, millel on sama räsi?", "o": ["Ei, SHA-256 on kokkupõrkekindel", "Jah, alati: sisendeid on lõpmatult, räsisid ainult 2²⁵⁶, kuid neid on praktiliselt võimatu leida", "Ainult siis, kui sisend on lühem kui 256 bitti", "Ainult siis, kui kasutatakse soola"], "c": 1, "e": "Kokkupõrked on matemaatiliselt paratamatud. Kokkupõrkekindlus tähendab, et ühtegi neist ei suudeta leida."},
+{"q": "Mitu bitti turvalisust annab SHA-256 kokkupõrgete vastu?", "o": ["256", "128", "64", "32"], "c": 1, "e": "Sünnipäevaparadoksi tõttu piisab n-bitise räsi kokkupõrke leidmiseks umbes 2^(n/2) katsest. Ruumis piisab 23 inimesest, et kahel oleks 50% tõenäosusega sama sünnipäev. 128-bitine MD5 pakub seetõttu kokkupõrgete vastu ainult 64 bitti ja tegelikud ründed on veel kiiremad."},
+{"q": "Sõnade „tere“ ja „Tere“ SHA-256 räsides pole midagi ühist, kuigi sõnad erinevad ainult ühe biti võrra. Kuidas seda omadust nimetatakse?", "o": ["Ühesuunalisus", "Laviiniefekt", "Kokkupõrge", "Soolamine"], "c": 1, "e": "Väike ja suur t erinevad ASCII-s täpselt ühe biti võrra (0x74 ja 0x54). Laviiniefekti tõttu muutub sellest umbes pool räsi bittidest, nii et räsist ei saa järeldada, et sisendid olid sarnased."},
+{"q": "Miks on MD5 kasutamine digiallkirjades ohtlik?", "o": ["MD5 räsist saab sisendi tagasi arvutada", "Saab luua kaks erinevat faili sama räsiga ja tõsta allkirja süütult dokumendilt pahatahtlikule", "MD5 on liiga aeglane", "MD5 räsi on liiga pikk"], "c": 1, "e": "Allkirjastatakse räsi, mitte faili ennast. Kui kahel failil on sama räsi, kehtib allkiri mõlemale. Flame-pahavara võltsis 2012. aastal MD5 kokkupõrkega Windows Update’i sertifikaadi."},
+{"q": "Milline räsialgoritm on tänapäeval turvaline?", "o": ["MD5", "SHA-1", "SHA-256", "NT-räsi (MD4)"], "c": 2, "e": "SHA-1 murti 2017. aastal (SHAttered: kaks erinevat sama räsiga PDF-i) ja MD5 kokkupõrkeid leitakse sekunditega. Turvalised on SHA-2 (SHA-256, SHA-512), SHA-3 ja BLAKE2/BLAKE3."},
+{"q": "Mis vahe on räsimisel ja krüpteerimisel?", "o": ["Vahet pole, mõlemad on pööratavad", "Krüpteerimine on võtmega pööratav, räsimine on pöördumatu ja ei kasuta võtit", "Räsimine kasutab pikemat võtit", "Krüpteerimine annab alati sama pika väljundi"], "c": 1, "e": "Kodeerimine (Base64) on ainult teine esitusviis, krüpteerimine on võtmega pööratav ja räsimine pöördumatu. Neid kolme aetakse sageli segi."},
+{"q": "Miks ei hoita paroole andmebaasis krüpteeritult?", "o": ["Krüpteerimine on liiga aeglane", "Võti peab olema serveris, seega saab andmebaasi ja serveri varastaja kõik paroolid kätte", "Krüpteeritud paroolid ei mahu andmebaasi", "Krüpteeritud parooli ei saa sisselogimisel kontrollida"], "c": 1, "e": "Hoitakse ainult räsi. Sisselogimisel arvutatakse sisestatud parooli räsi ja võrreldakse seda salvestatuga. Server ei pea parooli ennast kunagi teadma."},
+{"q": "Veebileht väidab, et „dekrüpteeris“ sinu MD5-räsi. Mida see tegelikult tähendab?", "o": ["MD5-l on salajane võti, mis on lekkinud", "Leht arvas sisendi ära: tal on suur eelarvutatud tabel võimalike paroolide räsidest", "MD5 on pööratav funktsioon", "Leht murdis MD5 matemaatiliselt"], "c": 1, "e": "Räsi ei saa pöörata, aga sisendit saab ära arvata. Lihtsa ja levinud parooli räsi on sellistes tabelites juba olemas. Juhusliku pika parooli räsi seal pole."},
+{"q": "Ründaja proovib sõnastiku igale sõnale tavalisi muudatusi: suur algustäht, aastaarv ja hüüumärk (kevad → Kevad2026!). Kuidas seda meetodit nimetatakse?", "o": ["Toore jõu rünne", "Reeglitega sõnastikurünne", "Vikerkaaretabel", "Pikendusrünne"], "c": 1, "e": "Inimesed muudavad sõnu ettearvatavalt. Reeglid katavad need muudatused, nii et keerukusnõuetele vastav parool, nagu Kevad2026!, leitakse sekunditega."},
+{"q": "Milleks lisatakse paroolile sool?", "o": ["Parool muutub lühemaks", "Räsi on kiirem arvutada", "Parooli saab hiljem dekrüpteerida", "Sama parool annab eri kasutajatel erineva räsi ja eelarvutatud tabelid ei tööta"], "c": 3, "e": "Ilma soolata arvutab ründaja iga arvatava parooli räsi üks kord ja võrdleb seda korraga miljoni kasutaja räsiga. Soolaga peab ta iga kasutaja jaoks eraldi arvutama: miljon korda rohkem tööd."},
+{"q": "Miks ei pea sool olema salajane?", "o": ["Sool kustutatakse kohe pärast räsimist", "Soola ülesanne on muuta iga kasutaja räsi erinevaks ja tabelid kasutuks, mitte midagi varjata", "Sool on kõigil kasutajatel sama", "Sool on krüpteeritud"], "c": 1, "e": "Sool salvestatakse räsi kõrvale, näiteks /etc/shadow reale. Salajast lisaväärtust, mida hoitakse andmebaasist eraldi, nimetatakse pipraks (pepper)."},
+{"q": "Milleks nõuab Argon2id iga katse jaoks mälu (nt 19 MiB)?", "o": ["Et salvestada kõik varasemad paroolid", "Et graafikakaardid ja eriotstarbelised kiibid, millel on palju arvutusüksusi, kuid vähe mälu, oleksid ebatõhusad", "Et räsi oleks pikem", "Mälu ei ole Argon2id-s oluline"], "c": 1, "e": "Kiire räsi puhul saab graafikakaart arvutada tuhandeid katseid korraga. Kui iga katse vajab palju mälu, ei mahu neid paralleelselt nii palju. Iteratsioonide arv teeb räsi lisaks aeglaseks."},
+{"q": "Milline algoritm sobib paroolide hoidmiseks?", "o": ["Argon2id", "MD5", "SHA-1", "Base64"], "c": 0, "e": "Argon2id on meelega aeglane, kasutab soola ja nõuab mälu. Kui Argon2id pole saadaval, sobivad scrypt, bcrypt või PBKDF2 suure iteratsioonide arvuga. PHP-s: password_hash($parool, PASSWORD_ARGON2ID) ja password_verify()."},
+{"q": "Ründaja proovib kiiret räsi 10¹¹ korda sekundis. Kui kaua kulub kõigi 10 väiketähest koosnevate paroolide läbiproovimiseks?", "o": ["Umbes 2 sekundit", "Umbes 24 minutit", "Umbes 18 tundi", "Umbes 8 kuud"], "c": 1, "e": "Võimalusi on 26¹⁰ ≈ 1,4 × 10¹⁴. Jagades 10¹¹-ga saame umbes 1400 sekundit ehk 24 minutit. 8 väiketähte võtab umbes 2 sekundit: iga lisatäht korrutab aja 26-ga."},
+{"q": "Parool Kevad2026! on salvestatud aeglase Argon2id-räsina. Kas see on turvaline?", "o": ["Jah, aeglane räsi kaitseb iga parooli", "Ei, inimese valitud parool leitakse sõnastiku ja reeglitega kiiresti, olgu räsi kui aeglane tahes", "Jah, sest parool sisaldab numbreid ja erimärki", "Ei, sest Argon2id on murtud"], "c": 1, "e": "Aeglane räsi aitab, kui parool on juhuslik ja ründaja peab proovima väga paljusid variante. Kevad2026! on esimeste katsete seas. Seepärast soovitatakse pikki paroolifraase ja paroolihaldurit."},
+{"q": "Mis on Windowsi NT-räsi suurim nõrkus?", "o": ["See on liiga pikk", "See on soolamata: samade paroolidega kasutajatel on sama räsi ja toimib pass-the-hash rünne", "See kasutab Argon2id-d", "See muutub iga sisselogimisega"], "c": 1, "e": "NT-räsi = MD4(parool UTF-16 kujul) ilma soolata. Pass-the-hash korral ei pea ründaja parooli teadma, räsist endast piisab. Seepärast tuleb kaitsta räsisid endid: Credential Guard, LAPS ja vähimad õigused."},
+{"q": "Mis on pipar (pepper) parooliräsis?", "o": ["Teine nimi soolale", "Salajane väärtus, mida hoitakse andmebaasist eraldi (nt riistvaralises võtmehoidlas)", "Räsi lühendatud kuju", "Iteratsioonide arv"], "c": 1, "e": "Sool on avalik ja igal kasutajal erinev. Pipar on salajane ja hoitakse mujal. Kui ründaja varastab ainult andmebaasi, ei saa ta ilma pipra teadmata paroole proovida."},
+{"q": "Miks ei piisa allalaaditud faili kontrollimiseks samalt lehelt võetud räsist?", "o": ["Räsi on liiga lühike", "Kui ründaja on serveri üle võtnud, vahetab ta nii faili kui ka lehel avaldatud räsi", "Räsi muutub allalaadimisel", "Räsi kontrollimine on liiga aeglane"], "c": 1, "e": "Kontrollsumma avastab juhusliku vea, mitte teadliku võltsingu. Seepärast avaldavad tootjad räsifaili koos digiallkirjaga (Ubuntu SHA256SUMS ja SHA256SUMS.gpg) või allkirjastavad tarkvara ise (Authenticode)."},
+{"q": "Mis vahe on HMAC-il ja tavalisel räsil?", "o": ["HMAC on lühem", "HMAC on pööratav", "HMAC kasutab salajast võtit, seega ei saa ründaja seda ise uuesti arvutada", "HMAC ei kasuta räsifunktsiooni"], "c": 2, "e": "Tavalise räsi saab igaüks uuesti arvutada. HMAC-i saab luua ja kontrollida ainult see, kes võtit teab. HMAC-i kasutavad TLS, IPsec, JWT (HS256), API-allkirjad ja TOTP-koodid."},
+{"q": "Miks ei kasutata sõnumi autentimiseks lihtsalt H(võti ‖ sõnum)?", "o": ["See on liiga aeglane", "SHA-256 on haavatav pikendusrünnakule: räsi teades saab arvutada kehtiva räsi pikendatud sõnumile ilma võtmeta", "Võti ei mahu räsi sisse", "H(võti ‖ sõnum) on pööratav"], "c": 1, "e": "Nii võltsiti 2009. aastal Flickri API päringuid. HMAC räsib kaks korda erinevate konstantidega (ipad ja opad) ning see välistab pikendusrünnaku."},
+{"q": "Mis vahe on HMAC-il ja digiallkirjal?", "o": ["Vahet pole", "HMAC-i saavad kontrollida ainult võtme omanikud; digiallkirja saab kontrollida igaüks avaliku võtmega ja saatja ei saa allkirjastamist salata", "Digiallkiri ei avasta võltsingut", "HMAC kasutab avalikku võtit"], "c": 1, "e": "HMAC-i puhul on võti mõlemal poolel sama, nii et kumbki võis HMAC-i luua. Seepärast ei tõesta HMAC kolmandale osapoolele, kes sõnumi saatis. Digiallkiri annab ka mittesalgamise (ptk 29)."},
+{"q": "Kuidas kontrollib Have I Been Pwned lekkinud paroole nii, et parool ise lehelt ei lahku?", "o": ["Parool saadetakse krüpteeritult", "Saadetakse ainult parooli SHA-1 räsi 5 esimest märki ja võrdlus tehakse kohapeal", "Parool saadetakse Base64 kujul", "Kontroll toimub ainult e-posti järgi"], "c": 1, "e": "Teenus tagastab kõik lekkinud räsid, mis algavad nende viie märgiga, ja kasutaja arvuti otsib nende seast oma räsi. Veebirakendus saab sama API-ga keelata registreerimisel lekkinud paroolid."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
