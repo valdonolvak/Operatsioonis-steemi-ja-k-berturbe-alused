@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 25 – test: krüptograafia ajalugu ja põhimõisted</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/25-kruptograafia-ajalugu.md">← Peatükk 25</a></nav>
+<h1>Test: krüptograafia ajalugu ja põhimõisted</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on krüptograafias võti?", "o": ["Algne loetav sõnum", "Krüpteeritud, ilma võtmeta loetamatu kuju", "Salajane väärtus, mis määrab algoritmi täpse tulemuse", "Šifrite murdmise teadus"], "c": 2, "e": "Algoritm ütleb, kuidas krüpteeritakse, ja võti, milline on täpne tulemus. Ülejäänud variandid on avatekst, šifritekst ja krüptoanalüüs."},
+{"q": "Miks ei murta 128-bitist AES-võtit toore jõuga?", "o": ["AES ei luba rohkem kui kolm katset", "Võtmeruum 2¹²⁸ on nii suur, et isegi miljard arvutit miljardi katsega sekundis vajaks umbes 10¹³ aastat", "Toore jõu rünne on seadusega keelatud", "AES-i võti vahetub iga sekund"], "c": 1, "e": "2¹²⁸ ≈ 3,4 × 10³⁸ võtit. See on ligikaudu tuhat korda kauem, kui universum on olemas olnud. Iga lisabitt kahekordistab võtmeruumi. Kaasaegsete šifrite puhul otsitakse seepärast vigu kasutamises, mitte võtit."},
+{"q": "Mida väidab Kerckhoffsi printsiip?", "o": ["Algoritm peab olema salajane", "Võti peab olema lühike", "Süsteem peab olema turvaline ka siis, kui kõik peale võtme on avalik", "Šifrit ei tohi kunagi muuta"], "c": 2, "e": "Kerckhoffs sõnastas selle 1883. aastal. Shannon ütles sama lühemalt: „vaenlane tunneb süsteemi“. Saladus on ainult võti."},
+{"q": "Miks ei ole salajane, „omatehtud“ algoritm hea turvalahendus?", "o": ["Salajane algoritm on alati aeglasem", "Algoritm lekib varem või hiljem ja seda on analüüsinud vaid autor; võtit on aga lihtne vahetada", "Salajast algoritmi ei saa arvutis käivitada", "Salajane algoritm nõuab pikemat võtit"], "c": 1, "e": "Algoritm on igas seadmes ja tarkvarakoopias. Kui see lekib, tuleb kogu süsteem välja vahetada. MIFARE Classicu Crypto-1, DVD-de CSS ja GSM-i A5/1 murti pärast seda, kui algoritm avalikuks tuli. Avalikku algoritmi on aastaid analüüsinud tuhanded teadlased."},
+{"q": "Spartalaste skütale korral jäävad tähed samaks, muutub ainult nende järjekord. Mis tüüpi šiffer see on?", "o": ["Transpositsioon", "Asendusšiffer", "Ühekordne plokk", "Rootorišiffer"], "c": 0, "e": "Transpositsioon muudab tähtede järjekorda, asendus aga tähti endid. Skütale võti oli pulga jämedus: lugeda sai ainult sama jämedusega pulga abil."},
+{"q": "Krüpteeri Caesari šifriga (nihe k = 3) sõna KOOL. Mis on šifritekst?", "o": ["NRRO", "LPPM", "HLLI", "NQQO"], "c": 0, "e": "Iga täht nihkub tähestikus kolm kohta edasi: K → N, O → R, O → R, L → O. Valem on C = (P + k) mod 26. LPPM on nihe 1 ja HLLI nihe 3 vastassuunas."},
+{"q": "Mitu võimalikku võtit on Caesari šifril 26-tähelises ladina tähestikus?", "o": ["2", "25", "1000", "2¹²⁸"], "c": 1, "e": "Nihkeid on 26, kuid nihe 0 ei muuda midagi, seega jääb 25 võtit. Ründaja proovib need kõik läbi ja näeb kohe, milline tulemus on loetav."},
+{"q": "Milline meetod murrab lihtsa asendusšifri?", "o": ["Sagedusanalüüs", "DNS-päring", "Räsimine", "Digiallkiri"], "c": 0, "e": "Sagedusanalüüsi kirjeldas al-Kindi juba 9. sajandil. Kõige sagedasem šifriteksti täht vastab tõenäoliselt keele kõige sagedasemale tähele, eesti keeles a-le või e-le."},
+{"q": "Asendusšifril on 26! ≈ 4 × 10²⁶ võimalikku võtit. Miks see sagedusanalüüsi vastu ei aita?", "o": ["Arvutid on liiga kiired", "Asendus muudab tähtede kuju, kuid mitte nende sagedust", "Võtmeid on tegelikult ainult 25", "Sagedusanalüüs proovib kõik võtmed läbi"], "c": 1, "e": "Sagedusanalüüs ei proovi võtmeid, vaid kasutab ära avateksti struktuuri, mis šifritekstis säilib. Õppetund: suur võtmeruum on vajalik, kuid mitte piisav."},
+{"q": "Miks ei tööta lihtne sagedusanalüüs Vigenère’i šifri vastu?", "o": ["Vigenère kasutab ainult numbreid", "Sama täht krüpteerub erinevalt sõltuvalt sellest, milline võtmetäht selle all on", "Vigenère’i šifritekst on avatekstist pikem", "Vigenère’il ei ole võtit"], "c": 1, "e": "Sõnas HOMMIKUL muutus üks M X-iks ja teine W-ks. Samas muutusid M ja I mõlemad W-ks. Tähtede sagedused segunevad ja lihtne sagedusanalüüs enam ei tööta."},
+{"q": "Kasiski meetodiga leidsid Vigenère’i šifritekstist kordused, mille vahekaugused on 12, 20 ja 32. Mis on tõenäoliselt võtme pikkus?", "o": ["2", "4", "8", "12"], "c": 1, "e": "Korduste vahekaugused on võtme pikkuse kordsed. Arvude 12, 20 ja 32 suurim ühistegur on 4. Seejärel jagatakse šifritekst neljaks osaks (iga neljas täht) ja igaüks murtakse nagu Caesar."},
+{"q": "Arvuta 01100001 ⊕ 00001111.", "o": ["01101110", "01100000", "01101111", "10011110"], "c": 0, "e": "XOR annab 1 seal, kus bitid erinevad, ja 0 seal, kus need on samad. Kui teed tulemusega 01101110 sama tehte uuesti, saad tagasi 01100001: (P ⊕ K) ⊕ K = P. Seepärast on krüpteerimine ja dekrüpteerimine sama tehe."},
+{"q": "Millal on ühekordne plokk täiuslikult turvaline?", "o": ["Kui võti on vähemalt 128 bitti", "Kui võti on tõeliselt juhuslik, sõnumiga sama pikk ja seda kasutatakse ainult üks kord", "Kui sõnum on lühem kui 100 tähte", "Kui kasutatakse XOR-i asemel liitmist"], "c": 1, "e": "Shannon tõestas 1949. aastal, et siis ei anna šifritekst avateksti kohta mingit infot. Praktikas on ühekordne plokk harv, sest sõnumiga sama pikk võti tuleb saajale turvaliselt toimetada."},
+{"q": "Kaks sõnumit on krüpteeritud sama ühekordse ploki võtmega. Mis juhtub, kui ründaja teeb šifritekstidega XOR-i?", "o": ["Ta saab võtme", "Ta saab C₁ ⊕ C₂ = P₁ ⊕ P₂ ehk võti kaob arvutusest", "Ta ei saa midagi teada", "Tulemus on alati nullid"], "c": 1, "e": "Kahe avateksti XOR-ist saab need sageli mõlemad taastada, eriti kui ühe sisu on arvatav. Nii murdis USA projekt Venona osa Nõukogude Liidu sõnumitest, sest võtmelehti oli trükitud mitu korda."},
+{"q": "Milline Enigma omadus, mille põhjustas reflektor, oli murdjatele kõige kasulikum?", "o": ["Masinal oli ainult kolm rootorit", "Ükski täht ei krüpteerunud iseendaks", "Pistikupaneel vahetas 10 tähepaari", "Masin töötas elektriga"], "c": 1, "e": "Reflektor tegi masina mugavaks, sest sama seadistus krüpteeris ja dekrüpteeris. Kuna aga ükski täht ei krüpteerunud iseendaks, sai vihjet šifriteksti peal libistades kohe välistada asendid, kus mõni täht oleks iseendaga kohakuti."},
+{"q": "Miks krüpteerus Enigmas sama täht iga kord erinevalt?", "o": ["Operaator vahetas iga tähe järel rootorid", "Parem rootor pöördus iga klahvivajutusega ühe sammu ja asendustabel muutus", "Pistikupaneel ühendati iga tähe järel ümber", "Masin valis tähe juhuslikult"], "c": 1, "e": "Rootorid liikusid nagu auto läbisõidumõõdiku numbrid. Tulemus sarnanes väga pika võtmega Vigenère’iga: kui vajutad viis korda A-d, saad viis erinevat tähte."},
+{"q": "Mis oli Bletchley Parkis vihje (crib)?", "o": ["Pommi juhtmestiku skeem", "Avateksti osa, mis sõnumis tõenäoliselt esines, nt WETTERVORHERSAGE", "Saksa operaatori parool", "Päevavõtme esimene täht"], "c": 1, "e": "Saksa sõnumites korduti iga päev samu fraase: ilmateade, „erilisi sündmusi pole“, „HEIL HITLER“. Pomm kasutas vihjet, et kontrollida tuhandeid seadistusi tunnis."},
+{"q": "Milleks ehitas Tommy Flowers 1944. aastal Colossuse?", "o": ["Enigma sõnumite krüpteerimiseks", "Lorenzi masinaga krüpteeritud sõnumite murdmiseks", "Ilmaennustuste arvutamiseks", "Raadiosignaalide segamiseks"], "c": 1, "e": "Lorenzi masin tegi XOR-i pseudojuhusliku võtmevooga. Colossus oli üks esimesi programmeeritavaid elektroonilisi arvuteid. Arvutiteadus ja krüptoanalüüs on algusest peale koos arenenud."},
+{"q": "Mida tähendab Shannoni mõiste hajutus (diffusion)?", "o": ["Võti jagatakse mitme inimese vahel", "Ühe avateksti biti muutmine muudab ligikaudu pooli šifriteksti bitte", "Šifritekst saadetakse mitme kanali kaudu", "Võti on võimalikult lühike"], "c": 1, "e": "Hajutus peidab avateksti mustrid. Segadus (confusion) muudab võtme ja šifriteksti seose keeruliseks. Caesar ei hajuta üldse, sest üks täht mõjutab ainult üht tähte. AES teeb mõlemat mitu ringi järjest."},
+{"q": "Millega peaks Pythonis looma parooli või krüptograafilise võtme?", "o": ["Mooduliga random", "Mooduliga secrets", "Kellaajaga time.time()", "Funktsiooniga hash()"], "c": 1, "e": "secrets kasutab krüptograafiliselt turvalist generaatorit (CSPRNG). random on mõeldud simulatsioonideks ja mängudeks: selle sisemise oleku saab väljundi põhjal taastada ja järgmised väärtused ette arvata."},
+{"q": "Mis oli Debiani OpenSSL-i vea (2008) tagajärg?", "o": ["RSA-algoritm osutus murtavaks", "Võtmed sõltusid peaaegu ainult protsessi numbrist, seega oli igat tüüpi võtmeid vaid kuni 32 768", "Kõik võtmed muutusid 56-bitiseks", "Serverid ei saanud enam käivituda"], "c": 1, "e": "Arendaja eemaldas kaks rida, mis lisasid entroopiat. Algoritm ja võtme pikkus olid korras, aga juhuslikkus puudus. Ründaja genereeris kõik võimalikud võtmed läbi ja leidis õige minutitega."},
+{"q": "Mis on Base64?", "o": ["Sümmeetriline šiffer", "Räsifunktsioon", "Asümmeetriline šiffer", "Kodeering, mitte krüpteerimine"], "c": 3, "e": "Base64-l puudub võti: igaüks saab selle tagasi muuta, nt echo 'a2Fzc2kxMjM=' | base64 -d annab kassi123. Parool kuulub saladuste hoidlasse, mitte seadistusfaili."},
+{"q": "Mille poolest erineb steganograafia krüptograafiast?", "o": ["Steganograafia peidab sõnumi olemasolu, krüptograafia sõnumi sisu", "Steganograafia on krüptograafia vanem nimi", "Steganograafia kasutab alati XOR-i", "Steganograafia ei vaja kandjat"], "c": 0, "e": "Steganograafia peidab sõnumi näiteks tõmmisfaili pikslitesse. Neid võib kombineerida: krüpteeritud sõnum peidetakse tõmmisesse. Kodeerimine (Base64) ei peida kumbagi."},
+{"q": "Mida tähendab lukk brauseri aadressiribal?", "o": ["Sait on aus ja kontrollitud", "Ühendus serveriga on krüpteeritud", "Sait ei sisalda pahavara", "Sinu parool on turvaliselt salvestatud"], "c": 1, "e": "Õngitsusleht saab TLS-sertifikaadi samamoodi nagu päris pank. Krüptograafia kaitseb ühendust, kuid ei kaitse inimese petmise, nakatunud seadme ega halva võtmehalduse eest."},
+{"q": "Milline krüptograafia ehitusplokk sobib suurte andmemahtude kiireks krüpteerimiseks?", "o": ["Sümmeetriline krüpteerimine (AES, ChaCha20)", "Räsifunktsioon (SHA-256)", "Asümmeetriline krüptograafia (RSA)", "Base64"], "c": 0, "e": "Sümmeetriline krüpteerimine on kiire, aga mõlemal poolel peab olema sama võti. HTTPS-is lepitakse asümmeetrilise krüptograafiaga kokku ühises võtmes ja andmed liiguvad AES-i või ChaCha20-ga."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
