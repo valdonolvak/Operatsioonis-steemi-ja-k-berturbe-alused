@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 31 – test: küberturbe õigus- ja juhtimisraamistik</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/31-oigus-ja-juhtimisraamistik.md">← Peatükk 31</a></nav>
+<h1>Test: küberturbe õigus- ja juhtimisraamistik</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Millise seadusega võeti Eestis üle NIS2-direktiiv?", "o": ["Isikuandmete kaitse seadus", "Küberturvalisuse seadus", "Karistusseadustik", "Avaliku teabe seadus"], "c": 1, "e": "Küberturvalisuse seadus (KüTS) kehtis Eestis juba 2018. aastast. NIS2 laiendas olemasolevat raamistikku: kohustatud üksuste ring kasvas RIA andmetel ligi 6500 ettevõtteni."},
+{"q": "Millal jõustusid Eestis NIS2 ülevõtmiseks tehtud küberturvalisuse seaduse muudatused?", "o": ["25. mail 2018", "17. oktoobril 2024", "1. jaanuaril 2026", "11. septembril 2026"], "c": 2, "e": "25. mai 2018 on IKÜM-i kohaldamise algus ja 17. oktoober 2024 NIS2 ülevõtmise tähtaeg EL-is, millest Eesti jäi maha. 11. septembrist 2026 kehtib CRA tootjate teavitamiskohustus."},
+{"q": "Mis vahe on NIS2 järgi väga olulisel ja olulisel üksusel?", "o": ["Olulised üksused ei pea intsidentidest teatama", "Kohustused on sarnased, kuid erinevad järelevalve viis ja trahvide suurus", "Väga olulised üksused on alati riigiasutused", "Olulistele üksustele kehtib ainult IKÜM"], "c": 1, "e": "Väga olulise üksuse üle teeb RIA ennetavat järelevalvet ja trahv võib olla kuni 10 mln € või 2% ülemaailmsest käibest. Oluliste üksuste puhul on järelevalve üldjuhul järelkontroll ja trahv kuni 7 mln € või 1,4%."},
+{"q": "Toidutootjal (NIS2 II lisa sektor) on 80 töötajat. Kuidas teda NIS2 üldreegli järgi liigitatakse?", "o": ["Väga oluline üksus", "Oluline üksus", "Ei kuulu NIS2 alla, sest toit ei ole kriitiline", "Ei kuulu NIS2 alla, sest töötajaid on alla 250"], "c": 1, "e": "Vähemalt 50 töötajaga on ettevõte keskmise suurusega. II lisa sektoris on keskmised ja ka suured ettevõtted „olulised“. „Väga olulised“ on suured ettevõtted I lisa sektoris ja need, kes kuuluvad seaduse alla suurusest olenemata."},
+{"q": "Mida küberturvalisuse seadus EI nõua?", "o": ["Riskianalüüsi", "Varundust ja toimepidevust", "Mitmikautentimist ja juurdepääsuhaldust", "Konkreetse tootja tulemüüri ja kindla parooli pikkuse kasutamist"], "c": 3, "e": "Seadus nõuab, et meetmed oleksid riskiga proportsionaalsed ja arvestaksid tehnika taset. Konkreetseid tooteid see ette ei kirjuta. Praktikas kasutatakse E-ITS-i, ISO 27001 või muud tunnustatud raamistikku ja dokumenteeritakse oma otsused."},
+{"q": "Mida tähendab NIS2 järgi juhtkonna vastutus?", "o": ["Juhtkond vastutab ainult eelarve eest", "Juhtkond kinnitab riskijuhtimise meetmed, jälgib nende täitmist ja osaleb ise koolitusel; juhte saab ka isiklikult vastutusele võtta", "Vastutus on alati IT-administraatoril", "Juhtkond peab ise tulemüüri seadistama"], "c": 1, "e": "Küberturve liigub NIS2-ga juhtimistasandile. Juhtkond ei pea tundma Kerberost, kuid peab otsustama, millised riskid on vastuvõetavad, ja kandma selle eest vastutust."},
+{"q": "Milline on NIS2 maksimaalne trahv väga olulisele üksusele?", "o": ["10 000 €", "Kuni 7 mln € või 1,4% ülemaailmsest käibest", "Kuni 10 mln € või 2% ülemaailmsest käibest", "Kuni 20 mln € või 4% ülemaailmsest käibest"], "c": 2, "e": "7 mln € või 1,4% on olulise üksuse ülempiir. 20 mln € või 4% on IKÜM-i (GDPR) maksimaalne trahv."},
+{"q": "Mis aja jooksul tuleb NIS2 järgi olulisest intsidendist saata varajane hoiatus?", "o": ["Ühe nädala", "Ühe kuu", "72 tunni", "24 tunni"], "c": 3, "e": "Varajane hoiatus 24 h jooksul, intsidendi teavitus 72 h jooksul ja lõpparuanne 1 kuu jooksul pärast intsidendi teavitust. Teated saadetakse RIA-le (CERT-EE)."},
+{"q": "Millal tuleb NIS2 järgi esitada lõpparuanne?", "o": ["24 tunni jooksul", "72 tunni jooksul", "Ühe kuu jooksul pärast intsidendi teavitust", "Ühe aasta jooksul"], "c": 2, "e": "Tähtaeg ei arvestata avastamisest, vaid intsidendi teavituse saatmisest. Lõpparuandes on põhjus, mõju ning rakendatud ja kavandatud meetmed. RIA võib vahepeal küsida ka vahearuannet."},
+{"q": "Oluline intsident avastati esmaspäeval kell 8.00. Mis on varajase hoiatuse viimane tähtaeg?", "o": ["Esmaspäeval kell 16.00", "Teisipäeval kell 8.00", "Neljapäeval kell 8.00", "Järgmisel esmaspäeval"], "c": 1, "e": "24 tundi avastamisest. Intsidendi teavituse tähtaeg (72 h) oleks neljapäeval kell 8.00. Tähtajad jooksevad ka nädalavahetusel, seepärast peab intsidendiplaanis olema kirjas, kes otsustab ja teavitab."},
+{"q": "Kellele teatatakse Eestis isikuandmetega seotud rikkumisest?", "o": ["Andmekaitse Inspektsioonile", "Politsei- ja Piirivalveametile", "Maksu- ja Tolliametile", "Tarbijakaitse ja Tehnilise Järelevalve Ametile"], "c": 0, "e": "Andmekaitse Inspektsioonile tuleb teatada 72 tunni jooksul, kui rikkumine võib ohustada inimeste õigusi. Kõrge riski korral teavitatakse ka inimesi endid. Kuriteoteade politseile on eraldi samm."},
+{"q": "Millal algab Andmekaitse Inspektsiooni teavitamise 72-tunnine tähtaeg?", "o": ["Kui uurimine on lõppenud", "Hetkest, kui organisatsioon saab rikkumisest teada", "Kui juhtkond on otsuse kinnitanud", "Järgmise tööpäeva algusest"], "c": 1, "e": "Ootama ei pea, kuni kõik on teada. Teavet võib esitada osade kaupa ja hiljem täiendada."},
+{"q": "Milline järgmistest on isikuandmetega seotud rikkumine, kuigi keegi ei häkkinud?", "o": ["Server taaskäivitati plaanipäraselt", "Õpilaste hinnetetabel saadeti kogemata valele lapsevanemale", "Kasutaja vahetas oma parooli", "Veebilehele lisati uus uudis"], "c": 1, "e": "Rikkumine on ka kaotatud krüpteerimata mälupulk, kogemata avalikuks jäetud pilvekaust ja lunavara poolt krüpteeritud andmebaas (käideldavuse rikkumine)."},
+{"q": "Õpetaja kaotas sülearvuti, mille ketas oli BitLockeriga tugevalt krüpteeritud, ja võti ei lekkinud. Mida tuleb teha?", "o": ["Teavitada kõiki õpilasi ja Andmekaitse Inspektsiooni", "Kanda rikkumine sisemisse registrisse; AKI-d ja inimesi üldjuhul teavitama ei pea", "Mitte midagi, sest andmed olid krüpteeritud", "Teavitada ainult RIA-t"], "c": 1, "e": "Kuna leidja ei saa andmeid lugeda, ei ohusta rikkumine tõenäoliselt inimeste õigusi. Rikkumine dokumenteeritakse siiski, koos põhjendusega, miks teavitust ei tehtud."},
+{"q": "Kool kasutab õpilaste andmete jaoks pilvepõhist õppeinfosüsteemi. Kes on vastutav töötleja ja kes volitatud töötleja?", "o": ["Kool on volitatud, süsteemi pakkuja vastutav töötleja", "Kool on vastutav töötleja, süsteemi pakkuja volitatud töötleja", "Mõlemad on volitatud töötlejad", "Õpilased on vastutavad töötlejad"], "c": 1, "e": "Vastutav töötleja otsustab, milleks ja kuidas andmeid töödeldakse. Volitatud töötleja töötleb neid tema nimel. Nende vahel peab olema IKÜM art 28 kohane leping, mis kirjeldab ka turvameetmeid."},
+{"q": "Milline IT-otsus järgib põhimõtet „võimalikult väheste andmete kogumine“?", "o": ["Andmebaasi lisatakse välju igaks juhuks, et neid hiljem kasutada", "Registreerimisvorm küsib ainult neid andmeid, mida teenuse osutamiseks päriselt vaja on", "Kõik logid säilitatakse igavesti", "Varukoopiad tehakse kümnesse kohta"], "c": 1, "e": "Mida vähem andmeid, seda väiksem on lekke mõju. IKÜM art 25 nõuab, et süsteem oleks juba kavandades niimoodi ehitatud (lõimitud ja vaikimisi andmekaitse)."},
+{"q": "Mida nõuab põhimõte „säilitamise piiramine“?", "o": ["Andmeid hoitakse nii kaua kui võimalik", "Vanad andmed kustutatakse, ka varukoopiatest ja logidest", "Andmeid hoitakse ainult paberil", "Andmeid ei tohi kunagi kustutada"], "c": 1, "e": "Andmeid hoitakse ainult nii kaua, kui eesmärgi jaoks vaja. Kustutamine peab ulatuma ka varukoopiatesse ja logidesse, mida unustatakse kõige sagedamini."},
+{"q": "Milline on IKÜM-i (GDPR) maksimaalne trahv?", "o": ["10 mln € või 2% ülemaailmsest käibest", "20 mln € või 4% ülemaailmsest käibest", "1 mln €", "Trahve ei ole, ainult ettekirjutused"], "c": 1, "e": "10 mln € või 2% on NIS2 maksimaalne trahv väga olulisele üksusele. IKÜM kehtib kõigile, kes töötlevad isikuandmeid, ka koolidele ja väikeettevõtetele."},
+{"q": "Mis vahe on E-ITS-il ja ISO/IEC 27001-l?", "o": ["Vahet pole, E-ITS on ISO 27001 tõlge", "E-ITS on Eesti standard moodulite ja konkreetsete meetmetega; ISO 27001 nõuab juhtimissüsteemi ja on sertifitseeritav", "ISO 27001 on kohustuslik kõigile Eesti asutustele", "E-ITS kehtib ainult pankadele"], "c": 1, "e": "E-ITS põhineb Saksa BSI IT-Grundschutzil ja on kohustuslik riigi- ja KOV-asutustele. ISO 27001 ei anna valmis tehnilisi meetmeid: organisatsioon hindab riskid, valib meetmed lisa A 93 meetme seast ja parendab pidevalt (PDCA)."},
+{"q": "Mida tähendab riski aktsepteerimine?", "o": ["Risk kõrvaldatakse täielikult", "Risk kantakse kindlustusele", "Juhtkond otsustab teadlikult jääkriski kanda", "Süsteem lülitatakse välja"], "c": 2, "e": "Aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine. Kõrge riski aktsepteerimine vajab põhjendust ja KüTS-i üksuses peab see olema kooskõlas nõutud turvameetmetega."},
+{"q": "Ettevõte ostab küberkindlustuse. Milline riski käsitlemise viis see on?", "o": ["Vähendamine", "Vältimine", "Jagamine (üleandmine)", "Aktsepteerimine"], "c": 2, "e": "Osa rahalisest kahjust kantakse kolmandale osapoolele. Rünnaku tõenäosust kindlustus ei muuda ja töö võib ikkagi seista. Seepärast kasutatakse jagamist koos vähendamisega."},
+{"q": "Avastad kogemata, et kooli veebilehe kaudu saab näha teiste õpilaste andmeid. Mida teed?", "o": ["Laen andmed alla, et oleks tõend", "Proovin, kui palju veel kätte saab", "Teatan omanikule või CERT-EE-le, kirjeldan, mida nägin, ja ei kasuta nõrkust edasi", "Postitan sellest kohe sotsiaalmeediasse, et kõik teaksid"], "c": 2, "e": "See on vastutustundlik avalikustamine. Andmete allalaadimine ja edasine proovimine võivad olla kuriteod (KarS § 217). Avalikult jagatakse nõrkust alles siis, kui omanikul on olnud aega see parandada."},
+{"q": "Millal on turvatestimine (penetration test) seaduslik?", "o": ["Alati, kui kavatsus on hea", "Kui süsteem on internetis avalik", "Ainult kirjaliku loaga, kus on kirjas ulatus, aeg ja meetodid", "Kui testija on IT-administraator"], "c": 2, "e": "Ka „hea kavatsusega“ võõra süsteemi skaneerimine või nõrkuse proovimine ilma loata võib olla kuritegu. Kirjalik luba kaitseb mõlemat poolt."},
+{"q": "IT-administraator näeb tehniliselt kõigi töötajate e-kirju. Kas ta tohib neid lugeda?", "o": ["Jah, sest tal on administraatoriõigused", "Jah, kui ta kahtlustab midagi", "Ainult õigusliku aluse ja organisatsiooni kehtestatud korra järgi; iga ligipääs peab olema põhjendatud ja logitud", "Jah, kui töötaja on puhkusel"], "c": 2, "e": "Õigused on antud töö tegemiseks, mitte uudishimu rahuldamiseks. Ka logid on isikuandmed: neid hoitakse vajaliku aja ja ligipääs neile on piiratud."},
+{"q": "Mida karistab karistusseadustiku § 216¹ (arvutikuriteo ettevalmistamine)?", "o": ["Iga turvatööriista allalaadimist", "Arvutikuritegudeks mõeldud programmi, seadme või paroolide hankimist, valmistamist või levitamist eesmärgiga panna kuritegu toime või võimaldada seda teisel", "Ainult pangakaardi vargust", "Nõrga parooli kasutamist"], "c": 1, "e": "Määrav on eesmärk. Nmap ja John the Ripper on laboris õppimiseks lubatud. Nende kasutamine või jagamine võõraste süsteemide ründamiseks ei ole."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>

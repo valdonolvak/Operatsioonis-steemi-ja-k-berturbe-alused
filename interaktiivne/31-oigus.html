@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 31 – NIS2 kuuluvus, teavitamise tähtajad ja riskimaatriks</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--bad:#a32d2d;--bad-bg:#fcebeb;--warn:#854f0b;--warn-bg:#faeeda;
+--low:#c0dd97;--mid:#fac775;--high:#f09595;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--bad:#f7c1c1;--bad-bg:#791f1f;--warn:#fac775;--warn-bg:#633806;--low:#3b6d11;--mid:#854f0b;--high:#a32d2d}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:20px;font-weight:500;margin:2.5rem 0 .5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+h3{font-size:16px;font-weight:500;margin:0 0 .4rem}
+nav a{color:var(--accent);font-size:14px;margin-right:14px}
+p{margin:.5rem 0}
+label{display:block;font-size:13px;color:var(--muted);margin:0 0 4px}
+label.cb{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--text);margin:6px 0}
+label.cb input{margin-top:5px}
+input,select{width:100%;font:inherit;font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);padding:6px 10px;height:38px}
+input[type=checkbox]{width:auto;height:auto}
+button{font:inherit;font-size:14px;padding:6px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);cursor:pointer}
+button:hover{background:var(--card)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:.75rem 0}
+.card{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin:0 0 12px}
+.verdict{border-radius:10px;padding:.8rem 1rem;margin:.75rem 0;font-size:16px}
+.verdict.ok{background:var(--ok-bg);color:var(--ok)}.verdict.bad{background:var(--bad-bg);color:var(--bad)}.verdict.warn{background:var(--warn-bg);color:var(--warn)}
+.verdict b{font-weight:600}
+.why{font-size:15px}
+.err{color:var(--bad);font-size:14px;margin:.25rem 0}
+.tl{list-style:none;padding:0;margin:.5rem 0;border-left:2px solid var(--border)}
+.tl li{position:relative;padding:.4rem 0 .8rem 1.1rem}
+.tl li::before{content:"";position:absolute;left:-7px;top:.75rem;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.tl li.done::before{background:var(--muted)}
+.tl .when{font-family:var(--mono);font-size:14px}
+.tl .who{display:inline-block;font-size:12px;padding:0 8px;border-radius:10px;background:var(--accent-bg);color:var(--accent);margin-left:6px}
+.tl small{display:block;color:var(--muted);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-weight:500;color:var(--muted)}
+td select{height:32px;padding:2px 6px;font-size:14px}
+.matrix{display:grid;grid-template-columns:70px repeat(3,1fr);gap:4px;max-width:520px;margin:1rem 0}
+.matrix .cell{min-height:64px;border-radius:6px;padding:4px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;position:relative}
+.matrix .cell .sc{position:absolute;right:6px;bottom:2px;font-size:12px;opacity:.7}
+.matrix .ax{font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center}
+.lo{background:var(--low)}.mi{background:var(--mid)}.hi{background:var(--high)}
+.dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--bg);color:var(--text);border:2px solid var(--text)}
+.dot.before{border-style:dashed;opacity:.6}
+.pill{display:inline-block;font-size:12px;padding:0 8px;border-radius:10px}
+.pill.lo{color:#173404}.pill.mi{color:#412402}.pill.hi{color:#501313}
+@media (prefers-color-scheme:dark){.pill.lo,.pill.mi,.pill.hi{color:#fff}}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/31-oigus-ja-juhtimisraamistik.md">← Peatükk 31</a><a href="#nis2">1. NIS2 kuuluvus</a><a href="#tahtajad">2. Teavitamise tähtajad</a><a href="#risk">3. Riskimaatriks</a></nav>
+<h1>Õigus ja juhtimine praktikas</h1>
+<p>Sellel lehel on kolm tööriista, mis aitavad peatüki nõudeid praktikas läbi mõelda: kas organisatsioon kuulub küberturvalisuse seaduse (NIS2) alla, millal ja kellele tuleb intsidendist teatada ning kuidas riske hinnata ja käsitleda.</p>
+<p class="why"><b>NB!</b> Tööriistad on õppimiseks ja lihtsustavad. Need ei ole õigusnõu. Konkreetse organisatsiooni kohustused tuleb täpsustada RIA, Andmekaitse Inspektsiooni või juristiga.</p>
+
+<!-- ================= 1 ================= -->
+<h2 id="nis2">1. Kas organisatsioon kuulub NIS2 alla?</h2>
+<p>NIS2 üldreegel seob kuuluvuse kahe asjaga: <b>millises sektoris</b> organisatsioon tegutseb ja <b>kui suur</b> see on. I lisa sektorid on kriitilisemad (energeetika, transport, tervishoid jt), II lisa sektorid on muud olulised valdkonnad (post, jäätmed, toit, tootmine jt). Mõni organisatsioon kuulub seaduse alla suurusest olenemata.</p>
+<div class="grid">
+  <div><label for="sec">Sektor</label><select id="sec">
+    <optgroup label="NIS2 I lisa (kõrge kriitilisusega)">
+      <option value="I">Energeetika (elekter, gaas, nafta, kaugküte)</option>
+      <option value="I">Transport (lennundus, raudtee, meri, maantee)</option>
+      <option value="I">Pangandus ja finantsturu taristu</option>
+      <option value="I">Tervishoid</option>
+      <option value="I">Joogivesi ja reovesi</option>
+      <option value="I">Digitaristu (andmekeskused, pilv, CDN)</option>
+      <option value="I">IKT-teenuste haldus ettevõtetele (IT-teenuse pakkuja)</option>
+      <option value="I">Kosmos</option>
+    </optgroup>
+    <optgroup label="NIS2 II lisa (muud kriitilised sektorid)">
+      <option value="II">Posti- ja kullerteenused</option>
+      <option value="II">Jäätmekäitlus</option>
+      <option value="II" selected>Toidu tootmine, töötlemine ja turustamine</option>
+      <option value="II">Kemikaalid</option>
+      <option value="II">Tootmine (meditsiiniseadmed, elektroonika, masinad, sõidukid)</option>
+      <option value="II">Digiteenuse pakkuja (e-pood, otsingumootor, sotsiaalmeedia)</option>
+      <option value="II">Teadusasutus</option>
+    </optgroup>
+    <optgroup label="Suurusest olenemata">
+      <option value="ALWAYS_E">Kvalifitseeritud usaldusteenuse osutaja</option>
+      <option value="ALWAYS_E">Tippdomeeni register või DNS-teenuse osutaja</option>
+      <option value="ALWAYS_E">Keskvalitsuse asutus (ministeerium, amet)</option>
+      <option value="ALWAYS_E">Elutähtsa teenuse osutaja</option>
+    </optgroup>
+    <optgroup label="Muu">
+      <option value="NONE">Muu sektor (nt jaekaubandus, ilusalong, ehitus)</option>
+    </optgroup>
+  </select></div>
+  <div><label for="emp">Töötajate arv</label><input id="emp" type="number" min="0" step="1" value="80"></div>
+  <div><label for="rev">Aastakäive (mln €)</label><input id="rev" type="number" min="0" step="0.1" value="12"></div>
+  <div><label for="bal">Bilansimaht (mln €)</label><input id="bal" type="number" min="0" step="0.1" value="8"></div>
+</div>
+<div class="err" id="nerr"></div>
+<div id="nout"></div>
+
+<!-- ================= 2 ================= -->
+<h2 id="tahtajad">2. Intsidendist teavitamise tähtajad</h2>
+<p>Intsidendi ajal on lihtne tähtajad unustada. Sisesta, millal sa intsidendist teada said, ja vasta küsimustele. Kalkulaator näitab, kellele ja millal tuleb teatada.</p>
+<div class="grid">
+  <div><label for="found">Millal said intsidendist teada?</label><input id="found" type="datetime-local"></div>
+  <div><label for="sent">Millal saadeti RIA-le intsidendi teavitus? (tühi = veel mitte)</label><input id="sent" type="datetime-local"></div>
+</div>
+<div class="card">
+  <label class="cb"><input type="checkbox" id="q1" checked><span>Organisatsioon kuulub KüTS-i (NIS2) alla <small style="color:var(--muted)">(vt jaotis 1)</small></span></label>
+  <label class="cb"><input type="checkbox" id="q2" checked><span>Intsident on oluline: põhjustab või võib põhjustada teenuse tõsise häire, rahalise kahju või kahju teistele</span></label>
+  <label class="cb"><input type="checkbox" id="q3" checked><span>Puudutatud on isikuandmed (töötajate, klientide, õpilaste andmed)</span></label>
+  <label class="cb"><input type="checkbox" id="q4"><span>Andmed olid tugevalt krüpteeritud ja võti ei lekkinud</span></label>
+  <label class="cb"><input type="checkbox" id="q5"><span>Rikkumine põhjustab inimestele tõenäoliselt kõrge riski (nt terviseandmed, paroolid, pangaandmed)</span></label>
+</div>
+<div class="err" id="terr"></div>
+<div id="tout"></div>
+
+<!-- ================= 3 ================= -->
+<h2 id="risk">3. Riskimaatriks ja riskide käsitlemine</h2>
+<p>Riski suurus = <b>tõenäosus × mõju</b>, mõlemad skaalal 1–3. Tulemus 1–2 on madal, 3–4 keskmine ja 6–9 kõrge risk. Hinda iga riski praegust olukorda, vali käsitlemise viis ja määra, milliseks muutuvad tõenäosus ja mõju pärast meetmeid. Maatriksil on katkendjoonega ring praegune risk ja täisjoonega ring jääkrisk.</p>
+<div class="card" style="overflow-x:auto"><table><thead><tr><th>#</th><th>Risk</th><th>Tõenäosus</th><th>Mõju</th><th>Käsitlus</th><th>Uus T</th><th>Uus M</th><th>Jääkrisk</th></tr></thead><tbody id="rtab"></tbody></table></div>
+<div class="matrix" id="matrix"></div>
+<div id="rout"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+/* ===== 1. NIS2 ===== */
+function runNIS(){
+  const sec=$('sec').value, e=+$('emp').value, r=+$('rev').value, b=+$('bal').value;
+  if([e,r,b].some(x=>!isFinite(x)||x<0)||$('emp').value===''){ $('nerr').textContent='Sisesta töötajate arv, käive ja bilanss nullist suuremate arvudena.'; $('nout').innerHTML=''; return; }
+  $('nerr').textContent='';
+  const large = e>=250 || (r>50 && b>43);
+  const medium = !large && (e>=50 || (r>10 && b>10));
+  const size = large?'suur':medium?'keskmine':'väike või mikro';
+  const sizeWhy = large ? (e>=250?'töötajaid on vähemalt 250':'käive on üle 50 mln € ja bilanss üle 43 mln €')
+                : medium ? (e>=50?'töötajaid on vähemalt 50 (aga alla 250)':'käive ja bilanss on kumbki üle 10 mln €')
+                : 'töötajaid on alla 50 ja käive või bilanss on kuni 10 mln €';
+  let cls, verdict, expl;
+  if(sec==='ALWAYS_E'){ cls='bad'; verdict='Väga oluline üksus'; expl='See organisatsiooni tüüp kuulub NIS2 alla <b>suurusest olenemata</b>, sest selle teenused on teistele kriitilised (usaldus, nimeteenus, riigivalitsemine, elutähtsad teenused).'; }
+  else if(sec==='NONE'){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Sektor ei ole NIS2 I ega II lisas. Isikuandmete kaitse nõuded (IKÜM) kehtivad aga ikkagi ja head küberhügieeni (MFA, varukoopiad, paikamine) on vaja igal organisatsioonil.'; }
+  else if(!large&&!medium){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Organisatsioon on '+size+' ('+sizeWhy+'). Väikesed ja mikroettevõtted on NIS2 üldreeglist välja jäetud, kui riik ei ole neid eraldi määranud, näiteks ainsa teenuseosutajana või elutähtsa teenuse osutajana.'; }
+  else if(sec==='I'&&large){ cls='bad'; verdict='Väga oluline üksus'; expl='Suur organisatsioon ('+sizeWhy+') NIS2 I lisa sektoris.'; }
+  else { cls='warn'; verdict='Oluline üksus'; expl=(sec==='I'?'Keskmise suurusega organisatsioon ('+sizeWhy+') I lisa sektoris.':'Organisatsioon on '+size+' ('+sizeWhy+') II lisa sektoris. II lisa sektoris on ka suured organisatsioonid „olulised“, mitte „väga olulised“.'); }
+  let h='<div class="verdict '+cls+'"><b>'+verdict+'</b></div><p class="why">'+expl+'</p>';
+  if(verdict!=='Üldjuhul ei kuulu NIS2 alla'){
+    const very=verdict==='Väga oluline üksus';
+    h+='<div class="card"><h3>Mis sellest tuleneb?</h3><ul style="margin:.25rem 0 0;padding-left:1.2rem">'+
+      '<li>Registreerimine RIA juures ja riskipõhised turvameetmed (NIS2 art 21): riskianalüüs, varundus, MFA, krüptograafia, tarneahela turve, koolitus.</li>'+
+      '<li>Juhtkond kinnitab meetmed, jälgib nende täitmist ja osaleb ise koolitusel.</li>'+
+      '<li>Olulisest intsidendist teatatakse RIA-le: 24 h, 72 h ja lõpparuanne 1 kuu pärast teavitust (jaotis 2).</li>'+
+      '<li>'+(very?'Järelevalve on ennetav: RIA võib teha auditeid ka ilma intsidendita. Trahv kuni 10 mln € või 2% ülemaailmsest käibest.':'Järelevalve on üldjuhul järelkontroll (nt pärast intsidenti või kaebust). Trahv kuni 7 mln € või 1,4% ülemaailmsest käibest.')+'</li></ul></div>';
+  }
+  h+='<p class="why" style="color:var(--muted)">Suuruse arvestus: suur = vähemalt 250 töötajat või käive üle 50 mln € ja bilanss üle 43 mln €; keskmine = vähemalt 50 töötajat või käive ja bilanss kumbki üle 10 mln €. Kontserni puhul arvestatakse ka seotud ettevõtete andmeid. Lõpliku kuuluvuse määravad KüTS ja RIA.</p>';
+  $('nout').innerHTML=h;
+}
+['sec','emp','rev','bal'].forEach(i=>$(i).addEventListener('input',runNIS));
+$('sec').addEventListener('change',runNIS);
+
+/* ===== 2. tähtajad ===== */
+const pad=n=>String(n).padStart(2,'0');
+const DAYS=['pühapäev','esmaspäev','teisipäev','kolmapäev','neljapäev','reede','laupäev'];
+const fmt=d=>DAYS[d.getDay()]+' '+pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear()+' kell '+pad(d.getHours())+':'+pad(d.getMinutes());
+const toLocal=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+function addMonth(d){ const x=new Date(d); const day=x.getDate(); x.setDate(1); x.setMonth(x.getMonth()+1); const last=new Date(x.getFullYear(),x.getMonth()+1,0).getDate(); x.setDate(Math.min(day,last)); return x; }
+function left(d){ const ms=d-new Date(); if(ms<0) return 'tähtaeg on möödas'; const h=Math.floor(ms/36e5); return h>=48? 'jäänud '+Math.floor(h/24)+' päeva' : 'jäänud '+h+' h '+Math.floor(ms%36e5/6e4)+' min'; }
+function runT(){
+  const fv=$('found').value; if(!fv){ $('terr').textContent='Sisesta, millal said intsidendist teada.'; $('tout').innerHTML=''; return; }
+  const F=new Date(fv), sv=$('sent').value, S=sv?new Date(sv):null;
+  if(S&&S<F){ $('terr').textContent='Teavitus ei saa olla saadetud enne, kui intsidendist teada saadi.'; $('tout').innerHTML=''; return; }
+  $('terr').textContent='';
+  const nis=$('q1').checked&&$('q2').checked, pd=$('q3').checked, enc=$('q4').checked, high=$('q5').checked;
+  const ev=[]; const H=36e5;
+  ev.push({d:F,who:'',t:'Intsident avastatud',s:'Isoleeri süsteem, säilita logid ja tõendid, teavita juhtkonda (intsidendiplaan). Ära lülita serverit välja enne mälutõmmise tegemist.'});
+  if(nis){
+    ev.push({d:new Date(+F+24*H),who:'RIA (CERT-EE)',t:'Varajane hoiatus',s:'Mis juhtus, kas võib olla pahatahtlik, kas võib mõjutada teisi.'});
+    ev.push({d:new Date(+F+72*H),who:'RIA (CERT-EE)',t:'Intsidendi teavitus',s:'Esialgne hinnang: raskusaste, mõju, kompromiteerimise tunnused (IP-aadressid, failide räsid).'});
+    if(S) ev.push({d:addMonth(S),who:'RIA (CERT-EE)',t:'Lõpparuanne',s:'Põhjus, mõju, rakendatud ja kavandatud meetmed. Tähtaeg on 1 kuu pärast intsidendi teavitust ('+fmt(S)+').'});
+    else ev.push({d:addMonth(new Date(+F+72*H)),who:'RIA (CERT-EE)',t:'Lõpparuanne (hiliseim)',s:'1 kuu pärast intsidendi teavitust. Kui teavitus saadetakse varem kui 72 h piiril, tuleb ka lõpparuanne varem. Sisesta teavituse aeg täpse tähtaja saamiseks.'});
+  }
+  let pdNote='';
+  if(pd){
+    if(enc&&!high){ pdNote='Isikuandmed olid tugevalt krüpteeritud ja võti ei lekkinud, seega rikkumine ei ohusta tõenäoliselt inimeste õigusi. Andmekaitse Inspektsiooni ega inimesi üldjuhul teavitama ei pea, kuid rikkumine kantakse sisemisse registrisse.'; ev.push({d:F,who:'sisemine register',t:'Rikkumine dokumenteeritakse',s:'Mis juhtus, mõju, tehtud otsused ja põhjendus, miks teavitust ei tehtud.'}); }
+    else {
+      ev.push({d:new Date(+F+72*H),who:'Andmekaitse Inspektsioon',t:'Isikuandmetega seotud rikkumise teade',s:'IKÜM art 33. Kui kõike ei ole veel teada, esita teave osade kaupa. Rikkumine kantakse ka sisemisse registrisse.'});
+      if(high) ev.push({d:F,who:'andmesubjektid',t:'Teavita inimesi põhjendamatu viivituseta',s:'IKÜM art 34: selges keeles, mis juhtus, võimalikud tagajärjed ja mida inimene saab ise teha (nt parooli vahetamine).'});
+    }
+  }
+  ev.push({d:F,who:'politsei',t:'Kuriteoteade (soovitatav)',s:'Lunavara, sissetung ja andmevargus on kuriteod (KarS § 206, 217 jt). Teade aitab ka kindlustusega suhtlemisel.'});
+  ev.sort((a,b)=>a.d-b.d);
+  let h='';
+  if(!nis&&!pd) h+='<div class="verdict ok">Valitud vastuste põhjal ei teki RIA-le ega Andmekaitse Inspektsioonile teavitamise kohustust. Kahtluse korral on mõistlik siiski RIA-ga ühendust võtta: CERT-EE saab hoiatada teisi ja anda abi.</div>';
+  else if(!nis&&$('q1').checked) h+='<p class="why">Intsident ei ole oluline, seega kohustuslikku RIA teavitust ei teki. Vabatahtlik teade on siiski teretulnud.</p>';
+  h+='<ul class="tl">'+ev.map(x=>'<li class="'+(x.d<new Date()?'done':'')+'"><span class="when">'+fmt(x.d)+'</span>'+(x.who?'<span class="who">'+x.who+'</span>':'')+'<br><b>'+x.t+'</b> <span style="color:var(--muted);font-size:13px">('+left(x.d)+')</span><small>'+x.s+'</small></li>').join('')+'</ul>';
+  if(pdNote) h+='<p class="why">'+pdNote+'</p>';
+  if(nis&&pd&&!(enc&&!high)) h+='<p class="why"><b>Kaks teavitust samal ajal:</b> RIA ja Andmekaitse Inspektsiooni tähtajad jooksevad paralleelselt. Kirjuta intsidendiplaani ette, kes kumbagi teavitab.</p>';
+  $('tout').innerHTML=h;
+}
+['found','sent','q1','q2','q3','q4','q5'].forEach(i=>{$(i).addEventListener('input',runT);$(i).addEventListener('change',runT)});
+
+/* ===== 3. risk ===== */
+const RISKS=[
+ {n:'Lunavara krüpteerib failiserveri',t:3,m:3,k:'Vähendamine',t2:2,m2:1,hint:'MFA ja võrgust eraldatud varukoopia: rünne võib õnnestuda, aga andmed saab taastada.'},
+ {n:'Internetis paikamata VPN-seade',t:3,m:3,k:'Vähendamine',t2:1,m2:3,hint:'Paikamine vähendab tõenäosust, kuid sissetungi mõju jääb samaks.'},
+ {n:'Vana raamatupidamisprogramm, mida ei saa paigata',t:2,m:2,k:'Vältimine',t2:0,m2:0,hint:'Programmist loobutakse, seega risk kaob koos tegevusega.'},
+ {n:'Pilveteenuse pikk katkestus',t:1,m:3,k:'Jagamine',t2:1,m2:2,hint:'Leping ja küberkindlustus kannavad osa rahalisest kahjust, kuid töö seisab ikkagi.'},
+ {n:'Kooli sööklamenüü lehe rikkumine',t:2,m:1,k:'Aktsepteerimine',t2:2,m2:1,hint:'Väike mõju: kaitse oleks kahjust kallim. Juhtkond kinnitab otsuse.'}
+];
+const lvl=s=>s===0?['–','']:s<=2?['madal','lo']:s<=4?['keskmine','mi']:['kõrge','hi'];
+const opt=(v,sel,txt)=>'<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(txt||v)+'</option>';
+function drawRisks(){
+  $('rtab').innerHTML=RISKS.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.n+'<br><small style="color:var(--muted)">'+r.hint+'</small></td>'+
+   '<td><select data-i="'+i+'" data-f="t">'+[1,2,3].map(v=>opt(v,r.t)).join('')+'</select></td>'+
+   '<td><select data-i="'+i+'" data-f="m">'+[1,2,3].map(v=>opt(v,r.m)).join('')+'</select></td>'+
+   '<td><select data-i="'+i+'" data-f="k">'+['Vähendamine','Vältimine','Jagamine','Aktsepteerimine'].map(v=>opt(v,r.k)).join('')+'</select></td>'+
+   '<td><select data-i="'+i+'" data-f="t2"'+(r.k==='Vältimine'?' disabled':'')+'>'+[1,2,3].map(v=>opt(v,r.t2)).join('')+'</select></td>'+
+   '<td><select data-i="'+i+'" data-f="m2"'+(r.k==='Vältimine'?' disabled':'')+'>'+[1,2,3].map(v=>opt(v,r.m2)).join('')+'</select></td>'+
+   '<td id="res'+i+'"></td></tr>').join('');
+  $('rtab').querySelectorAll('select').forEach(s=>s.onchange=()=>{const r=RISKS[+s.dataset.i],f=s.dataset.f;
+    r[f]= f==='k'? s.value : +s.value;
+    if(f==='k'){ if(s.value==='Vältimine'){r.t2=0;r.m2=0} else { if(r.t2===0){r.t2=r.t;r.m2=r.m} if(s.value==='Aktsepteerimine'){r.t2=r.t;r.m2=r.m} } drawRisks(); return; }
+    if((f==='t'||f==='m')&&r.k==='Aktsepteerimine'){r.t2=r.t;r.m2=r.m; drawRisks(); return;}
+    runRisk(); });
+  runRisk();
+}
+function runRisk(){
+  const cells={}; const warns=[];
+  RISKS.forEach((r,i)=>{
+    const s0=r.t*r.m, s1=r.t2*r.m2, L0=lvl(s0), L1=lvl(s1);
+    $('res'+i).innerHTML='<span class="pill '+L0[1]+'">'+s0+'</span> → '+(s1===0?'<span class="pill">0, risk kaob</span>':'<span class="pill '+L1[1]+'">'+s1+' '+L1[0]+'</span>');
+    (cells[r.t+','+r.m]=cells[r.t+','+r.m]||[]).push('<span class="dot before" title="'+r.n+' (praegu)">'+(i+1)+'</span>');
+    if(s1>0) (cells[r.t2+','+r.m2]=cells[r.t2+','+r.m2]||[]).push('<span class="dot" title="'+r.n+' (jääkrisk)">'+(i+1)+'</span>');
+    if(r.k==='Aktsepteerimine'&&s1>=6) warns.push('<b>Risk '+(i+1)+'</b>: kõrge riski aktsepteerimine. See on lubatud ainult juhtkonna allkirjastatud ja põhjendatud otsusena ning KüTS-i üksuses peab see olema kooskõlas nõutud turvameetmetega.');
+    if(r.k==='Aktsepteerimine'&&(r.t2!==r.t||r.m2!==r.m)) warns.push('<b>Risk '+(i+1)+'</b>: aktsepteerimisel meetmeid ei rakendata, seega jääkrisk on sama mis praegune.');
+    if(r.k==='Vähendamine'&&s1>=s0) warns.push('<b>Risk '+(i+1)+'</b>: vähendamine peab muutma tõenäosust või mõju väiksemaks. Praegu jääkrisk ei vähenenud.');
+    if(r.k==='Jagamine'&&r.t2<r.t) warns.push('<b>Risk '+(i+1)+'</b>: jagamine (kindlustus, leping) kannab üle kahju, kuid ei muuda tavaliselt rünnaku tõenäosust.');
+  });
+  let h='<div class="ax"></div><div class="ax">Mõju 1<br>väike</div><div class="ax">Mõju 2<br>keskmine</div><div class="ax">Mõju 3<br>suur</div>';
+  for(let t=3;t>=1;t--){ h+='<div class="ax">Tõenäosus '+t+'</div>'; for(let m=1;m<=3;m++){ const s=t*m; h+='<div class="cell '+lvl(s)[1]+'">'+(cells[t+','+m]||[]).join('')+'<span class="sc">'+s+'</span></div>'; } }
+  $('matrix').innerHTML=h;
+  $('rout').innerHTML = warns.length? '<div class="verdict warn">'+warns.join('<br>')+'</div>' : '<p class="why">Iga riski juures on valitud käsitlus ja põhjendatud jääkrisk. Päris organisatsioonis kantakse see riskiregistrisse, juhtkond kinnitab jääkriskid ja register vaadatakse üle vähemalt kord aastas ning pärast suuremaid muudatusi või intsidente.</p>';
+}
+
+/* start */
+runNIS();
+const now=new Date(); now.setMinutes(0,0,0); $('found').value=toLocal(now); runT();
+drawRisks();
+</script>
+</body>
+</html>
