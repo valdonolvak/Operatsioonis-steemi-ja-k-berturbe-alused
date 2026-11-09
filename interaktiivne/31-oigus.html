@@ -42,7 +42,13 @@ button:hover{background:var(--card)}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{text-align:left;padding:6px;border-bottom:1px solid var(--border);vertical-align:top}
 th{font-weight:500;color:var(--muted)}
-td select{height:32px;padding:2px 6px;font-size:14px}
+#rtab td select{height:36px;padding:4px 4px;font-size:15px;width:auto;min-width:56px}
+#rtab td select.k{min-width:146px}
+#rtab td.res{min-width:118px;line-height:1.9}
+#rtab td.num{white-space:nowrap}
+.risktable{min-width:760px}
+.scrollhint{display:none;font-size:13px;color:var(--muted);margin:0 0 4px}
+@media (max-width:800px){.scrollhint{display:block}}
 .matrix{display:grid;grid-template-columns:70px repeat(3,1fr);gap:4px;max-width:520px;margin:1rem 0}
 .matrix .cell{min-height:64px;border-radius:6px;padding:4px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;position:relative}
 .matrix .cell .sc{position:absolute;right:6px;bottom:2px;font-size:12px;opacity:.7}
@@ -122,7 +128,7 @@ td select{height:32px;padding:2px 6px;font-size:14px}
 <!-- ================= 3 ================= -->
 <h2 id="risk">3. Riskimaatriks ja riskide käsitlemine</h2>
 <p>Riski suurus = <b>tõenäosus × mõju</b>, mõlemad skaalal 1–3. Tulemus 1–2 on madal, 3–4 keskmine ja 6–9 kõrge risk. Hinda iga riski praegust olukorda, vali käsitlemise viis ja määra, milliseks muutuvad tõenäosus ja mõju pärast meetmeid. Maatriksil on katkendjoonega ring praegune risk ja täisjoonega ring jääkrisk.</p>
-<div class="card" style="overflow-x:auto"><table><thead><tr><th>#</th><th>Risk</th><th>Tõenäosus</th><th>Mõju</th><th>Käsitlus</th><th>Uus T</th><th>Uus M</th><th>Jääkrisk</th></tr></thead><tbody id="rtab"></tbody></table></div>
+<p class="scrollhint">Tabel on lai: keri seda sõrmega külgsuunas.</p><div class="card" style="overflow-x:auto"><table class="risktable"><thead><tr><th>#</th><th>Risk</th><th>Tõenäosus</th><th>Mõju</th><th>Käsitlus</th><th>Uus T</th><th>Uus M</th><th>Jääkrisk</th></tr></thead><tbody id="rtab"></tbody></table></div>
 <div class="matrix" id="matrix"></div>
 <div id="rout"></div>
 
@@ -214,12 +220,12 @@ const lvl=s=>s===0?['–','']:s<=2?['madal','lo']:s<=4?['keskmine','mi']:['kõrg
 const opt=(v,sel,txt)=>'<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(txt||v)+'</option>';
 function drawRisks(){
   $('rtab').innerHTML=RISKS.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+r.n+'<br><small style="color:var(--muted)">'+r.hint+'</small></td>'+
-   '<td><select data-i="'+i+'" data-f="t">'+[1,2,3].map(v=>opt(v,r.t)).join('')+'</select></td>'+
-   '<td><select data-i="'+i+'" data-f="m">'+[1,2,3].map(v=>opt(v,r.m)).join('')+'</select></td>'+
-   '<td><select data-i="'+i+'" data-f="k">'+['Vähendamine','Vältimine','Jagamine','Aktsepteerimine'].map(v=>opt(v,r.k)).join('')+'</select></td>'+
-   '<td><select data-i="'+i+'" data-f="t2"'+(r.k==='Vältimine'?' disabled':'')+'>'+[1,2,3].map(v=>opt(v,r.t2)).join('')+'</select></td>'+
-   '<td><select data-i="'+i+'" data-f="m2"'+(r.k==='Vältimine'?' disabled':'')+'>'+[1,2,3].map(v=>opt(v,r.m2)).join('')+'</select></td>'+
-   '<td id="res'+i+'"></td></tr>').join('');
+   '<td class="num"><select data-i="'+i+'" data-f="t" aria-label="Tõenäosus">'+[1,2,3].map(v=>opt(v,r.t)).join('')+'</select></td>'+
+   '<td class="num"><select data-i="'+i+'" data-f="m" aria-label="Mõju">'+[1,2,3].map(v=>opt(v,r.m)).join('')+'</select></td>'+
+   '<td><select class="k" data-i="'+i+'" data-f="k" aria-label="Käsitlus">'+['Vähendamine','Vältimine','Jagamine','Aktsepteerimine'].map(v=>opt(v,r.k)).join('')+'</select></td>'+
+   '<td class="num"><select data-i="'+i+'" data-f="t2" aria-label="Uus tõenäosus"'+(r.k==='Vältimine'?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.t2)).join(''))+'</select></td>'+
+   '<td class="num"><select data-i="'+i+'" data-f="m2" aria-label="Uus mõju"'+(r.k==='Vältimine'?' disabled':'')+'>'+(r.k==='Vältimine'?opt(0,0,'–'):[1,2,3].map(v=>opt(v,r.m2)).join(''))+'</select></td>'+
+   '<td id="res'+i+'" class="res"></td></tr>').join('');
   $('rtab').querySelectorAll('select').forEach(s=>s.onchange=()=>{const r=RISKS[+s.dataset.i],f=s.dataset.f;
     r[f]= f==='k'? s.value : +s.value;
     if(f==='k'){ if(s.value==='Vältimine'){r.t2=0;r.m2=0} else { if(r.t2===0){r.t2=r.t;r.m2=r.m} if(s.value==='Aktsepteerimine'){r.t2=r.t;r.m2=r.m} } drawRisks(); return; }
