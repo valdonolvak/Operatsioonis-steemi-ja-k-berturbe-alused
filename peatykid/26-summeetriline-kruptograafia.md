@@ -170,6 +170,8 @@ Kooli õpetaja sülearvuti, millel on õppijate hinded ja isikuandmed, jäi rong
 
 ### Kontrollküsimused
 
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 1. Miks vajab 20-liikmeline rühm sümmeetrilise krüptograafiaga 190 võtit? Mitu võtit vajab 50-liikmeline rühm?
 2. Kuidas lahendab Kerberos domeenis võtmejagamise probleemi?
 3. Mis vahe on plokkšifril ja voošifril? Too mõlema kohta näide.
