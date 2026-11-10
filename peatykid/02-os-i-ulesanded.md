@@ -35,11 +35,15 @@ Tänapäeva arvuti on keerukam:
 
 Joonis: rakendus ei pöördu kunagi otse riistvara poole – kõik käib OS-i kaudu, mis jagab ressursse ja kaitseb programme.
 
+> 🖱️ **Proovi ise:** [interaktiivne leht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/02-os-ulesanded.html#kes). Loe olukordi ja otsusta, millise OS-i ülesandega on tegu. Lehel saad ka tarkvara liigitada ja tänapäeva riistvara komponente nende kirjeldustega kokku viia.
+
 OS-i saab vaadelda kahest küljest. **Laiendatud masinana** peidab ta riistvara keerukuse: rakendus kutsub välja „ava fail“ ega tea, kas fail on SSD-l, USB-pulgal või võrgukettal. **Ressursihaldurina** otsustab ta, kes ja millal ressurssi kasutab, et süsteem oleks õiglane, tõhus ja turvaline.
 
 Tänapäeval lisanduvad veel kaks ootust: **töökindlus ja taastumine** (süsteem peab vigadest ise taastuma, vt ptk 19) ning **energiatõhusus** (sülearvutis ja telefonis on aku sama oluline ressurss kui protsessoriaeg).
 
 ### Näide: mis juhtub, kui vajutad Wordis Ctrl+S
+
+> 🖱️ **Proovi ise:** [Ctrl+S samm-sammult](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/02-os-ulesanded.html#ctrls). Liigu sammhaaval läbi ja vaata, millises kihis iga samm toimub.
 
 1. **Rakendus** kutsub välja API funktsiooni „kirjuta fail“. Word ei tea, kas fail on SSD-l, USB-pulgal või OneDrive’is.
 2. **OS kontrollib õigusi**: kas sul on lubatud sellesse kausta kirjutada?
@@ -56,6 +60,8 @@ Samal ajal mängib brauser muusikat ja viirusekaitse kontrollib faili. Igaüks s
 - Kaasaegses arvutis on lisaks CPU-le ka GPU, NPU ja turvaprotsessor, mida OS peab haldama.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/02-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Mis vahe on rakendustarkvaral ja süsteemitarkvaral? Too kummastki kaks näidet.
 2. Kirjelda von Neumanni arhitektuuri põhiosi.
