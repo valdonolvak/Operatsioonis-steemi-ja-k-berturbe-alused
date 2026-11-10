@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 8 – lõimede sünkroniseerimine: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--a:#185fa5;--a-bg:#e6f1fb;--b:#854f0b;--b-bg:#faeeda;--lk:#5f4b8b;--lk-bg:#eeeaf7;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--a:#85b7eb;--a-bg:#0c447c;--b:#fac775;--b-bg:#633806;--lk:#c9b8f0;--lk-bg:#3b2d5c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:920px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.btn.ba{border-color:var(--a);color:var(--a);font-weight:600}
+button.btn.bb{border-color:var(--b);color:var(--b);font-weight:600}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number]{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+/* race */
+.race{display:grid;grid-template-columns:1fr 150px 1fr;gap:12px;align-items:start}
+@media (max-width:700px){.race{grid-template-columns:1fr}}
+.th{background:var(--bg);border:2px solid var(--border);border-radius:10px;padding:.6rem .8rem}
+.th.A{border-color:var(--a)}.th.B{border-color:var(--b)}
+.th h3{margin-bottom:.4rem}.th.A h3{color:var(--a)}.th.B h3{color:var(--b)}
+.code{font-family:var(--mono);font-size:13px;line-height:1.9}
+.code div{padding:0 6px;border-radius:4px}
+.code div.pc{background:var(--accent-bg);font-weight:700}
+.code div.done{color:var(--muted);text-decoration:line-through}
+.code div.lk{color:var(--lk)}
+.reg{font-family:var(--mono);font-size:13px;margin-top:6px}
+.mem{background:var(--bg);border:2px solid var(--text);border-radius:10px;padding:.6rem;text-align:center}
+.mem .v{font-size:40px;font-weight:600;font-family:var(--mono);line-height:1.1}
+.lockst{margin-top:8px;font-size:13px;padding:3px 8px;border-radius:6px;background:var(--lk-bg);color:var(--lk);display:inline-block}
+.tl{font-family:var(--mono);font-size:12.5px;margin-top:10px;border-collapse:collapse;width:100%}
+.tl td,.tl th{padding:2px 8px;border-bottom:1px solid var(--border);text-align:left}
+.tl th{color:var(--muted);font-weight:500}
+.tl td.A{color:var(--a)}.tl td.B{color:var(--b)}
+/* mass */
+.bars{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:14px;margin-top:6px}
+.barbg{height:22px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.barfill{height:100%;transition:width .3s}
+/* semafor */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.lot{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.slot{height:54px;border:2px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--bg)}
+.slot.full{border-style:solid;border-color:var(--a)}
+.sem{font-family:var(--mono);font-size:22px;font-weight:700;text-align:center;padding:.3rem;border-radius:8px;background:var(--bg);border:1px solid var(--border)}
+.queue{min-height:36px;font-size:24px;letter-spacing:4px;padding:4px 8px;border:1px dashed var(--border);border-radius:8px;background:var(--bg)}
+.buf{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 0}
+.cell{height:44px;border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;background:var(--bg)}
+.cell.f{background:var(--a-bg);border-color:var(--a);color:var(--a)}
+.semrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.semrow div{flex:1;min-width:110px;text-align:center;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.3rem}
+.semrow b{display:block;font-family:var(--mono);font-size:20px}
+.sleep{color:var(--bad);font-weight:600}
+/* mutex */
+.ppl{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.per{flex:1;min-width:150px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem;text-align:center}
+.per .f{font-size:32px}
+.per.own{border:2px solid var(--ok-line)}
+.per.wait{border:2px dashed var(--bad-line)}
+.per.gone{opacity:.4}
+.per .btns{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.key{font-size:15px;text-align:center;margin-top:6px}
+/* valik */
+.qtext{font-size:17px;font-weight:500;margin:0 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.opt{font:inherit;font-size:14.5px;text-align:left;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/08-sunkroniseerimine.md">← Peatükk 8</a> · <a href="08-test.html">Test →</a></nav>
+<h1>Lõimede sünkroniseerimine – õpileht</h1>
+<p>Kui mitu lõime kasutab samu andmeid, tuleb nende töö kooskõlastada. Muidu tekivad <strong>võidujooksud</strong> ja andmed rikutakse. Sellel lehel tekitad võidujooksu ise, parandad selle lukuga ning proovid semafori, tootja–tarbija puhvrit ja mutexit.</p>
+<div class="toc"><a href="#voidujooks">1. Võidujooks samm-sammult</a><a href="#mass">2. Miljon suurendust</a><a href="#semafor">3. Semafor ja tootja–tarbija</a><a href="#mutex">4. Mutex ehk WC võti</a><a href="#vali">5. Vali mehhanism</a></div>
+
+<!-- 1 -->
+<section id="voidujooks">
+<h2>1. Võidujooks samm-sammult</h2>
+<p>Sina oled planeerija. Kaks lõime suurendavad sama muutujat <code>x</code>, mille algväärtus on 5. Õige lõpptulemus on 7. Vali, kumb lõim teeb järgmise sammu. Proovi kõigepealt ilma lukuta, nii et tulemuseks tuleb 6, ja siis lukuga.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="uselock"> Kasuta lukku (kriitiline piirkond)</label>
+  <div class="race" style="margin-top:10px">
+    <div class="th A"><h3>Lõim A</h3><div class="code" id="codeA"></div><div class="reg" id="regA"></div></div>
+    <div><div class="mem"><div class="hint">x mälus</div><div class="v" id="xv">5</div></div><div style="text-align:center"><span class="lockst" id="lockst"></span></div></div>
+    <div class="th B"><h3>Lõim B</h3><div class="code" id="codeB"></div><div class="reg" id="regB"></div></div>
+  </div>
+  <div class="row"><span><button class="btn ba" id="stepA">A teeb sammu</button> <button class="btn bb" id="stepB">B teeb sammu</button></span><span><button class="btn" id="worst">Näita halvimat järjekorda</button> <button class="btn" id="rreset">Alusta uuesti</button></span></div>
+  <div class="info" id="rinfo"></div>
+  <table class="tl" id="tl"></table>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="mass">
+<h2>2. Miljon suurendust</h2>
+<p>Päris programmis ei vali sina, vaid planeerija, ja vahetusi on tuhandeid. Käivita simulatsioon: mitu lõime suurendavad sama loendurit ning planeerija vahetab neid juhuslikel hetkedel. Mitu suurendust läheb kaduma?</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Lõimi: <select id="nth"><option>2</option><option selected>4</option><option>8</option></select> &nbsp; Suurendusi lõime kohta: <select id="nin"><option>1000</option><option selected>10000</option><option>50000</option></select></span><span><button class="btn" id="mrun">Käivita ilma lukuta</button> <button class="btn primary" id="mrunl">Käivita lukuga</button></span></div>
+  <div id="mres"></div>
+  <div class="info" id="minfo">Vajuta „Käivita“. Simulatsioon jäljendab olukorda, kus planeerija vahetab lõimi juhuslikult. Vahel isegi just loe, liida ja kirjuta sammude vahel.</div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="semafor">
+<h2>3. Semafor ja tootja–tarbija</h2>
+<div class="two">
+  <div class="card">
+    <h3>Parkla: loendav semafor (5 kohta)</h3>
+    <p class="hint">Saabuv auto teeb P (wait), lahkuv auto teeb V (signal).</p>
+    <div class="sem" id="psem"></div>
+    <div class="lot" id="lot"></div>
+    <div class="hint">Tõkkepuu taga ootavad:</div>
+    <div class="queue" id="pq"></div>
+    <div class="row"><button class="btn primary" id="arrive">🚗 Auto saabub (P)</button><button class="btn" id="leave">Auto lahkub (V)</button></div>
+    <div class="info" id="pinfo">Parklas on 5 vaba kohta.</div>
+  </div>
+  <div class="card">
+    <h3>Tootja–tarbija: video puhver (5 kohta)</h3>
+    <p class="hint">Tootja laadib videolõike, tarbija näitab neid. Kaks semafori ja üks mutex.</p>
+    <div class="buf" id="buf"></div>
+    <div class="semrow"><div>vabad<b id="sfree"></b></div><div>täidetud<b id="sfull"></b></div><div>tootja<b id="spst" style="font-size:14px"></b></div><div>tarbija<b id="scst" style="font-size:14px"></b></div></div>
+    <div class="row"><button class="btn primary" id="prod">📥 Tootja: laadi lõik</button><button class="btn" id="cons">▶️ Tarbija: näita lõiku</button></div>
+    <div class="info" id="binfo">Puhver on tühi.</div>
+  </div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="mutex">
+<h2>4. Mutex ehk kohviku WC võti</h2>
+<p>Võtme saab see, kes sisse läheb, ja tagastada saab ainult tema ise, sest ta on omanik. Proovi ka seda, mis juhtub, kui keegi läheb võtmega koju.</p>
+<div class="card">
+  <div class="ppl" id="ppl"></div>
+  <div class="key" id="keyst"></div>
+  <div class="info" id="xinfo">Võti on vaba. Vajuta kellegi juures „Võta võti“.</div>
+  <div class="row"><span></span><button class="btn" id="xreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="vali">
+<h2>5. Vali sobiv mehhanism</h2>
+<p>Igas olukorras on üks sobivaim Windowsi sünkroniseerimismehhanism. Vali see.</p>
+<div class="card" id="vcard" aria-live="polite"></div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ---------- 1. võidujooks ---------- */
+let x,T,lockOwner,log;
+function rReset(){x=5;lockOwner=null;log=[];T={A:{pc:0,reg:null,blocked:false},B:{pc:0,reg:null,blocked:false}};$('rinfo').className='info';$('rinfo').innerHTML='Vali, kumb lõim alustab. Proovi tekitada olukord, kus mõlemad loevad väärtuse 5 enne, kui kumbki uue väärtuse kirjutab.';drawR()}
+const STEPS=()=>$('uselock').checked?['võta lukk','loe x → reg','liida reg + 1','kirjuta reg → x','vabasta lukk']:['loe x → reg','liida reg + 1','kirjuta reg → x'];
+function drawR(){
+  const S=STEPS();
+  for(const n of ['A','B']){const t=T[n];
+    $('code'+n).innerHTML=S.map((s,i)=>'<div class="'+(i<t.pc?'done':i===t.pc?'pc':'')+(s.includes('lukk')?' lk':'')+'">'+(i===t.pc?'▶ ':'&nbsp;&nbsp;')+s+'</div>').join('')+(t.pc>=S.length?'<div style="color:var(--ok)">✓ valmis</div>':'');
+    $('reg'+n).innerHTML='register: <b>'+(t.reg===null?'–':t.reg)+'</b>'+(t.blocked?' <span style="color:var(--bad)">· ootab lukku</span>':'');
+    $('step'+n).disabled=t.pc>=S.length;}
+  $('xv').textContent=x;
+  $('lockst').textContent=$('uselock').checked?(lockOwner?'🔒 lukk: lõim '+lockOwner:'🔓 lukk vaba'):'lukku pole';
+  $('tl').innerHTML=log.length?'<tr><th>Aeg</th><th>Lõim</th><th>Samm</th><th>x</th></tr>'+log.map((l,i)=>'<tr><td>'+(i+1)+'</td><td class="'+l[0]+'">'+l[0]+'</td><td>'+l[1]+'</td><td>'+l[2]+'</td></tr>').join(''):'';
+}
+function step(n){
+  const S=STEPS(),t=T[n],s=S[t.pc],o=n==='A'?'B':'A';
+  if(s==='võta lukk'){if(lockOwner&&lockOwner!==n){t.blocked=true;log.push([n,'proovib lukku – hõivatud, jääb ootama',x]);$('rinfo').className='info';$('rinfo').innerHTML='Lõim '+n+' tahab lukku, kuid lõim '+lockOwner+' hoiab seda. '+n+' <b>blokeeritakse</b> ja ootab, kuni '+lockOwner+' luku vabastab. See ongi vastastikune välistamine.';drawR();return}lockOwner=n;t.blocked=false;log.push([n,'võtab luku',x])}
+  else if(s.startsWith('loe')){t.reg=x;log.push([n,'loeb x = '+x,x])}
+  else if(s.startsWith('liida')){t.reg++;log.push([n,'liidab → registris '+t.reg,x])}
+  else if(s.startsWith('kirjuta')){x=t.reg;log.push([n,'kirjutab '+t.reg,x])}
+  else if(s==='vabasta lukk'){lockOwner=null;log.push([n,'vabastab luku',x]);if(T[o].blocked){T[o].blocked=false}}
+  t.pc++;
+  const done=T.A.pc>=S.length&&T.B.pc>=S.length;
+  if(done){if(x===7){$('rinfo').className='info ok';$('rinfo').innerHTML='<b>x = 7, õige!</b> '+($('uselock').checked?'Lukk tagas, et teine lõim sai lugeda alles siis, kui esimene oli uue väärtuse kirjutanud. Ükskõik millises järjekorras sa samme valid, tulemus on alati 7.':'Seekord läks hästi, sest üks lõim jõudis kirjutada enne, kui teine luges. Proovi järjekorda A loe → B loe → …')}
+    else{$('rinfo').className='info bad';$('rinfo').innerHTML='<b>x = '+x+', üks suurendus läks kaduma!</b> Mõlemad lõimed lugesid väärtuse enne, kui teine jõudis uue kirjutada. Teise lõime kirjutus kirjutas esimese tulemuse üle. Lülita lukk sisse ja proovi sama järjekorda uuesti.'}}
+  else if(!$('uselock').checked&&T.A.reg!==null&&T.B.reg!==null&&T.A.pc===1&&T.B.pc===1){$('rinfo').className='info bad';$('rinfo').innerHTML='Mõlemad lõimed lugesid väärtuse '+T.A.reg+'. Nüüd on tulemus juba määratud: kumbki kirjutab 6.'}
+  else if($('uselock').checked&&s==='vabasta lukk'){$('rinfo').className='info';$('rinfo').innerHTML='Lõim '+n+' vabastas luku. Nüüd saab teine lõim selle võtta.'}
+  else{$('rinfo').className='info';$('rinfo').innerHTML='Lõim '+n+': '+s+'.'}
+  drawR();
+}
+$('stepA').onclick=()=>step('A');$('stepB').onclick=()=>step('B');
+$('uselock').onchange=rReset;$('rreset').onclick=rReset;
+$('worst').onclick=()=>{rReset();const seq=$('uselock').checked?['A','A','B','A','A','A','B','B','B','B','B']:['A','B','A','B','A','B'];let i=0;const tm=setInterval(()=>{if(i>=seq.length){clearInterval(tm);return}step(seq[i++])},550)};
+rReset();
+
+/* ---------- 2. mass ---------- */
+function runMass(lock){
+  const n=+$('nth').value,m=+$('nin').value;let x=0,lost=0;
+  const th=Array.from({length:n},()=>({left:m,st:0,reg:0}));
+  let alive=n,sw=0;
+  /* juhuslik vaheldumine: planeerija valib juhusliku lõime ja laseb tal teha juhusliku arvu samme */
+  while(alive){
+    const i=Math.floor(Math.random()*n),t=th[i];if(!t.left)continue;
+    let burst=30+Math.floor(Math.random()*1500);sw++;
+    if(lock){/* lukuga teeb lõim kogu loe-liida-kirjuta ühe jagamatu tervikuna */
+      if(t.st!==0){x=t.reg+0;}
+      while(burst--&&t.left){x++;t.left--}t.st=0;
+    } else {
+      while(burst--&&t.left){
+        if(t.st===0){t.reg=x;t.st=1}
+        else if(t.st===1){t.reg++;t.st=2}
+        else {x=t.reg;t.st=0;t.left--}
+      }
+    }
+    if(!t.left)alive--;
+  }
+  const exp=n*m;return {x,exp,lost:exp-x,sw};
+}
+let lastNo=null;
+function showMass(lock){const r=runMass(lock);if(!lock)lastNo=r;
+  const rows=[['Oodatud',r.exp,'var(--muted)']];if(lastNo&&lock)rows.push(['Ilma lukuta',lastNo.x,'var(--bad-line)']);rows.push([lock?'Lukuga':'Ilma lukuta',r.x,lock?'var(--ok-line)':'var(--bad-line)']);
+  $('mres').innerHTML='<div class="bars">'+rows.map(([l,v,c])=>'<span>'+l+'</span><div class="barbg"><div class="barfill" style="width:'+(v/r.exp*100)+'%;background:'+c+'"></div></div><b class="mono">'+v.toLocaleString('et-EE')+'</b>').join('</div><div class="bars">')+'</div>';
+  $('minfo').className='info '+(r.lost?'bad':'ok');
+  $('minfo').innerHTML=lock?'<b>Lukuga tuli täpselt '+r.exp.toLocaleString('et-EE')+'.</b> Iga suurendus on jagamatu: teised ootavad, kuni loe-liida-kirjuta on tehtud. Päris programmis on lukuga variant aeglasem, sest lõimed peavad üksteist ootama.':'<b>Kaotati '+r.lost.toLocaleString('et-EE')+' suurendust ('+(r.lost/r.exp*100).toFixed(1)+'%).</b> Käivita uuesti ja tulemus on iga kord erinev. Just see teeb võidujooksud salakavalaks: viga ei kordu alati samamoodi ja võib testides märkamata jääda.'}
+$('mrun').onclick=()=>showMass(false);$('mrunl').onclick=()=>showMass(true);
+
+/* ---------- 3a. parkla ---------- */
+let sem=5,lot=[],pq=[],carN=0;const CARS=['🚗','🚙','🚕','🚓','🚐','🛻','🚌','🏎️'];
+function drawP(){$('psem').innerHTML='semafor = '+sem+(sem===0?' <span class="hint">(P jääb ootama)</span>':'');
+  $('lot').innerHTML=Array.from({length:5},(_,i)=>'<div class="slot'+(lot[i]?' full':'')+'">'+(lot[i]||'')+'</div>').join('');
+  $('pq').innerHTML=pq.join('')||'<span class="hint" style="font-size:13px;letter-spacing:0">keegi ei oota</span>';$('leave').disabled=!lot.some(Boolean)}
+$('arrive').onclick=()=>{const c=CARS[carN++%CARS.length];
+  if(sem>0){sem--;lot[lot.findIndex(v=>!v)===-1?lot.length:lot.findIndex(v=>!v)]=c;$('pinfo').className='info';$('pinfo').innerHTML='<b>P:</b> semafor oli '+(sem+1)+' > 0, seega vähendati see '+sem+'-ni ja auto pääses sisse.'}
+  else{pq.push(c);$('pinfo').className='info bad';$('pinfo').innerHTML='<b>P:</b> semafor on 0, vabu kohti pole. Auto <b>jääb ootama</b> tõkkepuu taha. Ootaja ei raiska kütust (protsessoriaega), vaid seisab, kuni keegi lahkub.'}drawP()};
+$('leave').onclick=()=>{const idx=lot.map((v,i)=>v?i:-1).filter(i=>i>=0);const i=idx[Math.floor(Math.random()*idx.length)];lot[i]=null;
+  if(pq.length){lot[i]=pq.shift();$('pinfo').className='info ok';$('pinfo').innerHTML='<b>V:</b> auto lahkus ja ootaja ärkas. Semafor jäi '+sem+'-ks, sest vabanenud koht anti kohe järjekorra esimesele.'}
+  else{sem++;$('pinfo').className='info';$('pinfo').innerHTML='<b>V:</b> auto lahkus, semafor suurenes '+sem+'-ni.'}drawP()};
+lot=[null,null,null,null,null];drawP();
+
+/* ---------- 3b. tootja–tarbija ---------- */
+let buf=[],free=5,full=0,seg=1,pWait=false,cWait=false;
+function drawB(){$('buf').innerHTML=Array.from({length:5},(_,i)=>'<div class="cell'+(buf[i]?' f':'')+'">'+(buf[i]?'#'+buf[i]:'')+'</div>').join('');
+  $('sfree').textContent=free;$('sfull').textContent=full;
+  $('spst').innerHTML=pWait?'<span class="sleep">ootel</span>':'töötab';$('scst').innerHTML=cWait?'<span class="sleep">ootel</span>':'töötab'}
+$('prod').onclick=()=>{
+  if(free===0){pWait=true;$('binfo').className='info bad';$('binfo').innerHTML='<b>Tootja: P(vabad)</b> – vabad = 0, puhver on täis. Tootja <b>jääb ootama</b>. Ilma semaforita kirjutaks ta üle lõigu, mida pole veel näidatud.';drawB();return}
+  free--;buf.push(seg);const s=seg++;full++;
+  let msg='<b>Tootja:</b> P(vabad) → '+free+', võtab mutexi, paneb lõigu #'+s+' puhvrisse, vabastab mutexi, V(täidetud) → '+full+'.';
+  if(cWait){cWait=false;msg+=' <b>Ootel tarbija ärkas!</b>'}$('binfo').className='info';$('binfo').innerHTML=msg;drawB()};
+$('cons').onclick=()=>{
+  if(full===0){cWait=true;$('binfo').className='info bad';$('binfo').innerHTML='<b>Tarbija: P(täidetud)</b> – täidetud = 0, puhver on tühi. Tarbija <b>jääb ootama</b>, video näitab „laadimine…“. Ilma semaforita loeks ta tühjast puhvrist prügi.';drawB();return}
+  full--;const s=buf.shift();free++;
+  let msg='<b>Tarbija:</b> P(täidetud) → '+full+', võtab mutexi, näitab lõiku #'+s+', vabastab mutexi, V(vabad) → '+free+'.';
+  if(pWait){pWait=false;msg+=' <b>Ootel tootja ärkas!</b>'}$('binfo').className='info';$('binfo').innerHTML=msg;drawB()};
+drawB();
+
+/* ---------- 4. mutex ---------- */
+const PP=[['Mari','👩'],['Jaan','👨'],['Kati','👧']];
+let owner=null,waiting=[],gone=new Set(),abandoned=false;
+function drawX(){
+  $('ppl').innerHTML=PP.map(([n,f],i)=>{const st=gone.has(i)?'gone':owner===i?'own':waiting.includes(i)?'wait':'';
+    return '<div class="per '+st+'"><div class="f">'+f+'</div><b>'+n+'</b><div class="hint">'+(gone.has(i)?'läks koju 🏠':owner===i?'on WC-s (omanik)':waiting.includes(i)?'ootab':'kohvikus')+'</div><div class="btns">'+
+     '<button class="btn" data-a="take" data-i="'+i+'"'+(gone.has(i)||owner===i||waiting.includes(i)?' disabled':'')+'>Võta võti</button>'+
+     '<button class="btn" data-a="rel" data-i="'+i+'"'+(gone.has(i)?' disabled':'')+'>Tagasta võti</button>'+
+     '<button class="btn" data-a="go" data-i="'+i+'"'+(gone.has(i)||owner!==i?' disabled':'')+'>Lahku võtmega koju</button></div></div>'}).join('');
+  $('keyst').innerHTML=owner===null?'🔑 Võti on letil (mutex vaba)':'🔑 Võti on: <b>'+PP[owner][0]+'</b> (omanik)'+(waiting.length?' · ootajad: '+waiting.map(i=>PP[i][0]).join(', '):'');
+  document.querySelectorAll('#ppl button').forEach(b=>b.onclick=()=>act(b.dataset.a,+b.dataset.i));
+}
+function info(h,c){$('xinfo').className='info'+(c?' '+c:'');$('xinfo').innerHTML=h}
+function act(a,i){const n=PP[i][0];
+  if(a==='take'){if(owner===null){owner=i;info('<b>'+n+'</b> võttis võtme: <code>WaitForSingleObject</code> → <code>WAIT_OBJECT_0</code>. Nüüd on '+n+' mutexi omanik.','ok')}else{waiting.push(i);info('<b>'+n+'</b> tahab võtit, kuid see on '+PP[owner][0]+' käes. '+n+' jääb <b>ootama</b>.')}}
+  if(a==='rel'){if(owner!==i){info('<b>'+n+'</b> proovib võtit tagastada, kuid tema ei ole omanik. <code>ReleaseMutex</code> annab vea <code>ERROR_NOT_OWNER</code>. Mutexit saab vabastada ainult see, kes selle võttis. Semafori puhul oleks see õnnestunud.','bad');drawX();return}
+    owner=null;if(waiting.length){owner=waiting.shift();info('<b>'+n+'</b> tagastas võtme (<code>ReleaseMutex</code>). Järjekorras esimene, <b>'+PP[owner][0]+'</b>, ärkas ja sai võtme.','ok')}else info('<b>'+n+'</b> tagastas võtme. Võti on letil.','ok')}
+  if(a==='go'){gone.add(i);owner=null;
+    if(waiting.length){owner=waiting.shift();info('<b>'+n+'</b> läks võtmega koju (lõim lõppes mutexit vabastamata). Windows märkas seda ja andis võtme järgmisele ootajale <b>'+PP[owner][0]+'</b>, kuid tagastusväärtusega <code>WAIT_ABANDONED</code>. '+PP[owner][0]+' teab nüüd, et eelmine kasutaja lahkus ootamatult ja WC (jagatud andmed) võib olla poolikus olekus. Andmed tuleb üle kontrollida.','bad')}
+    else{abandoned=true;info('<b>'+n+'</b> läks võtmega koju (lõim lõppes mutexit vabastamata). Järgmine, kes võtit küsib, saab selle kätte, kuid tagastusväärtusega <code>WAIT_ABANDONED</code>.','bad')}}
+  if(a==='take'&&abandoned&&owner===i){abandoned=false;info('<b>'+n+'</b> sai võtme, kuid tagastusväärtusega <code>WAIT_ABANDONED</code>: eelmine omanik lahkus seda vabastamata. Kontrolli jagatud andmeid!','bad')}
+  drawX()}
+$('xreset').onclick=()=>{owner=null;waiting=[];gone=new Set();abandoned=false;info('Võti on vaba. Vajuta kellegi juures „Võta võti“.');drawX()};drawX();
+
+/* ---------- 5. vali ---------- */
+const MO=['Interlocked-funktsioon','Kriitiline sektsioon','SRW-lukk','Sündmus (event)','Nimega mutex','Semafor','Spinlukk'];
+const MQ=[['Veebiserveri loendur, mitu korda lehte on külastatud. Iga päring teeb ainult +1.',0,'Üks aatomtehe (InterlockedIncrement) on kõige kiirem ega vaja lukku.'],
+ ['Programmi lõimed kirjutavad samasse logifaili. Kõik on ühes protsessis.',1,'Ühe protsessi lõimede vahel on kriitiline sektsioon (või SRW-lukk) kiire kasutajarežiimi lukk.'],
+ ['Hinnakirja vahemälu, mida loevad sajad lõimed sekundis ja mida uuendatakse kord tunnis.',2,'SRW-lukk lubab palju lugejaid korraga ja ainult kirjutaja vajab ainuõigust.'],
+ ['Kõik töölõimed peavad ootama, kuni seadistusfail on laaditud, ja siis korraga alustama.',3,'Käsitsi lähtestuv sündmus äratab kõik ootajad korraga.'],
+ ['Kaks eraldi PowerShelli skripti (eri protsessid) kirjutavad samasse faili.',4,'Protsesside vahel on vaja tuumaobjekti, millele mõlemad saavad nime järgi ligi: Global\\Logi.'],
+ ['Programm tohib käivituda ainult ühe eksemplarina.',4,'Programm loob käivitumisel nimega mutexi. Kui see on juba olemas, töötab teine eksemplar.'],
+ ['Server tohib korraga avada kuni 5 andmebaasiühendust.',5,'Loendav semafor algväärtusega 5.'],
+ ['Võrgukaardi draiver kaitseb oma andmestruktuuri DISPATCH_LEVEL-il, kus lõim ei tohi ootele minna.',6,'Kõrgel IRQL-il ei saa blokeeruda, seega kasutatakse spinlukku (ptk 5). Lukk peab olema väga lühike.'],
+ ['Videotöötlusprogrammi taustalõim teatab kasutajaliidese lõimele: „renderdamine on valmis“.',3,'Sündmus teavitab, see ei kaitse andmeid.']];
+let vq=shuffle(MQ.map((_,i)=>i)),vp=0,vs={ok:0,n:0},va=null;
+function drawV(){
+  if(vp>=vq.length){$('vcard').innerHTML='<p class="qtext">Tulemus: '+vs.ok+' / '+vs.n+'</p><div class="row"><span></span><button class="btn primary" id="vag">Alusta uuesti</button></div>';$('vag').onclick=()=>{vq=shuffle(MQ.map((_,i)=>i));vp=0;vs={ok:0,n:0};va=null;drawV()};return}
+  const [q,c,e]=MQ[vq[vp]];let h='<p class="score">'+(vp+1)+' / '+vq.length+' · õigeid '+vs.ok+'</p><p class="qtext">'+q+'</p><div class="opts">';
+  MO.forEach((o,i)=>{let cl='opt';if(va!==null)cl+=i===c?' ok':i===va?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(va!==null?' disabled':'')+'>'+o+'</button>'});
+  h+='</div>';if(va!==null)h+='<div class="fb '+(va===c?'ok':'bad')+'"><strong>'+(va===c?'Õige!':'Vale. Õige: '+MO[c])+'</strong>'+e+'</div>';
+  h+='<div class="row"><span></span><button class="btn primary" id="vn"'+(va===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('vcard').innerHTML=h;document.querySelectorAll('#vcard .opt').forEach(b=>b.onclick=()=>{va=+b.dataset.i;vs.n++;if(va===c)vs.ok++;drawV()});$('vn').onclick=()=>{vp++;va=null;drawV()};
+}
+drawV();
+</script>
+</body>
+</html>

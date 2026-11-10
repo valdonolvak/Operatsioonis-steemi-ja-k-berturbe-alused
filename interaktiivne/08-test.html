@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 8 – test: lõimede sünkroniseerimine</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/08-sunkroniseerimine.md">← Peatükk 8</a> · <a href="08-sunkroniseerimine.html">Interaktiivne õpileht</a></nav>
+<h1>Test: lõimede sünkroniseerimine</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on võidujooks (race condition)?", "o": ["Olukord, kus mitu lõime muudavad jagatud andmeid kontrollimatult ja tulemus sõltub sellest, millises järjekorras nad juhtuvad töötama", "Kahe programmi kiiruse võrdlus", "Protsessori ülekuumenemine", "Viga, mis tekib alati ja samamoodi"], "c": 0, "e": "Võidujooks ilmneb ainult siis, kui lõimed töötavad „valel“ hetkel. Seepärast võib see testides märkamata jääda."},
+{"q": "Miks võib tehe x = x + 1 kahes lõimes kaotada suurenduse?", "o": ["Sest liitmine on aeglane", "Sest tehe koosneb kolmest sammust (loe, liida, kirjuta) ja planeerija võib lõimi nende vahel vahetada", "Sest x on liiga väike", "Sest mälu saab otsa"], "c": 1, "e": "Kui mõlemad lõimed loevad väärtuse 5 enne, kui kumbki uue kirjutab, kirjutavad mõlemad 6 ja üks suurendus kaob."},
+{"q": "x = 5. Lõim A loeb 5, lõim B loeb 5, A kirjutab 6, B kirjutab 6. Mis on x lõppväärtus?", "o": ["7", "5", "6", "12"], "c": 2, "e": "Mõlemad suurendasid, kuid B kirjutas A tulemuse üle. Õige oleks olnud 7."},
+{"q": "Mis on tootja–tarbija probleem?", "o": ["Kaks lõime konkureerivad sama printeri pärast", "Programm ostab protsessoriaega", "Kaks protsessi kasutavad sama faili", "Üks lõim paneb andmeid piiratud puhvrisse ja teine võtab neid sealt; tarbija peab ootama tühja ja tootja täis puhvri korral"], "c": 3, "e": "Näiteks video voogedastus: tootja laadib lõike, tarbija näitab neid."},
+{"q": "Mis on kriitiline piirkond?", "o": ["Koodiosa, mis kasutab jagatud ressurssi ja kus korraga tohib olla ainult üks lõim", "Mälu osa, kuhu programm ei pääse", "Kõige aeglasem koodiosa", "Tuumarežiimi kood"], "c": 0, "e": "Kriitiline piirkond kaitstakse lukuga: sisenemisel lukk võetakse, väljumisel vabastatakse."},
+{"q": "Milline neist EI ole kriitilise piirkonna hea lahenduse tingimus?", "o": ["Kaks lõime ei ole kunagi korraga kriitilises piirkonnas", "Ükski lõim ei oota lõputult", "Lahendus eeldab, et protsessoreid on täpselt kaks", "Kriitilisest piirkonnast väljas olev lõim ei blokeeri teisi"], "c": 2, "e": "Hea lahendus ei tohi eeldada midagi protsessorite arvu ega kiiruse kohta."},
+{"q": "Miks peaks kriitiline piirkond olema võimalikult lühike?", "o": ["Mida kauem lukku hoitakse, seda rohkem teised ootavad ja seda vähem on mitmest tuumast kasu", "Lühike kood on alati turvalisem", "Pikk kriitiline piirkond põhjustab sinise ekraani", "Windows lubab lukku hoida ainult 1 ms"], "c": 0, "e": "Ära tee luku all aeglaseid asju, nagu faili lugemine või võrgupäring, kui see pole vältimatu."},
+{"q": "Miks ei saa lukku teha tavalise muutujaga: kui lukk == 0, siis lukk = 1?", "o": ["Muutujas ei saa hoida arvu 1", "Sest kontroll ja omistamine on eraldi sammud ning kaks lõime võivad mõlemad näha 0 ja mõlemad lukku võtta", "Sest see on liiga aeglane", "Töötab küll"], "c": 1, "e": "See on sama võidujooks. Lukk peab olema tehtud aatomse tehtega, nt LOCK CMPXCHG."},
+{"q": "Mis on aatomikäsk?", "o": ["Käsk, mis kasutab tuumaenergiat", "Käsk, mis töötab ainult tuumarežiimis", "Kõige lühem protsessori käsk", "Käsk, mida teised tuumad ei saa poole pealt katkestada, nt x86 LOCK CMPXCHG"], "c": 3, "e": "Kõik kõrgema taseme lukud on ehitatud aatomikäskudele. Windowsis saab neid kasutada Interlocked-funktsioonidega."},
+{"q": "Mida teeb InterlockedIncrement(&x)?", "o": ["Suurendab x-i ühe jagamatu sammuna", "Lukustab kogu programmi", "Loob uue lõime", "Kustutab x-i"], "c": 0, "e": "See on kõige kiirem viis lihtsa loenduri kaitsmiseks, sest eraldi lukku pole vaja."},
+{"q": "Mis vahe on spinlukul (aktiivne ootamine) ja blokeeruval ootamisel?", "o": ["Vahet pole", "Spinlukk paneb lõime ootele, blokeeruv ootamine kontrollib tsüklis", "Spinlukk kontrollib tsüklis ja raiskab protsessoriaega; blokeeruv ootamine paneb lõime ootele ega raiska protsessoriaega", "Spinlukk töötab ainult ühe tuumaga"], "c": 2, "e": "Spinlukk sobib väga lühikeseks ootamiseks ja tuumas kõrgel IRQL-il, kus ootele minna ei saa. Blokeeruv ootamine sobib kõigeks pikemaks."},
+{"q": "Millal on spinlukk sobiv?", "o": ["Kui lukku hoitakse väga lühikest aega või kood töötab kõrgel IRQL-il, kus lõim ei tohi ootele minna", "Kui oodatakse faili allalaadimist", "Kui oodatakse kasutaja sisestust", "Alati, sest see on kõige kiirem"], "c": 0, "e": "Kui ootamine kestab kaua, raiskab spinlukk tuuma tühja kontrollimisega."},
+{"q": "Mis on semafor?", "o": ["Lukk, millel on omanik", "Graafikakaardi osa", "Täisarvuline loendur kahe aatomtehtega: P/wait vähendab (0 korral ootab), V/signal suurendab ja äratab ootaja", "Võrguprotokoll"], "c": 2, "e": "Semafori väärtus näitab, mitu ressurssi on vaba. Selle mõtles välja Edsger Dijkstra 1965. aastal."},
+{"q": "Semafori algväärtus on 5 (andmebaasiühendused). Viis päringut on juba ühenduse saanud. Mis juhtub kuuenda päringuga?", "o": ["Ta saab ka ühenduse", "Ta saab vea ja lõpetatakse", "Semafor muutub negatiivseks ja kõik jätkavad", "Ta jääb ootama, kuni keegi teeb V ja vabastab ühenduse"], "c": 3, "e": "P vähendab loendurit ainult siis, kui see on suurem kui 0. Muidu ootab lõim."},
+{"q": "Mitut semafori ja mutexit kasutab klassikaline tootja–tarbija lahendus?", "o": ["Ühte semafori", "Kahte semafori (vabad, täidetud) ja üht mutexit", "Kolme mutexit", "Ainult sündmust"], "c": 1, "e": "Semafor vabad ütleb, kas tootja tohib lisada, ja semafor täidetud, kas tarbija tohib võtta. Mutex kaitseb puhvri sisemisi andmeid."},
+{"q": "Mis on mutexi eriomadus semafori ees?", "o": ["Loendab mitu ressurssi", "Ei vaja tuuma", "Töötab ainult ühes lõimes", "Tal on omanik: vabastada saab ainult see lõim, kes selle võttis"], "c": 3, "e": "Semafori V-d võib teha ükskõik milline lõim. Kui mutexit üritab vabastada keegi teine, tuleb viga ERROR_NOT_OWNER."},
+{"q": "Mida tähendab WAIT_ABANDONED?", "o": ["Mutexi omanik lõpetas töö seda vabastamata; uus omanik sai luku, kuid jagatud andmed võivad olla poolikud", "Ootamine aegus", "Mutex kustutati", "Lõim on surnud"], "c": 0, "e": "Uus omanik peaks jagatud andmed üle kontrollima, sest eelmine lõim võis lahkuda poole töö pealt."},
+{"q": "Miks saab Windowsi mutexit kasutada protsesside vahel?", "o": ["Sest see on kasutajarežiimi lukk", "Sest see on tuumaobjekt, millele saab anda nime ja mida mitu protsessi saavad avada", "Sest see kasutab võrku", "Ei saa"], "c": 1, "e": "Näiteks kaks PowerShelli skripti saavad kasutada mutexit Global\\Logi. CRITICAL_SECTION ja SRW-lukk töötavad ainult ühe protsessi sees."},
+{"q": "Miks loob pahavara sageli nimega mutexi?", "o": ["Et kiirendada arvutit", "Et krüpteerida faile", "Et kontrollida, kas arvuti on juba nakatunud, ja mitte nakatada seda kaks korda", "Et logida kasutaja paroole"], "c": 2, "e": "Turvaanalüütikud kasutavad mutexi nimesid ründetunnustena (IoC). WannaCry kontrollis mutexit MsWinZonesCacheCounterMutexA."},
+{"q": "Mis vahe on käsitsi ja automaatselt lähtestuval sündmusel?", "o": ["Käsitsi lähtestuv äratab kõik ootajad ja jääb signaalituks; automaatselt lähtestuv äratab ühe ootaja ja lähtestub kohe", "Vahet pole", "Automaatselt lähtestuv on aeglasem", "Käsitsi lähtestuv töötab ainult kasutajarežiimis"], "c": 0, "e": "Koolikell on nagu käsitsi lähtestuv sündmus, sest kõik klassid lähevad välja. Arsti ooteruumi tablool süttiv number on automaatselt lähtestuv sündmus, sest kutsutakse üks patsient."},
+{"q": "Milline mehhanism sobib „palju lugejaid, üks kirjutaja“ olukorraks?", "o": ["Postkastipesa", "SRW-lukk", "Ootetaimer", "Sündmus"], "c": 1, "e": "SRW-lukk lubab mitmel lugejal korraga lugeda ja annab ainuõiguse ainult kirjutajale. See on väike ja kiire, kuid töötab ainult ühe protsessi sees."},
+{"q": "Miks on kriitiline sektsioon ja SRW-lukk kiiremad kui mutex?", "o": ["Need kasutavad GPU-d", "Need ei kontrolli midagi", "Need on kasutajarežiimi lukud: kui lukk on vaba, ei toimu süsteemikutset", "Need töötavad ainult ühe tuumaga"], "c": 2, "e": "Mutex on tuumaobjekt ja nõuab alati tuuma poole pöördumist. See-eest töötab mutex ka protsesside vahel."},
+{"q": "Mis on TOCTOU-viga?", "o": ["Võidujooks, kus programm kontrollib midagi (nt õigust) ja tegutseb hiljem, kuid vahepeal muudab ründaja olukorda", "Faili krüpteerimise viga", "Vale parool", "Liiga väike puhver"], "c": 0, "e": "Time-of-check to time-of-use. Näiteks programm kontrollib faili õigusi, kuid enne avamist vahetab ründaja faili lingiga süsteemifailile. Selliseid vigu on kasutatud õiguste tõstmiseks."},
+{"q": "Skript võtab mutexi, kuid kirjutamisel tekib erind ja ReleaseMutex jääb täitmata. Mis juhtub ja kuidas seda vältida?", "o": ["Mitte midagi, Windows vabastab luku kohe", "Arvuti taaskäivitub", "Teised ootavad igavesti (kuni protsess lõpeb); vältimiseks kasuta try/finally või C# lock", "Fail kustutatakse"], "c": 2, "e": "finally-plokk täidetakse ka erindi korral. Kui lõim lõpeb, saab järgmine ootaja WAIT_ABANDONED."},
+{"q": "Kuidas Rust aitab võidujookse vältida?", "o": ["Rust ei luba lõimi", "Rust keelab andmevõidujooksud juba kompileerimisel: kood, kus kaks lõime saaksid samu andmeid lukuta muuta, ei kompileeru", "Rust lisab automaatselt kõikjale mutexi", "Rust töötab ainult ühe tuumaga"], "c": 1, "e": "Seetõttu soovitab Microsoft kirjutada uut süsteemikoodi Rustis (ptk 4.9, 22)."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
