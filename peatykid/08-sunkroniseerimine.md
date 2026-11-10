@@ -117,20 +117,79 @@ Windowsi kriitiline sektsioon kasutab mõlemat: alguses proovib ta lühidalt spi
 
 ### 8.5 Semafor
 
-**Semafor** (semaphore, Edsger Dijkstra 1965) on täisarvuline loendur kahe aatomtehtega:
+**Semafor** (semaphore) on sünkroniseerimisvahend, mille mõtles välja Hollandi arvutiteadlane Edsger Dijkstra 1965. aastal. Nimi tuleb raudteesemaforist: signaalmast, mis lubab rongil edasi sõita või käsib oodata.
 
-- **P / wait** – vähenda loendurit; kui see on juba 0, oota, kuni keegi suurendab;
-- **V / signal** – suurenda loendurit ja ärata üks ootaja.
+Semafor koosneb kahest osast:
 
-Semafori väärtus näitab, mitu ressurssi on vaba. Seetõttu sobib **loendav semafor** piiratud arvu ressursside haldamiseks.
+- **loendurist** (täisarv S), mis näitab, mitu ressurssi on parajasti vaba;
+- **ootejärjekorrast**, kus magavad lõimed, kes said vastuseks „oota“.
 
-**Näide: andmebaasiühendused.** Serveril on litsents ainult viie samaaegse andmebaasiühenduse jaoks. Semafori algväärtus on 5:
+Semaforiga saab teha ainult kahte tehet. Dijkstra nimetas need hollandikeelsete sõnade järgi P ja V. Tänapäeval öeldakse ka *wait* ja *signal* või *acquire* ja *release*.
+
+| Tehe | Tähendus | Mis juhtub |
+| --- | --- | --- |
+| **P(S)** – wait | „tahan ressurssi“ | Kui S > 0: vähenda S-i ühe võrra ja jätka kohe. Kui S = 0: mine ootejärjekorda ja maga, kuni sind äratatakse. |
+| **V(S)** – signal | „annan ressursi tagasi“ | Kui keegi ootab: ärata järjekorra esimene (S jääb samaks, sest vabanenud ressurss läheb otse talle). Kui keegi ei oota: suurenda S-i ühe võrra. |
+
+![semafor · loendur ja ootejärjekord, P ja V tehte voog](../pildid/08-b.png)
+
+Joonis: P vähendab loendurit või paneb lõime magama; V äratab ootaja või suurendab loendurit. Algväärtus määrab, mitu lõime tohib korraga edasi minna.
+
+**Miks peavad P ja V olema aatomsed?** P sisaldab kontrolli „kas S > 0?“ ja muutmist „S = S − 1“. Kui need oleksid eraldi sammud, tekiks täpselt sama võidujooks nagu ptk 8.2-s: kaks lõime näevad S = 1, mõlemad vähendavad ja mõlemad lähevad sisse, kuigi kohti oli üks. Seepärast teeb P ja V operatsioonisüsteem, kasutades aatomikäske (ptk 8.4).
+
+**Mida algväärtus tähendab?**
+
+- **S = N** (nt 5): korraga tohib edasi minna kuni N lõime. Semafor **piirab** samaaegset juurdepääsu.
+- **S = 1**: korraga tohib sisse ainult üks lõim. Seda nimetatakse **binaarseks semaforiks** ja see toimib nagu lukk.
+- **S = 0**: keegi ei pääse edasi enne, kui keegi teine teeb V. Semafor **annab märku** ja seab tööd õigesse järjekorda.
+
+#### Näide 1: kolm printimistööd, kaks printerit
+
+Koolis on kaks printerit ja printserver haldab neid semaforiga, mille algväärtus on **2**. Kolm õpetajat saadavad printimistöö peaaegu samal ajal.
+
+| Samm | Mis juhtub | S | Ootejärjekord | Prindivad |
+| --- | --- | --- | --- | --- |
+| 0 | algseis | 2 | – | – |
+| 1 | Mari teeb P: S > 0, seega S − 1 | 1 | – | Mari |
+| 2 | Jaan teeb P: S > 0, seega S − 1 | 0 | – | Mari, Jaan |
+| 3 | Kati teeb P: S = 0, **jääb ootama** | 0 | Kati | Mari, Jaan |
+| 4 | Mari lõpetab ja teeb V: keegi ootab, **ärata Kati** | 0 | – | Jaan, Kati |
+| 5 | Jaan lõpetab ja teeb V: keegi ei oota, S + 1 | 1 | – | Kati |
+| 6 | Kati lõpetab ja teeb V: S + 1 | 2 | – | – |
+
+Pane tähele sammu 4: S jääb 0-ks, sest Mari vabastatud printer läks otse Katile. Kui S oleks tõusnud 1-ni, võiks keegi neljas samal hetkel P-ga sisse pääseda ja Kati jääks ootama, kuigi ta oli järjekorras ees.
+
+#### Näide 2: semafor märguandena (algväärtus 0)
+
+Kaks lõime peavad töötama kindlas järjekorras: lõim **A** laadib seadistusfaili ja lõim **B** tohib alustada alles siis, kui seadistus on laaditud. Semafori `valmis` algväärtus on **0**.
+
+```
+valmis = Semafor(0)
+
+Lõim A:                       Lõim B:
+  loe seadistusfail             P(valmis)     // S = 0 → ootab
+  V(valmis)   // S: 0 → ärata B kasuta seadistust
+```
+
+Kui B jõuab P-ni enne, kui A on lõpetanud, on S = 0 ja B jääb ootama. Kui A on juba lõpetanud ja V teinud, on S = 1 ja B läheb kohe edasi. Mõlemal juhul ei kasuta B seadistust enne, kui see on valmis. Ajastusest sõltumata on järjekord alati õige.
+
+#### Näide 3: andmebaasiühendused
+
+Serveril on litsents ainult viie samaaegse andmebaasiühenduse jaoks. Semafori algväärtus on 5:
 
 1. Viis päringut teevad P: loendur langeb 5 → 0 ja kõik saavad ühenduse.
 2. Kuues päring teeb P: loendur on 0, seega jääb ta ootama.
-3. Esimene päring lõpetab ja teeb V: loendur tõuseb 1-ni ja kuues päring ärkab.
+3. Esimene päring lõpetab ja teeb V: ootaja on olemas, seega kuues päring ärkab ja saab vabanenud ühenduse.
 
-**Tootja–tarbija lahendus.** Klassikaline lahendus kasutab kahte semafori ja ühte mutexit:
+Ilma semaforita avaks kuues päring kuuenda ühenduse, andmebaas keelduks ja kasutaja näeks veateadet.
+
+#### Tootja–tarbija lahendus
+
+Klassikaline lahendus kasutab **kahte semafori ja ühte lukku**. Iga semafor loendab eri asja:
+
+- `vabad` – mitu kohta puhvris on tühjad. Algväärtus = puhvri suurus (5);
+- `täidetud` – mitu kohta on andmetega. Algväärtus = 0;
+- `lukk` (mutex) – kaitseb puhvri sisemisi andmeid, et kaks lõime ei muudaks neid korraga.
 
 ```
 vabad    = Semafor(5)   // vabu kohti puhvris
@@ -145,9 +204,73 @@ Tootja:                     Tarbija:
   V(täidetud)                 V(vabad)
 ```
 
-Kui puhver on täis, on `vabad = 0` ja tootja jääb ootama. Kui puhver on tühi, on `täidetud = 0` ja tarbija jääb ootama. Mutex tagab, et puhvri sisemisi andmeid muudab korraga ainult üks lõim.
+![tootja–tarbija · kaks semafori, lukk ja puhver](../pildid/08-c.png)
+
+Joonis: tootja võtab „vaba koha“ ja annab „täidetud koha“, tarbija vastupidi. Kui keegi parajasti puhvrit ei kasuta, on kahe semafori summa puhvri suurus.
+
+Vaata, kuidas semaforide väärtused muutuvad, kui puhvri suurus on 3:
+
+| Samm | Tegevus | vabad | täidetud | Puhver |
+| --- | --- | --- | --- | --- |
+| 0 | algseis | 3 | 0 | `[ ][ ][ ]` |
+| 1 | tarbija teeb P(täidetud): 0 → **ootab** | 3 | 0 | `[ ][ ][ ]` |
+| 2 | tootja: P(vabad), paneb #1, V(täidetud) → ärata tarbija | 2 | 0 | `[1][ ][ ]` |
+| 3 | tarbija ärkab, võtab #1, V(vabad) | 3 | 0 | `[ ][ ][ ]` |
+| 4 | tootja paneb #2, #3, #4 | 0 | 3 | `[2][3][4]` |
+| 5 | tootja teeb P(vabad): 0 → **ootab** (puhver täis) | 0 | 3 | `[2][3][4]` |
+| 6 | tarbija võtab #2, V(vabad) → ärata tootja | 0 | 2 | `[3][4][ ]` |
+| 7 | tootja ärkab, paneb #5, V(täidetud) | 0 | 3 | `[3][4][5]` |
+
+Sammus 2 näitab `täidetud` väärtust 0, sest V andis vabanenud koha otse ootavale tarbijale (nagu printeri näites sammus 4).
+
+**Järjekord on oluline!** Tootja peab tegema **esmalt P(vabad) ja alles siis võtma luku**. Kui tootja võtaks luku enne ja jääks siis P(vabad) juures ootama (puhver on täis), magaks ta lukk käes. Tarbija ei saaks lukku võtta, et puhvrist midagi ära võtta, ja kumbki ei pääseks edasi. Tekiks **ummik** (ptk 11). Reegel: ära jää lukku hoides magama.
 
 Tänapäeval ei pea seda tavaliselt ise kirjutama. .NET-is teeb sama `BlockingCollection<T>` või `Channel<T>`.
+
+#### Binaarne semafor ja mutex: mis vahe on?
+
+Binaarne semafor (algväärtus 1) ja mutex näevad välja sarnased, sest mõlemad lasevad sisse ainult ühe lõime. Vahe on **omanikus**:
+
+| | Binaarne semafor | Mutex |
+| --- | --- | --- |
+| Kes tohib vabastada | ükskõik milline lõim võib teha V | ainult see lõim, kes luku võttis |
+| Kasutus | märguanne, järjekorra seadmine | kriitilise piirkonna kaitse |
+| Kui omanik sureb | keegi ei märka | järgmine saab `WAIT_ABANDONED` |
+| Rekursioon | sama lõim jääb teisel P-l ootama | Windowsi mutexit saab omanik võtta mitu korda |
+
+Seepärast kasuta kriitilise piirkonna kaitseks mutexit ja märguandeks või piiramiseks semafori.
+
+#### Tüüpilised vead semaforiga
+
+- **V unustatakse** (nt erindi korral). Loendur ei tõuse kunagi tagasi ja aja jooksul „kaovad“ ressursid, kuni kõik lõimed ootavad igavesti. Lahendus: `try/finally`.
+- **V ilma P-ta.** Loendur tõuseb üle algse piiri ja korraga pääseb sisse rohkem lõime, kui tohiks. Windows kontrollib seda: `ReleaseSemaphore` annab vea, kui maksimaalne väärtus saaks ületatud.
+- **Vale järjekord.** Lukk võetakse enne P-d ja lõim jääb lukk käes ootama: ummik.
+
+#### Semafor Windowsis
+
+Windowsis on semafor **tuumaobjekt**:
+
+- `CreateSemaphore(…, algväärtus, maksimum, nimi)` loob semafori;
+- `WaitForSingleObject(h, …)` on P;
+- `ReleaseSemaphore(h, 1, …)` on V.
+
+Nimega semafor töötab ka **protsesside vahel**. .NET-is on ühe protsessi sees kiirem `SemaphoreSlim`.
+
+**Näide PowerShellis: korraga kuni 2 varundusskripti.** Mitu ajastatud ülesannet käivitavad varundusskripti, kuid võrgukettale tohib korraga kirjutada ainult kaks:
+
+```powershell
+$sem = [System.Threading.Semaphore]::new(2, 2, 'Global\Varundus')
+"Ootan luba…"
+$sem.WaitOne() | Out-Null              # P: kui 2 juba töötavad, ootab siin
+try {
+    "Varundan, PID $PID"
+    Copy-Item C:\Andmed\* \\server\varundus\ -Recurse
+} finally {
+    $sem.Release() | Out-Null          # V: annab koha järgmisele
+}
+```
+
+Käivita see kolmes PowerShelli aknas korraga. Kaks esimest alustavad kohe, kolmas kirjutab „Ootan luba…“ ja jätkab alles siis, kui üks esimestest lõpetab.
 
 > 🖱️ **Proovi ise:** [semafor parklas ja tootja–tarbija puhver](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/08-sunkroniseerimine.html#semafor)
 
@@ -253,10 +376,13 @@ try {
 4. Miks ei saa lukku teha tavalise muutujaga `if (lukk == 0) lukk = 1`?
 5. Mis vahe on aktiivsel ja blokeerival ootamisel? Millal on kumbki sobiv?
 6. Kuidas töötab semafor? Selgita näite abil, mis juhtub kuuenda päringuga, kui semafori algväärtus on 5.
-7. Mille poolest erineb mutex semaforist? Mida tähendab `WAIT_ABANDONED`?
-8. Mis vahe on käsitsi ja automaatselt lähtestuval sündmusel?
-9. Mis on TOCTOU-viga ja miks on see turvarisk?
-10. Nimeta neli Windowsi sünkroniseerimismehhanismi ja nende kasutusala.
+7. Miks jääb V tegemisel semafori väärtus samaks, kui keegi ootab? Mis juhtuks, kui see suureneks?
+8. Milleks kasutatakse semafori algväärtusega 0? Too näide.
+9. Miks peab tootja tegema P(vabad) enne luku võtmist, mitte pärast?
+10. Mille poolest erineb mutex semaforist? Mida tähendab `WAIT_ABANDONED`?
+11. Mis vahe on käsitsi ja automaatselt lähtestuval sündmusel?
+12. Mis on TOCTOU-viga ja miks on see turvarisk?
+13. Nimeta neli Windowsi sünkroniseerimismehhanismi ja nende kasutusala.
 
 ### Valikküsimused
 
