@@ -39,9 +39,15 @@ Tähtsad kohad, mida IT-spetsialist peaks teadma:
 - `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run` ja `HKCU\…\Run` – automaatkäivitus (lemmik koht ka pahavarale);
 - `HKLM\SOFTWARE\Policies` ja `HKCU\SOFTWARE\Policies` – rühmapoliitika seadistused.
 
+> 🖱️ **Proovi ise:** [registriredaktor](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#regedit). Sirvi registrit ohutult, lahenda ülesanded ja vaata iga muudatuse PowerShelli vastet. Seejärel harjuta [väärtuste tüüpe ja tarusid](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#tyyp).
+
+
 ### 6.2 Konfiguratsioonihaldur
 
 **Konfiguratsioonihaldur** (Configuration Manager, tuumas tähisega Cm) laadib tarud käivitamisel mällu, haldab registri lugemist ja kirjutamist, kontrollib õigusi (igal võtmel on ACL) ja tagab, et muudatused jõuaksid kettale. Töökindluse jaoks kasutab ta **logifaile** (`.LOG1`, `.LOG2`): muudatus kirjutatakse esmalt logisse, siis tarusse. Kui arvuti kaotab toite, taastatakse taru logi järgi.
+
+> 🖱️ **Proovi ise:** [voolukatkestus registrisse kirjutamise ajal](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#logi). Lülita vool välja suvalisel hetkel ja vaata, mis taaskäivitusel juhtub.
+
 
 Registriga on seotud ka **virtualiseerimine**: kui vana rakendus üritab ilma administraatoriõiguseta kirjutada HKLM\\SOFTWARE alla, suunab Windows kirjutise kasutaja privaatsesse koopiasse. Microsoft Store’i (MSIX) rakendused saavad oma isoleeritud registrivaate.
 
@@ -63,7 +69,13 @@ Registrit ei peaks suures keskkonnas käsitsi muutma. Kasutatakse:
 3. Kirje asub HKCU all, seega lisati see kasutaja õigustega – administraatoriõigusi polnud vaja.
 4. Isoleerid arvuti, eemaldad kirje ja faili, käivitad Defenderi võrguühenduseta skannimise ning uurid, kust fail tuli (ptk 22.5).
 
+> 🖱️ **Proovi ise:** [Autorunsi jaht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#autoruns). Leia Run-võtmetest pahavara: vaata allkirja, VirusTotali tulemust, failiteed ja kirje asukohta.
+
+
 **Rühmapoliitika näide.** Kui administraator seab GPO-s „Prohibit access to Control Panel and PC settings“, kirjutab Windows kasutaja registrisse väärtuse `HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel = 1`. Explorer loeb seda väärtust ja peidab juhtpaneeli. Rühmapoliitika on seega mugav ja auditeeritav viis registri muutmiseks.
+
+> 🖱️ **Proovi ise:** [rühmapoliitika registris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#gpo). Lülita poliitikaid sisse ja vaata, millise väärtuse Windows registrisse kirjutab ja mis töölaual muutub.
+
 
 ### Kokkuvõte
 
@@ -72,6 +84,9 @@ Registrit ei peaks suures keskkonnas käsitsi muutma. Kasutatakse:
 - Run-võtmed ja teenused on tavalised püsivuse (persistence) kohad, mida turvaanalüüs alati kontrollib.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 
 1. Mis on register ja mida seal hoitakse?
 2. Mis vahe on võtmel ja väärtusel?
