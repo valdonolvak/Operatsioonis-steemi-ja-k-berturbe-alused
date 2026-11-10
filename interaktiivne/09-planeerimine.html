@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 9 – planeerimine ühel protsessoril: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* gantt */
+.gantt{margin:10px 0;font-size:12px}
+.glane{display:grid;grid-template-columns:90px 1fr;gap:6px;align-items:center;margin-bottom:4px}
+.gbar{position:relative;height:30px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.gseg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;border-right:1px solid rgba(255,255,255,.6)}
+.gseg.idle{background:repeating-linear-gradient(45deg,var(--card),var(--card) 4px,var(--bg) 4px,var(--bg) 8px);color:var(--muted)}
+.gaxis{position:relative;height:16px;margin-left:96px;font-size:11px;color:var(--muted)}
+.gaxis span{position:absolute;transform:translateX(-50%)}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:10px}
+.cmp div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px}
+.cmp div.best{border-color:var(--ok-line);box-shadow:0 0 0 1px var(--ok-line)}
+.cmp b{display:block;font-size:14px}
+/* prioriteet */
+.pscale{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;margin:10px 0 4px}
+.pscale div{height:34px;border-radius:3px;background:var(--bg);border:1px solid var(--border);font-size:9.5px;display:flex;align-items:flex-end;justify-content:center;color:var(--muted);position:relative}
+.pscale div.rt{background:#f3e8e8}
+@media (prefers-color-scheme:dark){.pscale div.rt{background:#3a2626}}
+.pscale div.range{background:var(--accent-bg)}
+.pscale div.base{background:var(--accent);color:#fff;font-weight:700}
+.pscale div.cur{outline:3px solid var(--warn);outline-offset:-1px;z-index:1}
+.plbl{display:grid;grid-template-columns:1fr 15fr 16fr;font-size:11px;color:var(--muted);text-align:center;gap:2px}
+.big{font-size:30px;font-weight:600;font-family:var(--mono)}
+/* tõus */
+.boost{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.boost{grid-template-columns:1fr}}
+.thr{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem}
+.thr.run{border:2px solid var(--ok-line)}
+.pbar{height:12px;background:var(--card);border-radius:6px;overflow:hidden;margin-top:4px}
+.pbar div{height:100%;background:var(--accent);transition:width .25s}
+.lat{font-family:var(--mono);font-size:13px;margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;max-height:150px;overflow:auto}
+.lat .good{color:var(--ok)}.lat .slow{color:var(--bad);font-weight:600}
+.timeline{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-top:8px;border:1px solid var(--border)}
+.timeline div{height:100%}
+/* inversioon */
+.inv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:640px){.inv{grid-template-columns:1fr}}
+.it{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:14px}
+.it.run{border:2px solid var(--ok-line)}
+.it.blk{border:2px dashed var(--bad-line)}
+.it .st{font-size:12.5px;color:var(--muted)}
+.lockbox{text-align:center;margin:10px 0;font-size:15px}
+.ilog{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:180px;overflow:auto;white-space:pre-wrap}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/09-planeerimine-uhel-protsessoril.md">← Peatükk 9</a> · <a href="09-test.html">Test →</a></nav>
+<h1>Planeerimine ühel protsessoril – õpileht</h1>
+<p>Planeerija otsustab, milline valmis lõim saab järgmisena protsessori ja kui kauaks. Sellel lehel võrdled planeerimisalgoritme, arvutad Windowsi prioriteete, näed prioriteeditõusu töös ja tekitad prioriteedi inversiooni.</p>
+<div class="toc"><a href="#simulaator">1. Algoritmide simulaator</a><a href="#liigid">2. Protsessori- või S/V-sõltuv?</a><a href="#prioriteet">3. Windowsi prioriteet</a><a href="#tous">4. Prioriteeditõus</a><a href="#inversioon">5. Prioriteedi inversioon</a></div>
+
+<!-- 1 -->
+<section id="simulaator">
+<h2>1. Planeerimisalgoritmide simulaator</h2>
+<p>Sisesta tööd (saabumisaeg, kestus ja prioriteet; suurem arv tähendab olulisemat tööd), vali algoritm ja vaata Gantti diagrammi ning ooteaegu. All võrreldakse kõiki algoritme samade töödega.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Näide: <select id="preset"><option value="ch">Peatüki näide (A 8, B 4, C 2)</option><option value="conv">Konvoiefekt (1 pikk, 3 lühikest)</option><option value="arr">Eri saabumisajad</option><option value="prio">Prioriteedid ja nälg</option></select></span><button class="btn" id="addjob">+ Lisa töö</button></div>
+  <table class="t" style="margin-top:8px"><thead><tr><th>Töö</th><th>Saabub (ms)</th><th>Kestus (ms)</th><th>Prioriteet</th><th></th></tr></thead><tbody id="jobs"></tbody></table>
+  <div class="row"><span id="algs"></span><span>Kvant: <select id="q"><option>1</option><option selected>2</option><option>4</option><option>8</option></select> ms</span></div>
+  <div class="gantt" id="gantt"></div>
+  <table class="t" id="res"></table>
+  <div class="cmp" id="cmp"></div>
+  <div class="info" id="sinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="liigid">
+<h2>2. Protsessorisõltuv või S/V-sõltuv?</h2>
+<p>Vali ülal programm ja klõpsa kastil, kuhu see kuulub. <strong>Protsessorisõltuv</strong> arvutab palju ja kasutab kogu kvandi. <strong>S/V-sõltuv</strong> ootab enamiku ajast ketast, võrku või kasutajat.</p>
+<div class="pool" id="lpool"></div>
+<div class="buckets">
+  <div class="bucket" data-b="c"><h3>Protsessorisõltuv (CPU-bound)</h3><div class="chips"></div></div>
+  <div class="bucket" data-b="i"><h3>S/V-sõltuv (I/O-bound)</h3><div class="chips"></div></div>
+</div>
+<div class="row"><button class="btn" id="lnew">Uus komplekt</button><button class="btn primary" id="lcheck" disabled>Kontrolli</button></div>
+<div id="lres"></div>
+</section>
+
+<!-- 3 -->
+<section id="prioriteet">
+<h2>3. Windowsi prioriteedikalkulaator</h2>
+<p>Lõime baasprioriteet tuleb protsessi <strong>prioriteediklassist</strong> ja lõime <strong>suhtelisest prioriteedist</strong>. Vali mõlemad ja vaata, kuhu lõim 32-astmelisel skaalal jõuab. Seejärel lisa dünaamiline tõus.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Protsessi klass: <select id="pc"><option value="4">Idle</option><option value="6">Below Normal</option><option value="8" selected>Normal</option><option value="10">Above Normal</option><option value="13">High</option><option value="24">Realtime</option></select> &nbsp; Lõime suhteline: <select id="tr"><option value="idle">Idle</option><option value="-2">Lowest (−2)</option><option value="-1">Below normal (−1)</option><option value="0" selected>Normal (0)</option><option value="1">Above normal (+1)</option><option value="2">Highest (+2)</option><option value="tc">Time critical</option></select></span></div>
+  <div class="pscale" id="pscale"></div>
+  <div class="plbl"><span>0</span><span>1–15 muutuvad prioriteedid</span><span>16–31 reaalaja prioriteedid</span></div>
+  <div class="row"><span>Baasprioriteet: <span class="big" id="pbase"></span> &nbsp; Praegune: <span class="big" id="pcur"></span></span>
+    <span><button class="btn" data-b="1">Ketas valmis (+1)</button> <button class="btn" data-b="2">Võrk valmis (+2)</button> <button class="btn" data-b="6">Klahvivajutus (+6)</button> <button class="btn" data-b="s">Nälg 4 s → 15</button> <button class="btn" id="decay">Kvant läbi (−1)</button></span></div>
+  <div class="info" id="pinfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="tous">
+<h2>4. Prioriteeditõus: Word ja HandBrake</h2>
+<p>Üks tuum. HandBrake kodeerib videot ja tahab kogu aeg protsessorit. Word ootab klahvivajutusi. Vajuta „Vajuta klahvi“ mitu korda ja vaata, kui kaua Word peab ootama, enne kui täht ekraanile ilmub. Proovi tõusuga ja ilma.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="boostOn" checked> Dünaamilised tõusud sees</label>
+  <label class="tg">HandBrake: <select id="hbp"><option value="8" selected>Normal (8)</option><option value="6">Below Normal (6)</option><option value="eco">Efektiivsusrežiim (Eco)</option></select></label>
+  <div class="boost" style="margin-top:10px">
+    <div class="thr" id="thW"><b>Word</b> <span class="hint">(S/V-sõltuv)</span><div id="wst" class="hint"></div><div class="pbar"><div id="wpb"></div></div></div>
+    <div class="thr" id="thH"><b>HandBrake</b> <span class="hint">(protsessorisõltuv)</span><div id="hst" class="hint"></div><div class="pbar"><div id="hpb"></div></div></div>
+  </div>
+  <div class="timeline" id="tline"></div>
+  <div class="row"><button class="btn primary" id="key">⌨️ Vajuta klahvi</button><span class="hint">Viimased 60 ms: <span style="color:#185fa5">■</span> Word &nbsp;<span style="color:#854f0b">■</span> HandBrake</span></div>
+  <div class="lat" id="lat"><span class="hint">Klahvivajutuste viivitused ilmuvad siia.</span></div>
+  <div class="info" id="binfo"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="inversioon">
+<h2>5. Prioriteedi inversioon (Mars Pathfinder)</h2>
+<p>Kolm lõime ja üks lukk. Madal <b>L</b> (prioriteet 4) võtab luku, kõrge <b>H</b> (12) vajab sama lukku ja keskmine <b>M</b> (8) teeb pikka arvutust, mis lukuga ei ole üldse seotud. Liigu sammhaaval ja vaata, mis juhtub ilma kaitseta ja prioriteedi pärimisega.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="inherit"> Prioriteedi pärimine / AutoBoost sees</label>
+  <div class="lockbox" id="lockbox"></div>
+  <div class="inv" id="inv"></div>
+  <div class="row"><button class="btn primary" id="istep">Järgmine samm →</button><button class="btn" id="ireset">Alusta uuesti</button></div>
+  <div class="info" id="iinfo"></div>
+  <div class="ilog" id="ilog"></div>
+</div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const COL=['#185fa5','#854f0b','#3b6d11','#a32d2d','#5f4b8b','#0f6e6e','#9a4d00','#4a5a16'];
+
+/* ---------- 1. simulaator ---------- */
+const PRESETS={ch:[['A',0,8,1],['B',0,4,1],['C',0,2,1]],conv:[['Käru',0,20,1],['Piim1',0,1,1],['Piim2',0,1,1],['Piim3',0,1,1]],arr:[['A',0,7,1],['B',2,4,1],['C',4,1,1],['D',5,4,1]],prio:[['Taust',0,10,1],['Word',1,2,3],['Brauser',3,3,2],['Word2',5,2,3],['Word3',8,2,3]]};
+const ALG={fcfs:'FCFS',sjf:'SJF',srtf:'SRTF (eelistav SJF)',rr:'Round Robin',prio:'Prioriteet (eelistav)'};
+let jobs,alg='fcfs';
+function loadPreset(){jobs=PRESETS[$('preset').value].map(j=>j.slice());if($('preset').value==='prio')alg='prio';drawJobs();run()}
+function drawJobs(){
+  $('jobs').innerHTML=jobs.map((j,i)=>'<tr><td><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:'+COL[i%8]+'"></span> <input type="text" value="'+j[0]+'" data-i="'+i+'" data-k="0" style="width:80px"></td><td><input type="number" min="0" max="50" value="'+j[1]+'" data-i="'+i+'" data-k="1"></td><td><input type="number" min="1" max="30" value="'+j[2]+'" data-i="'+i+'" data-k="2"></td><td><input type="number" min="1" max="9" value="'+j[3]+'" data-i="'+i+'" data-k="3"></td><td>'+(jobs.length>1?'<button class="btn" data-del="'+i+'">✕</button>':'')+'</td></tr>').join('');
+  document.querySelectorAll('#jobs input').forEach(inp=>inp.oninput=()=>{const i=+inp.dataset.i,k=+inp.dataset.k;jobs[i][k]=k===0?inp.value.slice(0,10):Math.max(k===2?1:0,Math.min(k===3?9:50,parseInt(inp.value)||0));run()});
+  document.querySelectorAll('#jobs [data-del]').forEach(b=>b.onclick=()=>{jobs.splice(+b.dataset.del,1);drawJobs();run()});
+  $('algs').innerHTML=Object.entries(ALG).map(([k,n])=>'<button class="btn'+(k===alg?' on':'')+'" data-a="'+k+'">'+n+'</button>').join(' ');
+  document.querySelectorAll('#algs button').forEach(b=>b.onclick=()=>{alg=b.dataset.a;drawJobs();run()});
+}
+function schedule(a,q){
+  const J=jobs.map((j,i)=>({i,n:j[0],arr:j[1],len:j[2],pr:j[3],left:j[2],first:null,fin:null}));
+  let t=0,segs=[],queue=[],done=0,cur=null,qleft=0,arrived=new Set();
+  const addArr=()=>{J.filter(j=>j.arr<=t&&!arrived.has(j.i)).sort((x,y)=>x.arr-y.arr||x.i-y.i).forEach(j=>{arrived.add(j.i);queue.push(j)})};
+  const push=(id)=>{const l=segs[segs.length-1];if(l&&l.id===id&&l.e===t)l.e=t+1;else segs.push({id,s:t,e:t+1})};
+  let guard=0;
+  while(done<J.length&&guard++<2000){
+    addArr();
+    if(a==='rr'&&cur&&qleft===0){queue.push(cur);cur=null}
+    if(cur&&(a==='srtf'||a==='prio')){queue.push(cur);cur=null}
+    if(!cur&&queue.length){
+      let pick;
+      if(a==='fcfs'||a==='rr')pick=queue[0];
+      else if(a==='sjf'||a==='srtf')pick=queue.reduce((b,j)=>j.left<b.left||(j.left===b.left&&(j.arr<b.arr||(j.arr===b.arr&&j.i<b.i)))?j:b);
+      else pick=queue.reduce((b,j)=>j.pr>b.pr||(j.pr===b.pr&&(j.arr<b.arr||(j.arr===b.arr&&j.i<b.i)))?j:b);
+      queue.splice(queue.indexOf(pick),1);cur=pick;qleft=+$('q').value;
+      if(cur.first===null)cur.first=t;
+    }
+    if(cur){push(cur.i);cur.left--;qleft--;t++;if(cur.left===0){cur.fin=t;done++;cur=null}}
+    else{push(-1);t++}
+  }
+  let sw=0;for(let k=1;k<segs.length;k++)if(segs[k].id!==segs[k-1].id&&segs[k].id>=0&&segs[k-1].id>=0)sw++;
+  J.forEach(j=>{j.turn=j.fin-j.arr;j.wait=j.turn-j.len;j.resp=j.first-j.arr});
+  const avg=k=>J.reduce((s,j)=>s+j[k],0)/J.length;
+  return {J,segs,end:t,sw,aw:avg('wait'),at:avg('turn'),ar:avg('resp')};
+}
+const f1=x=>x.toFixed(1).replace('.',',');
+function run(){
+  const r=schedule(alg,+$('q').value),W=r.end;
+  $('gantt').innerHTML='<div class="glane"><span>Protsessor</span><div class="gbar">'+r.segs.map(s=>'<div class="gseg'+(s.id<0?' idle':'')+'" style="left:'+(s.s/W*100)+'%;width:'+((s.e-s.s)/W*100)+'%;'+(s.id>=0?'background:'+COL[s.id%8]:'')+'" title="'+(s.id>=0?jobs[s.id][0]:'jõude')+' '+s.s+'–'+s.e+' ms">'+((s.e-s.s)/W>0.035?(s.id>=0?jobs[s.id][0]:''):'')+'</div>').join('')+'</div></div>'+
+   '<div class="gaxis">'+[...new Set(r.segs.flatMap(s=>[s.s,s.e]))].filter((v,i,a)=>W<=30||v%Math.ceil(W/15)===0||v===W).map(v=>'<span style="left:'+(v/W*100)+'%">'+v+'</span>').join('')+'</div>';
+  $('res').innerHTML='<tr><th>Töö</th><th>Saabus</th><th>Kestus</th><th>Esimest korda tööle</th><th>Valmis</th><th>Ooteaeg</th><th>Läbimisaeg</th><th>Reageerimisaeg</th></tr>'+r.J.map(j=>'<tr><td><b style="color:'+COL[j.i%8]+'">'+j.n+'</b></td><td>'+j.arr+'</td><td>'+j.len+'</td><td>'+j.first+'</td><td>'+j.fin+'</td><td>'+j.wait+'</td><td>'+j.turn+'</td><td>'+j.resp+'</td></tr>').join('')+
+   '<tr class="avg"><td colspan="5">Keskmine · kontekstivahetusi '+r.sw+'</td><td>'+f1(r.aw)+'</td><td>'+f1(r.at)+'</td><td>'+f1(r.ar)+'</td></tr>';
+  const all=Object.keys(ALG).map(k=>[k,schedule(k,+$('q').value)]);
+  const bw=Math.min(...all.map(x=>x[1].aw)),br=Math.min(...all.map(x=>x[1].ar));
+  $('cmp').innerHTML=all.map(([k,s])=>'<div class="'+(s.aw===bw||s.ar===br?'best':'')+'"><b>'+ALG[k]+'</b>ooteaeg '+f1(s.aw)+' · reageerimine '+f1(s.ar)+'<br>vahetusi '+s.sw+(s.aw===bw?' · <span style="color:var(--ok)">parim ooteaeg</span>':'')+(s.ar===br?' · <span style="color:var(--ok)">parim reageerimine</span>':'')+'</div>').join('');
+  let h={fcfs:'<b>FCFS</b> teeb tööd saabumise järjekorras. Kui ees on pikk töö, ootavad lühikesed selle taga (konvoiefekt).',sjf:'<b>SJF</b> valib alati lühima ootel töö ja laseb sel lõpuni töötada. Keskmine ooteaeg on väike, kuid OS peaks töö pikkust ette teadma.',srtf:'<b>SRTF</b> on eelistav SJF: kui saabub töö, mille järelejäänud aeg on lühem, katkestatakse jooksev töö. Teoreetiliselt väikseim keskmine ooteaeg.',rr:'<b>Round Robin</b> annab igale tööle kordamööda kvandi. Iga töö saab kiiresti esimese protsessoriaja (hea reageerimisaeg), kuid kontekstivahetusi on rohkem. Proovi muuta kvanti.',prio:'<b>Prioriteet</b>: alati töötab kõrgeima prioriteediga valmis töö. Vaata, kui kaua peab madala prioriteediga töö ootama, kui kõrgemaid tuleb pidevalt juurde (nälg).'}[alg];
+  if(alg==='rr'&&+$('q').value===1)h+=' Kvant 1 ms: väga hea reageerimine, kuid palju vahetusi. Päriselt maksab iga vahetus aega.';
+  $('sinfo').innerHTML=h;
+}
+$('preset').onchange=()=>{alg=$('preset').value==='prio'?'prio':'fcfs';loadPreset()};
+$('q').onchange=run;$('addjob').onclick=()=>{if(jobs.length>=8)return;jobs.push([String.fromCharCode(65+jobs.length),0,3,1]);drawJobs();run()};
+loadPreset();
+
+/* ---------- 2. liigid ---------- */
+const LI=[['HandBrake video kodeerimine','c','Arvutab pidevalt kaadreid ja kasutab kõik tuumad ära.'],['Visual Studio kompileerimine','c','Kompilaator töötleb lähtekoodi ja arvutab palju.'],['Blenderi 3D-renderdus','c','Iga piksli arvutamine nõuab palju protsessoriaega.'],['ZIP-arhiivi pakkimine (7-Zip, max tihendus)','c','Tihendusalgoritm arvutab palju. Kiire SSD korral on pudelikael protsessor.'],['Krüptoraha kaevandamine','c','Räsiarvutus käib katkematult.'],['Male-mootor analüüsib seisu','c','Otsib miljoneid käike sekundis.'],['Word, teksti kirjutamine','i','Ootab suurema osa ajast klahvivajutust.'],['Brauser loeb uudisteportaali','i','Ootab võrgust andmeid ja kasutaja kerimist.'],['Teams-i vestlus','i','Ootab sõnumeid võrgust.'],['Failide kopeerimine USB-pulgale','i','Ootab peamiselt aeglast USB-seadet.'],['Veebiserver, mis serveerib staatilisi faile','i','Ootab võrku ja ketast, arvutab vähe.'],['Notepad','i','Ootab kasutaja sisestust.']];
+let lset=[],lpl={},lsel=null,lchk=false;
+function newL(){const c=shuffle(LI.map((_,i)=>i).filter(i=>LI[i][1]==='c')).slice(0,4),io=shuffle(LI.map((_,i)=>i).filter(i=>LI[i][1]==='i')).slice(0,4);lset=shuffle([...c,...io]);lpl={};lsel=null;lchk=false;$('lres').innerHTML='';drawL()}
+function lchip(i,w){const b=document.createElement('button');let c='chip';if(lsel===i)c+=' sel';if(lchk&&w!=='pool')c+=LI[i][1]===w?' ok':' bad';b.className=c;b.textContent=LI[i][0];
+  b.onclick=e=>{e.stopPropagation();if(lchk)return;if(w==='pool')lsel=lsel===i?null:i;else{delete lpl[i];lsel=i}drawL()};return b}
+function drawL(){const pool=$('lpool');pool.innerHTML='';lset.filter(i=>!(i in lpl)).forEach(i=>pool.appendChild(lchip(i,'pool')));
+  if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
+  document.querySelectorAll('#liigid .bucket').forEach(bk=>{const c=bk.querySelector('.chips');c.innerHTML='';lset.filter(i=>lpl[i]===bk.dataset.b).forEach(i=>c.appendChild(lchip(i,bk.dataset.b)))});
+  $('lcheck').disabled=lchk||Object.keys(lpl).length!==lset.length}
+document.querySelectorAll('#liigid .bucket').forEach(bk=>bk.onclick=()=>{if(lchk||lsel===null)return;lpl[lsel]=bk.dataset.b;lsel=null;drawL()});
+$('lcheck').onclick=()=>{lchk=true;drawL();const w=lset.filter(i=>lpl[i]!==LI[i][1]);
+  $('lres').innerHTML='<div class="fb '+(w.length?'bad':'ok')+'"><strong>'+(w.length?'Õigesti '+(lset.length-w.length)+' / '+lset.length:'Kõik õigesti!')+'</strong>'+(w.length?w.map(i=>'<b>'+LI[i][0]+'</b> – '+LI[i][2]).join('<br>'):'Hea planeerija annab S/V-sõltuvatele kiiresti protsessori, sest nad kasutavad seda vaid hetke.')+'</div>'};
+$('lnew').onclick=newL;newL();
+
+/* ---------- 3. prioriteet ---------- */
+let cur=null;
+function base(){const c=+$('pc').value,r=$('tr').value,rt=c===24;
+  if(r==='idle')return rt?16:1;if(r==='tc')return rt?31:15;return c+ +r}
+function drawPrio(msg,cls){
+  const b=base(),c=+$('pc').value,rt=c===24;if(cur===null||cur<b)cur=b;
+  const lo=rt?22:c-2,hi=rt?26:c+2;
+  $('pscale').innerHTML=Array.from({length:32},(_,i)=>'<div class="'+(i>=16?'rt ':'')+(i>=lo&&i<=hi?'range ':'')+(i===b?'base ':'')+(i===cur&&cur!==b?'cur':'')+'" title="'+i+'">'+i+'</div>').join('');
+  $('pbase').textContent=b;$('pcur').textContent=cur;
+  const names={4:'Idle',6:'Below Normal',8:'Normal',10:'Above Normal',13:'High',24:'Realtime'};
+  $('pinfo').className='info'+(cls?' '+cls:'');
+  $('pinfo').innerHTML=msg||('Klassi <b>'+names[c]+'</b> baas on '+c+'. '+($('tr').value==='idle'?'Suhteline <i>Idle</i> annab alati '+(rt?16:1)+'.':$('tr').value==='tc'?'Suhteline <i>Time critical</i> annab alati '+(rt?31:15)+'.':'Suhteline prioriteet '+($('tr').value>0?'+':'')+$('tr').value+' → baasprioriteet <b>'+b+'</b>.')+(rt?' <b>Realtime-klassis</b> (16–31) dünaamilisi tõuse ei tehta ja lõim on kõrgemal kui hiire ning klaviatuuri sisendi töötlejad. Vale kasutus võib arvuti „külmutada“.':''));
+  document.querySelectorAll('#prioriteet [data-b]').forEach(x=>x.disabled=rt);$('decay').disabled=rt||cur===b;
+}
+$('pc').onchange=()=>{cur=null;drawPrio()};$('tr').onchange=()=>{cur=null;drawPrio()};
+document.querySelectorAll('#prioriteet [data-b]').forEach(x=>x.onclick=()=>{const b=base(),k=x.dataset.b;
+  if(k==='s'){cur=15;drawPrio('<b>Näljutamisvastane tõus:</b> lõim on olnud ~4 sekundit valmis, kuid pole protsessorit saanud. Windows tõstab ta korraks prioriteedile <b>15</b>, et ta saaks näiteks hoitava luku vabastada.','ok');return}
+  const n=Math.min(15,b+ +k);cur=Math.max(cur,n);drawPrio('<b>Tõus +'+k+':</b> '+({1:'ketta',2:'võrgu',6:'klaviatuuri'}[k])+' päring lõppes ja lõim ärkas. Uus prioriteet on '+cur+' (muutuvate prioriteetide ülempiir on 15). Iga ära kasutatud kvandiga langeb see ühe võrra tagasi baasini '+b+'.','ok')});
+$('decay').onclick=()=>{const b=base();if(cur>b)cur--;drawPrio('Lõim kasutas kvandi ära ja tõus langes ühe võrra: praegu <b>'+cur+'</b>'+(cur===b?', tagasi baasprioriteedil.':', baasprioriteet on '+b+'.'))};
+drawPrio();
+
+/* ---------- 4. tõus ---------- */
+let tick=0,hist=[],wordState='ootel',pend=null,wPr=8,lat=[],timer=null,hbQ=0;
+function hbPri(){const v=$('hbp').value;return v==='eco'?6:+v}
+function simTick(){
+  tick++;
+  const boost=$('boostOn').checked,hb=hbPri();
+  let runW=false;
+  if(pend!==null){
+    const wp=boost?Math.min(15,8+6):8;wPr=wp;
+    if(wp>hb){runW=true}
+    else if(wp===hb){hbQ++;if(hbQ>=31){runW=true;hbQ=0}}
+    else{hbQ++;if(hbQ>=31*3){runW=true;hbQ=0}}
+    if(runW){const d=tick-pend;lat.unshift(d);pend=null;wordState='töötab (joonistab tähe)';
+      $('lat').innerHTML=lat.slice(0,12).map((d,i)=>'<div class="'+(d<=2?'good':d>15?'slow':'')+'">#'+(lat.length-i)+': täht ilmus '+d+' ms pärast'+(d<=2?' ✓ kohe':d>15?' – märgatav viivitus':'')+'</div>').join('');
+      const eco=$('hbp').value==='eco';
+      $('binfo').className='info '+(d<=2?'ok':'bad');
+      $('binfo').innerHTML=d<=2?(boost?'Klaviatuuri tõus +6 tõstis Wordi prioriteedi '+wp+'-ni. See on kõrgem kui HandBrake\'i '+hb+', nii et planeerija <b>katkestas HandBrake\'i kohe</b>, kvandi lõppu ootamata.':'Tõusud on väljas, kuid HandBrake\'i prioriteet ('+hb+') on madalam kui Wordil (8). Seepärast katkestab Word HandBrake\'i ka ilma tõusuta.')+(eco?' Efektiivsusrežiimis töötab HandBrake lisaks säästlikul tuumal ja väiksema taktsagedusega.':''):'Ilma tõusuta on Wordil sama prioriteet ('+wp+') kui HandBrake\'il. Word peab ootama, kuni HandBrake\'i kvant (≈31 ms) lõpeb. Kirjutamine tundub takerduv. Lülita tõusud sisse või vali HandBrake\'ile Below Normal või Efektiivsusrežiim.'}
+  }
+  if(!runW)wordState=pend!==null?'valmis, ootab protsessorit…':'ootel (ootab klahvi)';
+  hist.push(runW?'W':'H');if(hist.length>60)hist.shift();
+  if(!runW&&pend===null&&boost&&wPr>8)wPr=Math.max(8,wPr-1);
+  if(pend===null&&!boost)wPr=8;
+  $('wst').textContent='prioriteet '+(pend!==null||runW?wPr:8)+' · '+wordState;
+  $('hst').textContent='prioriteet '+hb+($('hbp').value==='eco'?' · EcoQoS, E-tuum':'')+' · '+(runW?'katkestatud':'töötab');
+  $('wpb').style.width=((pend!==null||runW?wPr:8)/15*100)+'%';$('hpb').style.width=(hb/15*100)+'%';
+  $('thW').classList.toggle('run',runW);$('thH').classList.toggle('run',!runW);
+  $('tline').innerHTML=hist.map(x=>'<div style="flex:1;background:'+(x==='W'?'#185fa5':'#854f0b')+'"></div>').join('');
+}
+$('key').onclick=()=>{if(pend===null){pend=tick;hbQ=Math.floor(Math.random()*31)}};
+timer=setInterval(simTick,40);
+$('binfo').innerHTML='Simulatsioon töötab: üks samm vastab 1 ms-le. Vajuta klahvi.';
+
+/* ---------- 5. inversioon ---------- */
+let ist,ilog,inh;
+const ISTEPS=()=>{const ih=$('inherit').checked;return [
+ {L:'töötab',M:'ootel',H:'ootel',lock:null,lp:4,msg:'Alguses töötab ainult L (prioriteet 4). M ja H ootavad oma sündmusi.'},
+ {L:'töötab',M:'ootel',H:'ootel',lock:'L',lp:4,msg:'L võtab luku ja hakkab jagatud andmeid uuendama (kriitiline piirkond).'},
+ {L:'valmis',M:'ootel',H:'töötab',lock:'L',lp:4,msg:'H (12) ärkab ja tõrjub L-i välja, sest H prioriteet on kõrgem.'},
+ {L:'töötab',M:'ootel',H:'ootab lukku',lock:'L',lp:ih?12:4,msg:ih?'H tahab lukku, kuid see on L-i käes. H jääb ootama. <b>Prioriteedi pärimine:</b> L saab ajutiselt H prioriteedi 12 ja töötab edasi.':'H tahab lukku, kuid see on L-i käes. H jääb ootama, kuni L luku vabastab. Nüüd töötab jälle L ja jätkab kriitilist piirkonda.'},
+ {L:ih?'töötab':'valmis',M:ih?'valmis':'töötab',H:'ootab lukku',lock:'L',lp:ih?12:4,msg:ih?'M (8) ärkab, kuid L-i ajutine prioriteet 12 on kõrgem kui M-il. L jätkab ja M peab ootama.':'M (8) ärkab. M prioriteet on kõrgem kui L-il (4), nii et <b>M tõrjub L-i välja</b>. L ei saa protsessorit ega saa lukku vabastada.'},
+ {L:ih?'lõpetab':'valmis',M:ih?'valmis':'töötab',H:ih?'töötab':'ootab lukku',lock:ih?'H':'L',lp:4,msg:ih?'L lõpetab kriitilise piirkonna ja vabastab luku. Tema prioriteet langeb tagasi 4-ks. H saab luku ja töötab kohe. Inversioon kestis vaid hetke.':'<b>Prioriteedi inversioon!</b> M teeb oma pikka arvutust. H, kõige tähtsam lõim, ootab tegelikult M-i taga, kuigi M-il pole lukuga mingit pistmist.'},
+ {L:ih?'valmis':'valmis',M:ih?'töötab':'töötab',H:ih?'valmis':'ootab lukku',lock:ih?null:'L',lp:4,msg:ih?'H tegi oma töö ja läks ootele. Nüüd töötab M. Kõik said oma järjekorras.':'M töötab ikka veel… Mars Pathfinderil märkas valvetaimer, et kõrge prioriteediga ülesanne pole ammu töötanud, ja <b>taaskäivitas kogu süsteemi</b>. Windowsis annaks näljutamisvastane tõus L-ile ~4 sekundi pärast korraks prioriteedi 15. Lülita sisse prioriteedi pärimine ja proovi uuesti.'}]};
+function iReset(){ist=0;$('ilog').textContent='';drawI()}
+function drawI(){const S=ISTEPS(),s=S[ist],P={L:4,M:8,H:12};
+  $('inv').innerHTML=['H','M','L'].map(k=>{const st=s[k],run=st==='töötab'||st==='lõpetab';return '<div class="it'+(run?' run':st.startsWith('ootab lukku')?' blk':'')+'"><b>'+k+'</b> – '+({H:'kõrge, andmesiin',M:'keskmine, side',L:'madal, ilmajaam'}[k])+'<br>prioriteet <b>'+(k==='L'?s.lp:P[k])+'</b>'+(k==='L'&&s.lp!==4?' (päritud)':'')+'<div class="st">'+st+'</div></div>'}).join('');
+  $('lockbox').innerHTML='🔒 Lukk: '+(s.lock?'<b>'+s.lock+'</b> käes':'vaba');
+  $('iinfo').className='info'+(ist===S.length-1||ist===5?($('inherit').checked?' ok':' bad'):'');$('iinfo').innerHTML='<b>Samm '+(ist+1)+'/'+S.length+'.</b> '+s.msg;
+  $('istep').disabled=ist===S.length-1;
+}
+$('istep').onclick=()=>{ist++;const s=ISTEPS()[ist];$('ilog').textContent+='['+(ist+1)+'] töötab: '+(['H','M','L'].find(k=>s[k]==='töötab'||s[k]==='lõpetab')||'–')+'\n';drawI()};
+$('ireset').onclick=iReset;$('inherit').onchange=iReset;iReset();
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 9 – test: planeerimine ühel protsessoril</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/09-planeerimine-uhel-protsessoril.md">← Peatükk 9</a> · <a href="09-planeerimine.html">Interaktiivne õpileht</a></nav>
+<h1>Test: planeerimine ühel protsessoril</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mida teeb planeerija (scheduler)?", "o": ["Otsustab, milline valmis lõim saab järgmisena protsessori ja kui kauaks", "Loob uusi protsesse", "Jagab mälu protsesside vahel", "Kontrollib failide õigusi"], "c": 0, "e": "Protsesse loob protsessihaldur ja mälu jagab mäluhaldur. Planeerija on tuuma osa, mis jagab protsessoriaega."},
+{"q": "Milline mõõdik on kõige olulisem interaktiivses arvutis (nt Wordi kasutamisel)?", "o": ["Läbilaskevõime", "Reageerimisaeg", "Läbimisaeg", "Protsessori temperatuur"], "c": 1, "e": "Reageerimisaeg on aeg saabumisest esimese protsessoriajani. Inimene märkab viivitust, kui täht ilmub ekraanile hiljem kui umbes 100 ms."},
+{"q": "Millal loovutab lõim protsessori vabatahtlikult?", "o": ["Kui tema kvant saab otsa", "Kui kõrgema prioriteediga lõim muutub valmis", "Kui ta hakkab ootama, nt faili lugemist, lukku või Sleep-i lõppu", "Kui kasutaja sulgeb akna"], "c": 2, "e": "Kvandi lõpp ja kõrgema prioriteediga lõime ilmumine on sunnitud loovutamine."},
+{"q": "Milline programm on protsessorisõltuv (CPU-bound)?", "o": ["Notepad", "Teams-i vestlus", "Failide kopeerimine USB-pulgale", "Video kodeerimine HandBrake'iga"], "c": 3, "e": "Protsessorisõltuv programm arvutab palju ja kasutab oma kvandi täielikult ära. Ülejäänud on S/V-sõltuvad, sest ootavad kasutajat, võrku või seadet."},
+{"q": "Miks annab hea planeerija S/V-sõltuvatele lõimedele kiiresti protsessori?", "o": ["Sest nad kasutavad protsessorit vaid hetke ja lähevad siis jälle ootele, nii et teisi see peaaegu ei sega", "Sest nad on alati olulisemad", "Sest nad kasutavad vähem mälu", "Sest nad on kirjutatud Rustis"], "c": 0, "e": "Kasutaja jaoks tähendab see kiiret reageerimist ja protsessorisõltuvad tööd kaotavad selle juures vähe."},
+{"q": "Mis on mitte-eelistav (non-preemptive) planeerimine?", "o": ["OS võib lõime igal ajal katkestada", "Lõim töötab seni, kuni ise loovutab protsessori", "Iga lõim saab kordamööda kvandi", "Kõrgeima prioriteediga lõim töötab alati"], "c": 1, "e": "Nii töötasid Windows 3.x ja klassikaline Mac OS. Kui programm tsüklisse kinni jäi, hangus kogu arvuti."},
+{"q": "Mis on konvoiefekt?", "o": ["Mitu protsessorit töötab koos", "Lõimed liiguvad tuumade vahel", "Kontekstivahetused aeglustavad süsteemi", "FCFS-i korral ootavad lühikesed tööd ühe pika töö taga"], "c": 3, "e": "Nagu poes, kus täis käruga klient on kassas ja tema taga ootavad kolm inimest ühe piimapakiga."},
+{"q": "Tööd A = 8 ms, B = 4 ms, C = 2 ms saabuvad korraga. Mis on FCFS-i keskmine ooteaeg järjekorras A, B, C?", "o": ["2,7 ms", "6,7 ms", "5,3 ms", "14 ms"], "c": 1, "e": "Ooteajad on 0, 8 ja 12 ms, nende summa 20 jagatud kolmega on 6,7 ms."},
+{"q": "Samad tööd (A 8, B 4, C 2). Mis on SJF-i keskmine ooteaeg?", "o": ["2,7 ms", "6,7 ms", "0 ms", "4 ms"], "c": 0, "e": "Järjekord on C, B, A ja ooteajad 0, 2 ja 6 ms, keskmine 2,7 ms. SJF minimeerib keskmise ooteaja."},
+{"q": "Mis on SJF-i peamine puudus päris operatsioonisüsteemis?", "o": ["See on liiga aeglane", "See ei tööta ühe tuumaga", "OS ei tea tavaliselt ette, kui kaua töö kestab, ja pikad tööd võivad nälgida", "See kasutab liiga palju mälu"], "c": 2, "e": "Pikkust saab ainult hinnata varasema käitumise põhjal. Samal ideel töötab ka MLFQ."},
+{"q": "Milline algoritm annab näites (A 8, B 4, C 2) parima keskmise reageerimisaja?", "o": ["FCFS", "SJF", "Kõik on võrdsed", "Round Robin"], "c": 3, "e": "Round Robinil kvandiga 2 ms saab iga töö oma esimese kvandi hiljemalt 4 ms pärast, keskmine reageerimisaeg on 2 ms. Hind on rohkem kontekstivahetusi."},
+{"q": "Mis on mitmetasemelise tagasisidega järjekorra (MLFQ) põhiidee?", "o": ["Lõime prioriteet muutub tema käitumise järgi: kes kasutab kogu kvandi, langeb madalamale; kes läheb kiiresti ootele, jääb kõrgele", "Igal lõimel on fikseeritud prioriteet", "Tööd tehakse saabumise järjekorras", "Lõimed valitakse juhuslikult"], "c": 0, "e": "Nii saavad S/V-sõltuvad lõimed kiiresti protsessori ilma, et OS peaks töö pikkust ette teadma. Windowsi dünaamilised tõusud on sama idee üks variant."},
+{"q": "Mis on kontekstivahetuse kaudne hind?", "o": ["Fail kustutatakse", "Arvuti kulutab rohkem voolu", "Uue lõime andmeid pole protsessori vahemälus ja need tuleb mälust uuesti laadida", "Kaob võrguühendus"], "c": 2, "e": "Otsene hind on registrite salvestamine ja laadimine (mikrosekundid). Seepärast ei saa kvant olla väga lühike."},
+{"q": "Miks on Windows Serveri kvant (12 tiksu) pikem kui kliendi oma (2 tiksu)?", "o": ["Server on aeglasem", "Serveril on vähem lõimi", "Serveris ei ole kontekstivahetusi", "Pikem kvant tähendab vähem kontekstivahetusi ja suuremat läbilaskevõimet; kliendis on olulisem kiire reageerimine"], "c": 3, "e": "Server teenindab päringuid, mitte inimest klaviatuuri taga."},
+{"q": "Kui pikk on Windowsi kellatiks tavaliselt?", "o": ["Umbes 1 ms", "Umbes 15,6 ms", "Umbes 1 sekund", "Umbes 100 ms"], "c": 1, "e": "Kliendi vaikekvant 2 tiksu on seega umbes 31 ms."},
+{"q": "Mitu prioriteeditaset on Windowsi planeerijal?", "o": ["8", "16", "64", "32"], "c": 3, "e": "Tasemed on 0–31: 16–31 on reaalajaprioriteedid, 1–15 muutuvad prioriteedid ja 0 on nulllehe lõim."},
+{"q": "Mis prioriteet on Normal-klassi tavalisel lõimel?", "o": ["8", "4", "13", "24"], "c": 0, "e": "Klasside baasid on Idle 4, Below Normal 6, Normal 8, Above Normal 10, High 13 ja Realtime 24."},
+{"q": "Mis on High-klassi protsessi Highest-suhtelise prioriteediga lõime baasprioriteet?", "o": ["13", "10", "15", "24"], "c": 2, "e": "High-klassi baas on 13 ja Highest lisab +2, seega 15. See on muutuvate prioriteetide ülempiir."},
+{"q": "Miks ei tohi tavaprogrammile anda prioriteediklassi Realtime?", "o": ["Programm töötab siis aeglasemalt", "Programm ei saa siis faile avada", "Realtime töötab ainult serveris", "Realtime-lõim on kõrgemal kui ka hiire ja klaviatuuri sisendi töötlejad; tsüklisse jäädes ei reageeri arvuti enam isegi hiirele"], "c": 3, "e": "Seepärast nõuab Realtime-klass privileegi Increase scheduling priority. Ilma selleta saab protsess High-klassi."},
+{"q": "Miks Word ei hangu, kui HandBrake kasutab kogu protsessori?", "o": ["Klahvivajutus annab Wordi lõimele prioriteeditõusu (+6) ja see katkestab HandBrake'i kohe", "Word töötab GPU-l", "HandBrake peatub automaatselt", "Word on alati Realtime-klassis"], "c": 0, "e": "Ilma tõusuta peaks Word ootama HandBrake'i kvandi lõppu (≈31 ms) ja kirjutamine tunduks takerduv."},
+{"q": "Mis juhtub prioriteeditõusuga aja jooksul?", "o": ["See jääb püsivaks", "Iga ära kasutatud kvandiga langeb prioriteet ühe võrra, kuni jõuab tagasi baasprioriteedini", "See kahekordistub", "Lõim lõpetatakse"], "c": 1, "e": "Dünaamiline prioriteet pole kunagi madalam kui baasprioriteet. Reaalajaprioriteete (16–31) ei tõsteta."},
+{"q": "Mis on näljutamisvastane tõus Windowsis?", "o": ["Lõim saab rohkem mälu", "Lõim lõpetatakse", "Kui lõim on olnud ~4 sekundit valmis-olekus ilma protsessorita, tõstetakse ta korraks prioriteedile 15", "Kõik lõimed saavad sama prioriteedi"], "c": 2, "e": "Nii saab ka madala prioriteediga lõim lõpuks töötada ja näiteks hoitava luku vabastada."},
+{"q": "Mis on prioriteedi inversioon?", "o": ["Kõrge prioriteediga lõim ootab lukku, mida hoiab madal lõim, kuid keskmise prioriteediga lõim tõrjub madala välja ja lukk ei vabane", "Prioriteedid lähevad tagurpidi pärast taaskäivitust", "Kõik lõimed saavad sama prioriteedi", "Madal lõim saab kõrgeima prioriteedi"], "c": 0, "e": "Kuulus näide on Mars Pathfinder (1997), mis taaskäivitas ennast korduvalt, kuni NASA lülitas kaugjuhtimise teel sisse prioriteedi pärimise."},
+{"q": "Kuidas lahendab prioriteedi pärimine (Windowsis AutoBoost) prioriteedi inversiooni?", "o": ["Lõpetab keskmise prioriteediga lõime", "Lukku hoidev lõim saab ajutiselt ootaja kõrge prioriteedi, kuni luku vabastab", "Keelab lukud", "Annab kõigile lõimedele prioriteedi 31"], "c": 1, "e": "Nii ei saa keskmise prioriteediga lõim lukuhoidjat välja tõrjuda ja kõrge prioriteediga lõim saab luku kiiresti."},
+{"q": "Mida teeb Tegumihalduri Efektiivsusrežiim (Efficiency mode)?", "o": ["Lõpetab protsessi", "Annab protsessile Realtime-prioriteedi", "Seab protsessi EcoQoS-ile: madal prioriteet ja eelistatult säästlikud tuumad väiksema taktsagedusega", "Lülitab välja ekraani"], "c": 2, "e": "See säästab akut ja vähendab kuumenemist. Taustatööd, nt OneDrive'i sünkroonimine, ei vaja täiskiirust."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
