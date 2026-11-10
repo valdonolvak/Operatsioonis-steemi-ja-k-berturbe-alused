@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 3 – Windowsi põhimõisted: interaktiivne leht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--um:#3b6d11;--um-bg:#eaf3de;--km:#185fa5;--km-bg:#e6f1fb;--v1:#5f4b8b;--v1-bg:#eeeaf7;--warn:#854f0b;--warn-bg:#faeeda;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--um:#c0dd97;--um-bg:#27500a;--km:#85b7eb;--km-bg:#0c447c;--v1:#c9b8f0;--v1-bg:#3b2d5c;--warn:#fac775;--warn-bg:#633806;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:880px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .4rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.btn.danger{border-color:var(--bad-line);color:var(--bad)}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:3em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+/* 1 teekond */
+.path{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:720px){.path{grid-template-columns:1fr}}
+.zone{border-radius:10px;padding:.5rem .7rem .7rem}
+.zone.um{background:var(--um-bg);color:var(--um)}.zone.km{background:var(--km-bg);color:var(--km)}
+.zone .zl{font-size:12px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:4px}
+.box{background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:.35rem .7rem;margin-top:6px;font-size:14px;transition:all .2s}
+.box b{font-family:var(--mono);font-weight:600;font-size:13px}
+.box.on{border-color:currentColor;box-shadow:0 0 0 2px var(--accent)}
+.box.err{box-shadow:0 0 0 2px var(--bad-line)}
+.wall{margin:8px 0;text-align:center;font-size:12px;color:var(--muted);border-top:2px dashed var(--border);padding-top:4px;transition:all .2s}
+.wall.on{border-color:var(--warn);color:var(--warn);font-weight:600}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:10px;padding:.35rem .5rem;border-radius:8px;cursor:pointer;color:var(--muted);font-size:15px}
+.steps li .n{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px}
+.steps li.done{color:var(--text)}
+.steps li.cur{background:var(--bg);color:var(--text)}
+.steps li.cur .n{background:var(--accent);border-color:var(--accent);color:#fff}
+.steps li.x .n{background:var(--bad-line);border-color:var(--bad-line);color:#fff}
+.mode{display:inline-block;font-size:11px;font-weight:600;padding:0 6px;border-radius:5px;margin-left:6px;vertical-align:1px}
+.mode.um{background:var(--um-bg);color:var(--um)}.mode.km{background:var(--km-bg);color:var(--km)}
+/* 2 pidemed */
+.procs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.procs{grid-template-columns:1fr}}
+.proc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem}
+.proc.dead{opacity:.45}
+.proc .acts{display:flex;flex-wrap:wrap;gap:6px;margin:.5rem 0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:4px 6px;border-bottom:1px solid var(--border)}
+th{font-weight:500;color:var(--muted)}
+td.mono{font-family:var(--mono)}
+tr.new td{background:var(--accent-bg)}
+.kobj{margin-top:12px;background:var(--km-bg);color:var(--km);border-radius:10px;padding:.6rem .9rem}
+.kobj table{color:var(--text);background:var(--bg);border-radius:6px}
+.bsod{position:fixed;inset:0;background:#0b5aa8;color:#fff;display:none;flex-direction:column;justify-content:center;padding:8vw;z-index:10;font-size:18px}
+.bsod.on{display:flex}
+.bsod .face{font-size:90px;line-height:1;margin-bottom:24px}
+.bsod code{background:none;color:#fff}
+/* sorteerimine */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:720px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:110px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* teenus */
+.qtext{font-size:20px;font-weight:500;margin:0 0 .25rem;font-family:var(--mono)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:.75rem}
+.opt{font:inherit;font-size:15px;text-align:left;padding:.55rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.score{font-size:14px;color:var(--muted);margin:0}
+/* unicode */
+textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);resize:vertical}
+.sizes{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.size{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .9rem}
+.size .big{font-size:24px;font-weight:500}
+.size.bad{border-color:var(--bad-line)}
+.ctab{max-height:340px;overflow:auto;border:1px solid var(--border);border-radius:8px;background:var(--bg)}
+.ctab td.q{color:var(--bad);font-weight:600}
+.ctab th{position:sticky;top:0;background:var(--bg)}
+.back{font-family:var(--mono);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;margin-top:6px;word-break:break-all}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/03-pohimoisted.md">← Peatükk 3</a> · <a href="03-test.html">Test →</a></nav>
+<h1>Windowsi põhimõisted – proovi ise</h1>
+<p>Sellel lehel näed põhimõisteid töös: kuidas Windows API kõne jõuab tuuma, kuidas pidemed ja objektid toimivad, mis töötab millises režiimis, mida tähendab sõna „teenus“ ja kui palju baite võtab üks täht eri kodeeringutes.</p>
+<div class="toc"><a href="#teekond">1. Faili avamise teekond</a><a href="#pidemed">2. Pidemed ja objektid</a><a href="#reziim">3. Kus see töötab?</a><a href="#teenus">4. Mis liiki „teenus“?</a><a href="#unicode">5. Unicode baitideks</a></div>
+
+<!-- 1 -->
+<section id="teekond">
+<h2>1. Faili avamise teekond</h2>
+<p>Notepad avab faili <code>markmed.txt</code>. Liigu sammhaaval ja vaata, kuidas Windows API kõne jõuab kasutajarežiimist tuumarežiimi ja tagasi. Lülita sisse ka „Kasutajal pole õigust“ ja vaata, mis muutub.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="deny"> Kasutajal pole faili lugemise õigust</label>
+  <div class="path" style="margin-top:12px">
+    <div id="stack"></div>
+    <div><ol class="steps" id="psteps"></ol>
+      <div class="row"><button class="btn" id="pprev">← Tagasi</button><button class="btn primary" id="pnext">Järgmine samm →</button></div></div>
+  </div>
+  <div class="info" id="pinfo" aria-live="polite"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="pidemed">
+<h2>2. Pidemed ja objektid – garderoob</h2>
+<p>Objektid asuvad tuumamälus. Protsess saab nende kohta ainult <strong>pideme</strong>: numbri oma pidemetabelis, nagu garderoobinumbri. Ava ja sulge objekte kahes protsessis ning jälgi all tuumamälus objekti <strong>viidete arvu</strong>.</p>
+<div class="card">
+  <div class="procs" id="procs"></div>
+  <div class="kobj"><h3>Tuumamälu: objektid (rakendus siia otse ei pääse)</h3><div id="kobjs"></div></div>
+  <div class="info" id="hinfo" aria-live="polite">Vajuta mõnel nupul.</div>
+  <div class="row"><button class="btn danger" id="driver">Lae vigane draiver (tuumarežiim)</button><button class="btn" id="hreset">Alusta uuesti</button></div>
+</div>
+</section>
+<div class="bsod" id="bsod" role="alertdialog" aria-label="Sinine ekraan">
+  <div class="face">:(</div>
+  <p>Teie arvutil tekkis probleem ja see tuleb taaskäivitada.</p>
+  <p style="font-size:14px;margin-top:2rem">Peatuskood: <code>PAGE_FAULT_IN_NONPAGED_AREA</code><br>Mis nurjus: <code>vigane.sys</code></p>
+  <p style="font-size:15px;margin-top:2rem;max-width:640px">Erinevalt Notepadi kokkujooksmisest peatus seekord <strong>kogu süsteem</strong>. Draiver töötab tuumarežiimis, kus tal on ligipääs kogu mälule. Kui ta rikub tuumamälu, ei saa Windows enam usaldusväärselt jätkata ja peatub (bugcheck), et andmed rohkem kahjustada ei saaks.</p>
+  <p><button class="btn" id="reboot" style="margin-top:1rem">Taaskäivita</button></p>
+</div>
+
+<!-- 3 -->
+<section id="reziim">
+<h2>3. Kus see töötab?</h2>
+<p>Vali ülal komponent ja klõpsa kastil, kus see töötab. VTL 1 on hüperviisoriga eraldatud usaldustase, kuhu isegi tavaline tuum ligi ei pääse.</p>
+<div class="pool" id="rpool"></div>
+<div class="buckets">
+  <div class="bucket" data-b="um"><h3 style="color:var(--um)">Kasutajarežiim (ring 3)</h3><div class="chips"></div></div>
+  <div class="bucket" data-b="km"><h3 style="color:var(--km)">Tuumarežiim (ring 0, VTL 0)</h3><div class="chips"></div></div>
+  <div class="bucket" data-b="v1"><h3 style="color:var(--v1)">VTL 1 (turvatuum)</h3><div class="chips"></div></div>
+</div>
+<div class="row"><button class="btn" id="rreset">Alusta uuesti</button><button class="btn primary" id="rcheck" disabled>Kontrolli</button></div>
+<div id="rres"></div>
+</section>
+
+<!-- 4 -->
+<section id="teenus">
+<h2>4. Mis liiki „teenus“ see on?</h2>
+<p>Sõna „teenus“ tähendab Windowsis kolme eri asja. Lisaks on olemas tuumarutiinid. Vali, millega on tegu.</p>
+<div class="card" id="tcard" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section id="unicode">
+<h2>5. Unicode baitideks</h2>
+<p>Kirjuta tekst ja vaata, mitu baiti see võtab eri kodeeringutes ja mis juhtub, kui salvestad selle vana ANSI koodilehega. Eesti Windowsi ANSI koodileht on <strong>Windows-1257</strong> (Balti), mis sisaldab täpitähti, kuid mitte kirillitsat ega emotikone.</p>
+<textarea id="utext" rows="2">Tere, õäöüšž! Привет 😀</textarea>
+<div class="sizes" id="usizes"></div>
+<p class="hint" style="margin:.25rem 0">ANSI-failina salvestamise järel ja uuesti avamisel näed:</p>
+<div class="back" id="uback"></div>
+<p class="hint" style="margin:1rem 0 .25rem">Märk-märgilt:</p>
+<div class="ctab"><table><thead><tr><th>Märk</th><th>Koodipunkt</th><th>UTF-8 baidid</th><th>UTF-16 LE baidid</th><th>ANSI (1257)</th></tr></thead><tbody id="utab"></tbody></table></div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const hex=n=>n.toString(16).toUpperCase().padStart(2,'0');
+
+/* ---------- 1. teekond ---------- */
+const BOXES=[
+ ['um','notepad','<b>notepad.exe</b> – sinu rakendus'],
+ ['um','k32','<b>kernel32.dll / KernelBase.dll</b> – Windows API'],
+ ['um','ntdll','<b>ntdll.dll</b> – Native API'],
+ ['wall','wall','süsteemikutse (syscall): ring 3 → ring 0'],
+ ['km','disp','<b>süsteemiteenuste dispetšer</b>'],
+ ['km','om','<b>objektihaldur + SRM</b> – nimi ja õigused'],
+ ['km','io','<b>I/O-haldur + ntfs.sys</b> – fail kettal'],
+ ['km','ht','<b>Notepadi pidemetabel</b>']
+];
+const OK=[
+ ['notepad','um','Notepad kutsub <code>CreateFileW</code>','Notepad kutsub välja dokumenteeritud Windows API funktsiooni <code>CreateFileW(L"markmed.txt", GENERIC_READ, …)</code>. W tähendab, et failinimi on UTF-16 kujul.'],
+ ['k32','um','KernelBase.dll teisendab parameetrid','API-funktsioon asub DLL-is. Ta teisendab failitee NT kujule (<code>\\??\\C:\\…\\markmed.txt</code>) ja kutsub välja <code>ntdll.dll</code>-i funktsiooni <code>NtCreateFile</code>.'],
+ ['ntdll','um','ntdll.dll täidab käsu <code>syscall</code>','<code>NtCreateFile</code> on Native API funktsioon. Ta paneb süsteemiteenuse numbri registrisse ja täidab protsessori käsu <code>syscall</code>.'],
+ ['wall','wall','Režiimivahetus: ring 3 → ring 0','Protsessor lülitub tuumarežiimi ja hüppab kindlasse tuuma sisendpunkti. Rakendus ei saa valida, kuhu tuumas hüpata. Ainult nii pääseb kasutajarežiimist tuuma.'],
+ ['disp','km','Dispetšer kontrollib parameetreid','Süsteemiteenuste dispetšer leiab numbri järgi tuumafunktsiooni <code>NtCreateFile</code>. Kõik kasutajarežiimist tulnud aadressid ja väärtused kontrollitakse, sest rakendust ei usaldata.'],
+ ['om','km','Objektihaldur leiab nime, SRM kontrollib õigusi','Objektihaldur lahendab nime. Turvaviitemonitor (SRM) võrdleb Notepadi protsessi tokenit faili turvakirjeldaja pääsuloendiga (ACL). Lugemisõigus on olemas.'],
+ ['io','km','I/O-haldur ja NTFS avavad faili','I/O-haldur saadab päringu failisüsteemi draiverile <code>ntfs.sys</code>, mis leiab faili kettalt. Tuumamällu luuakse <b>failiobjekt</b>.'],
+ ['ht','km','Pidemetabelisse lisatakse kirje <code>0x1A4</code>','Objektihaldur lisab Notepadi pidemetabelisse kirje, mis viitab failiobjektile, ja tagastab selle numbri: <b>pide 0x1A4</b>. Failiobjekti ennast rakendus kunagi ei näe.'],
+ ['notepad','um','Notepad saab pideme ja loeb faili','Tagasi kasutajarežiimis. Notepad kutsub <code>ReadFile(0x1A4, …)</code>. Iga kord kontrollib tuum, et pide kuulub sellele protsessile ja lubab lugemist.']
+];
+const DENY=OK.slice(0,5).concat([
+ ['om','km','SRM keeldub: STATUS_ACCESS_DENIED','SRM võrdleb tokenit faili ACL-iga ega leia lugemisõigust. Faili ei avata, failiobjekti ega pidet ei looda. Ketta poole üldse ei pöördutud.','x'],
+ ['notepad','um','Notepad saab vea 5 – „Juurdepääs keelatud“','<code>CreateFileW</code> tagastab <code>INVALID_HANDLE_VALUE</code> ja <code>GetLastError()</code> annab väärtuse 5 (<code>ERROR_ACCESS_DENIED</code>). Notepad näitab teadet „Juurdepääs on keelatud“. Turvakontroll toimub pideme avamisel.','x']
+]);
+let pst=0;
+const PS=()=>$('deny').checked?DENY:OK;
+function drawPath(){
+  const S=PS(),s=S[pst];
+  let h='',zone=null;
+  BOXES.forEach(([z,id,t])=>{
+    if(z==='wall'){if(zone){h+='</div>';zone=null}h+='<div class="wall'+(s[0]==='wall'?' on':'')+'">'+t+'</div>';return}
+    if(z!==zone){if(zone)h+='</div>';h+='<div class="zone '+z+'"><div class="zl">'+(z==='um'?'Kasutajarežiim':'Tuumarežiim')+'</div>';zone=z}
+    h+='<div class="box'+(s[0]===id?(s[4]?' on err':' on'):'')+'">'+t+(id==='ht'?(S===OK&&pst>=7?' <span class="mono">0x1A4 → failiobjekt</span>':''):'')+'</div>';
+  });
+  $('stack').innerHTML=h+'</div>';
+  $('psteps').innerHTML=S.map((x,n)=>'<li class="'+(n<pst?'done':n===pst?'cur':'')+(x[4]&&n<=pst?' x':'')+'" data-n="'+n+'"><span class="n">'+(n+1)+'</span><span>'+x[2]+(x[1]!=='wall'?'<span class="mode '+x[1]+'">'+(x[1]==='um'?'kasutaja':'tuum')+'</span>':'')+'</span></li>').join('');
+  $('pinfo').className='info'+(s[4]?' bad':pst===S.length-1?' ok':'');
+  $('pinfo').innerHTML='<strong>Samm '+(pst+1)+'.</strong> '+s[3];
+  $('pprev').disabled=pst===0;$('pnext').textContent=pst===S.length-1?'Alusta uuesti':'Järgmine samm →';
+  document.querySelectorAll('#psteps li').forEach(li=>li.onclick=()=>{pst=+li.dataset.n;drawPath()});
+}
+$('pprev').onclick=()=>{pst--;drawPath()};
+$('pnext').onclick=()=>{pst=pst===PS().length-1?0:pst+1;drawPath()};
+$('deny').onchange=()=>{pst=Math.min(pst,PS().length-1);drawPath()};
+drawPath();
+
+/* ---------- 2. pidemed ---------- */
+const RES={file:['File','C:\\Users\\mari\\markmed.txt','Ava fail markmed.txt'],key:['Key','HKCU\\Software\\Notepad','Ava registrivõti'],event:['Event','\\BaseNamedObjects\\Valmis','Loo/ava sündmus „Valmis“']};
+let P,K,lastNew;
+function resetH(){
+  P=[{name:'notepad.exe',pid:7420,next:0x1A4,h:[],alive:true},{name:'msedge.exe',pid:3112,next:0x2C0,h:[],alive:true}];
+  K={};lastNew=null;$('hinfo').className='info';$('hinfo').textContent='Vajuta mõnel nupul.';drawH();
+}
+function info(t,c){$('hinfo').className='info'+(c?' '+c:'');$('hinfo').innerHTML=t}
+function openR(pi,r){
+  const p=P[pi],[type,name]=RES[r];
+  const created=!K[name];if(created)K[name]={type,refs:0};K[name].refs++;
+  const h=p.next;p.next+=4;p.h.push({h,name,type});lastNew=pi+':'+h;
+  info('<b>'+p.name+'</b> sai pideme <span class="mono">0x'+h.toString(16).toUpperCase()+'</span>. '+(created?'Tuumamällu loodi uus '+type+'-objekt.':'Objekt oli juba olemas (teine protsess kasutab seda), viidete arv kasvas: <b>'+K[name].refs+'</b>.')+' Pideme number kehtib ainult selle protsessi pidemetabelis.');
+  drawH();
+}
+function closeH(pi,idx){
+  const p=P[pi],e=p.h.splice(idx,1)[0];lastNew=null;
+  K[e.name].refs--;let t='<b>'+p.name+'</b> sulges pideme <span class="mono">0x'+e.h.toString(16).toUpperCase()+'</span> (<code>CloseHandle</code>). ';
+  if(K[e.name].refs===0){delete K[e.name];t+='Viidete arv langes nulli ja objekt <b>kustutati</b> tuumamälust.'}else t+='Objekt jääb alles, sest viiteid on veel <b>'+K[e.name].refs+'</b>.';
+  info(t);drawH();
+}
+function crash(pi){
+  const p=P[pi];if(!p.alive)return;const n=p.h.length,del=[];
+  p.h.forEach(e=>{K[e.name].refs--;if(K[e.name].refs===0){del.push(e.type);delete K[e.name]}});p.h=[];p.alive=false;lastNew=null;
+  info('<b>'+p.name+'</b> jooksis kokku. Windows lõpetas ainult selle protsessi ja sulges tema '+n+' pidet'+(del.length?'; kustutati objektid: '+del.join(', '):'')+'. Teine protsess töötab edasi, sest kasutajarežiimi viga ei puuduta tuuma ega teisi protsesse.','ok');drawH();
+}
+function foreign(pi){
+  const o=P[1-pi];if(!o.h.length){info('Teisel protsessil pole veel ühtegi pidet. Ava seal enne midagi.');return}
+  const h=o.h[0].h,mine=P[pi].h.find(e=>e.h===h);
+  info('<b>'+P[pi].name+'</b> proovib kasutada pidet <span class="mono">0x'+h.toString(16).toUpperCase()+'</span>, mille sai <b>'+o.name+'</b>. '+(mine?'Selles protsessis on juhuslikult sama numbriga pide olemas, kuid see viitab hoopis objektile <b>'+mine.type+'</b>. Numbrid on igas protsessis erinevad.':'Tuum otsib numbrit <b>selle protsessi</b> pidemetabelist ega leia seda: <code>STATUS_INVALID_HANDLE</code>. Võõra garderoobinumbriga mantlit ei saa.'),'bad');
+}
+function drawH(){
+  $('procs').innerHTML=P.map((p,pi)=>'<div class="proc'+(p.alive?'':' dead')+'"><h3>'+p.name+' <span class="hint">PID '+p.pid+(p.alive?'':' · lõpetatud')+'</span></h3>'+
+   '<div class="acts">'+Object.keys(RES).map(r=>'<button class="btn" data-a="o" data-p="'+pi+'" data-r="'+r+'"'+(p.alive?'':' disabled')+'>'+RES[r][2]+'</button>').join('')+
+   '<button class="btn" data-a="f" data-p="'+pi+'"'+(p.alive?'':' disabled')+'>Kasuta teise protsessi pidet</button><button class="btn danger" data-a="c" data-p="'+pi+'"'+(p.alive?'':' disabled')+'>Jookse kokku</button></div>'+
+   '<table><thead><tr><th>Pide</th><th>Tüüp</th><th>Objekt</th><th></th></tr></thead><tbody>'+(p.h.length?p.h.map((e,i)=>'<tr'+(lastNew===pi+':'+e.h?' class="new"':'')+'><td class="mono">0x'+e.h.toString(16).toUpperCase()+'</td><td>'+e.type+'</td><td class="mono" style="word-break:break-all">'+e.name+'</td><td><button class="btn" data-a="x" data-p="'+pi+'" data-i="'+i+'">Sulge</button></td></tr>').join(''):'<tr><td colspan="4" class="hint">Pidemetabel on tühi</td></tr>')+'</tbody></table></div>').join('');
+  const ks=Object.entries(K);
+  $('kobjs').innerHTML='<table><thead><tr><th>Tüüp</th><th>Nimi</th><th>Viiteid</th></tr></thead><tbody>'+(ks.length?ks.map(([n,o])=>'<tr><td>'+o.type+'</td><td class="mono" style="word-break:break-all">'+n+'</td><td><b>'+o.refs+'</b></td></tr>').join(''):'<tr><td colspan="3" class="hint">Objekte pole</td></tr>')+'</tbody></table>';
+  document.querySelectorAll('#procs button').forEach(b=>b.onclick=()=>{const pi=+b.dataset.p;({o:()=>openR(pi,b.dataset.r),x:()=>closeH(pi,+b.dataset.i),c:()=>crash(pi),f:()=>foreign(pi)})[b.dataset.a]()});
+}
+$('hreset').onclick=resetH;
+$('driver').onclick=()=>{$('bsod').classList.add('on');$('reboot').focus()};
+$('reboot').onclick=()=>{$('bsod').classList.remove('on');resetH();info('Arvuti taaskäivitati. Kõik protsessid ja objektid on kadunud. Vigane draiver tuumarežiimis peatas kogu süsteemi, kuid vigane rakendus kasutajarežiimis ainult iseenda.','bad')};
+resetH();
+
+/* ---------- 3. režiim ---------- */
+const RM=[['notepad.exe','um','Tavaline rakendus töötab kasutajarežiimis.'],['Word','um','Rakendused töötavad kasutajarežiimis.'],['kernel32.dll','um','API DLL-id laaditakse rakenduse protsessi, seega töötavad kasutajarežiimis.'],['ntdll.dll','um','ntdll.dll on viimane kasutajarežiimi kiht enne süsteemikutset.'],['svchost.exe','um','Teenused on tavalised protsessid kasutajarežiimis, kuigi sageli suuremate õigustega.'],['lsass.exe','um','LSASS on kasutajarežiimi protsess, mida kaitseb LSA kaitse.'],['ntoskrnl.exe (tuum ja käivitav süsteem)','km','Tuum ja executive töötavad tuumarežiimis.'],['ntfs.sys','km','Failisüsteemi draiver töötab tuumarežiimis.'],['win32k.sys','km','Akende ja graafika tuumaosa töötab tuumarežiimis.'],['Securekernel.exe','v1','Turvatuum töötab VTL 1-s. Tavaline tuum ei näe selle mälu.'],['LsaIso.exe (Credential Guard)','v1','Isoleeritud LSA hoiab paroolide räsisid ja Kerberose pileteid VTL 1-s.']];
+let rset=[],rpl={},rsel=null,rchk=false;
+function newR(){rset=shuffle(RM.map((_,i)=>i)).slice(0,8);if(!rset.some(i=>RM[i][1]==='v1'))rset[7]=9;rset=shuffle(rset);rpl={};rsel=null;rchk=false;$('rres').innerHTML='';drawR()}
+function rchip(i,w){const b=document.createElement('button');let c='chip';if(rsel===i)c+=' sel';if(rchk&&w!=='pool')c+=RM[i][1]===w?' ok':' bad';b.className=c;b.textContent=RM[i][0];
+  b.onclick=e=>{e.stopPropagation();if(rchk)return;if(w==='pool')rsel=rsel===i?null:i;else{delete rpl[i];rsel=i}drawR()};return b}
+function drawR(){
+  const pool=$('rpool');pool.innerHTML='';rset.filter(i=>!(i in rpl)).forEach(i=>pool.appendChild(rchip(i,'pool')));
+  if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
+  document.querySelectorAll('#reziim .bucket').forEach(bk=>{const c=bk.querySelector('.chips');c.innerHTML='';rset.filter(i=>rpl[i]===bk.dataset.b).forEach(i=>c.appendChild(rchip(i,bk.dataset.b)))});
+  $('rcheck').disabled=rchk||Object.keys(rpl).length!==rset.length;
+}
+document.querySelectorAll('#reziim .bucket').forEach(bk=>bk.onclick=()=>{if(rchk||rsel===null)return;rpl[rsel]=bk.dataset.b;rsel=null;drawR()});
+$('rcheck').onclick=()=>{rchk=true;drawR();const w=rset.filter(i=>rpl[i]!==RM[i][1]);
+  $('rres').innerHTML='<div class="fb '+(w.length?'bad':'ok')+'"><strong>'+(w.length?'Õigesti '+(rset.length-w.length)+' / '+rset.length:'Kõik õigesti!')+'</strong>'+w.map(i=>'<b>'+RM[i][0]+'</b> – '+RM[i][2]).join('<br>')+'</div>'};
+$('rreset').onclick=newR;newR();
+
+/* ---------- 4. teenus ---------- */
+const TK=['Windowsi teenus','Süsteemiteenus','API-funktsioon','Tuumarutiin'];
+const TQ=[['Windows Update (wuauserv)',0,'Taustaprotsess, mida juhib teenusehaldur (services.exe). Näed seda konsoolis services.msc.'],['DNS-klient (Dnscache)',0,'Windowsi teenus, mis töötab ühes svchost.exe protsessis koos teiste teenustega.'],['Print Spooler',0,'Printerijärjekorda haldav Windowsi teenus. Seda saab peatada käsuga Stop-Service Spooler.'],['NtCreateFile',1,'Tuumafunktsioon, mida kutsutakse süsteemikutse kaudu. Nt-eesliide viitab Native API-le.'],['NtReadFile',1,'Süsteemiteenus: ReadFile jõuab lõpuks selleni.'],['NtAllocateVirtualMemory',1,'Süsteemiteenus, mille VirtualAlloc välja kutsub.'],['CreateFileW',2,'Dokumenteeritud API-funktsioon KernelBase.dll-is. W tähendab Unicode’i (UTF-16) versiooni.'],['CreateProcessW',2,'Dokumenteeritud API-funktsioon, millega programm käivitab teise programmi.'],['VirtualAlloc',2,'Dokumenteeritud API-funktsioon mälu eraldamiseks.'],['ExAllocatePool2',3,'Tuumarutiin, millega draiver eraldab tuumamälu. Rakendus seda välja kutsuda ei saa.'],['IoCreateDevice',3,'Tuumarutiin, millega draiver loob seadmeobjekti.']];
+let tq=shuffle(TQ.map((_,i)=>i)),tp=0,ts={ok:0,n:0},ta=null;
+function drawT(){
+  if(tp>=tq.length){$('tcard').innerHTML='<p class="qtext" style="font-family:inherit">Tulemus: '+ts.ok+' / '+ts.n+'</p><p>'+(ts.ok===ts.n?'Suurepärane!':'Vaata peatükk 3.6 üle.')+' Vihje: <code>Nt…</code> = süsteemiteenus, dokumenteeritud nimed (nt <code>CreateFileW</code>) = API, <code>Ex…</code>/<code>Io…</code> = tuumarutiin.</p><div class="row"><span></span><button class="btn primary" id="tag">Alusta uuesti</button></div>';$('tag').onclick=()=>{tq=shuffle(TQ.map((_,i)=>i));tp=0;ts={ok:0,n:0};ta=null;drawT()};return}
+  const [q,c,e]=TQ[tq[tp]];
+  let h='<p class="score">Küsimus '+(tp+1)+' / '+tq.length+' · õigeid '+ts.ok+'</p><p class="qtext">'+q+'</p><div class="opts">';
+  TK.forEach((t,i)=>{let cl='opt';if(ta!==null)cl+=i===c?' ok':i===ta?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(ta!==null?' disabled':'')+'>'+t+'</button>'});
+  h+='</div>';if(ta!==null)h+='<div class="fb '+(ta===c?'ok':'bad')+'"><strong>'+(ta===c?'Õige!':'Vale. Õige: '+TK[c])+'</strong>'+e+'</div>';
+  h+='<div class="row"><span></span><button class="btn primary" id="tn"'+(ta===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('tcard').innerHTML=h;
+  document.querySelectorAll('#tcard .opt').forEach(b=>b.onclick=()=>{ta=+b.dataset.i;ts.n++;if(ta===c)ts.ok++;drawT();$('tn').focus()});
+  $('tn').onclick=()=>{tp++;ta=null;drawT()};
+}
+drawT();
+
+/* ---------- 5. unicode ---------- */
+const CP1257_HI="\u20ac\u0000\u201a\u0000\u201e\u2026\u2020\u2021\u0000\u2030\u0000\u2039\u0000\u00a8\u02c7\u00b8\u0000\u2018\u2019\u201c\u201d\u2022\u2013\u2014\u0000\u2122\u0000\u203a\u0000\u00af\u02db\u0000\u00a0\u0000\u00a2\u00a3\u00a4\u0000\u00a6\u00a7\u00d8\u00a9\u0156\u00ab\u00ac\u00ad\u00ae\u00c6\u00b0\u00b1\u00b2\u00b3\u00b4\u00b5\u00b6\u00b7\u00f8\u00b9\u0157\u00bb\u00bc\u00bd\u00be\u00e6\u0104\u012e\u0100\u0106\u00c4\u00c5\u0118\u0112\u010c\u00c9\u0179\u0116\u0122\u0136\u012a\u013b\u0160\u0143\u0145\u00d3\u014c\u00d5\u00d6\u00d7\u0172\u0141\u015a\u016a\u00dc\u017b\u017d\u00df\u0105\u012f\u0101\u0107\u00e4\u00e5\u0119\u0113\u010d\u00e9\u017a\u0117\u0123\u0137\u012b\u013c\u0161\u0144\u0146\u00f3\u014d\u00f5\u00f6\u00f7\u0173\u0142\u015b\u016b\u00fc\u017c\u017e\u02d9";/* baidid 0x80–0xFF */
+const CP1257=new Map();[...CP1257_HI].forEach((c,i)=>{if(c!=='\u0000')CP1257.set(c,128+i)});
+const enc=new TextEncoder();
+function drawU(){
+  const t=$('utext').value,chars=[...t];
+  let u8=0,u16=0,ansi=0,lost=0,back='',rows='';
+  chars.forEach(ch=>{
+    const cp=ch.codePointAt(0),b8=[...enc.encode(ch)],units=ch.length;
+    const b16=[];for(let k=0;k<units;k++){const u=ch.charCodeAt(k);b16.push(u&255,u>>8)}
+    const ok=cp<128||CP1257.has(ch);
+    u8+=b8.length;u16+=b16.length;ansi+=ok?1:units;if(!ok)lost++;back+=ok?ch:'?'.repeat(units);
+    const show=ch===' '?'␠':ch==='\n'?'↵':ch;
+    rows+='<tr><td style="font-size:17px">'+show.replace(/</g,'&lt;')+'</td><td class="mono">U+'+cp.toString(16).toUpperCase().padStart(4,'0')+'</td><td class="mono">'+b8.map(hex).join(' ')+' <span class="hint">('+b8.length+')</span></td><td class="mono">'+b16.map(hex).join(' ')+' <span class="hint">('+b16.length+')</span></td>'+(ok?'<td class="mono">'+hex(cp<128?cp:CP1257.get(ch))+'</td>':'<td class="q">ei mahu → '+'?'.repeat(units)+'</td>')+'</tr>';
+  });
+  $('usizes').innerHTML=
+   '<div class="size"><div class="hint">Märke</div><div class="big">'+chars.length+'</div></div>'+
+   '<div class="size"><div class="hint">UTF-8</div><div class="big">'+u8+' B</div><div class="hint">BOM-iga '+(u8+3)+' B</div></div>'+
+   '<div class="size"><div class="hint">UTF-16 LE</div><div class="big">'+(u16+2)+' B</div><div class="hint">sh BOM 2 B (FF FE)</div></div>'+
+   '<div class="size'+(lost?' bad':'')+'"><div class="hint">ANSI (Windows-1257)</div><div class="big">'+ansi+' B</div><div class="hint">'+(lost?lost+' märki läheb kaotsi':'kõik märgid mahuvad')+'</div></div>';
+  $('uback').textContent=back||' ';
+  $('utab').innerHTML=rows;
+}
+$('utext').oninput=drawU;drawU();
+</script>
+</body>
+</html>

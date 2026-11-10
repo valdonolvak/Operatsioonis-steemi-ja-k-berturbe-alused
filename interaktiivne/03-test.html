@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 3 – test: Windowsi põhimõisted</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/03-pohimoisted.md">← Peatükk 3</a> · <a href="03-pohimoisted.html">Interaktiivne leht</a></nav>
+<h1>Test: Windowsi põhimõisted</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mida tähendab lühend API?", "o": ["Application Programming Interface – funktsioonide kogum, mille kaudu programm OS-ilt teenuseid küsib", "Advanced Processor Instruction – protsessori erikäsk", "Automatic Program Installer – paigaldusprogramm", "Access Permission Index – õiguste loend"], "c": 0, "e": "Windowsi põhiliides on Windows API (varem Win32 API): C-keelsed funktsioonid nagu <code>CreateFile</code>, <code>CreateProcess</code> ja <code>VirtualAlloc</code>."},
+{"q": "Millises DLL-is on dokumenteerimata Native API funktsioonid?", "o": ["kernel32.dll", "user32.dll", "ntdll.dll", "gdi32.dll"], "c": 2, "e": "kernel32.dll, user32.dll ja advapi32.dll sisaldavad dokumenteeritud Windows API funktsioone. Need kutsuvad omakorda välja ntdll.dll-i Native API funktsioone, mis teevad süsteemikutse."},
+{"q": "Kuidas jõuab rakenduse API-kõne tuuma?", "o": ["Rakendus kutsub tuumafunktsiooni otse välja", "Rakendus kirjutab käsu tuumamällu", "Draiver loeb rakenduse mälu", "API DLL → ntdll.dll → süsteemikutse, mis lülitab protsessori tuumarežiimi"], "c": 3, "e": "Rakendus ei pääse tuuma otse. Ainus tee on süsteemikutse, mille juures tuum kontrollib parameetreid ja õigusi."},
+{"q": "Mis on COM?", "o": ["Komponentmudel, mida kasutavad nii Office kui ka paljud süsteemiteenused", "Käsurea tõlk", "Failisüsteem", "Võrguprotokoll"], "c": 0, "e": "COM (Component Object Model) võimaldab programmidel kasutada teiste programmide komponente. Näiteks saab PowerShelli skript COM-i kaudu Excelit juhtida."},
+{"q": "Mis vahe on .NET Frameworkil ja tänapäevasel .NET-il?", "o": ["Vahet pole, need on sama asi", ".NET Framework töötab ainult Windowsis ja uusi funktsioone sinna ei lisata; .NET on avatud lähtekoodiga ja töötab Windowsis, Linuxis ja macOS-is", ".NET töötab ainult Linuxis", ".NET Framework on uuem kui .NET"], "c": 1, "e": ".NET Framework 4.8.1 on Windowsis alles vanade rakenduste jaoks. Uus .NET-i põhiversioon ilmub igal novembril ja paarisarvulistel versioonidel on pikaajaline tugi (LTS)."},
+{"q": "Millise raamistiku peale on ehitatud PowerShell 7?", "o": [".NET Framework 4.8", "Java", ".NET (endine .NET Core)", "Python"], "c": 2, "e": "PowerShell 7 töötab .NET-i peal ja seetõttu ka Linuxis ja macOS-is. Windows PowerShell 5.1 töötab .NET Frameworki peal ja ainult Windowsis."},
+{"q": "Mis on Windowsis objekt?", "o": ["Tuumamälus asuv andmestruktuur, mis esindab ressurssi, nt protsessi, faili või registrivõtit", "Iga fail kettal", "Kasutajaliidese nupp", "Programmi lähtekoodi rida"], "c": 0, "e": "Objekte on palju tüüpe: protsess, lõim, fail, sündmus, mutex, registrivõti, token. Rakendus ei pääse objektile otse ligi."},
+{"q": "Mis on pide (handle)?", "o": ["Protsessi nimi", "Failitee", "Arv, mis viitab kirjele protsessi pidemetabelis ja mille kaudu rakendus objekti kasutab", "Objekti mäluaadress tuumas"], "c": 2, "e": "Pide on nagu garderoobinumber: sa ei pääse ise riidepuude juurde, aga numbri alusel toob garderoobitöötaja (OS) mantli (objekti)."},
+{"q": "Notepadil on pide 0x1A4. Mis juhtub, kui brauser üritab kasutada sama numbrit 0x1A4?", "o": ["Brauser saab Notepadi faili kätte", "Brauser saab Notepadi mälu lugeda", "Mõlemad programmid jooksevad kokku", "Tuum otsib numbrit brauseri enda pidemetabelist; Notepadi faili see ei anna"], "c": 3, "e": "Pidemetabel on igal protsessil oma. Sama number tähendab eri protsessides eri asja või ei tähenda midagi."},
+{"q": "Millal toimub objekti turvakontroll?", "o": ["Pideme avamisel", "Ainult arvuti käivitamisel", "Iga kord, kui kasutaja logib sisse", "Turvakontrolli ei tehta"], "c": 0, "e": "Igal objektil on turvakirjeldaja. Avamisel võrreldakse seda protsessi tokeniga. Seejärel kontrollitakse iga operatsiooni juures, kas pideme avamisel antud õigused seda lubavad."},
+{"q": "Millal kustutatakse objekt tuumamälust?", "o": ["Kohe, kui esimene protsess pideme sulgeb", "Kui viidete arv langeb nulli ehk keegi ei kasuta seda enam", "Ainult taaskäivitamisel", "Iga tunni järel automaatselt"], "c": 1, "e": "Viidete loendus tagab, et objekt ei kao seni, kuni seda veel kasutatakse, ega jää mällu, kui keegi seda enam ei vaja."},
+{"q": "Milline neist EI ole objektide kasutamise eelis Windowsis?", "o": ["Ühtne nimetamine ja leidmine", "Ühtne turvakontroll", "Viidete loendus", "Rakendus saab objekti andmeid otse tuumamälus muuta"], "c": 3, "e": "Rakendus ei saa tuumamälu muuta. Just see on objektide ja pidemete mõte: kõik käib OS-i kaudu ja OS kontrollib õigusi."},
+{"q": "Milline protsessori privileegitase vastab Windowsi kasutajarežiimile x86-l?", "o": ["ring 0", "ring 1", "ring 3", "ring 2"], "c": 2, "e": "Windows kasutab kahte taset: ring 3 (kasutajarežiim) ja ring 0 (tuumarežiim). Ring 1 ja 2 jäävad kasutamata."},
+{"q": "Mis töötab tuumarežiimis?", "o": ["Tuum, draiverid ja käivitav süsteem (executive)", "Word ja brauser", "kernel32.dll", "Kõik programmid"], "c": 0, "e": "Tuumarežiimis on täielik ligipääs riistvarale ja mälule. Rakendused ja API DLL-id (ka kernel32.dll) töötavad kasutajarežiimis."},
+{"q": "Mis juhtub, kui kasutajarežiimi rakendus jookseb kokku?", "o": ["Kogu süsteem peatub", "Lõpetatakse ainult see protsess ja vabastatakse tema pidemed", "Arvuti taaskäivitub", "Kõik teenused peatuvad"], "c": 1, "e": "Kasutajarežiimi rakendus ei pääse teiste protsesside ega tuuma mällu, seega ei saa tema viga neid kahjustada."},
+{"q": "Miks võib vigane draiver peatada kogu Windowsi (sinine ekraan)?", "o": ["Draiveritel puudub mälu", "Draiverid töötavad kasutajarežiimis", "Draiver töötab tuumarežiimis ja saab rikkuda tuumamälu, misjärel Windows ei saa enam usaldusväärselt jätkata", "Sinine ekraan tekib ainult viiruse tõttu"], "c": 2, "e": "Tuumarežiimis puudub kaitse tuumamälu eest. Seetõttu nõuab 64-bitine Windows draiveritelt digiallkirja ja Windows 11 vaikimisi ka mälu terviklikkust (HVCI)."},
+{"q": "Mida tagab süsteemikutse (system call)?", "o": ["Rakendus saab hüpata suvalisse kohta tuumas", "Programm töötab kiiremini", "Rakendus saab otse kettale kirjutada", "Rakendus läheb tuumarežiimi ainult kindlas sisendpunktis ja tuum kontrollib parameetreid ning õigusi"], "c": 3, "e": "Kui rakendus saaks hüpata suvalisse kohta tuumas, saaks ta mööda minna kõigist kontrollidest."},
+{"q": "Mis on VTL 1?", "o": ["Hüperviisoriga eraldatud virtuaalne usaldustase, kus töötab turvatuum ja hoitakse tundlikke andmeid", "Esimene virtuaalmasin Hyper-V-s", "Kasutajarežiimi teine nimi", "Võrguühenduse tüüp"], "c": 0, "e": "Tavaline tuum töötab VTL 0-s. Isegi tuumarežiimis töötav pahavara ei saa VTL 1 mälu lugeda. Näiteks Credential Guard hoiab seal paroolide räsisid."},
+{"q": "Mis on programm?", "o": ["Käivitatud programmi eksemplar", "Kettal asuv staatiline fail, nt notepad.exe", "Protsessi sees täidetav käsujada", "Tuumamälus olev objekt"], "c": 1, "e": "Programmist saab protsess alles siis, kui see käivitatakse. Sama programmi saab käivitada mitu korda ja iga kord tekib uus protsess."},
+{"q": "Mis kuulub protsessile?", "o": ["Ainult programmi fail kettal", "Ainult üks protsessori tuum", "Oma virtuaalne aadressiruum, pidemetabel, turvatoken ja vähemalt üks lõim", "Kõigi kasutajate failid"], "c": 2, "e": "Protsess on konteiner. Täitmise üksus on lõim."},
+{"q": "Mis on lõimel oma ja mida ta jagab teistega?", "o": ["Lõimel on oma register- ja pinuolek, kuid ta jagab protsessi mälu teiste sama protsessi lõimedega", "Lõimel on oma mälu, kuid ta jagab registreid", "Lõimel pole midagi oma", "Igal lõimel on oma pidemetabel"], "c": 0, "e": "Seetõttu saavad sama protsessi lõimed kiiresti andmeid jagada. Samas peavad nad oma tegevust koordineerima (vt sünkroniseerimine ja ummikud)."},
+{"q": "Mis on Windows Update’i tüüpi „teenus“?", "o": ["Süsteemiteenus (tuumafunktsioon)", "API-funktsioon DLL-is", "Tuumarutiin", "Windowsi teenus – taustaprotsess, mida juhib teenusehaldur (services.exe)"], "c": 3, "e": "Paljud Windowsi teenused jagavad ühte svchost.exe protsessi. Süsteemiteenus (nt NtCreateFile) on hoopis tuumafunktsioon, mida kutsutakse süsteemikutse kaudu."},
+{"q": "Mis on NtCreateFile?", "o": ["Windowsi teenus", "Süsteemiteenus – tuumafunktsioon, mida kutsutakse süsteemikutse kaudu", "Graafiline programm", "Failisüsteem"], "c": 1, "e": "Dokumenteeritud API-funktsioon CreateFileW kutsub lõpuks välja süsteemiteenuse NtCreateFile."},
+{"q": "Miks on API-funktsioonidel kaks kuju, nt CreateFileW ja CreateFileA?", "o": ["W on Windowsi, A Apple’i jaoks", "W kirjutab, A ainult loeb", "W kasutab Unicode’i (UTF-16) teksti, A vana ANSI koodilehte", "Vahet pole"], "c": 2, "e": "Windows hoiab tekste sisemiselt UTF-16-s. A-versioon teisendab teksti ja kõik märgid ei pruugi koodilehte mahtuda."},
+{"q": "Fail sisaldab teksti „õäöü Привет 😀“. Mis juhtub, kui see salvestatakse Eesti Windowsis ANSI (Windows-1257) kodeeringus?", "o": ["Kõik märgid säilivad", "Täpitähed säilivad, kuid kirillitsa ja emotikon asenduvad küsimärkidega", "Kaovad ainult täpitähed", "Faili ei saa salvestada"], "c": 1, "e": "Windows-1257 (Balti) koodilehes on eesti täpitähed olemas, kuid kirillitsat ja emotikone pole. Unicode (UTF-8, UTF-16) mahutab kõik märgid."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
