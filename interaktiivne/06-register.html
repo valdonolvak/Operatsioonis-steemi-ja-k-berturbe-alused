@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 6 – register ja konfiguratsioonihaldur: interaktiivne leht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--warn:#854f0b;--warn-bg:#faeeda;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--warn:#fac775;--warn-bg:#633806;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px;word-break:break-all}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.35rem .85rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.btn.danger{border-color:var(--bad-line);color:var(--bad)}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+input[type=text],select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+/* regedit */
+.reg{background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.addr{font-family:var(--mono);font-size:13px;padding:.35rem .7rem;border-bottom:1px solid var(--border);background:var(--card);word-break:break-all}
+.tools{display:flex;gap:6px;flex-wrap:wrap;padding:.4rem .6rem;border-bottom:1px solid var(--border)}
+.panes{display:grid;grid-template-columns:minmax(220px,1fr) minmax(0,1.6fr);min-height:320px}
+@media (max-width:720px){.panes{grid-template-columns:1fr}}
+.tree{border-right:1px solid var(--border);padding:.3rem;font-size:13.5px;overflow:auto;max-height:420px}
+.tree ul{list-style:none;margin:0;padding-left:16px}
+.tree>ul{padding-left:0}
+.tree li>div{display:flex;align-items:center;gap:2px;white-space:nowrap}
+.tree .tw{width:16px;text-align:center;cursor:pointer;color:var(--muted);user-select:none;font-size:11px}
+.tree .k{cursor:pointer;padding:0 5px;border-radius:4px}
+.tree .k.sel{background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.tree .k.sel{color:#042c53}}
+.tree .k.lock{color:var(--muted)}
+.vals{overflow:auto;max-height:420px}
+.vals table{width:100%;border-collapse:collapse;font-size:13px}
+.vals th,.vals td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.vals th{font-weight:500;color:var(--muted);position:sticky;top:0;background:var(--bg)}
+.vals td.d{font-family:var(--mono);font-size:12.5px;word-break:break-all}
+.vals tr{cursor:pointer}.vals tr.sel td{background:var(--accent-bg)}
+.status{font-size:12.5px;padding:.3rem .7rem;border-top:1px solid var(--border);background:var(--card);color:var(--muted)}
+.form{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:.5rem .7rem;border-bottom:1px solid var(--border);background:var(--accent-bg)}
+.ps{font-family:var(--mono);font-size:12.5px;background:#1f1f1d;color:#e6e4dc;border-radius:8px;padding:.5rem .7rem;margin-top:10px;white-space:pre-wrap;word-break:break-all;min-height:2.5em}
+.ps .y{color:#fac775}
+.tasks{list-style:none;padding:0;margin:.5rem 0 0;font-size:14.5px}
+.tasks li{padding:.2rem 0 .2rem 1.8rem;position:relative}
+.tasks li::before{content:"○";position:absolute;left:.3rem;color:var(--muted)}
+.tasks li.done{color:var(--ok)}.tasks li.done::before{content:"✓";color:var(--ok);font-weight:700}
+/* quiz cards */
+.qtext{font-size:17px;font-weight:500;margin:0 0 .75rem}
+.qtext.mono{font-family:var(--mono);font-size:15px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;word-break:break-all}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.opt{font:inherit;font-size:14.5px;text-align:left;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.twocol{grid-template-columns:1fr}}
+/* autoruns */
+.ar{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg);border-radius:8px;overflow:hidden}
+.ar th,.ar td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--border);vertical-align:top}
+.ar th{font-weight:500;color:var(--muted)}
+.ar td.m{font-family:var(--mono);font-size:12px;word-break:break-all}
+.ar tr.loc td{background:var(--card);font-weight:600;font-size:12px;font-family:var(--mono)}
+.ar tr.pick td{background:var(--warn-bg)}
+.ar tr.good td{background:var(--ok-bg)}.ar tr.badr td{background:var(--bad-bg)}
+.ar input{transform:scale(1.15)}
+.nv{color:var(--bad);font-weight:600}.vt{font-family:var(--mono)}
+.vt.hit{color:var(--bad);font-weight:700}
+/* taru log */
+.disk{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.disk{grid-template-columns:1fr}}
+.box{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px;min-height:90px}
+.box.on{box-shadow:0 0 0 2px var(--accent)}
+.box .mono{display:block;margin-top:4px}
+.power{display:inline-block;padding:2px 10px;border-radius:6px;font-weight:600;font-size:13px}
+.power.on{background:var(--ok-bg);color:var(--ok)}.power.off{background:var(--bad-bg);color:var(--bad)}
+/* gpo */
+.pol{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.pol:last-child{border:0}
+.sw{position:relative;width:44px;height:24px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:var(--border);border-radius:12px;cursor:pointer;transition:.2s}
+.sw span::before{content:"";position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:var(--accent)}
+.sw input:checked+span::before{transform:translateX(20px)}
+.desk{background:linear-gradient(135deg,#2b5f8f,#5b8fbf);border-radius:10px;padding:12px;min-height:150px;display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;color:#fff;font-size:12px}
+.ico{width:80px;text-align:center;opacity:1;transition:.3s}
+.ico .g{font-size:28px;line-height:1.2}
+.ico.gone{opacity:.15;filter:grayscale(1)}
+.ico.gone::after{content:"poliitika keelab";display:block;color:#ffd0d0;font-weight:700}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/06-register.md">← Peatükk 6</a> · <a href="06-test.html">Test →</a></nav>
+<h1>Register ja konfiguratsioonihaldur – proovi ise</h1>
+<p>Register on Windowsi hierarhiline seadistusandmebaas: <strong>võtmed</strong> on nagu kaustad, <strong>väärtused</strong> nagu failid ja kettal asuvad need <strong>tarudes</strong>. Sellel lehel saad registris ohutult ringi vaadata, otsida pahavara automaatkäivitusest ja näha, kuidas rühmapoliitika registrisse kirjutab.</p>
+<div class="toc"><a href="#regedit">1. Registriredaktor</a><a href="#tyyp">2. Tüüp ja taru</a><a href="#autoruns">3. Autorunsi jaht</a><a href="#logi">4. Voolukatkestus</a><a href="#gpo">5. Rühmapoliitika registris</a></div>
+
+<!-- 1 -->
+<section id="regedit">
+<h2>1. Registriredaktor</h2>
+<p>See on lihtsustatud <code>regedit</code>. Siin ei saa midagi katki teha. Lahenda ülesanded. Iga muudatuse juures näed ka sama käsku PowerShellis. Olekuribalt näed, millises taru-failis valitud võti kettal asub.</p>
+<div class="card">
+  <div class="reg">
+    <div class="addr" id="addr">Arvuti</div>
+    <div class="tools"><button class="btn" id="bkey">Uus võti</button><button class="btn" id="bval">Uus väärtus</button><button class="btn danger" id="bdel">Kustuta</button></div>
+    <div id="form"></div>
+    <div class="panes"><div class="tree" id="tree"></div><div class="vals" id="vals"></div></div>
+    <div class="status" id="status">Vali võti.</div>
+  </div>
+  <div class="ps" id="ps"><span class="y">PS&gt;</span> # siia ilmub iga muudatuse PowerShelli vaste</div>
+  <div class="info" id="rinfo">Alusta ülesannetest.</div>
+  <h3 style="margin-top:1rem">Ülesanded</h3>
+  <ul class="tasks" id="tasks"></ul>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="tyyp">
+<h2>2. Mis tüüp? Mis taru?</h2>
+<div class="twocol">
+  <div><p>Vali väärtusele sobiv <strong>tüüp</strong>.</p><div class="card" id="tcard"></div></div>
+  <div><p>Millises <strong>taru-failis</strong> see seadistus kettal asub?</p><div class="card" id="hcard"></div></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="autoruns">
+<h2>3. Autorunsi jaht</h2>
+<p>Kasutaja kaebab, et pärast sisselogimist avaneb hetkeks must aken. Sa avasid <strong>Autorunsi</strong> vahekaardi <em>Logon</em>. Märgi kahtlased kirjed ja vajuta „Kontrolli“. Vihje: vaata allkirja, VirusTotali tulemust, failiteed ja seda, kas kirje on HKLM-is või HKCU-s.</p>
+<div class="card">
+  <div style="overflow-x:auto"><table class="ar" id="ar"></table></div>
+  <div class="row"><button class="btn" id="arnew">Uus arvuti</button><button class="btn primary" id="archeck">Kontrolli</button></div>
+  <div id="arres"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="logi">
+<h2>4. Voolukatkestus registrisse kirjutamise ajal</h2>
+<p>Konfiguratsioonihaldur kirjutab muudatuse <strong>esmalt logifaili</strong> (<code>.LOG1</code>/<code>.LOG2</code>) ja <strong>alles siis tarusse</strong>. Muuda väärtust ja lülita vool välja suvalisel hetkel. Vaata, mis taaskäivitusel juhtub.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Muudatus: <code>HKCU\…\Personalize\AppsUseLightTheme</code> 1 → 0 (tume režiim)</span><span>Vool: <span class="power on" id="pw">sees</span></span></div>
+  <div class="disk">
+    <div class="box" id="bmem"><b>Mälu (konfiguratsioonihaldur)</b><span class="mono" id="vmem"></span></div>
+    <div class="box" id="blog"><b>Kettal: NTUSER.DAT.LOG1</b><span class="mono" id="vlog"></span></div>
+    <div class="box" id="bhive"><b>Kettal: NTUSER.DAT (taru)</b><span class="mono" id="vhive"></span></div>
+  </div>
+  <div class="row"><span><button class="btn primary" id="lstep">Järgmine samm →</button> <button class="btn danger" id="lcut">⚡ Voolukatkestus!</button></span><button class="btn" id="lreset">Alusta uuesti</button></div>
+  <div class="info" id="linfo"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="gpo">
+<h2>5. Rühmapoliitika registris</h2>
+<p>Lülita poliitikaid sisse ja välja nagu <code>gpedit.msc</code>-s (Kasutaja konfiguratsioon → Haldusmallid). Vaata, millise väärtuse Windows registrisse kirjutab ja mis kasutaja töölaual muutub.</p>
+<div class="twocol">
+  <div class="card" id="pols"></div>
+  <div><div class="desk" id="desk"></div><div class="ps" id="gps"></div></div>
+</div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- 1. regedit ---------- */
+const SID='S-1-5-21-3623811015-3361044348-30300820-1001';
+const K=(vals,keys,extra)=>Object.assign({v:vals||[],k:keys||{}},extra||{});
+let ROOT,sel=null,selVal=null,tasks;
+function build(){
+  const classes=K([],{'.txt':K([['(Vaikimisi)','REG_SZ','txtfile']]),'txtfile':K([['(Vaikimisi)','REG_SZ','Tekstidokument']],{'shell':K([],{'open':K([],{'command':K([['(Vaikimisi)','REG_EXPAND_SZ','%SystemRoot%\\system32\\NOTEPAD.EXE %1']])})})})});
+  const user=K([],{
+   'Control Panel':K([],{'Desktop':K([['WallPaper','REG_SZ','C:\\Users\\mari\\Pictures\\taust.jpg'],['MenuShowDelay','REG_SZ','400']])}),
+   'Environment':K([['TEMP','REG_EXPAND_SZ','%USERPROFILE%\\AppData\\Local\\Temp'],['Path','REG_EXPAND_SZ','%USERPROFILE%\\AppData\\Local\\Microsoft\\WindowsApps;']]),
+   'Software':K([],{'Microsoft':K([],{'Windows':K([],{'CurrentVersion':K([],{
+       'Run':K([['OneDrive','REG_SZ','"C:\\Users\\mari\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe" /background']]),
+       'Themes':K([],{'Personalize':K([['AppsUseLightTheme','REG_DWORD','0x00000001 (1)'],['SystemUsesLightTheme','REG_DWORD','0x00000001 (1)']])}),
+       'Policies':K([],{'Explorer':K([])})})})}),'Classes':K([])})
+  });
+  ROOT=K([],{
+   'HKEY_CLASSES_ROOT':Object.assign(classes,{note:'liitvaade'}),
+   'HKEY_CURRENT_USER':user,
+   'HKEY_LOCAL_MACHINE':K([],{
+     'HARDWARE':K([],{'DESCRIPTION':K([],{'System':K([],{'CentralProcessor':K([],{'0':K([['ProcessorNameString','REG_SZ','Intel(R) Core(TM) Ultra 5 125U'],['~MHz','REG_DWORD','0x00000a8c (2700)']])})})})}),
+     'SAM':K([],{'SAM':K([],{},{lock:1})}),
+     'SECURITY':K([],{},{lock:1}),
+     'SOFTWARE':K([],{'Classes':classes,'Microsoft':K([],{'Windows':K([],{'CurrentVersion':K([['ProgramFilesDir','REG_SZ','C:\\Program Files']],{'Run':K([['SecurityHealth','REG_EXPAND_SZ','%windir%\\system32\\SecurityHealthSystray.exe']])})})}),'Policies':K([])}),
+     'SYSTEM':K([],{'CurrentControlSet':K([],{
+        'Control':K([],{'ComputerName':K([],{'ComputerName':K([['ComputerName','REG_SZ','PC-KLASS-07']])})}),
+        'Services':K([],{
+          'Dnscache':K([['DisplayName','REG_SZ','DNS-klient'],['ImagePath','REG_EXPAND_SZ','%SystemRoot%\\system32\\svchost.exe -k NetworkService -p'],['Start','REG_DWORD','0x00000002 (2)'],['DependOnService','REG_MULTI_SZ','Tdx nsi']]),
+          'Spooler':K([['DisplayName','REG_SZ','Prindispuuler'],['ImagePath','REG_EXPAND_SZ','%SystemRoot%\\System32\\spoolsv.exe'],['Start','REG_DWORD','0x00000002 (2)']]),
+          'Ntfs':K([['ImagePath','REG_EXPAND_SZ','System32\\Drivers\\Ntfs.sys'],['Start','REG_DWORD','0x00000000 (0)'],['Type','REG_DWORD','0x00000002 (2)']])})})})
+   }),
+   'HKEY_USERS':K([],{'.DEFAULT':K([],{'Control Panel':K([])}),[SID]:user,[SID+'_Classes']:K([])}),
+   'HKEY_CURRENT_CONFIG':K([],{'Software':K([]),'System':K([])},{note:'viide'})
+  });
+  sel=null;selVal=null;
+  tasks=[
+   ['dns','Leia teenuse <b>DNS-klient</b> (Dnscache) käivitustüüp. Mis on väärtuse <code>Start</code> arv?',false],
+   ['run','Leia <b>kasutaja</b> automaatkäivituse võti (Run). Mis programm seal on?',false],
+   ['mk','Loo võti <code>HKEY_CURRENT_USER\\Software\\Opetus</code>',false],
+   ['val','Loo sinna väärtus <code>Proov</code> tüübiga REG_DWORD ja andmetega 1',false],
+   ['hku','Ava <code>HKEY_USERS\\S-1-5-21-…-1001\\Software\\Opetus</code>. Kas väärtus Proov on ka seal?',false],
+   ['del','Kustuta võti <code>Opetus</code>',false]
+  ];
+}
+const pathStr=p=>p?p.join('\\'):'Arvuti';
+function nodeAt(p){let n=ROOT;for(const s of p){n=n.k[s];if(!n)return null}return n}
+function hiveOf(p){
+  if(!p||!p.length)return '';
+  const [r,a]=p;
+  if(r==='HKEY_LOCAL_MACHINE'){if(!a)return 'Juurvõti – koosneb mitmest tarust';return {HARDWARE:'Taru puudub: luuakse igal käivitusel mällu',SAM:'C:\\Windows\\System32\\config\\SAM',SECURITY:'C:\\Windows\\System32\\config\\SECURITY',SOFTWARE:'C:\\Windows\\System32\\config\\SOFTWARE',SYSTEM:'C:\\Windows\\System32\\config\\SYSTEM'}[a]}
+  if(r==='HKEY_CURRENT_USER')return 'C:\\Users\\mari\\NTUSER.DAT (sama mis HKEY_USERS\\'+SID+')';
+  if(r==='HKEY_USERS'){if(!a)return 'Juurvõti – kõik laaditud kasutajatarud';if(a==='.DEFAULT')return 'C:\\Windows\\System32\\config\\DEFAULT';if(a===SID)return 'C:\\Users\\mari\\NTUSER.DAT';return 'C:\\Users\\mari\\AppData\\Local\\Microsoft\\Windows\\UsrClass.dat'}
+  if(r==='HKEY_CLASSES_ROOT')return 'Liitvaade: HKLM\\SOFTWARE\\Classes + HKCU\\Software\\Classes';
+  if(r==='HKEY_CURRENT_CONFIG')return 'Viide: HKLM\\SYSTEM\\CurrentControlSet\\Hardware Profiles\\Current';
+}
+const psPath=p=>{const m={HKEY_LOCAL_MACHINE:'HKLM:',HKEY_CURRENT_USER:'HKCU:',HKEY_USERS:'Registry::HKEY_USERS',HKEY_CLASSES_ROOT:'Registry::HKEY_CLASSES_ROOT',HKEY_CURRENT_CONFIG:'Registry::HKEY_CURRENT_CONFIG'};return m[p[0]]+(p.length>1?'\\'+p.slice(1).join('\\'):'')};
+let open=new Set(['']);
+function drawTree(){
+  const rec=(n,p)=>'<ul>'+Object.keys(n.k).sort((a,b)=>a.localeCompare(b)).map(name=>{const c=n.k[name],pp=p.concat(name),id=pp.join('\\'),has=Object.keys(c.k).length>0,isO=open.has(id);
+    return '<li><div><span class="tw" data-t="'+esc(id)+'">'+(has?(isO?'▾':'▸'):'')+'</span><span class="k'+(sel&&sel.join('\\')===id?' sel':'')+(c.lock?' lock':'')+'" data-p="'+esc(id)+'">'+(c.lock?'🔒 ':'')+esc(name)+'</span></div>'+(has&&isO?rec(c,pp):'')+'</li>'}).join('')+'</ul>';
+  $('tree').innerHTML='<ul><li><div><span class="tw"></span><span class="k'+(!sel?' sel':'')+'" data-p="">🖥️ Arvuti</span></div>'+rec(ROOT,[])+'</li></ul>';
+  document.querySelectorAll('#tree .tw[data-t]').forEach(t=>t.onclick=()=>{const id=t.dataset.t;open.has(id)?open.delete(id):open.add(id);drawTree()});
+  document.querySelectorAll('#tree .k').forEach(k=>k.onclick=()=>{const id=k.dataset.p;selectKey(id?id.split('\\'):null)});
+}
+function selectKey(p){
+  sel=p;selVal=null;$('form').innerHTML='';
+  if(p){for(let i=1;i<p.length;i++)open.add(p.slice(0,i).join('\\'));open.add(p.join('\\'))}
+  const n=p?nodeAt(p):null;
+  if(n&&n.lock){info('<b>Juurdepääs keelatud.</b> SAM- ja SECURITY-taru sisu (nt kohalike kasutajate parooliräsid) näeb vaikimisi ainult SYSTEM-konto, isegi administraator mitte. Igal võtmel on oma ACL.','bad')}
+  else if(p&&p[0]==='HKEY_CURRENT_USER'&&p.length===1)info('HKEY_CURRENT_USER ei ole eraldi taru, vaid <b>viide</b> sisseloginud kasutaja alamvõtmele HKEY_USERS all. Vaata olekuriba.');
+  else if(p&&p[0]==='HKEY_CLASSES_ROOT'&&p.length===1)info('HKEY_CLASSES_ROOT on <b>liitvaade</b>: failitüübid ja COM-klassid tulevad HKLM\\SOFTWARE\\Classes ja HKCU\\Software\\Classes alt.');
+  check();drawAll();
+}
+function drawVals(){
+  const n=sel?nodeAt(sel):null;
+  if(!n||n.lock){$('vals').innerHTML='<p class="hint" style="padding:.5rem">'+(n&&n.lock?'Juurdepääs keelatud':'Vali vasakult võti')+'</p>';return}
+  const vs=[['(Vaikimisi)','REG_SZ','(väärtust pole määratud)',true]].filter(()=>!n.v.some(x=>x[0]==='(Vaikimisi)')).concat(n.v);
+  $('vals').innerHTML='<table><tr><th>Nimi</th><th>Tüüp</th><th>Andmed</th></tr>'+vs.map(([a,b,c,dflt])=>'<tr data-n="'+esc(a)+'" class="'+(selVal===a?'sel':'')+'"><td>'+(b.includes('SZ')?'🔤 ':'🔢 ')+esc(a)+'</td><td>'+b+'</td><td class="d">'+(dflt?'<span class="hint">'+c+'</span>':esc(c))+'</td></tr>').join('')+'</table>';
+  document.querySelectorAll('#vals tr[data-n]').forEach(r=>r.onclick=()=>{selVal=r.dataset.n;drawVals()});
+}
+function drawAll(){$('addr').textContent=sel?'Arvuti\\'+pathStr(sel):'Arvuti';$('status').textContent=sel?'Taru: '+hiveOf(sel):'Vali võti.';drawTree();drawVals();drawTasks()}
+function info(h,c){$('rinfo').className='info'+(c?' '+c:'');$('rinfo').innerHTML=h}
+function ps(cmd,out){$('ps').innerHTML='<span class="y">PS&gt;</span> '+esc(cmd)+(out?'\n'+esc(out):'')}
+function writable(){if(!sel||sel.length<2){info('Vali kõigepealt võti mõne juurvõtme all.','bad');return false}const n=nodeAt(sel);if(n.lock){info('Juurdepääs keelatud.','bad');return false}
+  if(sel[0]==='HKEY_LOCAL_MACHINE'){info('<b>Juurdepääs keelatud.</b> HKLM-i muutmiseks on vaja administraatoriõigusi. Sina töötad tavakasutajana (vt ptk 6.2 registri virtualiseerimine). Proovi HKEY_CURRENT_USER all.','bad');return false}
+  if(sel[0]==='HKEY_CURRENT_CONFIG'||sel[0]==='HKEY_CLASSES_ROOT'&&sel.length<2){info('Siia selles harjutuses kirjutada ei saa.','bad');return false}return true}
+$('bkey').onclick=()=>{if(!writable())return;
+  $('form').innerHTML='<div class="form">Uue võtme nimi: <input type="text" id="fk" value="Opetus"><button class="btn primary" id="fok">Loo</button><button class="btn" id="fx">Loobu</button></div>';$('fk').focus();$('fx').onclick=()=>$('form').innerHTML='';
+  $('fok').onclick=()=>{const nm=$('fk').value.trim();if(!nm||/\\/.test(nm)){info('Nimi ei tohi olla tühi ega sisaldada märki \\.','bad');return}const n=nodeAt(sel);if(n.k[nm]){info('Selline võti on juba olemas.','bad');return}
+    n.k[nm]=K([]);ps('New-Item -Path "'+psPath(sel)+'" -Name "'+nm+'"');const np=sel.concat(nm);info('Võti <code>'+esc(pathStr(np))+'</code> loodud.','ok');selectKey(np)}};
+$('bval').onclick=()=>{if(!writable())return;
+  $('form').innerHTML='<div class="form">Nimi: <input type="text" id="fn" value="Proov" style="width:110px"> Tüüp: <select id="ft"><option>REG_SZ</option><option>REG_EXPAND_SZ</option><option>REG_MULTI_SZ</option><option selected>REG_DWORD</option><option>REG_QWORD</option><option>REG_BINARY</option></select> Andmed: <input type="text" id="fd" value="1" style="width:120px"><button class="btn primary" id="fok">Loo</button><button class="btn" id="fx">Loobu</button></div>';$('fx').onclick=()=>$('form').innerHTML='';
+  $('fok').onclick=()=>{const nm=$('fn').value.trim(),ty=$('ft').value;let d=$('fd').value;
+    if(!nm){info('Väärtusel peab olema nimi.','bad');return}
+    if(ty==='REG_DWORD'||ty==='REG_QWORD'){if(!/^\d+$/.test(d)){info(ty+' peab olema täisarv (nt 1).','bad');return}const x=+d;if(ty==='REG_DWORD'&&x>4294967295){info('REG_DWORD on 32-bitine: suurim väärtus on 4294967295.','bad');return}d='0x'+x.toString(16).padStart(ty==='REG_DWORD'?8:16,'0')+' ('+x+')'}
+    const n=nodeAt(sel);n.v=n.v.filter(v=>v[0]!==nm);n.v.push([nm,ty,d]);
+    const pt={REG_SZ:'String',REG_EXPAND_SZ:'ExpandString',REG_MULTI_SZ:'MultiString',REG_DWORD:'DWord',REG_QWORD:'QWord',REG_BINARY:'Binary'}[ty];
+    ps('New-ItemProperty -Path "'+psPath(sel)+'" -Name "'+nm+'" -Value '+$('fd').value+' -PropertyType '+pt);info('Väärtus <code>'+esc(nm)+'</code> ('+ty+') loodud.','ok');$('form').innerHTML='';selVal=nm;check();drawAll()}};
+$('bdel').onclick=()=>{if(!writable())return;const n=nodeAt(sel);
+  if(selVal&&n.v.some(v=>v[0]===selVal)){n.v=n.v.filter(v=>v[0]!==selVal);ps('Remove-ItemProperty -Path "'+psPath(sel)+'" -Name "'+selVal+'"');info('Väärtus kustutatud.','ok');selVal=null;check();drawAll();return}
+  if(sel.length<3){info('Seda võtit selles harjutuses kustutada ei saa.','bad');return}
+  const parent=nodeAt(sel.slice(0,-1)),nm=sel[sel.length-1];delete parent.k[nm];ps('Remove-Item -Path "'+psPath(sel)+'" -Recurse');info('Võti <code>'+esc(pathStr(sel))+'</code> kustutati koos kõigi alamvõtmete ja väärtustega.','ok');
+  if(nm==='Opetus')done('del');selectKey(sel.slice(0,-1))};
+function done(id){const t=tasks.find(x=>x[0]===id);if(t&&!t[2]){t[2]=true;return true}return false}
+function check(){
+  const id=sel?sel.join('\\'):'';
+  if(id==='HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Dnscache'&&done('dns'))info('<b>Leitud!</b> <code>Start = 2</code> tähendab automaatset käivitust. 0 = alglaadimisel (draiverid, nt Ntfs), 1 = süsteemi käivitamisel, 2 = automaatne, 3 = käsitsi, 4 = keelatud. Teenused ja draiverid asuvad SYSTEM-tarus.','ok');
+  if(id==='HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'&&done('run'))info('<b>Leitud!</b> OneDrive käivitub iga kord, kui <b>see kasutaja</b> sisse logib. HKCU Run-võtmesse saab kirjutada ilma administraatoriõiguseta, mistõttu on see pahavara lemmikkoht.','ok');
+  const u=nodeAt(['HKEY_CURRENT_USER','Software','Opetus']);
+  if(u)done('mk');
+  if(u&&u.v.some(v=>v[0]==='Proov'&&v[1]==='REG_DWORD'&&/\(1\)$/.test(v[2])))done('val');
+  if(id==='HKEY_USERS\\'+SID+'\\Software\\Opetus'&&u&&done('hku'))info('<b>Jah!</b> HKEY_CURRENT_USER ja HKEY_USERS\\'+SID+' on <b>üks ja sama</b> taru (NTUSER.DAT). HKCU on lihtsalt otsetee sisseloginud kasutaja alamvõtmele. Pikk number on kasutaja turvaidentifikaator (SID).','ok');
+}
+function drawTasks(){$('tasks').innerHTML=tasks.map(t=>'<li class="'+(t[2]?'done':'')+'">'+t[1]+'</li>').join('')+(tasks.every(t=>t[2])?'<li class="done"><b>Kõik ülesanded tehtud!</b> <button class="btn" id="treset">Alusta uuesti</button></li>':'');if($('treset'))$('treset').onclick=()=>{build();open=new Set(['']);drawAll();info('Register taastatud.')}}
+build();drawAll();
+
+/* ---------- 2. tüüp ja taru ---------- */
+const TY=['REG_SZ','REG_EXPAND_SZ','REG_MULTI_SZ','REG_DWORD','REG_QWORD','REG_BINARY'];
+const TQ=[['ComputerName = PC-KLASS-07',0,'Lihtne tekst ilma muutujateta.'],['ImagePath = %SystemRoot%\\System32\\spoolsv.exe',1,'%SystemRoot% on keskkonnamuutuja, mis asendatakse lugemisel (C:\\Windows). Selleks on REG_EXPAND_SZ.'],['DependOnService = Tdx, nsi (mitu teenuse nime)',2,'Tekstide loend on REG_MULTI_SZ.'],['NoControlPanel = 1',3,'Sisse-välja lülitid ja väikesed arvud on REG_DWORD (32 bitti).'],['Start = 2 (teenuse käivitustüüp)',3,'Teenuse käivitustüüp on REG_DWORD.'],['InstallTime = 133750195200000000 (FILETIME, 64-bitine)',4,'64-bitine arv, nt ajatempel, on REG_QWORD.'],['Sertifikaadi bitijada: 30 82 03 5c 30 82 02 44…',5,'Toorbaidid on REG_BINARY.'],['ProgramFilesDir = C:\\Program Files',0,'Tavaline tekst. Kui seal oleks %ProgramFiles%, oleks see REG_EXPAND_SZ.'],['TEMP = %USERPROFILE%\\AppData\\Local\\Temp',1,'Sisaldab muutujat %USERPROFILE%, seega REG_EXPAND_SZ.']];
+const HV=['SYSTEM','SOFTWARE','SAM','SECURITY','NTUSER.DAT'];
+const HQ=[['Teenuste ja draiverite seadistus (Services)',0,'HKLM\\SYSTEM\\CurrentControlSet\\Services on SYSTEM-tarus.'],['Arvuti nimi',0,'HKLM\\SYSTEM\\…\\ComputerName on SYSTEM-tarus.'],['Kõigile kasutajatele paigaldatud tarkvara ja HKLM Run-võti',1,'HKLM\\SOFTWARE on SOFTWARE-tarus.'],['Arvuti rühmapoliitika seadistused (HKLM\\SOFTWARE\\Policies)',1,'Arvutipoliitikad on SOFTWARE-tarus, kasutajapoliitikad NTUSER.DAT-is.'],['Kohalike kasutajakontode parooliräsid',2,'SAM (Security Account Manager) taru. Seda ründajad varastada püüavad.'],['Kohalik turvapoliitika ja LSA saladused',3,'SECURITY-taru, mille sisu näeb ainult SYSTEM.'],['Mari töölaua taustapilt',4,'Kasutaja seadistus on tema profiilikaustas failis NTUSER.DAT (HKCU).'],['Mari automaatkäivitusega programmid (HKCU Run)',4,'HKCU on NTUSER.DAT. Seepärast saab kasutaja ise sinna kirjutada.'],['Mari rakenduse tumeda režiimi valik',4,'Isiklik eelistus on HKCU all, ehk NTUSER.DAT-is.']];
+function quiz(el,Q,O,mono){let q=shuffle(Q.map((_,i)=>i)),p=0,s={ok:0,n:0},a=null;
+  function d(){if(p>=q.length){el.innerHTML='<p class="qtext">Tulemus: '+s.ok+' / '+s.n+'</p><button class="btn primary">Alusta uuesti</button>';el.querySelector('button').onclick=()=>{q=shuffle(Q.map((_,i)=>i));p=0;s={ok:0,n:0};a=null;d()};return}
+    const [t,c,e]=Q[q[p]];let h='<p class="score">'+(p+1)+' / '+q.length+' · õigeid '+s.ok+'</p><p class="qtext'+(mono?' mono':'')+'">'+esc(t)+'</p><div class="opts">';
+    O.forEach((o,i)=>{let cl='opt';if(a!==null)cl+=i===c?' ok':i===a?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(a!==null?' disabled':'')+'>'+o+'</button>'});
+    h+='</div>';if(a!==null)h+='<div class="fb '+(a===c?'ok':'bad')+'"><strong>'+(a===c?'Õige!':'Vale. Õige: '+O[c])+'</strong>'+esc(e)+'</div><div class="row"><span></span><button class="btn primary" data-n="1">Järgmine →</button></div>';
+    el.innerHTML=h;el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{a=+b.dataset.i;s.n++;if(a===c)s.ok++;d()});const nb=el.querySelector('[data-n]');if(nb)nb.onclick=()=>{p++;a=null;d()}}
+  d()}
+quiz($('tcard'),TQ,TY,true);quiz($('hcard'),HQ,HV,false);
+
+/* ---------- 3. autoruns ---------- */
+const GOOD=[
+ ['HKLM','SecurityHealth','Windows Security notification icon','Microsoft Windows','(Verified)','%windir%\\system32\\SecurityHealthSystray.exe','0/72'],
+ ['HKLM','RtkAudUService','Realtek HD Audio Universal Service','Realtek Semiconductor Corp.','(Verified)','C:\\Windows\\System32\\RtkAudUService64.exe','0/72'],
+ ['HKCU','OneDrive','Microsoft OneDrive','Microsoft Corporation','(Verified)','C:\\Users\\mari\\AppData\\Local\\Microsoft\\OneDrive\\OneDrive.exe','0/72'],
+ ['HKCU','Teams','Microsoft Teams','Microsoft Corporation','(Verified)','C:\\Users\\mari\\AppData\\Local\\Microsoft\\WindowsApps\\ms-teams.exe','0/72'],
+ ['HKLM','Zoom','Zoom Workplace','Zoom Communications, Inc.','(Verified)','C:\\Program Files\\Zoom\\bin\\Zoom.exe','0/72'],
+ ['HKCU','Spotify','Spotify','Spotify AB','(Verified)','C:\\Users\\mari\\AppData\\Roaming\\Spotify\\Spotify.exe','0/72'],
+ ['HKLM','IntelGraphics','Intel Graphics Command Center','Intel Corporation','(Verified)','C:\\Windows\\System32\\DriverStore\\FileRepository\\igcc_dch.inf\\igfxEM.exe','0/72']
+];
+const BAD=[
+ ['HKCU','Updater','','','(Not verified)','C:\\Users\\mari\\AppData\\Roaming\\upd\\svc.exe','14/72','Peatüki näide: allkirjata fail kasutaja Roaming-kaustas, mitu VirusTotali tuvastust, käivitub HKCU Run-võtmest. Administraatoriõigusi polnud vaja.'],
+ ['HKCU','WindowsDefender','Windows Defender','Microsoft Corporation','(Not verified)','C:\\Users\\mari\\AppData\\Local\\Temp\\msdefend.exe','9/72','Nimi ja kirjeldus matkivad Microsofti, kuid allkiri ei vasta ja fail on Temp-kaustas. Päris Defender ei käivitu sealt.'],
+ ['HKCU','svchost','Host Process for Windows Services','Microsoft Corporation','(Not verified)','C:\\Users\\Public\\Libraries\\svchost.exe','22/72','Päris svchost.exe asub ainult kaustas C:\\Windows\\System32 ja seda käivitab teenusehaldur, mitte Run-võti.'],
+ ['HKLM','SysHelper','','','(Not verified)','C:\\ProgramData\\SysHelper\\helper.exe -hide','6/72','Kirjeldus ja väljaandja puuduvad, allkiri puudub ja käsureal on -hide. Kirje on HKLM-is, seega oli ründajal administraatoriõigus.']
+];
+let AR=[];
+function newAR(){const bads=shuffle(BAD).slice(0,1+Math.floor(Math.random()*2));AR=shuffle([...shuffle(GOOD).slice(0,5),...bads.map(b=>b.concat(['bad']))]);drawAR(false);$('arres').innerHTML='';$('archeck').disabled=false}
+function drawAR(chk,picks){
+  const rows=['HKLM','HKCU'].map(loc=>'<tr class="loc"><td colspan="6">'+(loc==='HKLM'?'HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run':'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run')+'</td></tr>'+
+    AR.map((r,i)=>[r,i]).filter(([r])=>r[0]===loc).map(([r,i])=>{const bad=r[r.length-1]==='bad',pk=picks&&picks.includes(i);
+      return '<tr class="'+(chk?(bad?(pk?'good':'badr'):(pk?'badr':'')):'')+'"><td><input type="checkbox" data-i="'+i+'"'+(chk?' disabled':'')+(pk?' checked':'')+'></td><td><b>'+r[1]+'</b></td><td>'+(r[2]||'<span class="hint">–</span>')+'</td><td>'+(r[3]||'<span class="hint">–</span>')+'<br><span class="'+(r[4].includes('Not')?'nv':'hint')+'">'+r[4]+'</span></td><td class="m">'+r[5]+'</td><td class="vt'+(r[6]!=='0/72'?' hit':'')+'">'+r[6]+'</td></tr>'}).join('')).join('');
+  $('ar').innerHTML='<tr><th></th><th>Kirje</th><th>Kirjeldus</th><th>Väljaandja / allkiri</th><th>Pilditee</th><th>VirusTotal</th></tr>'+rows;
+}
+$('archeck').onclick=()=>{const picks=[...document.querySelectorAll('#ar input:checked')].map(c=>+c.dataset.i);drawAR(true,picks);$('archeck').disabled=true;
+  const bad=AR.map((r,i)=>i).filter(i=>AR[i][AR[i].length-1]==='bad'),miss=bad.filter(i=>!picks.includes(i)),fp=picks.filter(i=>!bad.includes(i));
+  let h=(miss.length||fp.length)?'<div class="fb bad"><strong>'+(miss.length?'Leidsid '+(bad.length-miss.length)+' / '+bad.length+' pahavarast':'Kõik pahavara leitud, aga märkisid ka puhtaid kirjeid')+'</strong>':'<div class="fb ok"><strong>Õige! Kõik kahtlased kirjed leitud ja puhtaid ei puudutatud.</strong>';
+  h+=bad.map(i=>'<b>'+AR[i][1]+'</b> – '+AR[i][7]).join('<br>');
+  if(fp.length)h+='<br>'+fp.map(i=>'<b>'+AR[i][1]+'</b> on puhas: Microsoft või tuntud tootja allkirjastatud ja VirusTotal 0/72. Puhta kirje kustutamine võib kasutaja töö katki teha.').join('<br>');
+  h+='<br><span class="hint">Järgmised sammud: isoleeri arvuti, eemalda kirje ja fail, käivita Defenderi võrguühenduseta skannimine ja uuri, kust fail tuli (ptk 22.5).</span></div>';$('arres').innerHTML=h};
+$('arnew').onclick=newAR;newAR();
+
+/* ---------- 4. logi ---------- */
+const LS=[
+ ['Algseis','Kõik kolm on kooskõlas: väärtus on 1 (hele režiim).',{m:'1',l:'(tühi)',h:'1'},null],
+ ['Kasutaja valib tumeda režiimi','Seadete rakendus kirjutab väärtuse. Konfiguratsioonihaldur muudab selle <b>mälus</b> kohe. Kettal on veel vana väärtus.',{m:'0 (muudetud)',l:'(tühi)',h:'1'},'mem'],
+ ['Muudatus kirjutatakse logisse','Konfiguratsioonihaldur kirjutab muudatuse <b>esmalt logifaili</b> NTUSER.DAT.LOG1. Taru ise on endiselt puutumata.',{m:'0',l:'AppsUseLightTheme = 0 ✓',h:'1'},'log'],
+ ['Muudatus kantakse tarusse','Alles nüüd kirjutatakse muudatus <b>tarusse</b> NTUSER.DAT.',{m:'0',l:'AppsUseLightTheme = 0 ✓',h:'0'},'hive'],
+ ['Logi tühjendatakse','Taru on ajakohane ja logi pole enam vaja.',{m:'0',l:'(tühi)',h:'0'},null]
+];
+const CUT=[
+ '<b>Taaskäivitus:</b> kettal pole midagi muutunud. Taru on terve, väärtus on 1. Viimane, veel ainult mälus olnud muudatus läks kaduma, kuid register ei ole rikutud.',
+ '<b>Taaskäivitus:</b> muudatus oli ainult mälus. Taru on terve ja väärtus on 1. Kasutaja peab tumeda režiimi uuesti valima, kuid register ei ole rikutud.',
+ '<b>Taaskäivitus:</b> konfiguratsioonihaldur leiab logist muudatuse, mida pole veel tarusse kantud, ja <b>mängib selle tarusse</b>. Tulemus: väärtus on 0 ja tume režiim on alles.',
+ '<b>Taaskäivitus:</b> muudatus oli juba nii logis kui ka tarus. Väärtus on 0 ja kõik on korras.',
+ '<b>Taaskäivitus:</b> kõik oli juba kettal. Väärtus on 0 ja kõik on korras.'
+];
+let ls=0,cut=false;
+function drawLog(){const s=LS[ls];$('vmem').textContent=cut?'(vool kadus – mälu tühi)':s[2].m;$('vlog').textContent=s[2].l;$('vhive').textContent=s[2].h;
+  ['bmem','blog','bhive'].forEach(b=>$(b).classList.toggle('on',!cut&&s[3]===b.slice(1)));
+  $('pw').className='power '+(cut?'off':'on');$('pw').textContent=cut?'väljas':'sees';
+  $('lstep').disabled=cut||ls===LS.length-1;$('lcut').disabled=cut;
+  $('linfo').className='info'+(cut?' ok':'');$('linfo').innerHTML=cut?CUT[ls]+'<br><span class="hint">Seepärast ei rikuta registrit isegi siis, kui vool kaob kõige halvemal hetkel: kas muudatus jõudis logisse täielikult ja taastatakse sealt, või ei jõudnud ja tarus on vana terviklik seis.</span>':'<b>Samm '+(ls+1)+'/'+LS.length+': '+s[0]+'.</b> '+s[1]}
+$('lstep').onclick=()=>{ls++;drawLog()};$('lcut').onclick=()=>{cut=true;drawLog()};$('lreset').onclick=()=>{ls=0;cut=false;drawLog()};drawLog();
+
+/* ---------- 5. GPO ---------- */
+const GP=[
+ ['Prohibit access to Control Panel and PC settings','Juhtpaneeli ja Sätete keelamine','HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer','NoControlPanel',1,'cp'],
+ ['Remove Recycle Bin icon from desktop','Prügikasti ikooni eemaldamine töölaualt','HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum','{645FF040-5081-101B-9F08-00AA002F954E}',1,'rb'],
+ ['Prevent access to registry editing tools','Registriredaktori keelamine','HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System','DisableRegistryTools',1,'re'],
+ ['Prevent access to the command prompt','Käsuviiba keelamine','HKCU\\Software\\Policies\\Microsoft\\Windows\\System','DisableCMD',1,'cmd']
+];
+const ICONS=[['rb','🗑️','Prügikast'],['cp','⚙️','Juhtpaneel'],['re','🧩','regedit'],['cmd','⬛','Käsuviip'],['x','📁','Dokumendid'],['y','🌐','Edge']];
+let gon={};
+function drawG(){
+  $('pols').innerHTML='<h3>Kasutaja konfiguratsioon → Haldusmallid</h3>'+GP.map((g,i)=>'<div class="pol"><div><b>'+g[0]+'</b><br><span class="hint">'+g[1]+'</span></div><label class="sw"><input type="checkbox" data-i="'+i+'"'+(gon[i]?' checked':'')+'><span></span></label></div>').join('');
+  document.querySelectorAll('#pols input').forEach(c=>c.onchange=()=>{const i=+c.dataset.i;gon[i]=c.checked;const g=GP[i];
+    $('gps').innerHTML='<span class="y">PS&gt;</span> # GPO '+(c.checked?'kirjutas':'eemaldas')+'\n'+(c.checked?'Get-ItemProperty "'+g[2].replace('HKCU','HKCU:')+'" -Name "'+g[3]+'"\n'+g[3]+' : '+g[4]:'Remove-ItemProperty "'+g[2].replace('HKCU','HKCU:')+'" -Name "'+g[3]+'"   # poliitika "Not configured"');drawG()});
+  const off=new Set(GP.filter((g,i)=>gon[i]).map(g=>g[5]));
+  $('desk').innerHTML=ICONS.map(([k,g,n])=>'<div class="ico'+(off.has(k)?' gone':'')+'"><div class="g">'+g+'</div>'+n+'</div>').join('');
+  if(!$('gps').innerHTML)$('gps').innerHTML='<span class="y">PS&gt;</span> # lülita mõni poliitika sisse';
+}
+drawG();
+</script>
+</body>
+</html>
