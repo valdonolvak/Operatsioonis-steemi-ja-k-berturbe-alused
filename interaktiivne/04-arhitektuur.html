@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 4 – Windowsi arhitektuur: interaktiivne leht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--um:#3b6d11;--um-bg:#eaf3de;--km:#185fa5;--km-bg:#e6f1fb;--v1:#5f4b8b;--v1-bg:#eeeaf7;--hv:#854f0b;--hv-bg:#faeeda;--hw:#55534d;--hw-bg:#e9e7e0;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--um:#c0dd97;--um-bg:#27500a;--km:#85b7eb;--km-bg:#0c447c;--v1:#c9b8f0;--v1-bg:#3b2d5c;--hv:#fac775;--hv-bg:#633806;--hw:#c9c7bf;--hw-bg:#3a3a37;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.btn.danger{border-color:var(--bad-line);color:var(--bad)}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:3em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+/* arhitektuur */
+.arch{display:grid;grid-template-columns:3fr 1fr;gap:6px;font-size:14px}
+.arch .lbl{grid-column:1/-1;display:grid;grid-template-columns:3fr 1fr;gap:6px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.zone{border-radius:10px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.zone .zt{width:100%;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;padding:0 4px}
+.z-um{background:var(--um-bg);color:var(--um)}.z-km{background:var(--km-bg);color:var(--km)}.z-v1{background:var(--v1-bg);color:var(--v1)}
+.z-hv{grid-column:1/-1;background:var(--hv-bg);color:var(--hv)}.z-hw{grid-column:1/-1;background:var(--hw-bg);color:var(--hw)}
+.comp{flex:1 1 140px;font:inherit;font-size:14px;text-align:left;padding:.45rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.comp small{display:block;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.comp.sel{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
+.comp:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:0 7px;border-radius:5px;margin-right:4px}
+.t-um{background:var(--um-bg);color:var(--um)}.t-km{background:var(--km-bg);color:var(--km)}.t-v1{background:var(--v1-bg);color:var(--v1)}.t-hv{background:var(--hv-bg);color:var(--hv)}.t-hw{background:var(--hw-bg);color:var(--hw)}
+/* järjestamine */
+.pool,.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:48px;padding:10px;border-radius:12px}
+.pool{background:var(--card)}
+.answer{border:1px dashed var(--border);flex-direction:column}
+.tile{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;text-align:left}
+.tile.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.tile.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* valikud */
+.qtext{font-size:18px;font-weight:500;margin:0 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.opt{font:inherit;font-size:15px;text-align:left;padding:.55rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+/* puu */
+.tree{font-family:var(--mono);font-size:14px;line-height:1.9}
+.tree ul{list-style:none;margin:0;padding-left:22px;border-left:1px dashed var(--border)}
+.tree>ul{padding-left:0;border:0}
+.tree li{position:relative}
+.tree ul ul li::before{content:"";position:absolute;left:-22px;top:.95em;width:16px;border-top:1px dashed var(--border)}
+.pnode{font:inherit;font-family:var(--mono);font-size:14px;padding:0 .5rem;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.pnode.sel{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
+.pnode.v1{border-color:var(--v1);color:var(--v1)}
+.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:720px){.twocol,.arch,.arch .lbl{grid-template-columns:1fr}}
+/* credential guard */
+.cg{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:12px}
+.mem{border-radius:10px;padding:.6rem .8rem;font-size:14px}
+.mem .mono{display:block;background:var(--bg);color:var(--text);border-radius:6px;padding:.3rem .5rem;margin-top:4px;font-size:12.5px;word-break:break-all}
+.mem.locked .mono{filter:blur(3px);user-select:none}
+.mem.hl{box-shadow:0 0 0 3px var(--bad-line)}
+.hvbar{grid-column:1/-1;border-radius:10px;padding:.35rem .8rem;font-size:13px;font-weight:600;background:var(--hv-bg);color:var(--hv);text-align:center}
+.hvbar.block{box-shadow:0 0 0 3px var(--ok-line)}
+.console{font-family:var(--mono);font-size:13px;background:#1f1f1d;color:#e6e4dc;border-radius:10px;padding:.7rem .9rem;margin-top:10px;min-height:7em;white-space:pre-wrap;word-break:break-all}
+.console .r{color:#f09595}.console .g{color:#97c459}.console .y{color:#fac775}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:pointer;font-weight:500}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/04-arhitektuur.md">← Peatükk 4</a> · <a href="04-test.html">Test →</a></nav>
+<h1>Windowsi arhitektuur – proovi ise</h1>
+<p>Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused ja teenused, tuumarežiimis käivitav süsteem, tuum, draiverid ja HAL. Kõige all on hüperviisor, mis eraldab tavalise Windowsi (VTL 0) turvalisest maailmast (VTL 1).</p>
+<div class="toc"><a href="#kaart">1. Arhitektuuri kaart</a><a href="#kihid">2. Pane kihid järjekorda</a><a href="#kes">3. Kes seda teeb?</a><a href="#protsessid">4. Süsteemiprotsessid</a><a href="#cg">5. Credential Guard ründe vastu</a></div>
+
+<!-- 1 -->
+<section id="kaart">
+<h2>1. Arhitektuuri kaart</h2>
+<p>Klõpsa komponendil, et näha, mida see teeb, millises režiimis see töötab ja millises peatükis seda lähemalt käsitletakse.</p>
+<div class="card">
+  <div class="arch" id="arch"></div>
+  <div class="info" id="ainfo" aria-live="polite">Vali komponent.</div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="kihid">
+<h2>2. Pane kihid järjekorda</h2>
+<p>Klõpsa tavalise Windowsi (VTL 0) kihte <strong>ülalt alla</strong>: rakendusest kuni riistvarani. Valitud kihi saad tagasi panna, kui klõpsad sellel uuesti.</p>
+<div class="pool" id="lpool"></div>
+<p class="hint" style="margin:.5rem 0 .25rem">Sinu järjekord (ülevalt alla):</p>
+<div class="answer" id="lans"></div>
+<div class="row"><button class="btn" id="lnew">Alusta uuesti</button><button class="btn primary" id="lcheck" disabled>Kontrolli</button></div>
+<div id="lres"></div>
+</section>
+
+<!-- 3 -->
+<section id="kes">
+<h2>3. Kes seda teeb?</h2>
+<p>Peatüki üks olulisemaid eristusi: <strong>käivitav süsteem</strong> otsustab poliitika (kes, mida, kas tohib), <strong>tuum</strong> teeb madala taseme tööd, <strong>HAL</strong> peidab emaplaadi erinevused ja <strong>draiver</strong> suhtleb seadmega. Vali, kes on õige tegija.</p>
+<div class="card" id="kcard" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section id="protsessid">
+<h2>4. Süsteemiprotsessid</h2>
+<p>Nii näeb protsesside puu välja Process Exploreris pärast sisselogimist (lihtsustatult). Klõpsa protsessil, et näha selle ülesannet. Seejärel proovi neid kirjelduse järgi ära tunda.</p>
+<div class="twocol">
+  <div class="card"><div class="tree" id="tree"></div><div class="info" id="pinfo">Vali protsess.</div></div>
+  <div class="card" id="pcard" aria-live="polite"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="cg">
+<h2>5. Credential Guard paroolivarga vastu</h2>
+<p>Ründaja on saanud tööjaamas administraatoriõigused. Ta tahab lugeda <code>lsass.exe</code> mälust domeenikasutaja parooliräsi ja sellega teise arvutisse siseneda (pass-the-hash). Proovi rünnakut Credential Guardiga ja ilma.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="cgon"> Credential Guard (VBS) on sisse lülitatud</label>
+  <div class="cg" id="cgmem"></div>
+  <div class="row"><span><button class="btn danger" id="dump">1. Loe lsass.exe mälu (admin)</button> <button class="btn danger" id="pth" disabled>2. Kasuta räsi serveris FS01</button></span><button class="btn" id="cgreset">Alusta uuesti</button></div>
+  <div class="console" id="con" aria-live="polite"></div>
+</div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const MODE={um:'kasutajarežiim',km:'tuumarežiim',v1:'VTL 1',hv:'hüperviisor',hw:'riistvara'};
+
+/* ---------- 1. kaart ---------- */
+const C={
+ apps:['um','Kasutajarakendused','Edge, Office, PowerShell','Lõppkasutaja programmid. Töötavad oma virtuaalses aadressiruumis protsessi tokeni õigustega ega pääse otse riistvara ega tuuma juurde.','ptk 7'],
+ svc:['um','Teenused ja süsteemiprotsessid','services.exe, svchost.exe, lsass.exe','Süsteemiprotsessid (smss, winlogon, lsass), teenuseprotsessid (enamasti svchost.exe sees) ja keskkonna alamsüsteemi serverprotsess csrss.exe.','ptk 4.10, 10'],
+ dll:['um','Alamsüsteemi DLL-id','kernel32.dll, user32.dll, ntdll.dll','Windows API funktsioonid. ntdll.dll on viimane kasutajarežiimi kiht: see teeb süsteemikutse tuuma.','ptk 3.1'],
+ ium:['v1','Isoleeritud kasutajarežiim (IUM)','LsaIso.exe','VTL 1 kasutajarežiim. Siin töötab Credential Guardi isoleeritud LSA, mis hoiab parooliräsisid ja Kerberose võtmeid. VTL 0 tuum ei näe selle mälu.','ptk 4.11'],
+ exe:['km','Käivitav süsteem (executive)','ntoskrnl.exe','Haldurid: protsessi-, mälu-, S/V-, PnP-, toite-, vahemälu-, objekti- ja konfiguratsioonihaldur, SRM ning ALPC. Otsustab poliitika: kes mida tohib.','ptk 4.5'],
+ krn:['km','Tuum (kernel)','ntoskrnl.exe','Madala taseme töö: lõimede planeerimine ja kontekstivahetus, katkestuste ja erindite suunamine, protsessoritevaheline sünkroniseerimine. Poliitikat ise ei otsusta.','ptk 4.6'],
+ drv:['km','Draiverid','*.sys, win32k.sys','Tuumamoodulid: seadme-, failisüsteemi-, filtri- ja võrgudraiverid. Kõik tuumarežiimi komponendid jagavad sama aadressiruumi, nii et vigane draiver võib kogu süsteemi peatada. 64-bitine Windows nõuab Microsofti allkirja.','ptk 4.8'],
+ hal:['km','HAL','hal.dll','Riistvara abstraktsioonikiht peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu ACPI-le ja UEFI-le on HAL täna väiksem kui 1990. aastatel.','ptk 4.7'],
+ sk:['v1','Turvatuum (Secure Kernel)','securekernel.exe','VTL 1 tuum. Kontrollib HVCI-ga, et tavalises tuumas käivitatakse ainult allkirjastatud koodi, ja teenindab IUM-protsesse.','ptk 4.11'],
+ hv:['hv','Hüperviisor','hvix64.exe / hvax64.exe','Töötab tuumast allpool ja eraldab VTL 0 ja VTL 1 mälu. Isegi tuumarežiimi pahavara ei saa VTL 1 mälu lugeda. hvix64 on Inteli, hvax64 AMD protsessoritele.','ptk 4.11'],
+ hw:['hw','Riistvara ja püsivara','CPU, UEFI, TPM, Pluton','Protsessor (virtualiseerimislaiendused), UEFI koos Secure Bootiga ning TPM või Pluton võtmete hoidmiseks.','ptk 2.1']
+};
+let asel=null;
+function drawArch(){
+  const b=k=>'<button class="comp'+(asel===k?' sel':'')+'" data-k="'+k+'">'+C[k][1]+'<small>'+C[k][2]+'</small></button>';
+  $('arch').innerHTML='<div class="lbl"><span>VTL 0 – tavaline Windows</span><span>VTL 1 – turvaline maailm</span></div>'+
+   '<div class="zone z-um"><span class="zt">Kasutajarežiim</span>'+b('apps')+b('svc')+b('dll')+'</div>'+
+   '<div class="zone z-v1"><span class="zt">Kasutajarežiim (IUM)</span>'+b('ium')+'</div>'+
+   '<div class="zone z-km"><span class="zt">Tuumarežiim</span>'+b('exe')+b('krn')+b('drv')+b('hal')+'</div>'+
+   '<div class="zone z-v1"><span class="zt">Tuumarežiim</span>'+b('sk')+'</div>'+
+   '<div class="zone z-hv">'+b('hv')+'</div><div class="zone z-hw">'+b('hw')+'</div>';
+  document.querySelectorAll('#arch .comp').forEach(x=>x.onclick=()=>{asel=x.dataset.k;const c=C[asel];drawArch();
+    $('ainfo').innerHTML='<span class="tag t-'+c[0]+'">'+MODE[c[0]]+'</span><strong>'+c[1]+'</strong> <span class="mono hint">'+c[2]+'</span><br>'+c[3]+' <span class="hint">('+c[4]+')</span>'});
+}
+drawArch();
+
+/* ---------- 2. kihid ---------- */
+const ORDER=[['Kasutajarakendused','Edge, Office'],['Alamsüsteemi DLL-id','kernel32.dll, ntdll.dll'],['Süsteemikutse','ring 3 → ring 0'],['Käivitav süsteem','haldurid, SRM'],['Tuum','planeerija, katkestused'],['HAL','hal.dll'],['Hüperviisor','hvix64.exe'],['Riistvara','CPU, UEFI, TPM']];
+let lp=[],lchk=false,lsh=[];
+function newL(){lsh=shuffle(ORDER.map((_,i)=>i));lp=[];lchk=false;$('lres').innerHTML='';drawL()}
+function drawL(){
+  $('lpool').innerHTML='';lsh.filter(i=>!lp.includes(i)).forEach(i=>{const b=document.createElement('button');b.className='tile';b.innerHTML=ORDER[i][0]+' <span class="hint">'+ORDER[i][1]+'</span>';b.onclick=()=>{lp.push(i);drawL()};$('lpool').appendChild(b)});
+  if(!$('lpool').children.length)$('lpool').innerHTML='<span class="hint">Kõik kihid on valitud.</span>';
+  $('lans').innerHTML='';lp.forEach((i,n)=>{const b=document.createElement('button');b.className='tile'+(lchk?(i===n?' ok':' bad'):'');b.innerHTML=(n+1)+'. '+ORDER[i][0]+' <span class="hint">'+ORDER[i][1]+'</span>';b.onclick=()=>{if(lchk)return;lp.splice(n,1);drawL()};$('lans').appendChild(b)});
+  if(!lp.length)$('lans').innerHTML='<span class="hint">Klõpsa ülal kõige ülemisel kihil.</span>';
+  $('lcheck').disabled=lchk||lp.length!==ORDER.length;
+}
+$('lcheck').onclick=()=>{lchk=true;drawL();const ok=lp.filter((i,n)=>i===n).length;
+  $('lres').innerHTML='<div class="fb '+(ok===ORDER.length?'ok':'bad')+'"><strong>'+(ok===ORDER.length?'Kõik õiges järjekorras!':'Õiges kohas '+ok+' / '+ORDER.length)+'</strong>'+(ok===ORDER.length?'See on sama järjekord nagu peatüki kokkuvõttes: rakendused → DLL-id → süsteemikutse → executive → tuum → HAL → (hüperviisor) → riistvara.':'Õige järjekord: '+ORDER.map(x=>x[0]).join(' → ')+'.')+'</div>'};
+$('lnew').onclick=newL;newL();
+
+/* ---------- 3. kes teeb ---------- */
+const WHO=['Käivitav süsteem','Tuum','HAL','Draiver','Hüperviisor'];
+const WQ=[
+ ['Otsustab, kas kasutajal on õigus faili avada.',0,'Õiguste kontroll on poliitika. Seda teeb käivitava süsteemi turvaviitemonitor (SRM).'],
+ ['Valib, milline lõim järgmisena protsessoril töötab, ja vahetab konteksti.',1,'Lõimede planeerimine ja kontekstivahetus on tuuma (kitsamas mõttes) põhitöö.'],
+ ['Suunab riistvarakatkestuse ja erindi õigele töötlejale.',1,'Katkestuste ja erindite suunamine on tuuma ülesanne.'],
+ ['Hoolitseb, et kaks protsessorit ei muudaks samal ajal sama andmestruktuuri.',1,'Protsessoritevaheline sünkroniseerimine (nt spinlock) on tuuma ülesanne.'],
+ ['Peidab, milline katkestuskontroller ja taimer on just sellel emaplaadil.',2,'Just selleks HAL on: tuum ei pea teadma iga kiibistiku eripära.'],
+ ['Hoiab registrit ja vastab registripäringutele.',0,'Konfiguratsioonihaldur on käivitava süsteemi osa (ptk 6).'],
+ ['Jagab protsessidele virtuaalmälu ja viib lehti saalefaili.',0,'Mäluhaldur on käivitava süsteemi osa (ptk 12).'],
+ ['Loob ja lõpetab protsesse ning lõimi.',0,'Protsessihaldur on käivitava süsteemi osa (ptk 7).'],
+ ['Võimaldab protsessidel kiiresti sõnumeid vahetada (ALPC).',0,'ALPC on käivitava süsteemi teenus, mida kasutavad näiteks lsass.exe ja teenused.'],
+ ['Saadab andmed konkreetse tootja võrgukaardile.',3,'Võrgudraiver tunneb oma seadet. Ülejäänud süsteem kasutab ühtset liidest.'],
+ ['Viirusetõrje kontrollib iga faili avamist enne, kui NTFS selle avab.',3,'Seda teeb filtridraiver, mis istub failisüsteemi draiveri peal.'],
+ ['Loeb ja kirjutab NTFS-vormingus kettal faile.',3,'Failisüsteem on Windowsis draiver (ntfs.sys).'],
+ ['Ei lase isegi tuumarežiimis töötaval koodil VTL 1 mälu lugeda.',4,'Hüperviisor töötab tuumast allpool ja kontrollib, milline mälu kummalegi usaldustasemele nähtav on.'],
+ ['Haldab seadmete toidet ja unerežiimi.',0,'Toitehaldur on käivitava süsteemi osa (ptk 14). Konkreetse seadme lülitab säästurežiimi selle draiver.']
+];
+let wq=shuffle(WQ.map((_,i)=>i)),wp=0,ws={ok:0,n:0},wa=null;
+function drawW(){
+  if(wp>=wq.length){$('kcard').innerHTML='<p class="qtext">Tulemus: '+ws.ok+' / '+ws.n+'</p><p>'+(ws.ok===ws.n?'Suurepärane!':'Loe ptk 4.5–4.8 uuesti.')+' Rusikareegel: <b>poliitika</b> = käivitav süsteem, <b>mehhanism</b> = tuum.</p><div class="row"><span></span><button class="btn primary" id="wag">Alusta uuesti</button></div>';$('wag').onclick=()=>{wq=shuffle(WQ.map((_,i)=>i));wp=0;ws={ok:0,n:0};wa=null;drawW()};return}
+  const [q,c,e]=WQ[wq[wp]];
+  let h='<p class="score">Küsimus '+(wp+1)+' / '+wq.length+' · õigeid '+ws.ok+'</p><p class="qtext">'+q+'</p><div class="opts">';
+  WHO.forEach((t,i)=>{let cl='opt';if(wa!==null)cl+=i===c?' ok':i===wa?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(wa!==null?' disabled':'')+'>'+t+'</button>'});
+  h+='</div>';if(wa!==null)h+='<div class="fb '+(wa===c?'ok':'bad')+'"><strong>'+(wa===c?'Õige!':'Vale. Õige: '+WHO[c])+'</strong>'+e+'</div>';
+  h+='<div class="row"><span></span><button class="btn primary" id="wn"'+(wa===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('kcard').innerHTML=h;
+  document.querySelectorAll('#kcard .opt').forEach(b=>b.onclick=()=>{wa=+b.dataset.i;ws.n++;if(wa===c)ws.ok++;drawW();$('wn').focus()});
+  $('wn').onclick=()=>{wp++;wa=null;drawW()};
+}
+drawW();
+
+/* ---------- 4. protsessid ---------- */
+const PR={
+ 'System (PID 4)':'Tuumalõimede konteiner. Siin töötavad tuuma ja draiverite enda lõimed. See ei ole tavaline programm kettal.',
+ 'Registry':'Hoiab registri andmeid mälus. Konfiguratsioonihaldur kasutab seda protsessi.',
+ 'smss.exe':'Seansihaldur. Esimene kasutajarežiimi protsess: käivitab seansid, iga seansi jaoks csrss.exe ning seansis 0 wininit.exe, kasutaja seansis winlogon.exe.',
+ 'csrss.exe':'Windowsi alamsüsteemi serverprotsess. Igas seansis on oma csrss.exe. Kui see lõpetatakse, tuleb sinine ekraan.',
+ 'wininit.exe':'Seansi 0 käivitaja. Käivitab teenusehalduri services.exe ja turva-autoriteedi lsass.exe (ning Credential Guardi korral LsaIso.exe).',
+ 'services.exe':'Teenusehaldur (SCM). Käivitab ja peatab Windowsi teenuseid, mis töötavad enamasti svchost.exe protsessides.',
+ 'svchost.exe':'Teenuste hostprotsess. Ühes svchost.exe-s võib töötada üks või mitu teenust, nt Windows Update või DNS-klient.',
+ 'lsass.exe':'Kohalik turva-autoriteet: autentimine, turvapoliitika ja tokenite loomine. Ründajate sage sihtmärk, sest selle mälus võivad olla parooliräsid.',
+ 'LsaIso.exe':'Credential Guardi isoleeritud LSA. Töötab VTL 1-s ja hoiab saladusi nii, et isegi administraator ega tuum ei saa neid lugeda.',
+ 'winlogon.exe':'Sisse- ja väljalogimine ning Ctrl+Alt+Del. Pärast sisselogimist käivitab userinit.exe, mis käivitab explorer.exe.',
+ 'dwm.exe':'Desktop Window Manager. Koostab DirectX-iga kõigi akende pildi üheks ekraanipildiks.',
+ 'explorer.exe':'Kasutaja graafiline kest: töölaud, tegumiriba, Start-menüü ja failihaldur. Selle vanemprotsess (userinit.exe) on juba lõpetatud.'
+};
+const TREE=[['System (PID 4)',[['smss.exe',[]]]],['Registry',[]],['csrss.exe <span class="hint">(seanss 0)</span>',[]],['wininit.exe',[['services.exe',[['svchost.exe',[]],['svchost.exe ',[]]]],['lsass.exe',[]],['LsaIso.exe',[]]]],['csrss.exe <span class="hint">(seanss 1)</span>',[]],['winlogon.exe',[['dwm.exe',[]]]],['explorer.exe',[]]];
+let psel=null;
+const cx=s=>s.replace(/\b([A-Za-z0-9]+\.(exe|dll|sys))\b/g,'<code>$1</code>');
+const key=n=>n.replace(/ <span.*$/,'').trim();
+function tr(nodes){return '<ul>'+nodes.map(([n,ch])=>{const k=key(n);return '<li><button class="pnode'+(psel===n?' sel':'')+(k==='LsaIso.exe'?' v1':'')+'" data-n="'+n.replace(/"/g,'&quot;')+'">'+n+'</button>'+(ch.length?tr(ch):'')+'</li>'}).join('')+'</ul>'}
+function drawTree(){$('tree').innerHTML=tr(TREE);document.querySelectorAll('.pnode').forEach(b=>b.onclick=()=>{psel=b.dataset.n;drawTree();const k=key(psel);$('pinfo').innerHTML='<strong class="mono">'+k+'</strong> – '+cx(PR[k])})}
+drawTree();
+const PQ=Object.keys(PR);
+let pq=shuffle(PQ),pp=0,pss={ok:0,n:0},pa=null,popts=[];
+function drawP(){
+  if(pp>=pq.length){$('pcard').innerHTML='<h3>Leia protsess</h3><p class="qtext">Tulemus: '+pss.ok+' / '+pss.n+'</p><div class="row"><span></span><button class="btn primary" id="pag">Alusta uuesti</button></div>';$('pag').onclick=()=>{pq=shuffle(PQ);pp=0;pss={ok:0,n:0};pa=null;drawP()};return}
+  const k=pq[pp];if(pa===null)popts=shuffle([k,...shuffle(PQ.filter(x=>x!==k)).slice(0,3)]);
+  const d=PR[k].split(k).join('…');
+  let h='<h3>Leia protsess</h3><p class="score">'+(pp+1)+' / '+pq.length+' · õigeid '+pss.ok+'</p><p style="font-size:15px">'+cx(pa===null?d:PR[k])+'</p><div class="opts">';
+  popts.forEach(o=>{let cl='opt mono';if(pa!==null)cl+=o===k?' ok':o===pa?' bad':' dim';h+='<button class="'+cl+'" data-o="'+o+'"'+(pa!==null?' disabled':'')+'>'+o+'</button>'});
+  h+='</div><div class="row"><span></span><button class="btn primary" id="pn"'+(pa===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('pcard').innerHTML=h;
+  document.querySelectorAll('#pcard .opt').forEach(b=>b.onclick=()=>{pa=b.dataset.o;pss.n++;if(pa===k)pss.ok++;drawP()});
+  $('pn').onclick=()=>{pp++;pa=null;drawP()};
+}
+drawP();
+
+/* ---------- 5. Credential Guard ---------- */
+let dumped=null;
+function drawCG(hl){
+  const on=$('cgon').checked;
+  $('cgmem').innerHTML=
+   '<div class="mem z-um'+(hl==='lsass'?' hl':'')+'"><b>VTL 0 · <code>lsass.exe</code></b> <span class="hint">(admin ja tuum näevad seda mälu)</span>'+
+     (on?'<span class="mono">mari.tamm → viide LsaIso-le, krüpteeritud blob [isoleeritud]</span>':'<span class="mono">mari.tamm NTLM: 8846F7EAEE8FB117AD06BDD830B7586C</span><span class="mono">kerberos TGT: doRQMIIE…6aRnA==</span>')+'</div>'+
+   '<div class="mem z-v1 '+(on?'':'')+(on?'locked':'')+'"><b>VTL 1 · <code>LsaIso.exe</code></b>'+(on?'<span class="mono">mari.tamm NTLM: 8846F7EAEE8FB117…</span><span class="mono">kerberos võtmed…</span>':'<span class="hint" style="display:block;margin-top:4px">ei tööta (Credential Guard väljas)</span>')+'</div>'+
+   '<div class="hvbar'+(hl==='hv'?' block':'')+'">Hüperviisor'+(on?' – VTL 1 mälu on VTL 0 jaoks suletud':' – VBS väljas, eraldust pole')+'</div>';
+}
+function log(h){$('con').innerHTML+=h+'\n'}
+function resetCG(){dumped=null;$('con').innerHTML='<span class="y">PS C:\\&gt;</span> # ründaja konsool, administraatoriõigustega\n';$('pth').disabled=true;$('dump').disabled=false;drawCG()}
+$('cgon').onchange=resetCG;
+$('dump').onclick=()=>{
+  const on=$('cgon').checked;$('dump').disabled=true;
+  log('<span class="y">PS C:\\&gt;</span> .\\loe-lsass.exe --pid (Get-Process lsass).Id');
+  if(!on){dumped='8846F7EAEE8FB117AD06BDD830B7586C';drawCG('lsass');
+    log('<span class="r">[+] mari.tamm  NTLM 8846F7EAEE8FB117AD06BDD830B7586C</span>\n<span class="r">[+] 1 Kerberose pilet</span>\n# Administraator võib lugeda iga VTL 0 protsessi mälu. Räsi lekkis.');$('pth').disabled=false}
+  else{dumped=null;drawCG('hv');
+    log('[+] lsass.exe mälu loetud\n<span class="g">[-] mari.tamm: räsi ei leitud, ainult krüpteeritud viide LsaIso-le</span>\n<span class="g">[-] LsaIso.exe (VTL 1): juurdepääs keelatud – hüperviisor blokeeris</span>\n# Admin ja isegi tuumadraiver näevad ainult VTL 0 mälu.');$('pth').disabled=false}
+};
+$('pth').onclick=()=>{
+  $('pth').disabled=true;log('<span class="y">PS C:\\&gt;</span> .\\pass-the-hash.exe -kasutaja mari.tamm -sihtmärk FS01');
+  if(dumped){log('<span class="r">[+] Autentimine õnnestus. Ligipääs \\\\FS01\\C$</span>\n# Ründaja liigub võrgus edasi ilma parooli teadmata (lateral movement).');drawCG()}
+  else{log('<span class="g">[-] Räsi puudub. Autentimine ebaõnnestus.</span>\n# Credential Guard peatas rünnaku. Pangaseifi ust ei ava hoone võtmed.')}
+};
+resetCG();
+</script>
+</body>
+</html>
