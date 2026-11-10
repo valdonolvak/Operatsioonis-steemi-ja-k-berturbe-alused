@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 12 – mäluhaldus: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.slider{display:grid;grid-template-columns:220px 1fr 80px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+@media (max-width:600px){.slider{grid-template-columns:1fr 80px}.slider label{grid-column:1/3}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.membar{display:flex;height:54px;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--bg);margin-top:10px}
+.membar div{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;border-right:1px solid rgba(255,255,255,.5);overflow:hidden;white-space:nowrap}
+.membar div.free{background:repeating-linear-gradient(45deg,var(--card),var(--card) 5px,var(--bg) 5px,var(--bg) 10px);color:var(--muted);font-weight:400}
+.frames{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:10px}
+.frames div{height:52px;border:1px solid var(--border);border-radius:6px;position:relative;overflow:hidden;background:var(--bg);font-size:11px;color:var(--muted)}
+.frames div span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+.frames div i{position:absolute;left:0;top:0;bottom:0}
+.frames div i.w{background:repeating-linear-gradient(45deg,rgba(0,0,0,.25) 0 3px,transparent 3px 7px)}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.ptab{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+.ptab div{border:1px solid var(--border);border-radius:6px;background:var(--bg);padding:4px;font-size:12px;text-align:center}
+.ptab div.hit{border:2px solid var(--accent);background:var(--accent-bg)}
+.ptab div.np{color:var(--muted)}
+.ptab div.np.hit{border-color:var(--bad-line);background:var(--bad-bg)}
+.addr{font-family:var(--mono);font-size:22px;display:flex;gap:2px;flex-wrap:wrap;align-items:flex-end;margin:8px 0}
+.addr span{padding:2px 8px;border-radius:6px}
+.addr small{display:block;font-size:11px;font-family:system-ui;color:var(--muted);text-align:center}
+.pg{background:var(--accent-bg);color:var(--accent)}.off{background:var(--ok-bg);color:var(--ok)}
+.bits{display:flex;flex-wrap:wrap;gap:4px;font-family:var(--mono);font-size:13px;margin-top:8px}
+.bits div{border-radius:6px;padding:4px 8px;text-align:center}
+.bits div small{display:block;font-family:system-ui;font-size:11px}
+.rgrid{overflow-x:auto;margin-top:10px}
+.rgrid table{border-collapse:collapse;font-family:var(--mono);font-size:13px;background:var(--bg)}
+.rgrid td,.rgrid th{border:1px solid var(--border);width:34px;height:30px;text-align:center;padding:0}
+.rgrid th{font-weight:600;background:var(--card)}
+.rgrid td.new{background:var(--bad-bg);color:var(--bad);font-weight:700}
+.rgrid td.hit{background:var(--ok-bg);color:var(--ok)}
+.rgrid td.f{color:var(--bad);font-weight:700}
+.rgrid td.h{color:var(--ok)}
+.bars{display:grid;gap:10px;margin-top:10px}
+.bl{font-size:13.5px;display:flex;justify-content:space-between}
+.bt{height:22px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow:hidden;display:flex;position:relative}
+.bt div{height:100%}
+.bt .lim{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--bad-line)}
+.procs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:10px}
+.proc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px}
+.proc.dead{opacity:.5;border-style:dashed}
+.proc .btn{font-size:13px;padding:.3rem .6rem;margin:2px 2px 0 0}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/12-maluhaldus.md">← Peatükk 12</a> · <a href="12-test.html">Test →</a></nav>
+<h1>Mäluhaldus – õpileht</h1>
+<p>Mäluhaldur annab igale protsessile oma virtuaalse aadressiruumi, tõlgib aadressid füüsilisteks ja otsustab, millised lehed RAM-is hoida. Sellel lehel näed killustumist, tõlgid aadresse, võrdled lehtede asendamise algoritme, arvutad TLB mõju, jälgid eraldatud mälu ja harjutad mälu ründekaitseid.</p>
+<div class="toc"><a href="#killustumine">1. Killustumine</a><a href="#tolkimine">2. Aadressi tõlkimine</a><a href="#asendamine">3. Lehtede asendamine</a><a href="#tlb">4. TLB ja suured lehed</a><a href="#commit">5. Eraldatud mälu</a><a href="#kaitsed">6. Ründekaitsed</a></div>
+
+<!-- 1 -->
+<section id="killustumine">
+<h2>1. Killustumine: pidev ala või lehed?</h2>
+<p>Mälu on 64 KB. Programmid tulevad ja lähevad. Vali mälumudel ja käi stsenaarium samm-sammult läbi. Viimasel sammul tahab tulla programm F (16 KB).</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-m="cont">Muutuvad sektsioonid (pidev ala)</button> <button class="btn" data-m="page">Lehekülgedeks jaotamine (4 KB lehed)</button></span></div>
+  <div id="kmem"></div>
+  <div class="row"><span><button class="btn primary" id="knext">Järgmine samm →</button> <button class="btn" id="kreset">Algusesse</button></span><span class="hint" id="kstep"></span></div>
+  <div class="kpis" id="kkpi"></div>
+  <div class="info" id="kinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="tolkimine">
+<h2>2. Aadressi tõlkimine</h2>
+<p>Lihtsustatud arvutis on aadressid 16-bitised ja leht on 4 KB. Seega on viimased 3 kuueteistkümnendnumbrit (12 bitti) <b>nihe</b> ja esimene number <b>lehe number</b>. Sisesta virtuaalaadress või lase lehel ülesanne anda.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-p="A">Protsess A</button> <button class="btn" data-p="B">Protsess B</button></span><span>Virtuaalaadress: <input type="text" id="tva" value="0x2A7F" style="width:90px;font-family:var(--mono)"> <button class="btn primary" id="tgo">Tõlgi</button></span></div>
+  <div class="addr" id="taddr"></div>
+  <div class="hint">Protsessi lehetabel (leht → raam):</div>
+  <div class="ptab" id="tptab"></div>
+  <div class="info" id="tinfo"></div>
+  <div class="row"><span><b>Harjuta:</b> <span id="tq"></span> Füüsiline aadress: <input type="text" id="tans" style="width:90px;font-family:var(--mono)" placeholder="0x…"> <button class="btn" id="tcheck">Kontrolli</button> <button class="btn" id="tnew">Uus ülesanne</button></span></div>
+  <div class="info" id="tfb" style="min-height:0"></div>
+  <h3 style="margin-top:1.2rem">Päris x64 aadress (48 bitti, 4 tasemega lehetabel)</h3>
+  <div class="row" style="margin-top:4px"><span>Aadress: <input type="text" id="xva" value="0x7FF6A1B2C3D4" style="width:160px;font-family:var(--mono)"></span></div>
+  <div class="bits" id="xbits"></div>
+  <p class="hint">Iga 9-bitine indeks (0–511) valib kirje ühest 512-kirjelisest tabelist; 12-bitine nihe valib baidi 4096-baidise lehe sees.</p>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="asendamine">
+<h2>3. Lehtede asendamise simulaator</h2>
+<p>Programm pöördub lehtede poole järjekorras, mis on antud allpool. Kui leht pole RAM-is, tekib leheviga (punane). Kui raamid on täis, valib algoritm, milline leht välja viia.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Näide: <select id="rpre"><option value="ch">Peatüki näide</option><option value="bel">Belady anomaalia</option><option value="loc">Lokaalsus (tsükkel)</option><option value="scan">Suur fail läbi (skaneerimine)</option></select></span><span>Raame: <select id="rfr"><option>3</option><option>4</option><option>5</option></select></span></div>
+  <div class="row"><span style="flex:1">Lehtede järjekord: <input type="text" id="rref" style="width:100%;max-width:420px;font-family:var(--mono)"></span></div>
+  <div class="row"><span id="ralgs"></span></div>
+  <div class="rgrid" id="rgrid"></div>
+  <div class="kpis" id="rkpi"></div>
+  <table class="t" style="margin-top:10px"><thead><tr><th>Algoritm</th><th class="num">3 raami</th><th class="num">4 raami</th><th class="num">5 raami</th></tr></thead><tbody id="rcmp"></tbody></table>
+  <div class="info" id="rinfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="tlb">
+<h2>4. TLB ja suured lehed</h2>
+<p>Iga TLB möödalask tähendab, et protsessor peab lugema mälust kõik lehetabeli tasemed. Vaata, kui palju mõjutab tabamusmäär keskmist mälupöördumise aega.</p>
+<div class="card">
+  <div class="slider"><label for="lh">TLB tabamusmäär</label><input type="range" id="lh" min="80" max="100" step="0.5" value="99"><b id="lhv" class="mono"></b></div>
+  <div class="slider"><label for="lm">Mälupöördumine (ns)</label><input type="range" id="lm" min="50" max="150" step="10" value="100"><b id="lmv" class="mono"></b></div>
+  <div class="slider"><label for="ll">Lehetabeli tasemeid</label><input type="range" id="ll" min="1" max="5" value="4"><b id="llv" class="mono"></b></div>
+  <div class="kpis" id="lkpi"></div>
+  <div class="info" id="linfo"></div>
+  <h3 style="margin-top:1.2rem">Kui palju mälu katab TLB?</h3>
+  <div class="row" style="margin-top:4px"><span>TLB kirjeid: <select id="le"><option>64</option><option>512</option><option selected>1536</option><option>2048</option></select></span><span>Lehe suurus: <select id="lp"><option value="4">4 KB</option><option value="2048">2 MB</option><option value="1048576">1 GB</option></select></span></div>
+  <div class="kpis" id="lcov"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="commit">
+<h2>5. Reserveeritud, eraldatud ja kasutatud mälu</h2>
+<p>Arvutis on 8 GB RAM-i. Süsteem ise on eraldanud ja kasutab 2 GB. Vali lehefaili suurus ja käivita programmide toiminguid. Jälgi, mis juhtub eraldatud mälu limiidi ja RAM-iga.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-os="win">Windows</button> <button class="btn" data-os="lin">Linux (ülejaotus lubatud)</button></span><button class="btn" id="creset">Algseis</button></div>
+  <div class="slider"><label for="cpf">Lehefail / swap (GB)</label><input type="range" id="cpf" min="0" max="16" value="8"><b id="cpfv" class="mono"></b></div>
+  <div class="procs" id="cprocs"></div>
+  <div class="bars" id="cbars"></div>
+  <div class="info" id="cinfo"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="kaitsed">
+<h2>6. Milline kaitse peatab ründe?</h2>
+<p>Iga rünne kasutab ära mäluviga. Vali kaitse, mis selle ründe kõige otsesemalt peatab või muudab väga raskeks.</p>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="12-test.html">Peatüki 12 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/12-maluhaldus.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
+const COL={A:'#185fa5',B:'#3b6d11',C:'#a3489c',D:'#c26a0a',E:'#0f7b7b',F:'#a32d2d',S:'#6b6a65'};
+const hex=(n,w=4)=>'0x'+n.toString(16).toUpperCase().padStart(w,'0');
+
+/* 1. Killustumine */
+const KS=[['load','A',12],['load','B',10],['load','C',14],['load','D',8],['load','E',12],['free','B'],['free','D'],['load','F',16]];
+let km='cont',ki=0;
+function kRun(){ // tagastab oleku pärast ki sammu
+  const cont=[],frames=Array(16).fill(null),log=[];let fail=null,waste=0;
+  for(let s=0;s<ki;s++){const [op,n,sz]=KS[s];
+    if(km==='cont'){
+      if(op==='load'){// first fit
+        let pos=0,ok=-1;const occ=cont.slice().sort((a,b)=>a.at-b.at);for(const b of occ){if(b.at-pos>=sz){ok=pos;break}pos=b.at+b.sz}if(ok<0&&64-pos>=sz)ok=pos;
+        if(ok<0){fail=n;log.push(`${n} (${sz} KB) ei mahu!`)}else{cont.push({n,at:ok,sz});log.push(`${n} (${sz} KB) laaditi aadressile ${ok} KB`)}}
+      else{const i=cont.findIndex(b=>b.n===n);cont.splice(i,1);log.push(`${n} lõpetas`)}
+    }else{
+      if(op==='load'){const need=Math.ceil(sz/4),freeIdx=frames.map((f,i)=>f?-1:i).filter(i=>i>=0);
+        if(freeIdx.length<need){fail=n;log.push(`${n} ei mahu`)}else{let left=sz;
+          // jaota hajusalt: võta vabad raamid järjest
+          freeIdx.slice(0,need).forEach((i,k)=>{const use=Math.min(4,left);left-=use;frames[i]={n,use,pg:k}});log.push(`${n} (${sz} KB) sai ${need} lehte`)}}
+      else{frames.forEach((f,i)=>{if(f&&f.n===n)frames[i]=null});log.push(`${n} lõpetas`)}
+    }}
+  return {cont,frames,log,fail};
+}
+function kDraw(){const r=kRun();
+  document.querySelectorAll('#killustumine [data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===km));
+  let h='';
+  if(km==='cont'){const occ=r.cont.slice().sort((a,b)=>a.at-b.at);let pos=0;h='<div class="membar">';
+    occ.forEach(b=>{if(b.at>pos)h+=`<div class="free" style="flex:${b.at-pos}">${b.at-pos} KB vaba</div>`;h+=`<div style="flex:${b.sz};background:${COL[b.n]}">${b.n} · ${b.sz} KB</div>`;pos=b.at+b.sz});
+    if(pos<64)h+=`<div class="free" style="flex:${64-pos}">${64-pos} KB vaba</div>`;h+='</div><div class="scale"><span>0 KB</span><span>16</span><span>32</span><span>48</span><span>64 KB</span></div>';
+    const holes=[];pos=0;occ.forEach(b=>{if(b.at>pos)holes.push(b.at-pos);pos=b.at+b.sz});if(pos<64)holes.push(64-pos);
+    const free=holes.reduce((a,b)=>a+b,0),big=Math.max(0,...holes);
+    $('kkpi').innerHTML=`<div>Vaba kokku<b>${free} KB</b></div><div>Suurim pidev vaba tükk<b>${big} KB</b></div><div>Vabu tükke<b>${holes.length}</b></div>`;
+  }else{h='<div class="frames">'+r.frames.map((f,i)=>f?`<div><i style="width:100%;background:${COL[f.n]}"></i>${f.use<4?`<i class="w" style="left:${f.use/4*100}%;right:0;width:auto;background-color:transparent"></i>`:''}<span style="color:#fff;font-weight:700">${f.n} leht ${f.pg}<small style="font-weight:400">${f.use<4?f.use+' KB + '+(4-f.use)+' KB raisku':'4 KB'}</small></span></div>`:`<div><span>raam ${i}<small>vaba</small></span></div>`).join('')+'</div>';
+    const fr=r.frames.filter(f=>!f).length,w=r.frames.reduce((s,f)=>s+(f?4-f.use:0),0);
+    $('kkpi').innerHTML=`<div>Vabu raame<b>${fr} (${fr*4} KB)</b></div><div>Sisemine killustumine<b>${w} KB</b></div>`;}
+  $('kmem').innerHTML=h;
+  $('kstep').textContent=`Samm ${ki}/${KS.length}`+(ki<KS.length?' · järgmine: '+(KS[ki][0]==='load'?`${KS[ki][1]} (${KS[ki][2]} KB) tahab mällu`:`${KS[ki][1]} lõpetab`):'');
+  $('knext').disabled=ki>=KS.length;
+  const last=r.log[r.log.length-1]||'';
+  $('kinfo').className='info'+(r.fail?' bad':ki===KS.length?' ok':'');
+  $('kinfo').innerHTML=!ki?'Mälu on tühi. Vajuta „Järgmine samm“.':
+   r.fail&&km==='cont'?`<b>Väline killustumine!</b> Programm F vajab 16 KB. Vaba mälu on kokku piisavalt, kuid see on laiali väikeste tükkidena ja ükski tükk pole 16 KB. Pidev ala nõuab, et kogu programm oleks järjest. Vaheta mudel „Lehekülgedeks jaotamine“ ja proovi uuesti.`:
+   ki===KS.length&&km==='page'?`<b>F mahtus!</b> F sai 4 lehte, mis on RAM-is eri kohtades – lehetabel seob need kokku üheks pidevaks virtuaalseks alaks. Välist killustumist pole. Alles jääb <b>sisemine killustumine</b>: kui programm vajab nt 10 KB, saab ta 3 lehte (12 KB) ja 2 KB jääb viimases lehes kasutamata (triibuline osa).`:
+   last+'.'+(ki===7&&km==='cont'?' Vaata, kuhu vabad tükid jäid.':'');
+}
+document.querySelectorAll('#killustumine [data-m]').forEach(b=>b.onclick=()=>{km=b.dataset.m;kDraw()});
+$('knext').onclick=()=>{ki++;kDraw()};$('kreset').onclick=()=>{ki=0;kDraw()};kDraw();
+
+/* 2. Tõlkimine */
+const PT={A:[[1,3],[1,7],[1,5],[0,null],[1,1],[0,null],[1,12],[0,null]],B:[[1,4],[1,7],[1,9],[1,2],[0,null],[1,11],[0,null],[1,14]]};
+let tp='A',tq=null;
+function parseHex(s){s=s.trim().replace(/^0x/i,'');if(!/^[0-9a-f]{1,4}$/i.test(s))return null;return parseInt(s,16)}
+function tDraw(){document.querySelectorAll('#tolkimine [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===tp));
+  const v=parseHex($('tva').value),I=$('tinfo');
+  if(v===null){I.className='info bad';I.innerHTML='Sisesta 16-bitine kuueteistkümnendarv, nt <code>0x2A7F</code>.';$('taddr').innerHTML='';tTab(-1);return}
+  const pg=v>>12,off=v&0xFFF,h=hex(v);
+  $('taddr').innerHTML=`<span class="pg">${h.slice(2,3)}<small>leht ${pg}</small></span><span class="off">${h.slice(3)}<small>nihe ${hex(off,3)}</small></span>`;
+  tTab(pg);const e=PT[tp][pg];
+  if(pg>7){I.className='info bad';I.innerHTML=`Leht ${pg} on väljaspool protsessi kasutatavat ala (lehetabelis on lehed 0–7). Pöördumine annab vea <b>access violation</b> ja programm tavaliselt lõpetatakse.`;return}
+  if(!e[0]){I.className='info bad';I.innerHTML=`<b>Leheviga!</b> Lehe ${pg} kirjes on <i>Present</i> = 0 – leht pole RAM-is (nt viidud lehefaili) või pole veel kasutatud. Protsessor katkestab käsu, mäluhaldur toob lehe vabasse raami, uuendab lehetabelit ja käsk käivitatakse uuesti.`;return}
+  const pa=(e[1]<<12)|off;I.className='info ok';
+  I.innerHTML=`Leht <b>${pg}</b> → raam <b>${e[1]}</b> (${hex(e[1],1)}). Füüsiline aadress = raam + nihe = <b class="mono">${hex(pa)}</b>. `+(tp==='B'?`Protsessis A viiks sama virtuaalaadress ${PT.A[pg][0]?'raami '+PT.A[pg][1]:'leheveani'} – protsessid ei näe üksteise mälu.`:`Vaheta protsessi B peale: sama virtuaalaadress viib teise kohta.`);
+}
+function tTab(hit){$('tptab').innerHTML=PT[tp].map(([p,f],i)=>`<div class="${p?'':'np'}${i===hit?' hit':''}">leht ${i}<br><b>${p?'raam '+f:'—'}</b><br><small>${p?'P=1':'P=0'}</small></div>`).join('')}
+function tNew(){let pg;do{pg=Math.floor(Math.random()*8)}while(!PT[tp][pg][0]);tq=(pg<<12)|Math.floor(Math.random()*4096);$('tq').innerHTML=`Protsess ${tp}, virtuaalaadress <code>${hex(tq)}</code>.`;$('tans').value='';$('tfb').textContent='';$('tfb').className='info';$('tfb').style.minHeight='0'}
+$('tcheck').onclick=()=>{const v=parseHex($('tans').value),pa=(PT[tp][tq>>12][1]<<12)|(tq&0xFFF);
+  $('tfb').className='info '+(v===pa?'ok':'bad');$('tfb').innerHTML=v===pa?'Õige! '+`Leht ${tq>>12} → raam ${PT[tp][tq>>12][1]}, nihe jääb samaks.`:`Vale. Õige on <b class="mono">${hex(pa)}</b>: esimene number (leht ${tq>>12}) asendatakse raami numbriga ${hex(PT[tp][tq>>12][1],1)}, ülejäänud kolm numbrit (nihe) jäävad samaks.`};
+$('tnew').onclick=tNew;$('tgo').onclick=tDraw;$('tva').onkeydown=e=>{if(e.key==='Enter')tDraw()};
+document.querySelectorAll('#tolkimine [data-p]').forEach(b=>b.onclick=()=>{tp=b.dataset.p;tDraw();tNew()});
+function xDraw(){let s=$('xva').value.trim().replace(/^0x/i,'');if(!/^[0-9a-f]{1,12}$/i.test(s)){$('xbits').innerHTML='<span class="hint">Sisesta kuni 12 kuueteistkümnendnumbrit.</span>';return}
+  const v=BigInt('0x'+s),b=v.toString(2).padStart(48,'0'),parts=[['PML4',9,'#185fa5'],['PDPT',9,'#0f7b7b'],['PD',9,'#a3489c'],['PT',9,'#c26a0a'],['nihe',12,'#3b6d11']];let p=0;
+  $('xbits').innerHTML=parts.map(([n,w,c])=>{const bits=b.slice(p,p+w);p+=w;return `<div style="background:${c};color:#fff">${bits}<small>${n}: ${n==='nihe'?hex(parseInt(bits,2),3):parseInt(bits,2)}</small></div>`}).join('')}
+$('xva').oninput=xDraw;tDraw();tNew();xDraw();
+
+/* 3. Asendamine */
+const RP={ch:'7 0 1 2 0 3 0 4 2 3 0 3 2',bel:'1 2 3 4 1 2 5 1 2 3 4 5',loc:'1 2 3 1 2 3 1 2 3 4 1 2 3 1 2 3',scan:'1 2 1 2 5 6 7 8 9 1 2 1 2'};
+const ALG={fifo:'FIFO',lru:'LRU',clock:'Kell (teine võimalus)',opt:'Optimaalne'};
+let ralg='fifo';
+function replace(ref,n,alg){const fr=Array(n).fill(null),ref1=Array(n).fill(0),cols=[];let q=[],last={},hand=0,faults=0;
+  ref.forEach((p,t)=>{let hit=fr.indexOf(p),slot=-1,victim=null;
+    if(hit>=0){last[p]=t;ref1[hit]=1}
+    else{faults++;slot=fr.indexOf(null);
+      if(slot<0){if(alg==='fifo'){victim=q.shift();slot=fr.indexOf(victim)}
+        else if(alg==='lru'){victim=fr.reduce((a,b)=>last[a]<=last[b]?a:b);slot=fr.indexOf(victim)}
+        else if(alg==='opt'){const fut=ref.slice(t+1);victim=fr.reduce((a,b)=>{const ia=fut.indexOf(a),ib=fut.indexOf(b);return (ia<0?1e9:ia)>=(ib<0?1e9:ib)?a:b});slot=fr.indexOf(victim)}
+        else{while(ref1[hand]){ref1[hand]=0;hand=(hand+1)%n}slot=hand;victim=fr[slot];hand=(hand+1)%n}
+        q=q.filter(x=>x!==victim);}
+      else if(alg==='clock'){hand=(slot+1)%n}
+      fr[slot]=p;ref1[slot]=1;q.push(p);last[p]=t}
+    cols.push({p,fr:fr.slice(),hit:hit>=0,slot:hit>=0?hit:slot,victim,bits:ref1.slice(),hand})});
+  return {cols,faults}}
+function getRef(){return $('rref').value.trim().split(/[\s,]+/).filter(x=>x!=='').map(Number).filter(x=>!isNaN(x)).slice(0,30)}
+function rDraw(){document.querySelectorAll('#ralgs button').forEach(b=>b.classList.toggle('on',b.dataset.a===ralg));
+  const ref=getRef(),n=+$('rfr').value;if(!ref.length){$('rgrid').innerHTML='';return}
+  const r=replace(ref,n,ralg);
+  let h='<table><tr><th>leht</th>'+r.cols.map(c=>`<th>${c.p}</th>`).join('')+'</tr>';
+  for(let i=0;i<n;i++)h+=`<tr><th>raam ${i}</th>`+r.cols.map(c=>{const v=c.fr[i];return `<td class="${c.slot===i?(c.hit?'hit':'new'):''}">${v===null?'':v}${ralg==='clock'&&v!==null?`<sup style="font-size:9px">${c.bits[i]}</sup>`:''}</td>`}).join('')+'</tr>';
+  h+='<tr><th></th>'+r.cols.map(c=>`<td class="${c.hit?'h':'f'}">${c.hit?'✓':'✗'}</td>`).join('')+'</tr></table>';
+  $('rgrid').innerHTML=h;
+  $('rkpi').innerHTML=`<div>Lehevigu<b>${r.faults}</b></div><div>Tabamusi<b>${ref.length-r.faults}</b></div><div>Tabamusmäär<b>${Math.round((ref.length-r.faults)/ref.length*100)}%</b></div>`;
+  $('rcmp').innerHTML=Object.keys(ALG).map(a=>`<tr${a===ralg?' class="avg"':''}><td>${ALG[a]}</td>`+[3,4,5].map(k=>`<td class="num">${replace(ref,k,a).faults}</td>`).join('')+'</tr>').join('');
+  const f3=replace(ref,3,'fifo').faults,f4=replace(ref,4,'fifo').faults;
+  $('rinfo').innerHTML={fifo:'FIFO viib välja kõige vanema lehe, olenemata sellest, kas seda kasutatakse sageli.',lru:'LRU viib välja lehe, mida pole kõige kauem kasutatud. See põhineb lokaalsusel: hiljuti kasutatud lehti vajatakse tõenäoliselt uuesti.',clock:'Kell käib raame ringiratast läbi. Ülaindeks on <i>Accessed</i>-bitt: 1 tähendab, et lehte on hiljuti kasutatud – see saab teise võimaluse ja bitt nullitakse. Välja viiakse esimene leht, mille bitt on 0. See on LRU odav lähend.',opt:'Optimaalne algoritm viib välja lehe, mida järgmisena vajatakse kõige hiljem. Seda ei saa päriselt teha (tulevik pole teada), kuid see näitab, milline on parim võimalik tulemus.'}[ralg]+
+   (f4>f3?` <b>Belady anomaalia:</b> FIFO annab 3 raamiga ${f3} ja 4 raamiga ${f4} leheviga – rohkem mälu, rohkem vigu!`:'');
+}
+$('ralgs').innerHTML=Object.entries(ALG).map(([k,v])=>`<button class="btn" data-a="${k}">${v}</button>`).join(' ');
+document.querySelectorAll('#ralgs button').forEach(b=>b.onclick=()=>{ralg=b.dataset.a;rDraw()});
+$('rpre').onchange=()=>{$('rref').value=RP[$('rpre').value];rDraw()};$('rfr').onchange=rDraw;$('rref').oninput=rDraw;
+$('rref').value=RP.ch;rDraw();
+
+/* 4. TLB */
+function lDraw(){const h=+$('lh').value/100,m=+$('lm').value,L=+$('ll').value;$('lhv').textContent=fmt(h*100)+'%';$('lmv').textContent=m+' ns';$('llv').textContent=L;
+  const hit=1+m,miss=1+L*m+m,eat=h*hit+(1-h)*miss;
+  $('lkpi').innerHTML=`<div>TLB tabamus<b>${hit} ns</b></div><div>TLB möödalask<b>${miss} ns</b></div><div>Keskmine<b>${fmt(eat)} ns</b></div><div>Aeglustus võrreldes ideaaliga<b>${fmt((eat/m-1)*100)}%</b></div>`;
+  $('linfo').innerHTML=`Ilma TLB-ta võtaks iga pöördumine ${miss-1} ns ehk ${L+1} korda kauem. ${h>=0.99?'Tänu lokaalsusele on tabamusmäär tavaliselt üle 99% ja tõlkimine on peaaegu nähtamatu.':'Kui programm hüppab mälus palju ringi (suur andmebaas, VM), langeb tabamusmäär – siis aitavad suured lehed.'}`;
+  const e=+$('le').value,p=+$('lp').value,kb=e*p;
+  $('lcov').innerHTML=`<div>TLB katab<b>${kb>=1048576?fmt(kb/1048576)+' GB':kb>=1024?fmt(kb/1024)+' MB':kb+' KB'}</b></div><div>16 GB mälu jaoks on vaja kirjeid<b>${fmt(16*1048576/p,0)}</b></div>`;}
+['lh','lm','ll'].forEach(i=>$(i).oninput=lDraw);['le','lp'].forEach(i=>$(i).onchange=lDraw);lDraw();
+
+/* 5. Commit */
+const RAM=8,SYS=2;let cos='win',C;
+function cInit(){C={p:{Brauser:{r:0,c:0,u:0,dead:false},Mäng:{r:0,c:0,u:0,dead:false}},msg:'Alusta brauserist: reserveeri, eralda ja kasuta mälu.',bad:false};cDraw()}
+const lim=()=>RAM+(+$('cpf').value);
+const charge=()=>SYS+Object.values(C.p).reduce((s,x)=>s+(x.dead?0:x.c),0);
+const used=()=>SYS+Object.values(C.p).reduce((s,x)=>s+(x.dead?0:x.u),0);
+function act(name,kind){const P=C.p[name];if(P.dead){P.dead=false;P.r=P.c=P.u=0}
+  C.bad=false;
+  if(kind==='res'){P.r+=4;C.msg=`${name} reserveeris 4 GB aadressivahemikku. Eraldatud mälu ja RAM ei muutunud – reserveerimine võtab ainult aadressiruumi (128 TB on palju).`}
+  else if(kind==='com'){const x=2;if(P.c+x>P.r){C.msg=`${name}: eraldada saab ainult reserveeritud vahemikus. Reserveeri enne.`;C.bad=true;return cDraw()}
+    if(cos==='win'&&charge()+x>lim()){C.msg=`<b>Eraldamine ebaõnnestus!</b> Eraldatud mälu oleks ${charge()+x} GB, kuid limiit (RAM ${RAM} + lehefail ${lim()-RAM}) on ${lim()} GB. ${name} saab vea „Out of memory“, kuigi RAM-is võib olla vaba ruumi. Suurenda lehefaili.`;C.bad=true;return cDraw()}
+    P.c+=x;C.msg=`${name} eraldas 2 GB (commit). OS lubas, et see mälu on olemas – RAM-is või lehefailis. RAM-i ei kasutata enne, kui programm lehti puudutab.`+(cos==='lin'&&charge()>lim()?' <b>Linux lubas rohkem, kui on RAM-i ja swap’i kokku (ülejaotus).</b>':'')}
+  else if(kind==='use'){const x=Math.min(2,P.c-P.u);if(x<=0){C.msg=`${name}: kõik eraldatud mälu on juba kasutusel. Eralda enne juurde.`;C.bad=true;return cDraw()}
+    P.u+=x;const u=used();
+    if(u>lim()){if(cos==='lin'){const v=Object.entries(C.p).filter(([k,q])=>!q.dead).sort((a,b)=>b[1].u-a[1].u)[0];v[1].dead=true;v[1].r=v[1].c=v[1].u=0;C.msg=`<b>OOM killer!</b> Programmid kasutavad rohkem, kui on RAM-i ja swap’i kokku. Linuxi tuum lõpetas suurima protsessi: <b>${v[0]}</b>. Salvestamata töö on kadunud.`;C.bad=true;return cDraw()}}
+    C.msg=`${name} kasutas ${x} GB – lehed said RAM-i raamid (leheviga → nullitud leht → tööhulka).`+(u>RAM?` <b>RAM on täis!</b> ${u-RAM} GB kauem kasutamata lehti tihendatakse või viiakse lehefaili. Kui programmid neid kohe uuesti vajavad, tekib palju kõvu lehevigu ja arvuti muutub aeglaseks.`:'')}
+  else if(kind==='end'){P.r=P.c=P.u=0;C.msg=`${name} suleti. Tema eraldatud ja kasutatud mälu vabastati.`}
+  cDraw()}
+function bar(label,parts,max,limv,note){return `<div><div class="bl"><span>${label}</span><span>${note}</span></div><div class="bt">${parts.map(([v,c,t])=>`<div title="${t}" style="width:${Math.min(100,v/max*100)}%;background:${c}"></div>`).join('')}${limv!=null?`<span class="lim" style="left:${Math.min(99.5,limv/max*100)}%"></span>`:''}</div></div>`}
+function cDraw(){document.querySelectorAll('#commit [data-os]').forEach(b=>b.classList.toggle('on',b.dataset.os===cos));$('cpfv').textContent=$('cpf').value+' GB';
+  $('cprocs').innerHTML=Object.entries(C.p).map(([k,P])=>`<div class="proc${P.dead?' dead':''}"><b>${k}</b>${P.dead?' – lõpetatud':''}<br>reserveeritud ${P.r} GB · eraldatud ${P.c} GB · kasutusel ${P.u} GB<br><button class="btn" data-n="${k}" data-k="res">Reserveeri 4 GB</button><button class="btn" data-n="${k}" data-k="com">Eralda 2 GB</button><button class="btn" data-n="${k}" data-k="use">Kasuta 2 GB</button><button class="btn" data-n="${k}" data-k="end">Sulge</button></div>`).join('');
+  $('cprocs').querySelectorAll('button').forEach(b=>b.onclick=()=>act(b.dataset.n,b.dataset.k));
+  const L=lim(),ch=charge(),u=used(),max=Math.max(24,ch,u,L)+1,bp=C.p.Brauser,mp=C.p.Mäng;
+  $('cbars').innerHTML=bar('Eraldatud mälu (commit) – punane joon on limiit',[[SYS,COL.S,'süsteem'],[bp.c,COL.A,'brauser'],[mp.c,COL.D,'mäng']],max,L,`${ch} / ${L} GB`)+
+    bar('Füüsiline RAM (kasutusel) – punane joon on RAM-i suurus',[[Math.min(u,RAM),'#185fa5','RAM'],[Math.max(0,u-RAM),'#a32d2d','lehefailis/tihendatud']],max,RAM,`${Math.min(u,RAM)} / ${RAM} GB`+(u>RAM?` + ${u-RAM} GB lehefailis`:''));
+  $('cinfo').className='info'+(C.bad?' bad':'');$('cinfo').innerHTML=C.msg;}
+document.querySelectorAll('#commit [data-os]').forEach(b=>b.onclick=()=>{cos=b.dataset.os;cInit()});
+$('cpf').oninput=cDraw;$('creset').onclick=cInit;cInit();
+
+/* 6. Kaitsed */
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+quiz('qtasks','qscore','qreset',['DEP / NX','ASLR','CFG','Varjupinu','HVCI'],[
+ ['Ründaja kirjutab puhvri ületäitumisega pinusse oma masinkoodi ja üritab selle käivitada.',0,'Pinu lehtedel on NX-lipp – protsessor keeldub sealt koodi käivitamast.'],
+ ['Ründaja teab, et vajalik DLL laaditakse alati samale aadressile, ja hüppab sealsele funktsioonile.',1,'ASLR laadib moodulid igal käivitusel (või taaskäivitusel) juhuslikule aadressile, nii et ründaja ei tea, kuhu hüpata.'],
+ ['Ründaja kirjutab kuhjas üle objekti funktsiooniviida, et kaudne kutse läheks suvalisse koodikohta.',2,'CFG kontrollib enne iga kaudset kutset, kas sihtkoht on lubatud funktsiooni algus.'],
+ ['Ründaja kirjutab üle tagastusaadressi ja ehitab programmi enda koodijuppidest ROP-ahela.',3,'Riistvaraline varjupinu hoiab tagastusaadressi koopiat kaitstud mälus. Kui tavalise pinu aadress erineb, lõpetatakse programm.'],
+ ['Pahatahtlik draiver üritab tuumas koodilehte muuta ja seejärel seda käivitada.',4,'HVCI (mälu terviklikkus) laseb hüperviisoril tagada, et tuuma leht pole korraga kirjutatav ja käivitatav ning käivitada saab ainult allkirjastatud koodi.'],
+ ['Ründaja on saanud kuhja kirjutada oma shellcode’i ja suunab programmi sinna.',0,'Kuhi on andmeala ja selle lehed on märgitud mittekäivitatavaks.'],
+ ['Rünne töötab ainult siis, kui ründaja teab täpselt, kus asub lõime pinu.',1,'ASLR muudab juhuslikuks ka pinu ja kuhja asukohad.']],
+ 'Kaitsed täiendavad üksteist: DEP takistab oma koodi käivitamist, ASLR peidab aadressid, CFG ja varjupinu kaitsevad juhtimisvoogu, HVCI kaitseb tuuma.');
+</script>
+</body>
+</html>
