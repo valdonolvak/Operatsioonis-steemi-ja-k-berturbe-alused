@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 10 – planeerimine mitmel protsessoril: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.slider{display:grid;grid-template-columns:200px 1fr 60px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+@media (max-width:600px){.slider{grid-template-columns:1fr 60px}.slider label{grid-column:1/3}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+svg text{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
+.lane{display:grid;grid-template-columns:70px 1fr;gap:6px;align-items:center;margin-bottom:4px;font-size:12.5px}
+.lbar{display:flex;height:28px;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--bg)}
+.lbar div{flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;border-right:1px solid rgba(255,255,255,.35)}
+.lbar div.idle{background:var(--bg);color:var(--muted);font-weight:400}
+.lbar div.cold{background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.35) 0 3px,transparent 3px 7px)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.cpus{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.cpus label{display:flex;flex-direction:column;align-items:center;font-size:12px;border:1px solid var(--border);border-radius:8px;padding:6px 8px;background:var(--bg);cursor:pointer;min-width:52px}
+.cpus label.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.cpus input{margin:0 0 3px}
+.nodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.node{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px}
+.node.use{border:2px solid var(--accent)}
+.meter{height:12px;background:var(--card);border-radius:6px;overflow:hidden;margin:3px 0 8px}
+.meter div{height:100%;background:var(--accent)}
+.meter div.over{background:var(--bad-line)}
+.line{display:grid;grid-template-columns:repeat(8,1fr);gap:2px;margin:6px 0}
+.line div{height:44px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600}
+.line div.pad{background:var(--card)!important;color:var(--muted);font-weight:400}
+.lines{display:grid;gap:8px}
+.lrow{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:12.5px}
+.state{font-family:var(--mono);font-size:12px}
+.flash{animation:fl .35s}
+@keyframes fl{from{box-shadow:0 0 0 3px var(--bad-line) inset}to{box-shadow:none}}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/10-planeerimine-mitmel-protsessoril.md">← Peatükk 10</a> · <a href="10-test.html">Test →</a></nav>
+<h1>Planeerimine mitmel protsessoril – õpileht</h1>
+<p>Mitme tuumaga arvutis peab planeerija otsustama, <b>millal</b> ja ka <b>kus</b> lõim töötab. Sellel lehel arvutad paralleelsuse kasu, võrdled afiinsuse strateegiaid, koostad afiinsusmaski, valid lõimedele P- või E-tuuma, paigutad virtuaalmasina NUMA-sõlmedesse ja näed, kuidas vale jagamine programmi aeglustab.</p>
+<div class="toc"><a href="#amdahl">1. Amdahli seadus</a><a href="#afiinsus">2. Afiinsuse simulaator</a><a href="#mask">3. Afiinsusmask</a><a href="#hybriid">4. P- või E-tuum?</a><a href="#numa">5. NUMA ja VM</a><a href="#vale">6. Vale jagamine</a></div>
+
+<!-- 1 -->
+<section id="amdahl">
+<h2>1. Amdahli seadus: kui palju tuumad aitavad?</h2>
+<p>Vali, kui suure osa programmist saab paralleelseks teha ja mitu tuuma on kasutada. Graafik näitab kiirenemist 1–64 tuuma korral; punktiirjoon on ideaalne (lineaarne) kiirenemine.</p>
+<div class="card">
+  <div class="slider"><label for="ap">Paralleelne osa <i>p</i></label><input type="range" id="ap" min="0" max="100" value="90"><b id="apv" class="mono">90%</b></div>
+  <div class="slider"><label for="an">Tuumade arv <i>n</i></label><input type="range" id="an" min="1" max="64" value="8"><b id="anv" class="mono">8</b></div>
+  <div class="row" style="margin-top:4px"><span class="hint">Näited:</span><span><button class="btn" data-p="90" data-n="8">Video kodeerimine</button> <button class="btn" data-p="50" data-n="4">Kontrollküsimus 11</button> <button class="btn" data-p="99" data-n="64">Teadusarvutus</button> <button class="btn" data-p="20" data-n="16">Vana ühelõimeline programm</button></span></div>
+  <div class="kpis"><div>Kiirenemine<b id="asp">4,7×</b></div><div>Tuumade kasutus (tõhusus)<b id="aef">59%</b></div><div>Ülempiir (∞ tuuma)<b id="amax">10×</b></div><div>Aeg (1 tuum = 100 s)<b id="atime">21 s</b></div></div>
+  <svg id="achart" viewBox="0 0 640 240" width="100%" style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px"></svg>
+  <div class="info" id="ainfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="afiinsus">
+<h2>2. Afiinsuse simulaator</h2>
+<p>Kuus lõime (A–F) töötavad neljal tuumal. Iga lõim töötab 2 ajaühikut, läheb siis hetkeks ootele (nt loeb faili) ja jätkab, kokku kolm korda. Kui lõim jätkab <b>teisel tuumal</b> kui eelmisel korral, on tema andmed vale tuuma vahemälus ja esimene ajaühik kulub andmete laadimiseks (triibuline lahter). Vali strateegia ja võrdle.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span id="strats"></span></div>
+  <div id="sim" style="margin-top:10px"></div>
+  <div class="legend"><span><i style="background:repeating-linear-gradient(45deg,#666 0 3px,#bbb 3px 7px)"></i>külm vahemälu (andmed laaditakse)</span><span><i style="border:1px solid var(--border)"></i>tuum jõude</span></div>
+  <div class="kpis" id="skpi"></div>
+  <table class="t" style="margin-top:10px"><thead><tr><th>Strateegia</th><th>Valmis ajal</th><th>Tuumavahetusi</th><th>Kulutatud laadimisele</th><th>Tuumade jõudeaeg</th></tr></thead><tbody id="scmp"></tbody></table>
+  <div class="info" id="sinfo"></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="mask">
+<h2>3. Afiinsusmask</h2>
+<p>Afiinsusmask on bitimask: bitt 0 tähendab protsessorit 0, bitt 1 protsessorit 1 jne. Märgi lubatud loogilised protsessorid ja vaata, mis arvu peaks PowerShellis kirjutama (<code>$p.ProcessorAffinity = …</code>).</p>
+<div class="card">
+  <div class="cpus" id="cpus"></div>
+  <div class="row" style="margin-top:4px"><span><button class="btn" id="mall">Kõik</button> <button class="btn" id="mnone">Ainult LP 0</button> <button class="btn" id="mp">Ainult P-tuumad</button> <button class="btn" id="me">Ainult E-tuumad</button></span><span>Või sisesta arv: <input type="number" id="mdec" min="1" max="255" value="255" style="width:80px"></span></div>
+  <div class="kpis"><div>Kahendkujul (LP 7 … LP 0)<b id="mbin">11111111</b></div><div>Kümnendkujul<b id="mdv">255</b></div><div>Kuueteistkümnendkujul<b id="mhex">0xFF</b></div></div>
+  <div class="info" id="minfo"></div>
+  <p class="hint">Näiteprotsessor nagu peatüki joonisel: LP 0–3 on kahe SMT-ga P-tuuma loogilised protsessorid, LP 4–7 neli E-tuuma.</p>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="hybriid">
+<h2>4. P- või E-tuum?</h2>
+<p>Sülearvutis on 4 P-tuuma ja 8 E-tuuma ning see töötab <b>akutoitel</b>. Kuhu suunaks Windows 11 planeerija need tööd? Vali iga töö jaoks tuuma tüüp.</p>
+<div class="card">
+  <div class="tasks" id="tasks"></div>
+  <div class="row"><span class="hint" id="hscore"></span><button class="btn" id="hreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="numa">
+<h2>5. Kas virtuaalmasin mahub ühte NUMA-sõlme?</h2>
+<p>Sisesta hosti ja virtuaalmasina andmed. Sõlme mahtuvust hinnatakse <b>füüsiliste tuumade</b> järgi (SMT loogilised protsessorid ei ole täisväärtuslikud tuumad) ja sõlme mälu järgi.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Näide: <select id="npre"><option value="ch">Peatüki näide (SQL VM 24 vCPU / 384 GB)</option><option value="ok">Hea VM (16 vCPU / 192 GB)</option><option value="mem">Liiga palju mälu (8 vCPU / 300 GB)</option><option value="small">Väike server (1 pesa)</option></select></span></div>
+  <table class="t" style="margin-top:8px"><tbody>
+  <tr><td>Host: pesi (= NUMA-sõlmi)</td><td><input type="number" id="nsock" min="1" max="8"></td><td>Tuumi pesa kohta</td><td><input type="number" id="ncore" min="1" max="128"></td></tr>
+  <tr><td>RAM sõlme kohta (GB)</td><td><input type="number" id="nram" min="1" max="4096" style="width:80px"></td><td>VM vCPU-sid</td><td><input type="number" id="vcpu" min="1" max="512"></td></tr>
+  <tr><td>VM RAM (GB)</td><td><input type="number" id="vram" min="1" max="8192" style="width:80px"></td><td></td><td></td></tr>
+  </tbody></table>
+  <div class="nodes" id="nodes"></div>
+  <div class="info" id="ninfo"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="vale">
+<h2>6. Vale jagamine</h2>
+<p>Neli lõime, igaüks oma tuumal, suurendavad igaüks <b>oma</b> loendurit 1000 korda. Vahemälu liigutab andmeid 64-baidiste ridadena. Vali, kas loendurid on massiivis tihedalt kõrvuti või iga loendur eraldi real, ja käivita.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><label class="tg"><input type="radio" name="lay" value="tight" checked> <span>Tihedalt: <code>long loendur[4]</code></span></label><label class="tg"><input type="radio" name="lay" value="pad"> <span>Joondatud: iga loendur eraldi 64-baidisel real</span></label></span></div>
+  <div class="lines" id="vlines"></div>
+  <div class="row"><span><button class="btn primary" id="vrun">▶ Käivita</button> <button class="btn" id="vstep">Üks samm</button> <button class="btn" id="vreset">Lähtesta</button></span><span class="hint" id="vprog"></span></div>
+  <div class="kpis"><div>Kirjutusi<b id="vw">0</b></div><div>Rea ülekandeid tuumade vahel<b id="vx">0</b></div><div>Hinnanguline aeg<b id="vt">0 µs</b></div></div>
+  <div class="info" id="vinfo"></div>
+  <table class="t" style="margin-top:10px"><thead><tr><th>Paigutus</th><th>Rea ülekandeid</th><th>Hinnanguline aeg</th></tr></thead><tbody id="vcmp"></tbody></table>
+  <p class="hint">Mudel: kirjutus omaenda vahemällu (olek M) võtab ~1 ns; kui rida tuleb teise tuuma vahemälust ära tuua (teised muutuvad I-olekusse), ~40 ns.</p>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="10-test.html">Peatüki 10 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/10-planeerimine-mitmel-protsessoril.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d,minimumFractionDigits:0});
+const COL=['#185fa5','#3b6d11','#a3489c','#c26a0a','#0f7b7b','#a32d2d'];
+
+/* 1. Amdahl */
+function sp(p,n){return 1/((1-p)+p/n)}
+function amdahl(){
+  const p=+$('ap').value/100,n=+$('an').value;$('apv').textContent=$('ap').value+'%';$('anv').textContent=n;
+  const s=sp(p,n);$('asp').textContent=fmt(s)+'×';$('aef').textContent=Math.round(s/n*100)+'%';
+  $('amax').textContent=p>=1?'∞':fmt(1/(1-p))+'×';$('atime').textContent=fmt(100/s)+' s';
+  const W=640,H=240,L=40,B=26,T=10,R=12,ymax=Math.max(8,Math.min(64,Math.ceil(sp(p,64)/4)*4+4));
+  const X=k=>L+(k-1)/63*(W-L-R),Y=v=>H-B-Math.min(v,ymax)/ymax*(H-B-T);
+  let g='';for(let v=0;v<=ymax;v+=ymax/4)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="currentColor" opacity=".12"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${v}×</text>`;
+  [1,8,16,32,48,64].forEach(k=>g+=`<text x="${X(k)}" y="${H-8}" text-anchor="middle">${k}</text>`);
+  g+=`<polyline fill="none" stroke="currentColor" opacity=".35" stroke-dasharray="4 4" points="${[1,ymax].map(k=>X(Math.min(k,64))+','+Y(Math.min(k,64))).join(' ')}"/>`;
+  let pts=[];for(let k=1;k<=64;k++)pts.push(X(k)+','+Y(sp(p,k)));
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${pts.join(' ')}"/>`;
+  if(p<1)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(1/(1-p))}" y2="${Y(1/(1-p))}" stroke="var(--bad-line)" stroke-dasharray="2 4"/>`;
+  g+=`<circle cx="${X(n)}" cy="${Y(s)}" r="6" fill="var(--accent)" stroke="var(--bg)" stroke-width="2"/><text x="${W-R}" y="${H-B-4}" text-anchor="end">tuumi →</text>`;
+  $('achart').innerHTML=g;$('achart').style.color='var(--text)';
+  const seq=Math.round((1-p)*100);
+  $('ainfo').innerHTML=p===0?'Kui midagi ei saa paralleelseks teha, ei aita lisatuumad üldse.':
+   `${n} tuumaga töötab programm <b>${fmt(s)} korda</b> kiiremini. ${seq}% tööst tehakse ikkagi ühel tuumal, seepärast ei saa kiirenemine kunagi ületada <b>${p>=1?'tuumade arvu':fmt(1/(1-p))+'×'}</b> (punane joon). `+(s/n<0.5?'Üle poole tuumade ajast kulub ootamisele – rohkem tuumi lisada pole mõistlik.':'');
+}
+['ap','an'].forEach(i=>$(i).oninput=amdahl);
+document.querySelectorAll('#amdahl [data-p]').forEach(b=>b.onclick=()=>{$('ap').value=b.dataset.p;$('an').value=b.dataset.n;amdahl()});
+amdahl();
+
+/* 2. Afiinsus */
+const STR={common:'Ühine järjekord (suvaline vaba tuum)',aff:'Afiinsus (eelista viimast tuuma)',fixed:'Range mask (iga lõim ühel tuumal)'};
+const WAITS=[[3,3],[2,2],[1,3],[2,2],[1,2],[2,2]];
+function simulate(mode){
+  const C=4,th='ABCDEF'.split('').map((n,i)=>({n,i,burst:0,left:2,last:-1,ready:0,done:false,cold:false})),grid=[...Array(C)].map(()=>[]);
+  const run=Array(C).fill(null);let t=0,mig=0,cold=0,idle=0,rr=0;
+  while(th.some(x=>!x.done)&&t<60){
+    // vabad tuumad valivad
+    const free=[...Array(C).keys()].filter(c=>!run[c]);
+    const rq=th.filter(x=>!x.done&&x.ready<=t&&!run.includes(x)).sort((a,b)=>a.ready-b.ready||a.i-b.i);
+    const pick=(c,x)=>{run[c]=x;x.cold=x.last!==-1&&x.last!==c;if(x.cold){mig++;x.left+=1}x.last=c;rq.splice(rq.indexOf(x),1)};
+    if(mode==='fixed'){free.forEach(c=>{const x=rq.find(y=>y.i%C===c);if(x)pick(c,x)})}
+    else if(mode==='aff'){
+      free.forEach(c=>{const x=rq.find(y=>y.last===c);if(x)pick(c,x)});
+      free.filter(c=>!run[c]).forEach(c=>{const x=rq.find(y=>y.last===-1||run[y.last]);if(x)pick(c,x)});
+      free.filter(c=>!run[c]).forEach(c=>{const x=rq.find(y=>y.ready<t);if(x)pick(c,x)}); // ootab liiga kaua -> võtab
+    } else {free.forEach(c=>{if(rq.length)pick(c,rq[0])})}
+    for(let c=0;c<C;c++){const x=run[c];
+      if(!x){grid[c].push(null);idle++;continue}
+      const isCold=x.cold;grid[c].push({n:x.n,i:x.i,cold:isCold});if(isCold){cold++;x.cold=false}
+      x.left--;if(x.left===0){run[c]=null;x.burst++;if(x.burst===3)x.done=true;else{x.ready=t+1+WAITS[x.i][x.burst-1];x.left=2}}}
+    t++;
+  }
+  // jõudeaeg kuni lõpuni
+  return {grid,t,mig,cold,idle};
+}
+let curS='common';
+$('strats').innerHTML=Object.entries(STR).map(([k,v])=>`<button class="btn" data-s="${k}">${v}</button>`).join(' ');
+document.querySelectorAll('#strats button').forEach(b=>b.onclick=()=>{curS=b.dataset.s;drawS()});
+function drawS(){
+  document.querySelectorAll('#strats button').forEach(b=>b.classList.toggle('on',b.dataset.s===curS));
+  const r=simulate(curS);
+  let h='';r.grid.forEach((row,c)=>{h+=`<div class="lane"><span>Tuum ${c}</span><div class="lbar">`+row.map(x=>x?`<div class="${x.cold?'cold':''}" style="background-color:${COL[x.i]}">${x.n}</div>`:'<div class="idle">·</div>').join('')+'</div></div>'});
+  h+='<div class="lane"><span></span><div style="display:flex;font-size:11px;color:var(--muted)">'+r.grid[0].map((_,i)=>`<span style="flex:1;text-align:center">${i}</span>`).join('')+'</div></div>';
+  $('sim').innerHTML=h;
+  $('skpi').innerHTML=`<div>Kõik valmis ajal<b>${r.t}</b></div><div>Tuumavahetusi<b>${r.mig}</b></div><div>Laadimisele kulunud<b>${r.cold}</b></div><div>Tuumade jõudeaeg<b>${r.idle}</b></div>`;
+  $('scmp').innerHTML=Object.keys(STR).map(k=>{const q=simulate(k);return `<tr${k===curS?' class="avg"':''}><td>${STR[k]}</td><td>${q.t}</td><td>${q.mig}</td><td>${q.cold}</td><td>${q.idle}</td></tr>`}).join('');
+  $('sinfo').innerHTML={common:'Ühine järjekord jagab töö ühtlaselt: iga vaba tuum võtab järgmise lõime. Lõimed aga hüppavad tuumade vahel ja iga hüpe tähendab külma vahemälu – osa protsessoriajast kulub andmete uuesti laadimisele.',
+   aff:'Afiinsusega eelistab vaba tuum lõime, mis töötas viimati just tal. Kui lõime oma tuum on hõivatud ja lõim on juba oodanud, võtab ta ikkagi vaba tuuma. Nii teeb ka Windows: eelistatakse ideaalset või viimati kasutatud protsessorit, kuid vaba tuum ei jää tühjalt ootama. Tuumavahetusi on vähem ja laadimisele kulub vähem aega.',
+   fixed:'Range afiinsusmaskiga ei vaheta ükski lõim tuuma, nii et vahemälu on alati soe. Aga kuus lõime ei jagune neljale tuumale ühtlaselt: tuumadel 0 ja 1 on kaks lõime, tuumad 2 ja 3 seisavad osa ajast jõude. Koormus on tasakaalust väljas ja kõik saab valmis hiljem. Seepärast ei ole käsitsi afiinsuse määramine tavaliselt hea mõte.'}[curS];
+}
+drawS();
+
+/* 3. Mask */
+const LPN=['P0 · LP 0','P0 · LP 1','P1 · LP 2','P1 · LP 3','E0 · LP 4','E1 · LP 5','E2 · LP 6','E3 · LP 7'];
+$('cpus').innerHTML=LPN.map((n,i)=>`<label id="cl${i}"><input type="checkbox" data-b="${i}" checked>${n}</label>`).join('');
+function setMask(m){document.querySelectorAll('#cpus input').forEach(c=>c.checked=!!(m>>c.dataset.b&1));drawM()}
+function drawM(){let m=0;document.querySelectorAll('#cpus input').forEach(c=>{if(c.checked)m|=1<<c.dataset.b;$('cl'+c.dataset.b).classList.toggle('on',c.checked)});
+  $('mbin').textContent=m.toString(2).padStart(8,'0');$('mdv').textContent=m;$('mhex').textContent='0x'+m.toString(16).toUpperCase();$('mdec').value=m;
+  const list=[...Array(8).keys()].filter(i=>m>>i&1);
+  $('minfo').className='info'+(m===0?' bad':'');
+  $('minfo').innerHTML=m===0?'Mask 0 ei luba ühtegi protsessorit – Windows ei luba sellist maski seada.':
+   `Lõim võib töötada loogilistel protsessoritel <b>${list.join(', ')}</b>. `+
+   (m===255?'See on vaikimisi olek: planeerija valib vabalt.':m===1?'Kõik lõimed on surutud ühele loogilisele protsessorile – programm kasutab vaid ühte tuuma.':
+    m===15?'Ainult P-tuumad: kiire, aga E-tuumad jäävad kasutamata ja voolu kulub rohkem.':m===240?'Ainult E-tuumad: säästlik, kuid aeglane – sobib taustatööle.':
+    (m&3)===3&&list.length===2?'LP 0 ja LP 1 on <b>sama füüsilise tuuma</b> SMT-lõimed. Kaks rasket lõime saavad kokku vaid veidi rohkem kui ühe tuuma jõudluse.':
+    '')+` PowerShellis: <code>$p.ProcessorAffinity = ${m}</code>`;
+}
+document.querySelectorAll('#cpus input').forEach(c=>c.onchange=drawM);
+$('mall').onclick=()=>setMask(255);$('mnone').onclick=()=>setMask(1);$('mp').onclick=()=>setMask(15);$('me').onclick=()=>setMask(240);
+$('mdec').onchange=()=>{const v=Math.max(0,Math.min(255,+$('mdec').value|0));setMask(v)};
+drawM();
+
+/* 4. Hübriid */
+const TASKS=[
+ ['Teamsi videokõne aktiivses aknas','P','Esiplaanil olev interaktiivne töö saab kõrge QoS-i. Hangumine oleks kohe näha ja kuulda, seega läheb see P-tuumale (tausta hägustamine võib minna NPU-le).'],
+ ['OneDrive sünkroonib taustal faile','E','Taustal töötav sünkroonimine saab madala QoS-i või EcoQoS-i. Pole oluline, kas see lõpeb sekund varem – E-tuum säästab akut.'],
+ ['Mäng täisekraanil','P','Mäng vajab maksimaalset jõudlust ja ühtlast kaadrisagedust. Mängud võivad ka CPU Sets API-ga tuumi enda jaoks reserveerida.'],
+ ['Windows Update laadib uuendusi alla','E','Uuenduste allalaadimine ja ettevalmistus on tüüpiline taustatöö (EcoQoS).'],
+ ['Visual Studio kompileerib projekti (aken on aktiivne)','P','Kasutaja ootab tulemust. Aktiivse akna töö saab kõrge QoS-i ja kasutab P-tuumi (kompileerimine kasutab vabu E-tuumi lisaks).'],
+ ['Windowsi otsing indekseerib faile','E','Indekseerimine on taustatöö, mida keegi ei oota – sobib E-tuumale ja peatub, kui kasutaja on aktiivne.'],
+ ['Brauseri vaheleht, mis on minimeeritud aknas','E','Minimeeritud akna ja taustal oleva vahelehe lõimed saavad madalama QoS-i. Edge ja Chrome kasutavad selleks ise EcoQoS-i.'],
+ ['Kasutaja kerib PDF-dokumenti','P','Kerimine peab olema sujuv – see on esiplaanil kasutaja tegevus, mis saab kõrge QoS-i.']];
+let hans={};
+function drawH(){
+  $('tasks').innerHTML=TASKS.map(([n,c,e],i)=>{const a=hans[i];return `<div class="task${a?(a===c?' ok':' bad'):''}"><span>${n}</span><span><button class="btn${a==='P'?' on':''}" data-i="${i}" data-v="P" ${a?'disabled':''}>P-tuum</button> <button class="btn${a==='E'?' on':''}" data-i="${i}" data-v="E" ${a?'disabled':''}>E-tuum</button></span>${a?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on '+c+'-tuum.'}</b> ${e}</div>`:''}</div>`}).join('');
+  document.querySelectorAll('#tasks button').forEach(b=>b.onclick=()=>{hans[b.dataset.i]=b.dataset.v;drawH()});
+  const k=Object.keys(hans).length,ok=Object.entries(hans).filter(([i,v])=>TASKS[i][1]===v).length;
+  $('hscore').textContent=k?`Vastatud ${k}/${TASKS.length}, õigesti ${ok}.`+(k===TASKS.length?' Reegel: esiplaan ja see, mida kasutaja ootab → P; taust → E.':''):'';
+}
+$('hreset').onclick=()=>{hans={};drawH()};drawH();
+
+/* 5. NUMA */
+const NP={ch:[2,16,256,24,384],ok:[2,16,256,16,192],mem:[2,16,256,8,300],small:[1,12,128,8,64]};
+function setN(k){const v=NP[k];['nsock','ncore','nram','vcpu','vram'].forEach((id,i)=>$(id).value=v[i]);drawN()}
+function drawN(){
+  const S=Math.max(1,+$('nsock').value|0),Cn=Math.max(1,+$('ncore').value|0),Rn=Math.max(1,+$('nram').value|0),V=Math.max(1,+$('vcpu').value|0),M=Math.max(1,+$('vram').value|0);
+  const needC=Math.ceil(V/Cn),needM=Math.ceil(M/Rn),need=Math.max(needC,needM);
+  let remV=V,remM=M,h='';
+  for(let i=0;i<S;i++){const use=i<need;const v=use?Math.min(Math.ceil(V/need),remV):0,m=use?Math.min(Math.ceil(M/need),remM):0;remV-=v;remM-=m;
+    h+=`<div class="node${use?' use':''}"><b>NUMA-sõlm ${i}</b> (pesa ${i})<br>Tuumad: ${v} / ${Cn}<div class="meter"><div style="width:${Math.min(100,v/Cn*100)}%"></div></div>Mälu: ${m} / ${Rn} GB<div class="meter"><div style="width:${Math.min(100,m/Rn*100)}%"></div></div></div>`}
+  $('nodes').innerHTML=h;
+  const tot=need>S;
+  $('ninfo').className='info '+(tot?'bad':need===1?'ok':'bad');
+  const sugV=Math.min(V,Cn),sugM=Math.min(M,Math.floor(Rn*0.75));
+  $('ninfo').innerHTML=tot?`VM vajab ${need} sõlme, kuid hostil on ainult ${S}. Selline VM ei mahu sellele hostile (või konkureerib iga tuuma pärast teiste VM-idega).`:
+   need===1?`<b>VM mahub ühte NUMA-sõlme.</b> Kõik vCPU-d ja kogu mälu saavad olla samas sõlmes, nii et iga mälupöördumine on kohalik. Jäta sõlme veidi mälu ka hostile ja teistele VM-idele.`:
+   `<b>VM ei mahu ühte sõlme</b> – see jaotub ${need} sõlme vahele (`+(needC>1&&needM>1?'liiga palju nii vCPU-sid kui ka mälu':needC>1?'liiga palju vCPU-sid':'liiga palju mälu, kuigi vCPU-sid on vähe')+`). Hüperviisor peab andma külalisele õige <b>vNUMA</b>-topoloogia (${need} virtuaalset sõlme), muidu teeb osa pöördumisi aeglasemat kaugpöördumist. Kui võimalik, vähenda VM-i: nt <b>${sugV} vCPU ja ${sugM} GB</b> mahuks ühte sõlme.`;
+}
+['nsock','ncore','nram','vcpu','vram'].forEach(id=>$(id).oninput=drawN);
+$('npre').onchange=()=>setN($('npre').value);setN('ch');
+
+/* 6. Vale jagamine */
+const VT=4,VN=1000;let vs;
+function vreset(){const tight=document.querySelector('input[name=lay]:checked').value==='tight';
+  vs={tight,cnt:Array(VT).fill(0),w:0,x:0,ns:0,owner:tight?[-1]:Array(VT).fill(-1),k:0,timer:vs&&vs.timer};
+  if(vs.timer){clearInterval(vs.timer);vs.timer=null}$('vrun').textContent='▶ Käivita';drawV();}
+function vstep(n=1){for(let s=0;s<n&&vs.k<VT*VN;s++){const t=vs.k%VT,li=vs.tight?0:t;
+    if(vs.owner[li]!==t){if(vs.owner[li]!==-1)vs.x++;vs.owner[li]=t;vs.ns+=40;vs.last=li;vs.fl=true}else vs.ns+=1;
+    vs.cnt[t]++;vs.w++;vs.k++;vs.lt=t}
+  drawV();if(vs.k>=VT*VN&&vs.timer){clearInterval(vs.timer);vs.timer=null;$('vrun').textContent='▶ Käivita'}}
+function cell(i,owner){return `<div style="background:${COL[i]}">loendur[${i}]<span style="font-weight:400">${vs.cnt[i]}</span></div>`}
+function drawV(){
+  let h='';const st=li=>[...Array(VT).keys()].map(c=>vs.owner[li]===c?'<b>M</b>':vs.owner[li]===-1?'–':'I').join(' ');
+  if(vs.tight){h+=`<div class="lrow"><span>Vahemälurida 0<br><span class="hint">64 baiti</span></span><div class="line${vs.fl?' flash':''}">${[0,1,2,3].map(i=>cell(i)).join('')}${[4,5,6,7].map(()=>'<div class="pad">vaba</div>').join('')}</div><span class="state">T0 T1 T2 T3<br>${st(0)}</span></div>`}
+  else for(let i=0;i<VT;i++)h+=`<div class="lrow"><span>Vahemälurida ${i}</span><div class="line">${cell(i)}${[...Array(7)].map(()=>'<div class="pad">täide</div>').join('')}</div><span class="state">T0 T1 T2 T3<br>${st(i)}</span></div>`;
+  $('vlines').innerHTML=h;vs.fl=false;
+  $('vw').textContent=vs.w;$('vx').textContent=vs.x;$('vt').textContent=fmt(vs.ns/1000,2)+' µs';
+  $('vprog').textContent=`Samm ${vs.k} / ${VT*VN}`;
+  $('vinfo').className='info'+(vs.k?(vs.tight?' bad':' ok'):'');
+  $('vinfo').innerHTML=!vs.k?'Olekud paremal: M = rida on selle tuuma vahemälus muudetud, I = kehtetu (tuleb uuesti tuua), – = pole veel laaditud.':
+   vs.tight?`Kõik neli loendurit on <b>samal vahemälureal</b>. Iga kord, kui järgmine lõim kirjutab, tuleb rida eelmise tuuma vahemälust ära tuua ja teised märgitakse kehtetuks (I). Lõimed ei jaga ühtegi muutujat, kuid rida põrkab tuumade vahel – see on <b>vale jagamine</b>.`:
+   `Iga loendur on <b>oma real</b>. Pärast esimest laadimist on igal tuumal oma rida olekus M ja kirjutused jäävad tuuma enda vahemällu. Ülekandeid tuumade vahel pole – programm skaleerub.`;
+  $('vcmp').innerHTML=[['Tihedalt (vale jagamine)',VT*VN-1,(VT*VN)*40],['Joondatud (alignas(64))',0,VT*40+(VT*VN-VT)]].map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${fmt(r[2]/1000,2)} µs</td></tr>`).join('');
+}
+$('vstep').onclick=()=>vstep(1);
+$('vrun').onclick=()=>{if(vs.timer){clearInterval(vs.timer);vs.timer=null;$('vrun').textContent='▶ Käivita';return}if(vs.k>=VT*VN)vreset();vs.timer=setInterval(()=>vstep(40),60);$('vrun').textContent='⏸ Peata'};
+$('vreset').onclick=vreset;document.querySelectorAll('input[name=lay]').forEach(r=>r.onchange=vreset);
+vreset();
+</script>
+</body>
+</html>

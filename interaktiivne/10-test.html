@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 10 – test: planeerimine mitmel protsessoril</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/10-planeerimine-mitmel-protsessoril.md">← Peatükk 10</a> · <a href="10-mitu-protsessorit.html">Interaktiivne õpileht</a></nav>
+<h1>Test: planeerimine mitmel protsessoril</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mida peab planeerija mitme protsessoriga süsteemis otsustama lisaks sellele, millal lõim töötab?", "o": ["Millise kasutaja nimel lõim töötab", "Millisel tuumal lõim töötab", "Millises kaustas programm asub", "Kui suur on lõime pinu"], "c": 1, "e": "Mitme tuuma puhul muutub planeerimine ka ruumiliseks: tuleb valida tuum, hübriidprotsessoris tuuma tüüp ja serveris NUMA-sõlm."},
+{"q": "Mis on SMT (Hyper-Threading)?", "o": ["Ühe füüsilise tuuma võime täita korraga kaht lõime, mida OS näeb kahe loogilise protsessorina", "Kahe protsessori ühendamine ühele emaplaadile", "Tehnoloogia, mis kahekordistab tuuma taktsageduse", "Mälu jagamine kahe arvuti vahel"], "c": 0, "e": "SMT kasutab ära tuuma vabu täitmisüksusi. Üks füüsiline tuum paistab OS-ile kahe loogilise protsessorina."},
+{"q": "Kui palju kiirendab SMT tavaliselt tuuma tööd?", "o": ["Täpselt 2 korda", "4 korda", "Üldse mitte", "Umbes 10–30%"], "c": 3, "e": "Kaks lõime jagavad sama tuuma täitmisüksusi ja vahemälu, seega lisandub tavaliselt vaid 10–30%. Seepärast paneb planeerija rasked lõimed eelistatult eri füüsilistele tuumadele."},
+{"q": "Protsessoril on 8 füüsilist tuuma ja kõigil SMT. Mitu loogilist protsessorit näitab Tegumihaldur?", "o": ["4", "32", "8", "16"], "c": 3, "e": "Iga SMT-ga tuum annab kaks loogilist protsessorit: 8 × 2 = 16."},
+{"q": "Milline vahemälu on tavaliselt kõigi tuumade peale ühine?", "o": ["TLB", "L1", "L3", "Registrid"], "c": 2, "e": "L1 (ja tavaliselt L2) on tuumal oma, L3 on kõigi tuumade peale ühine."},
+{"q": "Miks on kasulik hoida lõime samal tuumal (afiinsus)?", "o": ["Lõime andmed on juba selle tuuma vahemälus ja neid ei pea uuesti laadima", "Siis ei saa teised lõimed seda tuuma kasutada", "Nii väheneb protsessori temperatuur", "Windows nõuab seda turvalisuse tõttu"], "c": 0, "e": "L1/L2-vahemälu on mitu korda kiirem kui RAM. Kui lõim liigub teisele tuumale, peab ta oma andmed uuesti laadima (külm vahemälu)."},
+{"q": "Mis vahe on P- ja E-tuumadel hübriidprotsessoris?", "o": ["P-tuumad on ainult graafika jaoks", "E-tuumad töötavad ainult siis, kui arvuti on välja lülitatud", "Vahet pole, nimed on ainult turunduseks", "P-tuumad on kiired ja voolunõudlikud, E-tuumad väikesed ja säästlikud"], "c": 3, "e": "P (performance) tuumad sobivad esiplaani tööle ja mängudele, E (efficiency) tuumad taustatööle."},
+{"q": "Millisele tuumale suunab Windows 11 tõenäoliselt OneDrive’i taustal sünkroonimise akutoitel?", "o": ["Alati tuumale 0", "GPU-le", "E-tuumale", "P-tuumale"], "c": 2, "e": "Taustatöö saab madala QoS-i või EcoQoS-i ja läheb E-tuumale, mis säästab akut."},
+{"q": "Mis on Intel Thread Director?", "o": ["BIOS-i seade SMT väljalülitamiseks", "Riistvara, mis jälgib lõimede käske ja annab OS-ile soovitusi P- ja E-tuumade valikuks", "Windowsi teenus, mis loob uusi lõimi", "Programm lõimede silumiseks"], "c": 1, "e": "Thread Director annab Windows 11 planeerijale vihjeid, milline lõim kasuks P-tuumast ja milline sobib E-tuumale."},
+{"q": "Mis iseloomustab SMP-süsteemi?", "o": ["Kõik protsessorid on võrdsed ja täidavad nii OS-i kui ka rakenduste koodi", "Üks protsessor juhib ja teised täidavad tema antud töid", "Igal protsessoril on oma operatsioonisüsteem", "Protsessorid on ühendatud võrgu kaudu"], "c": 0, "e": "SMP (sümmeetriline multitöötlus) on tänapäeva Windowsi, Linuxi ja macOS-i mudel. Juhtiva protsessoriga mudel on AMP, võrgu kaudu ühendatud arvutid on klaster."},
+{"q": "Mis on NUMA?", "o": ["Mälu, mis kustub voolu katkemisel", "Võrguprotokoll serverite vahel", "Vahemälu koherentsuse protokoll", "Arhitektuur, kus protsessori oma sõlme mälu on kiirem kui teise sõlme mälu"], "c": 3, "e": "NUMA (Non-Uniform Memory Access) on tavaline mitme pesaga serverites. Kaugmälu pöördumine on ~1,5–2 korda aeglasem."},
+{"q": "Lõim töötab NUMA-sõlmes 0, kuid tema andmed on sõlme 1 mälus. Mis juhtub?", "o": ["Windows peatab lõime", "Midagi ei muutu", "Mälupöördumised on aeglasemad, sest käivad protsessorite vahelise ühenduse kaudu", "Lõim ei saa andmeid üldse lugeda"], "c": 2, "e": "Kaugpöördumine on võimalik, kuid aeglasem. Windows ja hüperviisorid püüavad hoida lõime ja tema mälu samas sõlmes."},
+{"q": "Mida tagab vahemälu koherentsuse protokoll (nt MESI)?", "o": ["Et lõimed ei saaks sama mälu kasutada", "Et kõik tuumad näeksid muutuja uusimat väärtust, kuigi igal on oma vahemälu", "Et vahemälu oleks krüpteeritud", "Et vahemälu ei saaks täis"], "c": 1, "e": "Kui üks tuum muudab rida, märgitakse see teistes vahemäludes kehtetuks (Invalid) ja nad peavad uue väärtuse tooma."},
+{"q": "Mida tähendab MESI-protokollis olek „Invalid“?", "o": ["Vahemälurida on aegunud ja tuleb enne kasutamist uuesti tuua", "Rida on muudetud ainult selles tuumas", "Rida on mitme tuuma vahemälus ja kõik loevad", "Rida on rikutud ja programm jookseb kokku"], "c": 0, "e": "M – muudetud, E – ainuomandis muutmata, S – jagatud, I – kehtetu (tuleb uuesti tuua)."},
+{"q": "Miks ei piisa mitmeprotsessorilises süsteemis kriitilise piirkonna kaitseks katkestuste keelamisest?", "o": ["Katkestusi ei saa Windowsis üldse keelata", "Katkestuste keelamine aeglustab arvutit liiga palju", "Mitmeprotsessorilistes süsteemides katkestusi pole", "Katkestuste keelamine kehtib ainult oma tuumale, teised tuumad töötavad edasi"], "c": 3, "e": "Teine tuum võib samal ajal samu andmeid muuta. Seepärast on vaja lukke, tuumas spinlukke."},
+{"q": "Miks kasutab tuum mitme protsessoriga süsteemis lühikeste kriitiliste piirkondade jaoks spinlukke?", "o": ["Spinlukud töötavad ainult ühe protsessoriga", "Spinlukk lülitab teised tuumad välja", "Teine tuum vabastab luku tavaliselt mõne mikrosekundi jooksul ja ootele minek võtaks kauem", "Spinlukud ei kasuta üldse protsessoriaega"], "c": 2, "e": "Spinlukk ootab aktiivselt tsüklis. See on mõistlik ainult siis, kui lukku hoitakse väga lühikest aega."},
+{"q": "Mis eelis on järjekorraga spinlukul (queued spinlock)?", "o": ["See lubab mitmel tuumal korraga kriitilisse piirkonda siseneda", "Iga ootav tuum keerleb oma muutujal, nii et vahemälurida ei põrka tuumade vahel", "Lukk ei vaja üldse mälu", "Lukku saab hoida tunde"], "c": 1, "e": "Lihtsas spinlukus loevad kõik ootajad sama aadressi ja ühendussiin ummistub. Järjekorras antakse lukk edasi järgmisele ootajale ja see on ka aus."},
+{"q": "Mis on vale jagamine (false sharing)?", "o": ["Eri lõimede muutujad on samal vahemälureal ja rida põrkab tuumade vahel", "Kaks protsessi jagavad sama faili ilma loata", "Lõim kasutab vale lukku", "Kasutaja jagab parooli"], "c": 0, "e": "Lõimed ei jaga ühtegi muutujat, kuid kuna rida on ühine, märgib koherentsusprotokoll selle pärast iga kirjutust teises tuumas kehtetuks."},
+{"q": "Kuidas vale jagamist vältida?", "o": ["Kasutada rohkem lõimi", "Lülitada SMT välja", "Suurendada RAM-i", "Paigutada iga lõime muutuja eraldi 64-baidisele vahemälureale (joondamine)"], "c": 3, "e": "Näiteks C++-s alignas(64) või täitebaidid muutujate vahel. Siis on igal tuumal oma rida ja kirjutused jäävad tuuma enda vahemällu."},
+{"q": "Mis on tööde varastamine (work stealing)?", "o": ["Lõim võtab teise lõime luku", "OS võtab rakenduselt mälu tagasi", "Jõude tuum võtab töö ülekoormatud tuuma järjekorrast", "Pahavara varastab protsessoriaega"], "c": 2, "e": "Tuumapõhised järjekorrad koos tööde varastamisega ühendavad afiinsuse eelised ja ühtlase koormuse."},
+{"q": "Miks püüavad hüperviisorid käivitada VM-i vCPU-sid võimalikult koos (rühmaplaneerimine)?", "o": ["Et külalis-OS ei näeks hosti", "Et vCPU ei peaks keerlema spinlukul, mida hoiab peatatud vCPU", "Et säästa mälu", "Et VM käivituks kiiremini"], "c": 1, "e": "Kui spinlukku hoidev vCPU on peatatud, keerleb ootav vCPU tühja. Koos käivitamine väldib seda."},
+{"q": "Programmist saab 50% paralleelseks teha. Kui palju kiireneb see Amdahli seaduse järgi 4 tuumaga?", "o": ["1,6 korda", "2 korda", "4 korda", "3,1 korda"], "c": 0, "e": "1 / (0,5 + 0,5/4) = 1 / 0,625 = 1,6. Isegi lõpmata paljude tuumadega ei saaks see üle 2 korra kiiremaks."},
+{"q": "Mida tähendab lõime afiinsusmask väärtusega 3?", "o": ["Lõim võib töötada ainult protsessoril 3", "Lõim võib töötada kolmel suvalisel protsessoril", "Lõim on prioriteediga 3", "Lõim võib töötada ainult protsessoritel 0 ja 1"], "c": 3, "e": "3 on kahendkujul 11, st bitid 0 ja 1. Mask 1 tähendaks ainult protsessorit 0, mask 15 protsessoreid 0–3."},
+{"q": "Mitu loogilist protsessorit mahub ühte Windowsi protsessorirühma?", "o": ["Kuni 32", "Piiramatult", "Kuni 64", "Kuni 16"], "c": 2, "e": "Suuremas süsteemis on mitu rühma. Windows 11 ja Server 2022 jagavad protsessi lõimi vaikimisi mitme rühma vahel."},
+{"q": "Hostil on 2 NUMA-sõlme, kummaski 16 tuuma ja 256 GB RAM-i. Milline VM mahub tervenisti ühte sõlme?", "o": ["32 vCPU ja 128 GB", "16 vCPU ja 192 GB", "24 vCPU ja 384 GB", "8 vCPU ja 300 GB"], "c": 1, "e": "Ühte sõlme mahub kuni 16 tuuma ja 256 GB. 24 vCPU-d, 300 GB või 32 vCPU-d ei mahu – need VM-id jaotuvad kahe sõlme vahele ja vajavad õiget vNUMA-topoloogiat."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
