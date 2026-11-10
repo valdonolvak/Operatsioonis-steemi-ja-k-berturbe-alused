@@ -56,14 +56,6 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 - [Sõnastik](peatykid/sonastik.md)
 - [Allikad ja lisalugemine](peatykid/allikad.md)
 
-## Joonised
-
-Kõik 69 joonist on kaustas [`pildid/`](pildid/) PNG-failidena (nt `15-b.png` = peatüki 15 teine joonis) ja need kuvatakse peatükkide sees.
-
-## Testid Google Formsis
-
-Kaustas [`google-forms/`](google-forms/) on Google Apps Scripti fail, mis loob sinu Google'i kontole **31 peatükitesti** ja **üldtesti (64 küsimust, vähemalt 2 igast peatükist)**. Juhend: [google-forms/JUHEND.md](google-forms/JUHEND.md).
-
 ## Litsents ja allikad
 
 Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) sisukorda; tekst on kirjutatud uuesti eesti keeles ja ajakohastatud 2026. aasta seisu järgi. Allikad on iga peatüki lõpus ja koondatult failis [allikad.md](peatykid/allikad.md).
