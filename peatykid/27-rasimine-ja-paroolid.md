@@ -53,7 +53,7 @@ Kui keegi ütleb „dekrüpteerisin MD5-räsi“, tähendab see tegelikult, et t
 
 ### 27.3 Paroolide hoidmine
 
-Veebirakendus ega operatsioonisüsteem ei tohi paroole hoida avatekstina ega krüpteeritult. Krüpteeritud paroolide võti peab olema serveris, nii et andmebaasi ja serveri varastaja saab kõik paroolid kätte. Seepärast hoitakse ainult räsi. Sisselogimisel arvutatakse sisestatud parooli räsi ja võrreldakse seda salvestatuga.
+Veebirakendus ega operatsioonisüsteem ei tohi paroole hoida lihttekstina ega krüpteeritult. Krüpteeritud paroolide võti peab olema serveris, nii et andmebaasi ja serveri varastaja saab kõik paroolid kätte. Seepärast hoitakse ainult räsi. Sisselogimisel arvutatakse sisestatud parooli räsi ja võrreldakse seda salvestatuga.
 
 #### Kuidas paroole murtakse
 
@@ -179,7 +179,7 @@ Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul
 
 ### Valikküsimused
 
-1. Mis on räsifunktsiooni peamine omadus? a) räsist saab võtmega avateksti tagasi b) räsist ei saa sisendit tagasi arvutada ja väike muutus sisendis muudab kogu räsi c) räsi on alati sisendist pikem d) räsi sõltub kellaajast
+1. Mis on räsifunktsiooni peamine omadus? a) räsist saab võtmega lihtteksti tagasi b) räsist ei saa sisendit tagasi arvutada ja väike muutus sisendis muudab kogu räsi c) räsi on alati sisendist pikem d) räsi sõltub kellaajast
 2. Milleks lisatakse paroolile sool? a) parool muutub lühemaks b) räsi on kiirem arvutada c) parooli saab hiljem dekrüpteerida d) sama parool annab eri kasutajatel erineva räsi ja eelarvutatud tabelid ei tööta
 3. Milline algoritm sobib paroolide hoidmiseks? a) Argon2id b) MD5 c) SHA-1 d) Base64
 4. Mis vahe on HMAC-il ja tavalisel räsil? a) HMAC on lühem b) HMAC on pööratav c) HMAC kasutab salajast võtit, seega ei saa ründaja seda ise uuesti arvutada d) HMAC ei kasuta räsifunktsiooni
