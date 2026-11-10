@@ -29,6 +29,9 @@ Objektide kasutamise eelised:
 - viidete loendus – objekt kustutatakse, kui keegi seda enam ei kasuta;
 - ressursside piiramine protsessi kaupa.
 
+> 🖱️ **Proovi ise:** [pidemed ja objektid](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#pidemed). Ava ja sulge objekte kahes protsessis, jälgi viidete arvu ja vaata, mis juhtub, kui rakendus või draiver kokku jookseb.
+
+
 ### 3.4 Windows töötab kahes režiimis
 
 Protsessoril on privileegitasemed. Windows kasutab kahte:
@@ -41,6 +44,9 @@ Rakendus läheb tuumarežiimi ainult **süsteemikutse** (system call) kaudu, mis
 ![faili avamise teekond · kasutajarežiimist tuumarežiimi ja tagasi](../pildid/03-a.png)
 
 Joonis: Windows API funktsioon jõuab ntdll.dll kaudu süsteemikutseni; tuumas kontrollitakse õigusi ja rakendus saab tagasi ainult pideme, mitte otseligipääsu.
+
+> 🖱️ **Proovi ise:** [faili avamise teekond](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#teekond). Liigu sammhaaval kasutajarežiimist tuumarežiimi ja vaata, mis muutub, kui kasutajal pole õigust. Seejärel [paiguta komponendid õigesse režiimi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#reziim).
+
 
 **Uus kiht: virtuaalsed usaldustasemed.** Alates Windows 10-st kasutab Windows hüperviisorit, et jagada mälu kaheks virtuaalseks usaldustasemeks (VTL 0 ja VTL 1). Tavaline tuum töötab VTL 0-s, turvatuum (Secure Kernel) ja tundlikud andmed VTL 1-s. Isegi tuumarežiimis töötav pahavara ei saa VTL 1 mälu lugeda. Arhitektuuri selgitab ptk 4.
 
@@ -60,9 +66,15 @@ Sõna „teenus“ tähendab Windowsis kolme asja:
 
 **Tuumarutiinid** on tuuma siseselt kasutatavad funktsioonid, mida draiverid saavad kutsuda.
 
+> 🖱️ **Proovi ise:** [mis liiki „teenus“ see on?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#teenus)
+
+
 ### 3.7 Unicode
 
 Windows hoiab tekste sisemiselt **UTF-16** kodeeringus: iga sümbol võtab 2 või 4 baiti. Seetõttu on API-funktsioonidel kaks kuju: `CreateFileW` (lai, Unicode) ja `CreateFileA` (ANSI, vana koodileht). Alates Windows 10 1903-st saab rakendus valida koodileheks ka **UTF-8**, mis lihtsustab platvormiüleseid programme. Unicode võimaldab üheaegselt kasutada täpitähti (õ, ä, ö, ü, š, ž), kirillitsat ja emotikone.
+
+> 🖱️ **Proovi ise:** [Unicode baitideks](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#unicode). Kirjuta tekst ja vaata, mitu baiti see võtab UTF-8, UTF-16 ja ANSI kodeeringus ning mis ANSI-failist alles jääb.
+
 
 ### Näide: garderoobinumber ja Notepad
 
@@ -78,6 +90,9 @@ Windows hoiab tekste sisemiselt **UTF-16** kodeeringus: iga sümbol võtab 2 võ
 - Protsess on konteiner, lõim on täitmise üksus.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 
 1. Mida tähendab lühend API ja milleks Windows API on?
 2. Mis vahe on .NET Frameworkil ja tänapäevasel .NET-il?
