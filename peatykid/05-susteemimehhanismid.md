@@ -19,6 +19,9 @@ Et ISR oleks lühike, lükkab Windows aeganeelava töö edasi:
 
 Joonis: ISR töötab kõrgel IRQL-il ja lükkab töö DPC-sse, mis omakorda äratab andmeid ootava lõime. Nii ei blokeeri üks seade pikalt teisi katkestusi.
 
+> 🖱️ **Proovi ise:** [katkestuste ja IRQL-i simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#irql). Saada seadmetelt katkestusi ja vaata sammhaaval, kuidas kõrgem IRQL katkestab madalama ja kuidas ISR lükkab töö DPC-sse.
+
+
 Kaasaegsed seadmed kasutavad **MSI/MSI-X** katkestusi: seade kirjutab mällu sõnumi ja katkestused saab jagada eri protsessorituumade vahel. NVMe-SSD-l võib olla iga tuuma jaoks eraldi järjekord.
 
 ### 5.2 Erindid
@@ -33,17 +36,26 @@ Tuumarežiimis töötlemata erind on fataalne – tulemuseks on süsteemi seisku
 | Ajastus | asünkroonne | sünkroonne |
 | Näide | klahvivajutus, võrgupakett | nulliga jagamine, leheviga |
 
+> 🖱️ **Proovi ise:** [katkestus või erind?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#ke) Sorteeri sündmused. Seejärel [jaga nulliga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#erind) ja vaata, mis juhtub erindiga, mida programm käsitleb, ja erindiga, mida ta ei käsitle.
+
+
 ### 5.3 Objektihaldur
 
 **Objektihaldur** (Object Manager) on käivitava süsteemi komponent, mis loob, nimetab, kaitseb ja kustutab kõiki tuumaobjekte. Objektil on päis (nimi, turvakirjeldaja, viidete arv) ja keha (tüübiomased andmed). Objektid on hierarhilises **nimeruumis**, nt `\Device\HarddiskVolume3`, `\BaseNamedObjects\MinuSündmus`, `\KnownDlls`. Ketta täht `C:` on tegelikult sümbolviide, mis osutab seadmeobjektile.
 
 Objekti avamisel kontrollib objektihaldur turvaviitemonitori abil, kas küsijal on vajalikud õigused; edukal kontrollil lisatakse kirje protsessi pidemetabelisse. Kui viidete arv langeb nulli, objekt kustutatakse.
 
+> 🖱️ **Proovi ise:** [objektihalduri nimeruum](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#nimeruum). Sirvi WinObj-i moodi nimeruumi, leia ketta tähe `C:` sihtmärk ja vaata, kuidas failitee seadmeni lahendatakse.
+
+
 ### 5.4 32-bitised rakendused 64-bitises süsteemis ja ARM64
 
 **WoW64** (Windows-on-Windows 64) võimaldab käitada 32-bitiseid x86 programme 64-bitises Windowsis. WoW64 tõlgib süsteemikutsed, hoiab eraldi 32-bitiseid DLL-e kaustas `C:\Windows\SysWOW64` ning suunab osa registri- ja failiteid ümber (nt `Program Files (x86)`). 16-bitiseid DOS- ja Windows 3.x programme 64-bitine Windows ei käita.
 
 Windows 11 jaoks on sama oluline **ARM64**. Snapdragon X protsessoriga sülearvutid käitavad ARM64 rakendusi omakeelselt ning x86/x64 rakendusi emulaatori **Prism** abil, mis tõlgib käske jooksvalt. Arendajad saavad koostada **ARM64EC** binaare, kus osa koodist on omakeelne ja osa emuleeritud. Emulatsioon ei toimi tuumadraiveritega: seadmel peab olema ARM64 draiver.
+
+> 🖱️ **Proovi ise:** [kas see programm käivitub?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#wow) Otsusta, kas programm töötab omakeelselt, WoW64 kaudu, Prismi emulatsiooniga või üldse mitte.
+
 
 ### Näide: uksekell ja kirja kohaletoimetamine
 
@@ -59,6 +71,9 @@ Windows 11 jaoks on sama oluline **ARM64**. Snapdragon X protsessoriga sülearvu
 - WoW64 ja Prism tagavad vanade ja teise arhitektuuri rakenduste töö.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 
 1. Mis vahe on katkestusel ja erindil? Too kummastki näide.
 2. Mis on IRQL ja milleks Windows seda kasutab?
