@@ -14,6 +14,8 @@ Windows 1.0 (1985) kuni Windows 3.x olid graafilised kasutajaliidesed, mis töö
 
 #### DOS-põhise liini ajajoon
 
+> 🖱️ **Proovi ise:** [interaktiivne ajajoon](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/01-ajajoon.html#v0) – sama ajajoon klõpsatava versioonina.
+
 ![DOS-põhise Windowsi ajajoon · peamised uuendused versioonide kaupa 1985–2000](../pildid/01-b.png)
 
 Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võrreldes eelmisega. Allpool on samad uuendused täpsemalt lahti kirjutatud.
@@ -104,6 +106,8 @@ Joonis: DOS-põhine liin lõppes Windows ME-ga; Windows XP-st alates kasutavad k
 | 2026 | Windows 11 26H2 | iga-aastane funktsiooniuuendus (enablement package) |
 
 #### NT-põhise liini ajajoon ja peamised uuendused
+
+> 🖱️ **Proovi ise:** [interaktiivne ajajoon](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/01-ajajoon.html). Klõpsa versioonil ja vaata selle uuendusi koos selgitustega. Lehel saad ka versioone õigesse järjekorda panna ja arvata, millises versioonis mingi uuendus tuli.
 
 ![NT-põhise Windowsi ajajoon · peamised uuendused versioonide kaupa 1993–2026](../pildid/01-c.png)
 
@@ -271,6 +275,8 @@ Näide näitab, et OS-i versioon pole ainult mugavuse küsimus: see määrab tur
 - Windows Server 2025 toob uuendused ilma taaskäivituseta ja liigub NTLM-ist eemale.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/01-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
 
 1. Mis oli MS-DOS-i roll esimestes Windowsi versioonides?
 2. Miks arendas Microsoft Windows NT, kuigi Windows 95 oli populaarne?
