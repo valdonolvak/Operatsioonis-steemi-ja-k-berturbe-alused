@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 7 – protsessid, lõimed ja tööd: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--r:#3b6d11;--r-bg:#eaf3de;--y:#854f0b;--y-bg:#faeeda;--b:#185fa5;--b-bg:#e6f1fb;--g:#55534d;--g-bg:#e9e7e0;--v:#5f4b8b;--v-bg:#eeeaf7;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--r:#c0dd97;--r-bg:#27500a;--y:#fac775;--y-bg:#633806;--b:#85b7eb;--b-bg:#0c447c;--g:#c9c7bf;--g-bg:#3a3a37;--v:#c9b8f0;--v-bg:#3b2d5c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:920px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px;word-break:break-all}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+/* loomine */
+.create{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media (max-width:720px){.create{grid-template-columns:1fr}}
+.stages{list-style:none;padding:0;margin:0}
+.stages li{display:flex;gap:10px;padding:.4rem .6rem;border-radius:8px;color:var(--muted);font-size:14.5px;cursor:pointer}
+.stages li .n{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px}
+.stages li.done{color:var(--text)}.stages li.done .n{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.stages li.cur{background:var(--bg);color:var(--text)}.stages li.cur .n{background:var(--accent);border-color:var(--accent);color:#fff}
+.stages li.x .n{background:var(--bad-line);border-color:var(--bad-line);color:#fff}
+.proc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;font-size:13.5px}
+.proc .part{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dashed var(--border)}
+.proc .part:last-child{border:0}
+.proc .part span:last-child{font-family:var(--mono);font-size:12.5px;text-align:right}
+.proc .part.empty span:last-child{color:var(--muted)}
+.proc .part.new{background:var(--ok-bg)}
+.evtlog{font-family:var(--mono);font-size:12.5px;background:#1f1f1d;color:#e6e4dc;border-radius:8px;padding:.5rem .7rem;margin-top:10px;white-space:pre-wrap;min-height:4em}
+.evtlog .r{color:#f09595}.evtlog .g{color:#97c459}.evtlog .y{color:#fac775}
+/* olekud */
+.sm{position:relative;height:300px;max-width:620px;margin:0 auto}
+.st{position:absolute;width:150px;height:62px;border-radius:12px;border:2px solid var(--border);background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:600;font-size:15px;transition:.25s}
+.st small{font-weight:400;font-size:12px;color:var(--muted)}
+.st.on.ready{background:var(--y-bg);border-color:var(--y);color:var(--y)}
+.st.on.running{background:var(--r-bg);border-color:var(--r);color:var(--r)}
+.st.on.waiting{background:var(--b-bg);border-color:var(--b);color:var(--b)}
+.st.on.term{background:var(--g-bg);border-color:var(--g);color:var(--g)}
+.sm svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sm svg path{fill:none;stroke:var(--border);stroke-width:2}
+.sm svg path.hot{stroke:var(--accent);stroke-width:3}
+.sm svg text{font-size:11px;fill:var(--muted)}
+.evs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.cpuuse{font-size:13px;text-align:center;margin-top:6px}
+/* multi */
+.gantt{margin-top:10px;font-size:12.5px}
+.lane{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:6px;margin-bottom:4px}
+.bar{position:relative;height:26px;background:var(--bg);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.seg{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;border-right:1px solid rgba(255,255,255,.5)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:13px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.axis{display:grid;grid-template-columns:70px 1fr;gap:6px;font-size:11px;color:var(--muted)}
+.axis div:last-child{display:flex;justify-content:space-between}
+/* sorteerimine */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:720px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:110px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;text-align:left}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* valikud */
+.qtext{font-size:17px;font-weight:500;margin:0 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.opt{font:inherit;font-size:14.5px;text-align:left;padding:.5rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+/* puu */
+.tree{font-family:var(--mono);font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;white-space:pre;overflow-x:auto;line-height:1.75}
+.tree .pn{cursor:pointer;padding:1px 4px;border-radius:4px}
+.tree .pn:hover{background:var(--accent-bg)}
+.tree .pn.pk{background:var(--y-bg);color:var(--y);font-weight:700}
+.tree .pn.good{background:var(--ok-bg);color:var(--ok);font-weight:700}
+.tree .pn.badp{background:var(--bad-bg);color:var(--bad);font-weight:700;text-decoration:line-through}
+.tree .pn.miss{outline:2px dashed var(--bad-line)}
+.tree .cl{color:var(--muted)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/07-protsessid-ja-loimed.md">← Peatükk 7</a> · <a href="07-test.html">Test →</a></nav>
+<h1>Protsessid, lõimed ja tööd – õpileht</h1>
+<p><strong>Protsess</strong> on ressursside konteiner, <strong>lõim</strong> on täitmise üksus ja <strong>töö</strong> on protsesside rühm. Sellel lehel näed, kuidas protsess sünnib, kuidas lõim olekute vahel liigub, mida tähendab mitmeülesandelisus ühe ja mitme tuumaga ning kuidas protsessipuust rünnakut ära tunda.</p>
+<div class="toc"><a href="#loomine">1. Protsessi sünd</a><a href="#olekud">2. Lõime olekud</a><a href="#multi">3. Mitmeülesandelisus</a><a href="#kellele">4. Kellele see kuulub?</a><a href="#ipc">5. Vali IPC</a><a href="#puu">6. Protsessipuu detektiiv</a></div>
+
+<!-- 1 -->
+<section id="loomine">
+<h2>1. Protsessi sünd: topeltklõps Wordi ikoonil</h2>
+<p>Explorer kutsub välja <code>CreateProcess("WINWORD.EXE")</code>. Liigu etappide kaupa ja vaata, kuidas protsess täitub. Proovi ka varianti, kus AppLocker on Wordi keelanud.</p>
+<div class="card">
+  <label class="tg"><input type="checkbox" id="block"> App Control / AppLocker keelab selle programmi</label>
+  <label class="tg"><input type="checkbox" id="audit" checked> Protsesside loomise audit sees (sündmus 4688)</label>
+  <div class="create" style="margin-top:10px">
+    <ol class="stages" id="stages"></ol>
+    <div><div class="proc" id="proc"></div><div class="evtlog" id="evt"></div></div>
+  </div>
+  <div class="row"><button class="btn" id="cprev">← Tagasi</button><button class="btn primary" id="cnext">Järgmine etapp →</button></div>
+  <div class="info" id="cinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="olekud">
+<h2>2. Lõime olekud: automaatsalvestuse lõim</h2>
+<p>Juhi Wordi automaatsalvestuse lõime sündmustega. Lubatud on ainult need üleminekud, mida planeerija päriselt teeb. Proovi ka keelatud üleminekut: näiteks lõim ei saa ootelt otse tööle minna.</p>
+<div class="card">
+  <div class="sm" id="sm">
+    <svg viewBox="0 0 620 300" preserveAspectRatio="none" id="arrows"></svg>
+    <div class="st ready" id="s-ready" style="left:20px;top:30px">VALMIS<small>ootab protsessorit</small></div>
+    <div class="st running" id="s-running" style="left:450px;top:30px">TÖÖTAB<small>täidab käske</small></div>
+    <div class="st waiting" id="s-waiting" style="left:235px;top:205px">OOTEL<small>ootab sündmust</small></div>
+    <div class="st term" id="s-term" style="left:450px;top:205px">LÕPETATUD<small>töö tehtud</small></div>
+  </div>
+  <div class="cpuuse" id="cpuuse"></div>
+  <div class="evs" id="evs"></div>
+  <div class="info" id="sinfo"></div>
+  <div class="row"><span class="hint" id="shist"></span><button class="btn" id="sreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="multi">
+<h2>3. Mitmeülesandelisus: samaaegsus ja paralleelsus</h2>
+<p>Kolm programmi tahavad protsessorit. Vali tuumade arv ja ajakvant ning vaata, kuidas planeerija aja jagab. Ühe tuumaga töötab igal hetkel ainult üks lõim (<strong>samaaegsus</strong>), mitme tuumaga päriselt mitu korraga (<strong>paralleelsus</strong>).</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Tuumi: <select id="cores"><option>1</option><option selected>2</option><option>4</option></select> &nbsp; Ajakvant: <select id="quant"><option value="10">10 ms</option><option value="30" selected>30 ms</option><option value="60">60 ms</option></select></span><span class="hint">Iga programm vajab 120 ms protsessoriaega</span></div>
+  <div class="gantt" id="gantt"></div>
+  <div class="legend" id="leg"></div>
+  <div class="info" id="minfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="kellele">
+<h2>4. Kellele see kuulub: protsessile, lõimele või tööle?</h2>
+<p>Vali ülal omadus ja klõpsa kastil, kellele see kuulub.</p>
+<div class="pool" id="kpool"></div>
+<div class="buckets">
+  <div class="bucket" data-b="p"><h3>Protsess</h3><p class="hint">ressursside konteiner</p><div class="chips"></div></div>
+  <div class="bucket" data-b="t"><h3>Lõim</h3><p class="hint">täitmise üksus</p><div class="chips"></div></div>
+  <div class="bucket" data-b="j"><h3>Töö (job)</h3><p class="hint">protsesside rühm</p><div class="chips"></div></div>
+</div>
+<div class="row"><button class="btn" id="knew">Uus komplekt</button><button class="btn primary" id="kcheck" disabled>Kontrolli</button></div>
+<div id="kres"></div>
+</section>
+
+<!-- 5 -->
+<section id="ipc">
+<h2>5. Vali sobiv IPC-mehhanism</h2>
+<p>Protsessid ei näe teineteise mälu. Vali igas olukorras kõige sobivam suhtlusviis.</p>
+<div class="card" id="icard" aria-live="polite"></div>
+</section>
+
+<!-- 6 -->
+<section id="puu">
+<h2>6. Protsessipuu detektiiv</h2>
+<p>Sa oled turvaanalüütik ja vaatad EDR-i konsoolis protsessipuud. Klõpsa protsessidel, mis on kahtlased, ja vajuta „Kontrolli“. Vihje: vaata vanemat, käsurida ja failiteed.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><b id="pttl"></b><span class="hint" id="pnum"></span></div>
+  <div class="tree" id="ptree"></div>
+  <div class="row"><button class="btn" id="pnext">Järgmine juhtum →</button><button class="btn primary" id="pcheck">Kontrolli</button></div>
+  <div id="pres"></div>
+</div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- 1. loomine ---------- */
+const ST=[
+ ['EXE-faili avamine ja kontroll','Windows avab <code>C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE</code>. Smart App Control, App Control for Business / AppLocker ja Defender kontrollivad, kas seda tohib käivitada. Kõik on korras.'],
+ ['Protsessiobjekt ja aadressiruum','Tuumas luuakse protsessiobjekt (EPROCESS), Word saab PID-i, oma virtuaalse aadressiruumi ja Mari tokeni koopia. <b>Protsessihaldur teavitab draivereid</b> ja EDR näeb uut protsessi.'],
+ ['Esimene lõim','Luuakse esimene lõim koos pinude ja TEB-iga. See on peatatud olekus, sest protsess pole veel valmis.'],
+ ['Alamsüsteemi teavitamine','csrss.exe saab teada uuest protsessist ja lõimest.'],
+ ['DLL-ide laadimine','Uue protsessi sees laaditakse <code>ntdll.dll</code>, <code>kernel32.dll</code> ja teised teegid. Täidetakse nende algatuskood.'],
+ ['Täitmise algus','Esimene lõim hakkab täitma Wordi koodi. Word loob kohe lisalõimed: kasutajaliides, õigekirjakontroll ja automaatsalvestus. Avaneb Wordi aken.']
+];
+const PARTS=[['PID',1,'7420'],['Vanem (PPID)',1,'explorer.exe (5128)'],['Aadressiruum',1,'128 TB virtuaalset'],['Token',1,'mari · Medium'],['Pidemetabel',1,'WINWORD.EXE, …'],['Lõimed',2,'1 (peatatud)'],['Laaditud DLL-id',4,'ntdll, kernel32, …'],['Lõimed ',5,'1 → 23 (töötab)']];
+let cs=0;
+function drawC(){
+  const blocked=$('block').checked,last=blocked?0:ST.length-1;
+  $('stages').innerHTML=ST.map((s,i)=>'<li class="'+(i<cs?'done':i===cs?'cur':'')+(blocked&&i===0&&cs===0?' x':'')+'" data-i="'+i+'"><span class="n">'+(i+1)+'</span><span>'+s[0]+'</span></li>').join('');
+  const show=PARTS.filter(p=>p[1]<=cs&&!blocked);const dedup={};show.forEach(p=>dedup[p[0].trim()]=p);
+  $('proc').innerHTML='<h3>WINWORD.EXE</h3>'+(blocked?'<p class="hint">Protsessi ei loodud.</p>':Object.values(dedup).length?Object.values(dedup).map(p=>'<div class="part'+(p[1]===cs?' new':'')+'"><span>'+p[0].trim()+'</span><span>'+p[2]+'</span></div>').join(''):'<p class="hint">Protsessi veel pole.</p>');
+  let ev='<span class="y">EDR / turvalogi</span>\n';
+  if(blocked){ev+='<span class="r">AppLocker 8004: WINWORD.EXE käivitamine blokeeriti</span>\n<span class="r">CreateProcess → ERROR_ACCESS_DISABLED_BY_POLICY</span>'}
+  else{if(cs>=1)ev+='<span class="g">EDR: uus protsess WINWORD.EXE (PID 7420), vanem explorer.exe</span>\n';if(cs>=1&&$('audit').checked)ev+='<span class="g">Security 4688: A new process has been created</span>\n  New Process Name: …\\WINWORD.EXE  Creator: explorer.exe  Token: Medium\n';if(cs<1)ev+='(veel midagi)'}
+  $('evt').innerHTML=ev;
+  if(blocked){$('cinfo').className='info bad';$('cinfo').innerHTML='<b>Etapp 1: käivitus peatati.</b> App Control / AppLocker leidis, et Wordi käivitamine pole lubatud. Protsessi ei loodud, nii et ka pahavara, mis üritaks selle programmi nime all käivituda, ei saaks kunagi tööle. Kaitse kõige varasemas etapis on kõige odavam.'}
+  else{$('cinfo').className='info'+(cs===last?' ok':'');$('cinfo').innerHTML='<b>Etapp '+(cs+1)+'.</b> '+ST[cs][1]}
+  $('cprev').disabled=cs===0;$('cnext').disabled=blocked;$('cnext').textContent=cs===last?'Alusta uuesti':'Järgmine etapp →';
+  document.querySelectorAll('#stages li').forEach(li=>li.onclick=()=>{if(!blocked){cs=+li.dataset.i;drawC()}});
+}
+$('cprev').onclick=()=>{cs--;drawC()};$('cnext').onclick=()=>{cs=cs===ST.length-1?0:cs+1;drawC()};
+$('block').onchange=()=>{cs=0;drawC()};$('audit').onchange=drawC;drawC();
+
+/* ---------- 2. olekud ---------- */
+const TR={
+ pick:['Planeerija valib lõime','ready','running','Planeerija valis selle lõime ja andis talle tuuma. Lõim täidab nüüd käske.'],
+ quant:['Ajakvant sai otsa','running','ready','Ajakvant (mõnikümmend millisekundit) sai otsa ja planeerija andis tuuma teisele lõimele. Meie lõim on endiselt töövalmis, seega läheb tagasi valmis-olekusse.'],
+ pre:['Kõrgema prioriteediga lõim ärkas','running','ready','Kõrgema prioriteediga lõim (nt kasutajaliides, sest vajutasid klahvi) sai valmis ja <b>tõrjus</b> meie lõime tuumalt välja. See on eelistav (preemptive) mitmeülesandelisus.'],
+ io:['Kutsub WriteFile ja ootab ketast','running','waiting','Lõim kutsus <code>WriteFile</code> ja peab ootama, kuni SSD kirjutamise lõpetab. Ootel lõim <b>ei kasuta protsessoriaega</b>, nii et tuum vabaneb teistele.'],
+ timer:['Ootab automaatsalvestuse taimerit (5 min)','running','waiting','Lõim kutsus <code>WaitForSingleObject(taimer)</code> ja jääb ootele. Viie minuti jooksul ei kuluta ta protsessoriaega.'],
+ done:['Ketas/taimer valmis (sündmus saabus)','waiting','ready','Sündmus saabus ja lõim muutub <b>valmis</b>-olekusse, mitte kohe töötavaks. Ta peab ootama, kuni planeerija ta valib, sest tuum võib olla hõivatud.'],
+ exit:['Lõim lõpetab (Word suletakse)','running','term','Lõim jõudis oma funktsiooni lõppu või Word suleti. Lõim on lõpetatud ja tema pinud vabastatakse.']
+};
+const ILLEGAL={'waiting>running':'Lõim ei lähe ootelt otse tööle. Kui sündmus saabub, muutub ta valmis-olekusse ja peab ootama, kuni planeerija ta valib.','ready>waiting':'Valmis-olekus lõim ei täida ühtegi käsku, seega ei saa ta ka midagi ootama hakata. Ootele minekuks peab lõim töötama ja välja kutsuma ootamise funktsiooni.','ready>term':'Lõim lõpetab tavaliselt ise oma koodi täitmisega, seega peab ta selleks töötama.','waiting>term':'Lihtsustatud mudelis peab lõim enne lõpetamist ärkama ja töötama.'};
+let state='ready',hist=['valmis'];
+const NAMES={ready:'valmis',running:'töötab',waiting:'ootel',term:'lõpetatud'};
+const ARR=[['ready','running','M170 50 L450 50','planeerija valib',310,42],['running','ready','M450 78 L170 78','kvant läbi / tõrjutud',310,96],['running','waiting','M500 92 L360 205','ootab sündmust',470,155],['waiting','ready','M235 225 L95 92','sündmus saabus',120,170],['running','term','M525 92 L525 205','lõpp',540,155]];
+function drawS(last){
+  ['ready','running','waiting','term'].forEach(s=>$('s-'+s).classList.toggle('on',s===state));
+  $('arrows').innerHTML='<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>'+ARR.map(([a,b,d,t,x,y])=>'<path d="'+d+'" class="'+(last===a+'>'+b?'hot':'')+'" marker-end="url(#ah)" style="color:var(--'+(last===a+'>'+b?'accent':'border')+')"/><text x="'+x+'" y="'+y+'" text-anchor="middle">'+t+'</text>').join('');
+  $('cpuuse').innerHTML='Protsessori kasutus: '+(state==='running'?'<b style="color:var(--r)">kasutab tuuma</b>':'<b>0%</b> – ei kasuta tuuma');
+  $('evs').innerHTML=Object.entries(TR).map(([k,[t,f]])=>'<button class="btn'+(f===state?'':'')+'" data-k="'+k+'"'+(state==='term'?' disabled':'')+'>'+t+'</button>').join('');
+  document.querySelectorAll('#evs button').forEach(b=>b.onclick=()=>{const [t,f,to,ex]=TR[b.dataset.k];
+    if(f!==state){const msg=ILLEGAL[state+'>'+to]||('Sündmus „'+t+'“ saab juhtuda ainult siis, kui lõim on olekus <b>'+NAMES[f]+'</b>. Praegu on ta olekus <b>'+NAMES[state]+'</b>.');$('sinfo').className='info bad';$('sinfo').innerHTML='<b>Seda ei saa.</b> '+msg;return}
+    const prev=state;state=to;hist.push(NAMES[to]);$('sinfo').className='info'+(to==='term'?' ok':'');$('sinfo').innerHTML='<b>'+NAMES[prev]+' → '+NAMES[to]+'.</b> '+ex;drawS(prev+'>'+to)});
+  $('shist').textContent='Teekond: '+hist.join(' → ');
+}
+$('sreset').onclick=()=>{state='ready';hist=['valmis'];$('sinfo').className='info';$('sinfo').innerHTML='Lõim on loodud ja valmis. Vajuta „Planeerija valib lõime“.';drawS()};
+$('sreset').click();
+
+/* ---------- 3. mitmeülesandelisus ---------- */
+const TH=[['Spotify','#3b6d11'],['Word','#185fa5'],['Allalaadija','#854f0b']];
+function sim(cores,q){
+  const need=[120,120,120],queue=[0,1,2],free=Array(cores).fill(0),segs=Array.from({length:cores},()=>[]);let t=0,switches=0,finish=[0,0,0];
+  // simple round robin, all threads ready at 0
+  const ready=[0,1,2];const busyUntil=Array(cores).fill(0);
+  while(ready.length){
+    // find earliest free core
+    let c=0;for(let i=1;i<cores;i++)if(busyUntil[i]<busyUntil[c])c=i;
+    const th=ready.shift(),start=busyUntil[c],len=Math.min(q,need[th]);
+    segs[c].push([th,start,len]);need[th]-=len;busyUntil[c]=start+len;switches++;
+    if(need[th]>0)ready.push(th);else finish[th]=start+len;
+  }
+  return {segs,end:Math.max(...busyUntil),finish,switches};
+}
+function drawM(){
+  const cores=+$('cores').value,q=+$('quant').value,r=sim(cores,q),W=Math.max(r.end,360);
+  $('gantt').innerHTML=r.segs.map((s,c)=>'<div class="lane"><span>Tuum '+(c+1)+'</span><div class="bar">'+s.map(([th,st,len])=>'<div class="seg" style="left:'+(st/W*100)+'%;width:'+(len/W*100)+'%;background:'+TH[th][1]+'" title="'+TH[th][0]+' '+st+'–'+(st+len)+' ms">'+(len/W>0.05?TH[th][0][0]:'')+'</div>').join('')+'</div></div>').join('')+
+   '<div class="axis"><span></span><div><span>0 ms</span><span>'+Math.round(W/2)+' ms</span><span>'+W+' ms</span></div></div>';
+  $('leg').innerHTML=TH.map(([n,c],i)=>'<span><i style="background:'+c+'"></i>'+n+' – valmis '+r.finish[i]+' ms</span>').join('');
+  let h='Kõik kolm programmi said valmis <b>'+r.end+' ms</b> jooksul. ';
+  if(cores===1)h+='Ühe tuumaga töötab igal hetkel ainult <b>üks</b> lõim. Planeerija vahetab neid iga '+q+' ms järel ('+(r.switches-1)+' kontekstivahetust), nii et kasutajale tundub, nagu töötaks kõik korraga. See on <b>samaaegsus</b> (concurrency).';
+  else if(cores>=3)h+='Iga programm saab oma tuuma ja kõik töötavad <b>päriselt korraga</b>. See on <b>paralleelsus</b> (parallelism).'+(cores>3?' Neljas tuum jääb tühjaks: tuumi on rohkem kui töövalmis lõimi.':'');
+  else h+='Kahe tuumaga töötab korraga kaks lõime (paralleelsus), kolmas peab ootama ja planeerija vahetab neid (samaaegsus). Päris arvutis on mõlemat korraga.';
+  if(cores===1&&q===10)h+=' Väike kvant tähendab kiiremat reageerimist, kuid rohkem kontekstivahetusi, millest igaüks võtab natuke aega.';
+  if(cores===1&&q===60)h+=' Suur kvant tähendab vähem vahetusi, kuid iga programm peab kauem ootama, enne kui uuesti tuuma saab. Muusika võiks hakata katkema.';
+  $('minfo').innerHTML=h;
+}
+$('cores').onchange=drawM;$('quant').onchange=drawM;drawM();
+
+/* ---------- 4. kellele ---------- */
+const KO=[['Privaatne virtuaalne aadressiruum','p','Aadressiruum kuulub protsessile ja kõik selle lõimed jagavad seda.'],['Pidemetabel','p','Avatud objektid kuuluvad protsessile. Kõik lõimed saavad samu pidemeid kasutada.'],['Juurdepääsutoken','p','Protsessil on token, mis määrab, kelle õigustega ta töötab.'],['PID','p','Protsessi ID. Lõimel on oma TID.'],['PEB','p','Process Environment Block kirjeldab protsessi kasutajarežiimis.'],['Laaditud DLL-id','p','DLL-id laaditakse protsessi aadressiruumi.'],['Registrite olek (käsuloendur)','t','Igal lõimel on oma registrid: kus täitmine parajasti on.'],['Kasutaja- ja tuumapinu','t','Igal lõimel on kaks oma pinu.'],['Prioriteet planeerijale','t','Planeerija planeerib lõimi, seega on prioriteet lõime omadus (protsessil on prioriteediklass).'],['TEB ja lõime lokaalne mälu (TLS)','t','Thread Environment Block ja TLS kuuluvad igale lõimele eraldi.'],['Olek: valmis / töötab / ootel','t','Olek on lõime omadus, sest planeerija liigutab lõimi.'],['Kõigi protsesside ühine mälupiirang','j','Ühine piirang mitmele protsessile on tööobjekti ülesanne.'],['Kõigi protsesside lõpetamine korraga','j','Töö sulgemisel saab lõpetada kõik selle protsessid.'],['Keeld luua uusi lapsprotsesse','j','Tööobjekt saab piirata aktiivsete protsesside arvu.'],['Konteineri ressursipiirangud','j','Windowsi konteinerid ja Windows Sandbox põhinevad tööobjektidel.']];
+let kset=[],kpl={},ksel=null,kchk=false;
+function newK(){const by=b=>shuffle(KO.map((_,i)=>i).filter(i=>KO[i][1]===b));kset=shuffle([...by('p').slice(0,3),...by('t').slice(0,3),...by('j').slice(0,3)]);kpl={};ksel=null;kchk=false;$('kres').innerHTML='';drawK()}
+function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KO[i][1]===w?' ok':' bad';b.className=c;b.textContent=KO[i][0];
+  b.onclick=e=>{e.stopPropagation();if(kchk)return;if(w==='pool')ksel=ksel===i?null:i;else{delete kpl[i];ksel=i}drawK()};return b}
+function drawK(){const pool=$('kpool');pool.innerHTML='';kset.filter(i=>!(i in kpl)).forEach(i=>pool.appendChild(kchip(i,'pool')));
+  if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
+  document.querySelectorAll('#kellele .bucket').forEach(bk=>{const c=bk.querySelector('.chips');c.innerHTML='';kset.filter(i=>kpl[i]===bk.dataset.b).forEach(i=>c.appendChild(kchip(i,bk.dataset.b)))});
+  $('kcheck').disabled=kchk||Object.keys(kpl).length!==kset.length}
+document.querySelectorAll('#kellele .bucket').forEach(bk=>bk.onclick=()=>{if(kchk||ksel===null)return;kpl[ksel]=bk.dataset.b;ksel=null;drawK()});
+$('kcheck').onclick=()=>{kchk=true;drawK();const w=kset.filter(i=>kpl[i]!==KO[i][1]);
+  $('kres').innerHTML='<div class="fb '+(w.length?'bad':'ok')+'"><strong>'+(w.length?'Õigesti '+(kset.length-w.length)+' / '+kset.length:'Kõik õigesti!')+'</strong>'+(w.length?w.map(i=>'<b>'+KO[i][0]+'</b> – '+KO[i][2]).join('<br>'):'Rusikareegel: <b>mis</b> on olemas → protsess; <b>kes</b> töötab → lõim; <b>mitu protsessi koos</b> → töö.')+'</div>'};
+$('knew').onclick=newK;newK();
+
+/* ---------- 5. IPC ---------- */
+const IO=['Jagatud mälu','Nimega toru','Anonüümne toru','Pesa (socket)','ALPC','RPC / COM','Lõikelaud'];
+const IQ=[['Videotöötlusprogramm annab 500 MB kaadreid teisele protsessile, mis need kodeerib. Vaja on kõige kiiremat viisi.',0,'Jagatud mälu (memory-mapped file) on kõige kiirem, sest andmeid ei kopeerita: mõlemad protsessid näevad sama mälulehte. Juurdepääsu peab koordineerima (ptk 8).'],
+ ['Prindispuuler kuulab klientide päringuid kohaliku nime \\\\.\\pipe\\spoolss kaudu.',1,'Nimega toru on kliendi-serveri suhtlus samas arvutis ja võrgus (SMB kaudu).'],
+ ['PowerShell käivitab ipconfig.exe ja loeb selle väljundi muutujasse.',2,'Anonüümne toru ühendab vanema lapsprotsessi standardväljundiga. Nime pole vaja, sest vanem loob toru ise.'],
+ ['Brauser laadib veebilehte serverist teises riigis.',3,'Võrgusuhtlus käib pesade (TCP/UDP) kaudu.'],
+ ['Rakendus küsib lsass.exe-lt sisselogimise kontrolli. Windowsi komponendid vajavad omavahel kiiret sõnumivahetust.',4,'ALPC on Windowsi sisemine kiire sõnumivahetus (ptk 4.5).'],
+ ['PowerShelli skript avab Exceli, täidab tabeli ja salvestab selle.',5,'COM (ja selle aluseks olev RPC) võimaldab ühel programmil teise programmi objekte juhtida.'],
+ ['Kasutaja kopeerib Wordis tabeli ja kleebib selle Excelisse.',6,'Lõikelaud on OS-i hallatav IPC graafilistele rakendustele. Word ja Excel ei suhtle otse.'],
+ ['Docker CLI saadab käsud Docker Engine’ile, mis töötab samas Windowsis eraldi teenusena (\\\\.\\pipe\\docker_engine).',1,'Docker Desktop kasutab Windowsis nimega toru. Linuxis kasutab ta sama rolli jaoks Unixi domeenipesa.'],
+ ['Haldustööriist küsib teise serveri teenuste olekut (nt Get-Service -ComputerName SRV01).',5,'Kaughaldus käib RPC kaudu. RPC-liidesed peavad kliendi õigusi kontrollima, sest need on ründepind.']];
+let iq=shuffle(IQ.map((_,i)=>i)),ip=0,is={ok:0,n:0},ia=null;
+function drawI(){
+  if(ip>=iq.length){$('icard').innerHTML='<p class="qtext">Tulemus: '+is.ok+' / '+is.n+'</p><div class="row"><span></span><button class="btn primary" id="iag">Alusta uuesti</button></div>';$('iag').onclick=()=>{iq=shuffle(IQ.map((_,i)=>i));ip=0;is={ok:0,n:0};ia=null;drawI()};return}
+  const [q,c,e]=IQ[iq[ip]];let h='<p class="score">'+(ip+1)+' / '+iq.length+' · õigeid '+is.ok+'</p><p class="qtext">'+esc(q)+'</p><div class="opts">';
+  IO.forEach((o,i)=>{let cl='opt';if(ia!==null)cl+=i===c?' ok':i===ia?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(ia!==null?' disabled':'')+'>'+o+'</button>'});
+  h+='</div>';if(ia!==null)h+='<div class="fb '+(ia===c?'ok':'bad')+'"><strong>'+(ia===c?'Õige!':'Vale. Õige: '+IO[c])+'</strong>'+esc(e)+'</div>';
+  h+='<div class="row"><span></span><button class="btn primary" id="in"'+(ia===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('icard').innerHTML=h;document.querySelectorAll('#icard .opt').forEach(b=>b.onclick=()=>{ia=+b.dataset.i;is.n++;if(ia===c)is.ok++;drawI()});$('in').onclick=()=>{ip++;ia=null;drawI()};
+}
+drawI();
+
+/* ---------- 6. puu ---------- */
+/* [tase, nimi, käsurida, kahtlane?, selgitus] */
+const CASES=[
+ ['Juhtum 1: Mari tööjaam',[[0,'explorer.exe','',0],[1,'WINWORD.EXE','C:\\Users\\mari\\Downloads\\arve.docm',0],[2,'cmd.exe','/c powershell -w hidden -enc JABjAD0A…',1,'Word käivitab käsuviiba. Tekstitöötlus ei pea seda tegema. Tõenäoliselt makro.'],[3,'powershell.exe','-w hidden -enc JABjAD0A…',1,'Peidetud aken ja Base64-kodeeritud käsk: ründaja peidab, mida skript teeb.'],[4,'rundll32.exe','C:\\Users\\mari\\AppData\\Local\\Temp\\a.dll,Start',1,'DLL käivitatakse Temp-kaustast rundll32 kaudu. See on levinud pahavara laadimise viis.'],[1,'msedge.exe','--type=renderer',0],[1,'Teams.exe','',0]]],
+ ['Juhtum 2: süsteemiprotsessid',[[0,'wininit.exe','',0],[1,'services.exe','',0],[2,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k netsvcs -p',0],[2,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k LocalService',0],[1,'lsass.exe','C:\\Windows\\System32\\lsass.exe',0],[0,'explorer.exe','',0],[1,'svchost.exe','C:\\Users\\Public\\svchost.exe',1,'svchost.exe vanem peab olema services.exe ja fail peab asuma kaustas C:\\Windows\\System32. Siin käivitas selle explorer.exe ja fail on Public-kaustas: pahavara matkib süsteemiprotsessi nime.'],[1,'notepad.exe','C:\\Users\\mari\\Desktop\\markmed.txt',0]]],
+ ['Juhtum 3: serveri veebiteenus',[[0,'services.exe','',0],[1,'w3wp.exe','-ap "DefaultAppPool"',0],[2,'cmd.exe','/c whoami & net user',1,'IIS-i tööprotsess (w3wp.exe) ei pea käivitama käsuviiba. whoami ja net user on luure: ründaja kontrollib, kelle õigustes ta on. Tõenäoliselt veebikest (web shell).'],[3,'net.exe','user',1,'Kasutajakontode loetlemine pärast veebiserverist käivitamist on ründe jätk.'],[1,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k NetworkService',0],[1,'sqlservr.exe','-sMSSQLSERVER',0]]],
+ ['Juhtum 4: tavaline tööpäev',[[0,'explorer.exe','',0],[1,'EXCEL.EXE','C:\\Users\\mari\\Documents\\eelarve.xlsx',0],[1,'msedge.exe','',0],[2,'msedge.exe','--type=renderer',0],[2,'msedge.exe','--type=gpu-process',0],[1,'powershell.exe','',0],[1,'notepad.exe','',0],[1,'Code.exe','C:\\Users\\mari\\projekt',0]]],
+ ['Juhtum 5: paroolivargus',[[0,'wininit.exe','',0],[1,'lsass.exe','C:\\Windows\\System32\\lsass.exe',0],[0,'explorer.exe','',0],[1,'cmd.exe','',0],[2,'rundll32.exe','C:\\Windows\\System32\\comsvcs.dll, MiniDump 812 C:\\Temp\\l.dmp full',1,'comsvcs.dll MiniDump teeb protsessist 812 (lsass.exe) mälutõmmise. Ründaja tahab sealt paroolide räsisid. LSA kaitse (PPL) ja Credential Guard takistavad seda.'],[1,'Teams.exe','',0]]]
+];
+let pc=0,pick=new Set(),pchk=false,porder=shuffle(CASES.map((_,i)=>i));
+function drawP(){
+  const [ttl,rows]=CASES[porder[pc]];$('pttl').textContent=ttl;$('pnum').textContent=(pc+1)+' / '+CASES.length;
+  $('ptree').innerHTML=rows.map(([lv,n,cl,bad],i)=>{let c='pn';if(pchk){c+=bad?(pick.has(i)?' good':' miss'):(pick.has(i)?' badp':'')}else if(pick.has(i))c+=' pk';
+    return '  '.repeat(lv)+(lv?'└─ ':'')+'<span class="'+c+'" data-i="'+i+'">'+esc(n)+'</span>'+(cl?'  <span class="cl">'+esc(cl)+'</span>':'')}).join('\n');
+  document.querySelectorAll('#ptree .pn').forEach(s=>s.onclick=()=>{if(pchk)return;const i=+s.dataset.i;pick.has(i)?pick.delete(i):pick.add(i);drawP()});
+  $('pcheck').disabled=pchk;
+}
+$('pcheck').onclick=()=>{pchk=true;drawP();const rows=CASES[porder[pc]][1],bad=rows.map((r,i)=>i).filter(i=>rows[i][3]),miss=bad.filter(i=>!pick.has(i)),fp=[...pick].filter(i=>!rows[i][3]);
+  let h='<div class="fb '+(miss.length||fp.length?'bad':'ok')+'"><strong>'+(bad.length===0?(fp.length?'Selles puus pahavara polnud.':'Õige! Selles puus pole midagi kahtlast.'):(miss.length||fp.length?'Leidsid '+(bad.length-miss.length)+' / '+bad.length:'Õige! Leidsid kõik kahtlased protsessid.'))+'</strong>';
+  h+=bad.map(i=>'<b>'+esc(rows[i][1])+'</b> – '+esc(rows[i][4])).join('<br>');
+  if(fp.length)h+=(bad.length?'<br>':'')+fp.map(i=>'<b>'+esc(rows[i][1])+'</b> on tavaline: '+(rows[i][1]==='msedge.exe'?'Edge’il on alati mitu protsessi (renderdus, GPU).':rows[i][1]==='powershell.exe'?'kasutaja avas PowerShelli ise Explorerist, käsurida on tavaline.':'vanem ja asukoht on ootuspärased.')).join('<br>');
+  if(!bad.length&&!fp.length)h+='Kõik vanemad ja käsuread on ootuspärased: rakendused käivitab explorer.exe ja Edge’i alamprotsessid käivitab Edge ise.';
+  $('pres').innerHTML=h+'</div>'};
+$('pnext').onclick=()=>{pc=(pc+1)%CASES.length;pick=new Set();pchk=false;$('pres').innerHTML='';drawP()};
+drawP();
+</script>
+</body>
+</html>

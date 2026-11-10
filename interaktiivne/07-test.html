@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 7 – test: protsessid, lõimed ja tööd</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/07-protsessid-ja-loimed.md">← Peatükk 7</a> · <a href="07-protsessid.html">Interaktiivne õpileht</a></nav>
+<h1>Test: protsessid, lõimed ja tööd</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis vahe on programmil ja protsessil?", "o": ["Programm on kettal olev fail, protsess on selle käivitatud eksemplar oma mälu, pidemete ja tokeniga", "Vahet pole", "Protsess on fail kettal, programm töötab mälus", "Programm on alati suurem kui protsess"], "c": 0, "e": "Kui avad Notepadi kolm korda, on kettal üks programm, kuid töötab kolm protsessi. Igaühel on oma PID ja oma mälu."},
+{"q": "Mis kirjeldab protsessi turvakonteksti?", "o": ["PEB", "Juurdepääsutoken", "Pidemetabel", "TEB"], "c": 1, "e": "Token sisaldab kasutaja SID-i, rühmi, privileege ja terviklikkuse taset. PEB ja TEB on kasutajarežiimi andmestruktuurid, pidemetabel sisaldab avatud objekte."},
+{"q": "Kui suur on x64 Windowsis protsessi kasutajarežiimi virtuaalne aadressiruum?", "o": ["4 GB", "2 GB", "128 TB", "Sama suur kui RAM"], "c": 2, "e": "Virtuaalne aadressiruum ei sõltu füüsilise mälu suurusest. Mäluhaldur vastendab sellest kasutatud osad füüsilisele mälule või saalefailile (ptk 12)."},
+{"q": "Mis juhtub, kui protsessi viimane lõim lõpetab?", "o": ["Protsess jääb igaveseks mällu", "Arvuti taaskäivitub", "Protsess saab automaatselt uue lõime", "Protsess lõpetatakse, sest ilma lõimeta ei saa see midagi teha"], "c": 3, "e": "Protsessil peab olema vähemalt üks lõim. Protsess on ainult konteiner, töö teevad lõimed."},
+{"q": "Millise terviklikkuse tasemega töötab tavaliselt kasutaja käivitatud Notepad?", "o": ["System", "High", "Medium", "Low"], "c": 2, "e": "Tavalised programmid töötavad tasemel Medium. High on administraatoriõigustes programmidel, System teenustel ning Low/AppContainer brauseri sisuprotsessidel."},
+{"q": "Miks töötavad Edge’i vahekaartide sisuprotsessid madala terviklikkuse tasemega (Low/AppContainer)?", "o": ["Et brauser töötaks kiiremini", "Kui veebilehe kood leiab brauserist vea, ei saa see kirjutada kasutaja failidesse ega teistesse protsessidesse", "Et säästa mälu", "Et vahekaardid saaksid omavahel andmeid jagada"], "c": 1, "e": "Madala tasemega protsess ei saa kirjutada keskmise tasemega objektidesse. See on kaitse sügavuti (defense in depth)."},
+{"q": "Millises protsessi loomise etapis saavad Smart App Control ja AppLocker käivituse peatada?", "o": ["EXE-faili avamisel, enne protsessiobjekti loomist", "Pärast DLL-ide laadimist", "Pärast esimese lõime käivitamist", "Ainult siis, kui protsess on töötanud vähemalt minuti"], "c": 0, "e": "Kui käivitamine keelatakse kohe alguses, protsessi ei looda ja kood ei saa kunagi tööle."},
+{"q": "Kuidas saab EDR-tarkvara teada iga uue protsessi loomisest?", "o": ["Ta loeb iga sekund Tegumihaldurit", "Kasutaja teatab talle", "Protsessihaldur teavitab registreerunud draivereid protsesside loomisest", "EDR kontrollib ainult kettal olevaid faile"], "c": 2, "e": "Draiverid saavad registreeruda teavituste saamiseks (nt PsSetCreateProcessNotifyRoutineEx) ja näha iga uut protsessi koos vanema ja käsureaga."},
+{"q": "Millise sündmuse kirjutab Windows turvalogisse uue protsessi loomisel, kui audit on sees?", "o": ["4624", "4625", "1000", "4688"], "c": 3, "e": "4688 – A new process has been created. 4624/4625 on sisselogimine, 1000 on rakenduse krahh. Käsurea logimise saab eraldi poliitikaga sisse lülitada."},
+{"q": "Mis on kaitstud protsess (PPL)?", "o": ["Protsess, mille mälu ei saa lugeda ega mida ei saa lõpetada isegi administraator", "Protsess, mis töötab ainult öösel", "Protsess, millel puudub token", "Viirusega nakatunud protsess"], "c": 0, "e": "Näiteks lsass.exe LSA kaitsega (RunAsPPL) ja viirusetõrje teenused. Nii ei saa administraatoriõigustega ründaja lihtsalt lsass.exe mälust räsisid võtta."},
+{"q": "Mida jagavad sama protsessi lõimed?", "o": ["Registrite olekut", "Pinu", "Protsessi mälu ja pidemeid", "Prioriteeti"], "c": 2, "e": "Igal lõimel on oma registrid, pinud, prioriteet ja TLS, kuid mälu ja pidemed kuuluvad protsessile."},
+{"q": "Mis on igal lõimel oma?", "o": ["Virtuaalne aadressiruum", "Pidemetabel", "Juurdepääsutoken", "Registrite olek ja kaks pinu (kasutaja- ja tuumapinu)"], "c": 3, "e": "Lõim on täitmise üksus. Selleks peab tal olema oma käsuloendur, registrid ja pinu."},
+{"q": "Miks teeb Word automaatsalvestuse ja õigekirjakontrolli eraldi taustalõimedes?", "o": ["Et kasutajaliidese lõim jääks vabaks ja aken ei hanguks raske töö ajal", "Et kasutada vähem mälu", "Sest Windows keelab ühes lõimes salvestamise", "Et fail oleks väiksem"], "c": 0, "e": "Kui kõik töö oleks ühes lõimes, ei reageeriks ekraan iga salvestamise ajal."},
+{"q": "Lõim kutsub WriteFile ja peab ootama ketast. Millisesse olekusse ta läheb?", "o": ["Valmis", "Töötab", "Ootel", "Lõpetatud"], "c": 2, "e": "Ootel olekus ei kasuta lõim üldse protsessoriaega ja tuum vabaneb teistele lõimedele."},
+{"q": "Ketas lõpetas kirjutamise. Millisesse olekusse läheb ootel lõim?", "o": ["Otse töötavasse olekusse", "Valmis-olekusse", "Lõpetatud olekusse", "Jääb ootele"], "c": 1, "e": "Lõim ei lähe ootelt otse tööle. Ta peab ootama, kuni planeerija ta valib, sest kõik tuumad võivad olla hõivatud."},
+{"q": "Töötava lõime ajakvant sai otsa, kuid tal on veel tööd. Kuhu ta läheb?", "o": ["Valmis-olekusse", "Ootel olekusse", "Lõpetatud olekusse", "Ta töötab edasi, kuni lõpetab"], "c": 0, "e": "Windows kasutab eelistavat mitmeülesandelisust: planeerija võtab tuuma ära ka siis, kui lõim pole valmis. Kuna lõim on endiselt töövalmis, läheb ta valmis-olekusse."},
+{"q": "Milleks kasutatakse lõimekogumit (thread pool)?", "o": ["Lõimede kustutamiseks", "Et mitte luua ja hävitada iga ülesande jaoks uut lõime, vaid anda ülesandeid olemasolevatele lõimedele", "Lõimede prioriteedi tõstmiseks", "Protsesside rühmitamiseks"], "c": 1, "e": "Lõime loomine on suhteliselt kallis. C# async/await ja Task kasutavad lõimekogumit automaatselt."},
+{"q": "Mis on kiud (fiber)?", "o": ["Tuumarežiimi lõim", "Võrgukaabel", "Protsesside rühm", "Kasutajarežiimis hallatav kerge täitmisüksus, mille vahel programm ise vahetab; tuum neid ei näe"], "c": 3, "e": "Kiudude asemel kasutatakse tänapäeval korutiine ja asünkroonset programmeerimist. UMS on Windows 11-st eemaldatud."},
+{"q": "Mida saab teha tööobjektiga (job object)?", "o": ["Seada mitmele protsessile ühise mälu- ja protsessoripiirangu ning lõpetada need korraga", "Krüpteerida faile", "Luua kasutajakontosid", "Planeerida lõimi"], "c": 0, "e": "Näiteks saab õpilaste programmid käivitada tööobjektis, mille mälupiirang on 512 MB ja ajapiirang 10 sekundit."},
+{"q": "Mis on konteinerite ja Windows Sandboxi ressursipiirangute aluseks?", "o": ["Kiud", "Tööobjekt", "Postkastipesa", "TLS"], "c": 1, "e": "Windowsi konteinerid kasutavad tööobjekte ja objektide nimeruume. Linuxis täidavad sama rolli cgroups ja nimeruumid (namespaces)."},
+{"q": "Kes planeerib lõimi Windowsis?", "o": ["Protsessihaldur", "Objektihaldur", "Tuum (planeerija)", "Teenusehaldur"], "c": 2, "e": "Protsessihaldur loob ja lõpetab protsesse ja lõimi, kuid ei otsusta, millal lõim töötab."},
+{"q": "Mis vahe on samaaegsusel (concurrency) ja paralleelsusel (parallelism)?", "o": ["Vahet pole", "Paralleelsus on ainult ühe tuumaga arvutis", "Samaaegsus tähendab, et programmid töötavad eri arvutites", "Samaaegsus: lõimed vahelduvad kiiresti ja näivad töötavat korraga; paralleelsus: lõimed töötavad päriselt korraga eri tuumadel"], "c": 3, "e": "Ühe tuumaga arvutis on ainult samaaegsus. Mitme tuumaga on mõlemat."},
+{"q": "Milline IPC-mehhanism on suurte andmemahtude jaoks kõige kiirem?", "o": ["Postkastipesa", "Aknasõnum", "Jagatud mälu", "Lõikelaud"], "c": 2, "e": "Jagatud mälus andmeid ei kopeerita: mõlemad protsessid näevad sama mälulehte. Juurdepääsu peab sünkroniseerima (ptk 8)."},
+{"q": "Miks on nimega torud ja RPC-liidesed ründepind?", "o": ["Need kasutavad palju mälu", "Need töötavad ainult võrgus", "Need on krüpteerimata failid", "Kui teenus ei kontrolli, kes ühendub, võib pahatahtlik programm saata käske või kasutada teenuse õigusi õiguste tõstmiseks"], "c": 3, "e": "IPC on vajalik, kuid iga liides peab kontrollima kliendi õigusi."},
+{"q": "EDR näitab ahelat WINWORD.EXE → cmd.exe → powershell.exe -w hidden -enc …. Mida see tõenäoliselt tähendab?", "o": ["Pahatahtlik makro käivitas peidetud ja kodeeritud skripti", "Word uuendab ennast", "Kasutaja avas PowerShelli ise", "See on tavaline Wordi käivitus"], "c": 0, "e": "Word ei pea tavaliselt käsuviiba ega PowerShelli käivitama. Peidetud aken ja kodeeritud käsk viitavad sellele, et ründaja peidab oma tegevust. Vanemprotsessi ja käsurea jälgimine on üks tõhusamaid ründe tuvastamise viise."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
