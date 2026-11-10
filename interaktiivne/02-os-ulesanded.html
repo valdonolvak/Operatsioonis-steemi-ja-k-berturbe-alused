@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 2 – operatsioonisüsteemi ülesanded: interaktiivne leht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--user:#3b6d11;--user-bg:#eaf3de;--app:#854f0b;--app-bg:#faeeda;--os:#185fa5;--os-bg:#e6f1fb;--hw:#5f4b8b;--hw-bg:#eeeaf7;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--user:#c0dd97;--user-bg:#27500a;--app:#fac775;--app-bg:#633806;--os:#85b7eb;--os-bg:#0c447c;--hw:#c9b8f0;--hw-bg:#3b2d5c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+button.btn{font:inherit;font-size:15px;padding:.45rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+/* kihid */
+.sim{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:700px){.sim{grid-template-columns:1fr}}
+.layers{display:flex;flex-direction:column;gap:6px}
+.layer{border-radius:10px;padding:.6rem .9rem;border:2px solid transparent;transition:border-color .2s,box-shadow .2s}
+.layer h3{margin:0;font-size:14px;font-weight:600;letter-spacing:.02em}
+.layer .parts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.part{font:inherit;font-size:13px;padding:.15rem .6rem;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.part.hot{border-color:currentColor;font-weight:600;box-shadow:0 0 0 2px currentColor inset}
+.L-user{background:var(--user-bg);color:var(--user)}.L-app{background:var(--app-bg);color:var(--app)}
+.L-os{background:var(--os-bg);color:var(--os)}.L-hw{background:var(--hw-bg);color:var(--hw)}
+.layer .part{color:inherit}
+.layer.active{border-color:currentColor;box-shadow:0 0 0 3px var(--bg),0 0 0 5px currentColor}
+.arrow{text-align:center;color:var(--muted);font-size:12px;line-height:1}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:10px;padding:.45rem .5rem;border-radius:8px;cursor:pointer;color:var(--muted)}
+.steps li .n{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px}
+.steps li.done{color:var(--text)}
+.steps li.cur{background:var(--bg);color:var(--text)}
+.steps li.cur .n{background:var(--accent);border-color:var(--accent);color:#fff}
+.view{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;margin-top:4px}
+.view.lm{background:var(--os-bg);color:var(--os)}.view.rh{background:var(--app-bg);color:var(--app)}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:3em}
+/* mängud */
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px}
+.opt{font:inherit;font-size:15px;text-align:left;padding:.6rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+/* sorteerimine */
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:120px}
+.bucket h3{font-size:14px;font-weight:600;margin:0 0 4px}
+.bucket .hint{margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;padding:.3rem .8rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px}
+/* riistvara */
+.hw{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:600px){.hw{grid-template-columns:1fr}.buckets{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:8px}
+.m{font:inherit;font-size:15px;text-align:left;padding:.55rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.m.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.m.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok);cursor:default}
+.m.bad{animation:shake .35s;border-color:var(--bad-line)}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/02-os-i-ulesanded.md">← Peatükk 2</a> · <a href="02-test.html">Test →</a></nav>
+<h1>Operatsioonisüsteemi ülesanded – proovi ise</h1>
+<p>Operatsioonisüsteem on vahendaja rakenduste ja riistvara vahel. Ta peidab riistvara keerukuse (<strong>laiendatud masin</strong>) ja jagab ressursse programmide vahel (<strong>ressursihaldur</strong>). Sellel lehel näed, kuidas see praktikas käib, ja saad oma teadmisi kontrollida.</p>
+<div class="toc"><a href="#ctrls">1. Ctrl+S samm-sammult</a><a href="#kes">2. Kes selle eest vastutab?</a><a href="#tarkvara">3. Süsteemi- või rakendustarkvara?</a><a href="#riistvara">4. Tänapäeva riistvara</a></div>
+
+<!-- 1 -->
+<section id="ctrls">
+<h2>1. Mis juhtub, kui vajutad Wordis Ctrl+S</h2>
+<p>Liigu samm-sammult läbi ja vaata, millises kihis iga samm toimub. Kihi komponendil klõpsates näed, mida see teeb.</p>
+<div class="card sim">
+  <div>
+    <div class="layers" id="layers"></div>
+  </div>
+  <div>
+    <ol class="steps" id="steps"></ol>
+    <div class="row"><button class="btn" id="sprev">← Tagasi</button><button class="btn primary" id="snext">Järgmine samm →</button></div>
+  </div>
+</div>
+<div class="info" id="sinfo" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section id="kes">
+<h2>2. Kes selle eest vastutab?</h2>
+<p>Loe olukorda ja vali, millise operatsioonisüsteemi ülesandega on tegu. Ülesanded on samad, mis peatüki tabelis 2.2.</p>
+<div class="card" id="kcard" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section id="tarkvara">
+<h2>3. Süsteemi- või rakendustarkvara?</h2>
+<p><strong>Rakendustarkvara</strong> on mõeldud lõppkasutajale. <strong>Süsteemitarkvara</strong> on madala taseme programmid, mis hoiavad arvutit käigus või aitavad teisi programme luua ja hallata. Vali ülal programm ja klõpsa siis kastil, kuhu see kuulub.</p>
+<div class="pool chips" id="spool"></div>
+<div class="buckets">
+  <div class="bucket" data-b="sys" id="b-sys"><h3>Süsteemitarkvara</h3><p class="hint">OS, draiverid, kompilaatorid, haldustööriistad</p><div class="chips"></div></div>
+  <div class="bucket" data-b="app" id="b-app"><h3>Rakendustarkvara</h3><p class="hint">programmid lõppkasutaja tööks ja meelelahutuseks</p><div class="chips"></div></div>
+</div>
+<div class="row"><button class="btn" id="sreset">Alusta uuesti</button><button class="btn primary" id="scheck" disabled>Kontrolli</button></div>
+<div id="sres"></div>
+</section>
+
+<!-- 4 -->
+<section id="riistvara">
+<h2>4. Tänapäeva arvuti riistvara</h2>
+<p>Tänapäeva OS peab haldama palju rohkemat kui protsessor ja mälu. Vali vasakult komponent ja paremalt selle kirjeldus.</p>
+<div class="card">
+  <div class="hw"><div class="col" id="hwL"></div><div class="col" id="hwR"></div></div>
+  <div class="info" id="hwinfo" aria-live="polite">Vali komponent.</div>
+  <div class="row"><span class="hint" id="hwscore"></span><button class="btn" id="hwreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ---------- 1. Ctrl+S ---------- */
+const LAYERS=[
+ {id:'user',name:'Kasutaja',parts:[['kasutaja','Sina vajutad Ctrl+S. Kasutaja suhtleb ainult rakendusega ega pea teadma, kuidas salvestamine tehniliselt käib.']]},
+ {id:'app',name:'Rakendused',parts:[['Word','Word kutsub välja OS-i API funktsiooni „kirjuta fail“ (Windowsis nt WriteFile). Ta ei tea, kas fail on SSD-l, USB-pulgal või OneDrive’is.'],['brauser','Mängib samal ajal muusikat. Ka tema vajab protsessoriaega ja mälu.'],['viirusetõrje','Kontrollib salvestatud faili. OS annab ka talle oma osa ressurssidest.']]},
+ {id:'os',name:'Operatsioonisüsteem',parts:[['turvalisus','Turvaviitemonitor (SRM) kontrollib faili või kausta pääsuloendist (ACL), kas sul on lubatud sinna kirjutada.'],['failisüsteem','NTFS leiab kettal vaba ruumi, kirjutab faili andmed ja uuendab oma tabeleid (MFT). Logimine aitab pärast voolukatkestust kiiresti taastuda.'],['vahemälu','Vahemäluhaldur võtab andmed mällu vastu ja Word saab kohe edasi töötada. Kettale kirjutatakse veidi hiljem, kui sobib.'],['planeerija','Planeerija jagab protsessoriaega Wordi, brauseri ja viirusetõrje vahel, nii et kõik tunduvad töötavat korraga.'],['draiver','Salvestusdraiver tõlgib OS-i üldise „kirjuta plokid“ käsu konkreetse NVMe-kontrolleri keelde.']]},
+ {id:'hw',name:'Riistvara',parts:[['CPU','Täidab kõigi programmide käske. Planeerija otsustab, milline lõim millisel tuumal töötab.'],['RAM','Siin asuvad töötavad programmid ja vahemälus olevad andmed.'],['NVMe-SSD','SSD kontroller kirjutab andmed välkmällu. Ainult draiver teab, kuidas selle kontrolleriga suhelda.']]}
+];
+const STEPS=[
+ {t:'Sa vajutad Ctrl+S',L:'user',p:['kasutaja','Word'],v:null,i:'Kasutaja annab käsu rakendusele. Kõik järgmine toimub sinu eest peidetult.'},
+ {t:'Word kutsub välja „kirjuta fail“',L:'app',p:['Word'],v:'lm',i:'Rakendus ei pöördu kunagi otse riistvara poole. Ta kasutab OS-i ühtset liidest (API) ega pea teadma, kus fail tegelikult asub. See on <b>laiendatud masina</b> vaade: riistvara keerukus on peidetud.'},
+ {t:'OS kontrollib õigusi',L:'os',p:['turvalisus'],v:null,i:'Enne kirjutamist kontrollib OS, kas sul on õigus sellesse kausta kirjutada. Kui ei ole, saab Word vea „Juurdepääs keelatud“ ja ketta poole üldse ei pöörduta.'},
+ {t:'Failisüsteem leiab kettal ruumi',L:'os',p:['failisüsteem'],v:'lm',i:'NTFS otsustab, millistesse kettaplokkidesse andmed lähevad, ja uuendab oma tabeleid. Word ei tea plokkidest midagi, tema jaoks on olemas ainult „fail“.'},
+ {t:'Vahemälu võtab andmed vastu',L:'os',p:['vahemälu','RAM'],v:'rh',i:'Andmed jäävad esialgu mällu ja Word saab kohe edasi töötada. OS otsustab, millal on sobiv aeg kettale kirjutada. See on <b>ressursihalduri</b> otsus: kiirus ja ketta koormus on tasakaalus.'},
+ {t:'Draiver saadab käsu SSD-le',L:'hw',p:['draiver','NVMe-SSD'],v:'lm',i:'Draiver tõlgib üldise käsu konkreetse seadme keelde ja SSD kontroller kirjutab andmed välkmällu. Kui vahetad SSD teise tootja oma vastu, Word seda ei märka.'},
+ {t:'Samal ajal: kõik saavad oma osa',L:'os',p:['planeerija','CPU','brauser','viirusetõrje'],v:'rh',i:'Kogu selle aja mängib brauser muusikat ja viirusetõrje kontrollib faili. Planeerija jagab protsessoriaega ja mäluhaldur mälu, nii et kõik saavad oma osa ega sega üksteist. See on <b>ressursihalduri</b> vaade.'}
+];
+let step=0;
+function drawSim(){
+  const s=STEPS[step];
+  $('layers').innerHTML=LAYERS.map((L,n)=>(n?'<div class="arrow">▲▼</div>':'')+'<div class="layer L-'+L.id+(s.L===L.id?' active':'')+'"><h3>'+L.name+'</h3><div class="parts">'+L.parts.map(([p])=>'<button class="part'+(s.p.includes(p)?' hot':'')+'" data-p="'+p+'">'+p+'</button>').join('')+'</div></div>').join('');
+  $('steps').innerHTML=STEPS.map((x,n)=>'<li class="'+(n<step?'done':n===step?'cur':'')+'" data-n="'+n+'"><span class="n">'+(n+1)+'</span><span>'+x.t+(n===step&&x.v?'<br><span class="view '+x.v+'">'+(x.v==='lm'?'laiendatud masin':'ressursihaldur')+'</span>':'')+'</span></li>').join('');
+  $('sinfo').innerHTML='<strong>Samm '+(step+1)+'.</strong> '+s.i;
+  $('sprev').disabled=step===0;$('snext').textContent=step===STEPS.length-1?'Alusta uuesti':'Järgmine samm →';
+  document.querySelectorAll('#steps li').forEach(li=>li.onclick=()=>{step=+li.dataset.n;drawSim()});
+  document.querySelectorAll('.part').forEach(b=>b.onclick=()=>{const p=b.dataset.p;for(const L of LAYERS)for(const [n,t] of L.parts)if(n===p)$('sinfo').innerHTML='<strong>'+L.name+' → '+n+'.</strong> '+t});
+}
+$('sprev').onclick=()=>{step--;drawSim()};
+$('snext').onclick=()=>{step=step===STEPS.length-1?0:step+1;drawSim()};
+drawSim();
+
+/* ---------- 2. Kes vastutab ---------- */
+const TASKS=['Protsesside haldus','Mäluhaldus','Failide ja salvestuse haldus','Sisend ja väljund','Võrk','Turvalisus','Kasutajaliides'];
+const SC=[
+ ['Avad korraga brauseri, Spotify ja Wordi. Arvutil on 8 tuuma, kuid töötavaid lõimi on üle tuhande. Kes otsustab, milline lõim millal protsessorit kasutab?',0,'Planeerija (scheduler) jagab protsessoriaega lõimede vahel. Tegumihalduri vahekaardilt „Üksikasjad“ näed kõiki protsesse.'],
+ ['Avatud programmid vajavad kokku rohkem mälu, kui arvutis RAM-i on. Arvuti töötab aeglasemalt, kuid ei jookse kokku.',1,'Mäluhaldur viib vähem kasutatud mälulehed kettale saalefaili (pagefile.sys). See on virtuaalmälu.'],
+ ['Vigane programm üritab kirjutada teise programmi mällu. OS lõpetab vigase programmi, teised jätkavad tööd.',1,'Mälukaitse on mäluhalduri ülesanne: igal protsessil on oma aadressiruum ja võõrasse mällu kirjutamine põhjustab vea.'],
+ ['Kopeerid USB-pulgale faili nimega „Aruanne 2026 lõplik.docx“. Kopeerimisprogramm ei tea, kas pulgal on FAT32, exFAT või NTFS.',2,'Failisüsteemi draiver peidab vormingu erinevused. Programm kasutab ainult faile ja kaustu.'],
+ ['Ühendad uue USB-printeri. Windows tuvastab selle ja paigaldab draiveri ise.',3,'Plug and Play haldur tuvastab seadme ja S/V-haldur laadib draiveri. Ilma selleta peaks iga programm ise iga printerimudelit toetama.'],
+ ['Sülearvuti kaas suletakse ja arvuti läheb unerežiimi. Avamisel jätkub töö samast kohast.',3,'Toitehaldus on osa sisendi ja väljundi haldusest: OS käsib seadmetel minna säästurežiimi ja hiljem taastab nende oleku.'],
+ ['Avad kooli võrgukettal kausta \\\\server\\jagatud. Explorer näitab faile nagu kohalikul kettal.',4,'SMB-protokoll ja TCP/IP pinu toovad võrgu failid kohale. Rakenduse jaoks näeb see välja nagu tavaline kaust.'],
+ ['Brauser saadab päringu veebiserverile. Kes paneb andmed TCP/IP pakettidesse ja saadab need võrgukaardini?',4,'TCP/IP pinu on OS-i osa. Brauser kasutab sokleid (sockets) ega tea võrgukaardi tüübist midagi.'],
+ ['Kolleeg üritab avada sinu kodukausta ja saab teate „Juurdepääs keelatud“.',5,'Turvaviitemonitor (SRM) võrdleb kasutaja õigusi faili pääsuloendiga (ACL).'],
+ ['Sisestad sisselogimisel vale parooli kolm korda. Turvalogisse tekib sündmus 4625.',5,'LSASS kontrollib sisselogimist ja OS kirjutab sündmuse auditilogisse. Sündmuste vaaturist (Event Viewer) näed neid jaotises Security.'],
+ ['Administraator käivitab PowerShelli ja sisestab käsu Get-Process.',6,'Käsurealõikesüsteem (PowerShell) on kasutajaliides. Get-Process ise küsib andmed protsessihaldurilt.'],
+ ['Topeltklõpsad töölaual ikoonil ja programm käivitub.',6,'Graafiline kest (Explorer) on kasutajaliides. Protsessi loob protsessihaldur, kuid käsu annab kest.'],
+ ['Kaks programmi tahavad korraga kirjutada samasse faili. OS lubab ühel kirjutada ja teine peab ootama.',2,'Failisüsteem lukustab faili, et andmed ei läheks segi. Sellest tuleb teade „Faili kasutab teine protsess“.'],
+ ['Arvuti on 30 päeva järjest töötanud. Mõni programm on kogu aeg lõpetamata, kuigi aken on suletud.',0,'Protsess võib töötada ka ilma aknata, näiteks teenused. Protsesside haldus loob ja lõpetab protsesse ning jälgib nende olekut.']
+];
+let kq=shuffle(SC.map((_,i)=>i)),kp=0,ks={ok:0,n:0},kans=null,kopts=[];
+function drawK(){
+  if(kp>=kq.length){$('kcard').innerHTML='<p class="qtext">Tulemus: '+ks.ok+' / '+ks.n+'</p><p>'+(ks.ok===ks.n?'Suurepärane! Tunned OS-i ülesandeid hästi.':'Vaata peatüki tabel 2.2 uuesti üle.')+'</p><div class="row"><span></span><button class="btn primary" id="kagain">Alusta uuesti</button></div>';$('kagain').onclick=()=>{kq=shuffle(SC.map((_,i)=>i));kp=0;ks={ok:0,n:0};kans=null;drawK()};return}
+  const [q,c,e]=SC[kq[kp]];
+  if(kans===null)kopts=TASKS.map((t,i)=>i);
+  let h='<p class="score">Olukord '+(kp+1)+' / '+kq.length+' · õigeid '+ks.ok+'</p><p class="qtext">'+q+'</p><div class="opts">';
+  kopts.forEach(i=>{let cl='opt';if(kans!==null){cl+=i===c?' ok':i===kans?' bad':' dim'}h+='<button class="'+cl+'" data-i="'+i+'"'+(kans!==null?' disabled':'')+'>'+TASKS[i]+'</button>'});
+  h+='</div>';
+  if(kans!==null)h+='<div class="fb '+(kans===c?'ok':'bad')+'"><strong>'+(kans===c?'Õige!':'Vale. Õige: '+TASKS[c])+'</strong>'+e+'</div>';
+  h+='<div class="row"><span class="hint">'+(kans===null?'Vali üks ülesanne':'')+'</span><button class="btn primary" id="knext"'+(kans===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('kcard').innerHTML=h;
+  document.querySelectorAll('#kcard .opt').forEach(b=>b.onclick=()=>{kans=+b.dataset.i;ks.n++;if(kans===c)ks.ok++;drawK();$('knext').focus()});
+  $('knext').onclick=()=>{kp++;kans=null;drawK()};
+}
+drawK();
+
+/* ---------- 3. Süsteemi- vs rakendustarkvara ---------- */
+const SW=[['Windows 11','sys','Operatsioonisüsteem on süsteemitarkvara põhinäide.'],['NVIDIA graafikadraiver','sys','Draiver juhib riistvara ja töötab tuumarežiimis.'],['Microsoft Edge','app','Brauser on lõppkasutaja programm.'],['Excel','app','Tabelarvutus on kontoritöö rakendus.'],['Minecraft','app','Mäng on rakendustarkvara.'],['GCC kompilaator','sys','Kompilaator on arendaja tööriist, mis tõlgib lähtekoodi masinkoodiks. Seda loetakse süsteemitarkvaraks.'],['Tegumihaldur','sys','Haldustööriist, mis näitab ja juhib protsesse.'],['Spotify','app','Muusikarakendus lõppkasutajale.'],['PowerShell','sys','Käsurealõikesüsteem ja administraatori tööriist.'],['UEFI püsivara','sys','Püsivara käivitab arvuti ja laadib OS-i. See on madalaim tarkvarakiht.'],['Zoom','app','Videokõne rakendus.'],['Kettahaldus (diskmgmt.msc)','sys','Haldustööriist ketaste ja partitsioonide jaoks.'],['Photoshop','app','Pilditöötlus on lõppkasutaja töö.'],['Windows Defender','sys','Viirusetõrje on OS-i turvakomponent ja töötab osaliselt tuumarežiimis.']];
+let sset=[],splace={},ssel=null,schecked=false;
+function newSW(){sset=shuffle(SW.map((_,i)=>i)).slice(0,8);splace={};ssel=null;schecked=false;$('sres').innerHTML='';drawSW()}
+function chip(i,where){const b=document.createElement('button');let c='chip';if(ssel===i)c+=' sel';if(schecked&&where!=='pool')c+=SW[i][1]===where?' ok':' bad';b.className=c;b.textContent=SW[i][0];
+  b.onclick=()=>{if(schecked)return;if(where==='pool'){ssel=ssel===i?null:i}else{delete splace[i];ssel=i}drawSW()};return b}
+function drawSW(){
+  const pool=$('spool');pool.innerHTML='';
+  sset.filter(i=>!(i in splace)).forEach(i=>pool.appendChild(chip(i,'pool')));
+  if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik programmid on paigutatud. Vajuta „Kontrolli“.</span>';
+  for(const b of ['sys','app']){const box=document.querySelector('#b-'+b+' .chips');box.innerHTML='';sset.filter(i=>splace[i]===b).forEach(i=>box.appendChild(chip(i,b)))}
+  $('scheck').disabled=schecked||Object.keys(splace).length!==sset.length;
+}
+document.querySelectorAll('.bucket').forEach(bk=>bk.onclick=e=>{if(schecked||ssel===null||e.target.classList.contains('chip'))return;splace[ssel]=bk.dataset.b;ssel=null;drawSW()});
+$('scheck').onclick=()=>{schecked=true;drawSW();const wrong=sset.filter(i=>splace[i]!==SW[i][1]);
+  $('sres').innerHTML='<div class="fb '+(wrong.length?'bad':'ok')+'"><strong>'+(wrong.length?'Õigesti '+(sset.length-wrong.length)+' / '+sset.length:'Kõik õigesti!')+'</strong>'+wrong.map(i=>'<b>'+SW[i][0]+'</b> – '+SW[i][2]).join('<br>')+'</div>'};
+$('sreset').onclick=newSW;newSW();
+
+/* ---------- 4. Riistvara ---------- */
+const HW=[['Hübriidprotsessor (P- ja E-tuumad)','Jõudluse tuumad teevad rasket tööd, säästlikud tuumad taustatööd. OS-i planeerija peab otsustama, milline lõim millisele tuumale läheb.'],['GPU','Graafika ja paralleelarvutus. Tuhanded lihtsad arvutusüksused teevad sama tehet paljude andmetega korraga.'],['NPU','Tehisintellekti mudelite säästlik käitamine, nt kaameraefektid ja kohalikud Copilot+ funktsioonid.'],['TPM 2.0 / Pluton','Turvaprotsessor, mis hoiab krüptovõtmeid (BitLocker, Windows Hello) ja mõõdab käivitusahelat.'],['NVMe-SSD','Kiire salvesti otse PCIe-siinil. Palju kiirem kui SATA-liidesega ketas.'],['UEFI püsivara','Asendas BIOS-i, käivitab arvuti ja võimaldab Secure Booti.'],['RAM','Põhimälu, kus asuvad töötavad programmid ja nende andmed. Von Neumanni arhitektuuris on käsud ja andmed samas mälus.']];
+let hL=[],hR=[],hs=null,hm=new Set(),htries=0;
+function newHW(){hL=shuffle(HW.map((_,i)=>i));hR=shuffle(HW.map((_,i)=>i));hs=null;hm=new Set();htries=0;$('hwinfo').textContent='Vali komponent.';drawHW()}
+function drawHW(){
+  $('hwL').innerHTML=hL.map(i=>'<button class="m'+(hm.has(i)?' ok':hs===i?' sel':'')+'" data-i="'+i+'"'+(hm.has(i)?' disabled':'')+'>'+HW[i][0]+'</button>').join('');
+  $('hwR').innerHTML=hR.map(i=>'<button class="m'+(hm.has(i)?' ok':'')+'" data-r="'+i+'"'+(hm.has(i)?' disabled':'')+'>'+HW[i][1]+'</button>').join('');
+  $('hwscore').textContent='Paare leitud '+hm.size+' / '+HW.length+' · katseid '+htries;
+  document.querySelectorAll('#hwL .m').forEach(b=>b.onclick=()=>{hs=+b.dataset.i;$('hwinfo').innerHTML='Valitud: <b>'+HW[hs][0]+'</b>. Vali nüüd kirjeldus.';drawHW()});
+  document.querySelectorAll('#hwR .m').forEach(b=>b.onclick=()=>{
+    if(hs===null){$('hwinfo').textContent='Vali kõigepealt vasakult komponent.';return}
+    htries++;const r=+b.dataset.r;
+    if(r===hs){hm.add(hs);$('hwinfo').innerHTML='<b>Õige!</b> '+HW[hs][0]+': '+HW[hs][1];hs=null;drawHW();if(hm.size===HW.length)$('hwinfo').innerHTML='<b>Kõik paarid leitud '+htries+' katsega!</b> Neid kõiki peab tänapäeva OS haldama.'}
+    else{b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),400);$('hwinfo').innerHTML='See kirjeldus ei sobi komponendile <b>'+HW[hs][0]+'</b>. Proovi uuesti.';$('hwscore').textContent='Paare leitud '+hm.size+' / '+HW.length+' · katseid '+htries}
+  });
+}
+$('hwreset').onclick=newHW;newHW();
+</script>
+</body>
+</html>
