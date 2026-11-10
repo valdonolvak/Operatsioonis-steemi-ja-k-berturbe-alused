@@ -20,55 +20,63 @@ Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võr
 
 **1985 · Windows 1.0** – võrreldes puhta MS-DOS-iga:
 
-- graafiline kasutajaliides ja hiirega juhtimine DOS-i peal;
-- aknad paigutusid kõrvuti (tiled), üksteise peale neid tõsta ei saanud;
-- koostööpõhine (cooperative) multitegumtöö: mitu Windowsi rakendust korraga, kuid iga programm pidi ise juhtimise loovutama;
-- ühised seadmedraiverid ekraanile ja printerile – rakendus ei pidanud iga printerit eraldi toetama;
-- kaasas rakendused: MS-DOS Executive (failihaldur), Paint, Write, Notepad, Calculator, Calendar, Cardfile.
+- **Graafiline kasutajaliides DOS-i peal** – käskude tippimise asemel sai programme avada ja faile hallata ekraanil klõpsates. Windows ise oli DOS-i rakendus: arvuti käivitus DOS-i ja Windows pandi käima käsuga `win`.
+- **Hiir ja kõrvuti aknad** – hiirest sai tavaline sisendseade. Aknad jaotati ekraanil kõrvuti (tiled) ega saanud üksteise peale ulatuda, sest tolleaegne graafikariistvara oli nõrk.
+- **Koostööpõhine multitegumtöö** (cooperative multitasking) – mitu programmi võis olla korraga avatud, kuid iga programm pidi ise juhtimise teistele loovutama. Kui programm seda ei teinud, jäi kogu süsteem seisma.
+- **Ühised seadmedraiverid** – ekraani ja printeri draiver paigaldati üks kord Windowsile ning kõik Windowsi rakendused said seda kasutada. DOS-is pidi iga programm (nt tekstitöötlus) ise iga printerimudelit toetama.
+- **Kaasasolevad rakendused** – MS-DOS Executive (failihaldur), Paint, Write, Notepad, Calculator, Calendar ja Cardfile näitasid, milleks graafilist liidest kasutada saab.
+
+*Allikad:* [Wikipedia: Windows 1.0](https://en.wikipedia.org/wiki/Windows_1.0)
 
 **1987 · Windows 2.0 / 2.1** – võrreldes 1.0-ga:
 
-- üksteise peale ulatuvad (overlapping) aknad;
-- akende minimeerimine ja maksimeerimine;
-- klaviatuuri kiirklahvid menüüde ja akende juhtimiseks;
-- DDE (Dynamic Data Exchange) – rakendused said omavahel andmeid vahetada;
-- Windows/386 kasutas 386-protsessori virtuaalset 8086-režiimi: mitu DOS-programmi said töötada korraga eraldi akendes;
-- ilmusid esimesed Windowsi Word ja Excel.
+- **Üksteise peale ulatuvad aknad** (overlapping windows) – aknaid sai vabalt paigutada ja üksteise peale tõsta, nagu paberilehti laual. Sellest sai graafiliste kasutajaliideste standard.
+- **Minimeerimine ja maksimeerimine** – akna sai peita ikooniks või laiendada üle ekraani. Nii oli mitme programmiga töötamine mugavam.
+- **Kiirklahvid** – menüüsid ja aknaid sai juhtida ka klaviatuuriga. Sellest tulid ka kombinatsioonid, mida kasutatakse Windowsis siiani.
+- **DDE** (Dynamic Data Exchange) – programmid said omavahel andmeid vahetada, nt Exceli tabeli muutus kajastus automaatselt Wordi dokumendis. See oli esimene samm rakendustevahelise koostöö suunas.
+- **Windows/386** – kasutas 386-protsessori virtuaalset 8086-režiimi: iga DOS-programm sai oma „virtuaalse arvuti“ ja mitu DOS-programmi töötasid korraga eraldi akendes. Samal ajal ilmusid ka esimesed Windowsi Word ja Excel.
+
+*Allikad:* [Wikipedia: Windows 2.0](https://en.wikipedia.org/wiki/Windows_2.0) · [Wikipedia: Windows 2.1x](https://en.wikipedia.org/wiki/Windows_2.1x)
 
 **1990 · Windows 3.0, 1992 · Windows 3.1, 1993 · Windows for Workgroups 3.11** – võrreldes 2.x-ga:
 
-- kaitstud režiim (protected mode): ligipääs üle 640 KB mälule, 386-režiimis ka virtuaalmälu (saalefail);
-- Program Manager ja File Manager, uus kolmemõõtmeline välimus ja VGA 16 värvi;
-- 3.1: TrueType skaleeritavad fondid;
-- 3.1: OLE – objekti (nt Exceli tabeli) põimimine teise dokumenti;
-- 3.1: multimeedia tugi (heli, MCI), lohista-ja-kukuta (drag and drop);
-- 3.11: sisseehitatud võrgutugi – failide ja printerite jagamine töörühmas.
+- **Kaitstud režiim** (protected mode) – Windows sai kasutada kogu arvuti mälu, mitte ainult DOS-i 640 KB piiri. 386-režiimis lisandus virtuaalmälu (saalefail kettal), nii et korraga sai avada rohkem programme, kui füüsilisse mällu mahtus.
+- **Program Manager ja File Manager** – programmid olid grupeeritud ikoonidena ühte aknasse ja failihaldur näitas kaustapuud. Windowsiga oli nüüd lihtne töötada ka arvutit vähem tundval inimesel ning 3.0-st sai esimene suur müügiedu.
+- **TrueType fondid** (3.1) – fondid olid skaleeritavad: sama kiri nägi igas suuruses ühtviisi hea välja nii ekraanil kui ka printeril („mida näed, seda saad“, WYSIWYG).
+- **OLE ja lohista-ja-kukuta** (3.1) – ühte dokumenti sai põimida teise programmi objekti (nt Exceli tabeli Wordi), mis avanes topeltklõpsuga oma programmis. Faile sai liigutada hiirega lohistades.
+- **Võrgutugi** (3.11) – arvutid said töörühmas faile ja printereid jagada ilma eraldi võrgutarkvarata. Nii sai Windowsist ka kontorivõrkude operatsioonisüsteem.
+
+*Allikad:* [Wikipedia: Windows 3.0](https://en.wikipedia.org/wiki/Windows_3.0) · [Wikipedia: Windows 3.1x](https://en.wikipedia.org/wiki/Windows_3.1x)
 
 **1995 · Windows 95** – võrreldes Windows 3.1-ga:
 
-- Start-menüü, tegumiriba ja töölaud; Program Manageri asemel Explorer;
-- 32-bitised (Win32) rakendused ja eelisjärjestusega (preemptive) multitegumtöö 32-bitistele programmidele;
-- Plug and Play – riistvara tuvastati ja seadistati suurel määral automaatselt;
-- pikad failinimed (kuni 255 märki, VFAT);
-- sisseehitatud TCP/IP ja sissehelistamisvõrgu (dial-up) tugi;
-- paremklõpsu kontekstimenüü ja otseteed (shortcuts).
+- **Start-menüü, tegumiriba ja töölaud** – kõik programmid leidis Start-nupust ja avatud aknad olid tegumiribal näha. See liidese põhimõte kehtib Windowsis tänini.
+- **32-bitised rakendused** (Win32) – uued programmid said kasutada rohkem mälu ja töötasid kiiremini. Eelisjärjestusega multitegumtöös jagab OS ise protsessori aega, nii et üks 32-bitine programm ei saa teisi kinni hoida. Vanad 16-bitised programmid jagasid aga endiselt ühte ühist ruumi.
+- **Plug and Play** – OS tuvastas uue seadme (nt helikaardi) ja seadistas selle võimaluse korral ise. Varem pidi kasutaja ise draivereid paigaldama ja IRQ-sid ning muid ressursse käsitsi määrama.
+- **Pikad failinimed** – DOS-i 8.3-vormingu (nt `ARUANNE1.DOC`) asemel sai faili nimeks panna kuni 255 märki, nt „Aruanne 2025 lõplik.doc“.
+- **Sisseehitatud TCP/IP** – interneti protokollide tugi oli OS-is kaasas ja sissehelistamisega sai võrku ühendada ilma lisatarkvarata. See soodustas interneti levikut koduarvutites.
+
+*Allikad:* [Wikipedia: Windows 95](https://en.wikipedia.org/wiki/Windows_95)
 
 **1998 · Windows 98 / 98 SE** – võrreldes Windows 95-ga:
 
-- Internet Explorer integreeriti kesta (Active Desktop, veebilaadne kaustavaade);
-- laialdane USB tugi;
-- FAT32 failisüsteem kõigile kasutajatele (suuremad kettad, väiksem raiskamine);
-- Windows Update veebiteenus;
-- WDM draiverimudel (ühine Windows 2000-ga), ACPI toitehaldus ja mitme monitori tugi;
-- 98 SE: interneti ühiskasutus (Internet Connection Sharing).
+- **Internet Explorer integreeriti kesta** – brauser oli OS-i osa ning kaustu sai vaadata nagu veebilehti (Active Desktop). Sellest kasvas USA-s Microsofti vastu monopolikohtuasi.
+- **Laialdane USB tugi** – hiire, klaviatuuri, printeri ja muud seadmed sai ühendada ühe universaalse pistikuga, ilma arvutit taaskäivitamata.
+- **FAT32 failisüsteem** – toetas suuremaid kettaid ja salvestas väikesed failid tõhusamalt (väiksemad klastrid), nii et kettaruumi raisati vähem.
+- **Windows Update** – parandusi ja draivereid sai alla laadida Microsofti veebilehelt, ilma uut plaati ostmata. Sellest kasvas välja tänane uuendussüsteem.
+- **WDM-draiverid, ACPI ja mitu monitori** – sama draiverimudel töötas nii Windows 98-s kui ka Windows 2000-s. ACPI võimaldas OS-il juhtida toidet (unerežiim, väljalülitus) ja ühe arvutiga sai kasutada mitut ekraani. 98 SE lisas interneti ühiskasutuse: üks arvuti sai jagada internetiühendust teistega.
+
+*Allikad:* [Wikipedia: Windows 98](https://en.wikipedia.org/wiki/Windows_98)
 
 **2000 · Windows ME** – võrreldes Windows 98-ga (viimane DOS-põhine Windows):
 
-- System Restore – süsteemi taastamine varasemasse punkti;
-- System File Protection – kaitses süsteemifaile ülekirjutamise eest;
-- automaatsed uuendused (Automatic Updates);
-- DOS-i reaalrežiim peideti, mis kiirendas käivitumist, kuid halvendas vanade DOS-programmide ühilduvust;
-- Windows Movie Maker, Windows Media Player 7 ja UPnP tugi.
+- **System Restore** (süsteemitaaste) – süsteem salvestas taastepunkte ja ebaõnnestunud paigalduse järel sai arvuti seadistused varasemasse olekusse tagasi viia, ilma et kasutaja failid kaoksid.
+- **Süsteemifailide kaitse** – takistas programmidel olulisi Windowsi faile vanemate versioonidega üle kirjutada. Varem oli see sage põhjus, miks süsteem pärast tarkvara paigaldamist katki läks („DLL-põrgu“).
+- **Automaatsed uuendused** – Windows laadis uuendused ise taustal alla ja pakkus neid paigaldada, nii et kasutaja ei pidanud meeles pidama Windows Update'i lehel käimist.
+- **DOS-i reaalrežiim peideti** – arvuti käivitus kiiremini, kuid paljud vanad DOS-i programmid ja mängud enam ei töötanud. ME-l oli ka halb stabiilsuse maine, mis kiirendas üleminekut NT-põhisele XP-le.
+- **Multimeedia** – Windows Movie Maker (videotöötlus), Windows Media Player 7 ja UPnP (võrguseadmete automaatne leidmine) näitasid, et koduarvutit kasutati üha enam meedia jaoks.
+
+*Allikad:* [Wikipedia: Windows Me](https://en.wikipedia.org/wiki/Windows_Me)
 
 ### 1.3 Windows NT
 
@@ -103,116 +111,130 @@ Joonis: NT-põhise Windowsi versioonid Windows NT 3.1-st kuni Windows 11 26H2-ni
 
 **1993 · Windows NT 3.1** – võrreldes Windows 3.1-ga:
 
-- täielikult 32-bitine tuum, mis ei sõltu MS-DOS-ist;
-- eelisjärjestusega multitegumtöö ja mitmelõimelisus (threads), mitme protsessori (SMP) tugi;
-- mälukaitse: igal protsessil on oma aadressiruum, üks vigane programm ei jooksuta kogu süsteemi kokku;
-- NTFS failisüsteem koos ACL-ipõhiste õigustega;
-- turvamudel: kohustuslik sisselogimine (Ctrl+Alt+Del), kasutajakontod, turvalogi (audit);
-- kaasaskantavus: riistvara abstraktsioonikiht (HAL) võimaldas töötada x86-, MIPS- ja Alpha-protsessoritel.
+- **Täielikult 32-bitine tuum, mis ei sõltu MS-DOS-ist** – NT on iseseisev operatsioonisüsteem, mis haldab riistvara ise. Kõik selle all töötab NT reeglite järgi, mitte DOS-i piirangutega.
+- **Eelisjärjestusega multitegumtöö, lõimed ja SMP** – OS-i ajastaja otsustab, millal iga programm protsessorit kasutab, nii et ükski programm ei saa teisi kinni hoida. Programm võib jaguneda mitmeks lõimeks (thread), mis töötavad paralleelselt. SMP tähendab mitme protsessori samaaegset kasutamist ja seetõttu sobis NT ka serveriks.
+- **Mälukaitse** – igal protsessil on oma aadressiruum ja ta ei saa teise protsessi mälu lugeda ega muuta. Kui üks programm jookseb kokku, suletakse see ja muud programmid jätkavad tööd.
+- **NTFS ja ACL-ipõhised õigused** – NTFS failisüsteem säilitab iga faili ja kausta juures pääsuloendi (ACL): kes tohib lugeda, muuta või kustutada. Logimine (journaling) aitab ketta pärast voolukatkestust kiiresti korda saada.
+- **Turvamudel** – kasutaja peab sisse logima (Ctrl+Alt+Del, mida ükski programm järele teha ei saa), igal kasutajal on oma konto ja õigused ning olulised sündmused kirjutatakse turvalogisse (audit). DOS-is ja Windows 9x-is tõelist kasutajate eristamist polnud.
+- **Kaasaskantavus ja HAL** – riistvara abstraktsioonikiht (HAL) peidab protsessori ja emaplaadi erinevused, nii et sama NT töötas x86-, MIPS- ja Alpha-arvutitel. Sama põhimõte võimaldab tänapäeval Windowsit käitada ka ARM-protsessoritel.
+
+*Allikad:* [Wikipedia: Windows NT 3.1](https://en.wikipedia.org/wiki/Windows_NT_3.1) · Yosifovich jt (2017), *Windows Internals*, 7. tr, 1. osa, ptk 1–2
 
 **1996 · Windows NT 4.0** – võrreldes NT 3.51-ga:
 
-- Windows 95 kasutajaliides (Start-menüü, tegumiriba, Explorer);
-- graafikaalamsüsteem (GDI) ja ekraanidraiverid viidi tuumarežiimi – kiirem, kuid vigane draiver võis nüüd tuuma kokku jooksutada;
-- Task Manager (tegumihaldur);
-- serveris IIS veebiserver ja tugevam domeenipõhine võrguhaldus;
-- Internet Explorer ja DirectX-i (piiratud) tugi.
+- **Windows 95 kasutajaliides** – NT sai Start-menüü, tegumiriba ja Exploreri. Kasutaja jaoks nägi turvaline NT nüüd välja samasugune nagu tuttav Windows 95, mis aitas NT-l ettevõtetes levida.
+- **Graafika tuumarežiimi** – graafikaalamsüsteem (GDI) ja ekraanidraiverid viidi kasutajarežiimist tuumarežiimi. Graafika muutus kiiremaks, kuid vigane graafikadraiver võis nüüd kogu süsteemi kokku jooksutada (sinine ekraan). See on näide, kus kiiruse nimel loobuti osaliselt töökindlusest.
+- **Task Manager** (tegumihaldur) – sai vaadata töötavaid protsesse, protsessori ja mälu koormust ning hangunud programmi sulgeda. Tegumihaldur on üks administraatori põhitööriistu tänini.
+- **IIS ja domeenivõrgud** – serveris oli kaasas IIS veebiserver, nii et NT Serverist sai ka veebiserver. Domeenide abil sai paljude arvutite kasutajakontosid hallata keskselt.
+- **Internet Explorer ja DirectX** – brauser oli kaasas, DirectX-i (mängude ja multimeedia liidese) tugi oli aga piiratud. Seetõttu jäi NT 4.0 eelkõige tööarvutite ja serverite süsteemiks ning koduarvutites jätkus Windows 9x.
+
+*Allikad:* [Wikipedia: Windows NT 4.0](https://en.wikipedia.org/wiki/Windows_NT_4.0)
 
 **2000 · Windows 2000** – võrreldes NT 4.0-ga:
 
-- Active Directory – kataloogiteenus domeeni kasutajate, arvutite ja ressursside haldamiseks;
-- grupipoliitika (Group Policy) arvutite ja kasutajate tsentraalseks seadistamiseks;
-- Kerberos autentimine (NTLM-i kõrval);
-- Plug and Play, ACPI ja USB tugi NT-liinis;
-- NTFS 5.0: failide krüpteerimine (EFS), kettakvoodid; dünaamilised kettad ja tarkvaraline RAID;
-- Windows Installer (MSI) tarkvara paigaldamiseks.
+- **Active Directory** – kataloogiteenus, kus kasutajad, arvutid, grupid ja printerid on hierarhilises andmebaasis (domeenid, organisatsiooniüksused). NT 4.0 lame domeenimudel ei sobinud suurtele asutustele. AD on tänini enamiku organisatsioonide identiteedihalduse alus.
+- **Grupipoliitika** (Group Policy, GPO) – administraator saab ühe reegliga seadistada tuhandeid arvuteid, nt parooli nõuded, tulemüüri, paigaldatava tarkvara ja töölaua piirangud. Varem pidi iga arvutit eraldi seadistama.
+- **Kerberos autentimine** – piletipõhine autentimine, kus parooli ei saadeta üle võrgu. Kerberos on turvalisem ja kiirem kui vana NTLM. NTLM jäi ühilduvuse jaoks alles ja sellest loobutakse alles nüüd (vt Windows Server 2025).
+- **Plug and Play, USB ja ACPI** – NT-liin sai lõpuks samad riistvara mugavused, mis Windows 98-l. Nii sai NT-põhist süsteemi kasutada ka sülearvutis (toitehaldus, unerežiim) ja koduarvutis.
+- **EFS, kettakvoodid ja dünaamilised kettad** – EFS krüpteerib üksikuid faile kasutaja võtmega. Kvoodid piiravad, kui palju kettaruumi kasutaja tohib võtta. Dünaamilised kettad võimaldavad tarkvaralist RAID-i (peegeldamine, triibutamine).
+- **Windows Installer** (MSI) – standardne paigaldusvorming, mis oskab paigalduse ebaõnnestumisel muudatused tagasi võtta ja mida saab grupipoliitikaga arvutitesse laiali jagada.
+
+*Allikad:* [Wikipedia: Windows 2000](https://en.wikipedia.org/wiki/Windows_2000) · [Microsoft: Overview of Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) · [Microsoft: Kerberos Authentication Overview](https://learn.microsoft.com/windows-server/security/kerberos/kerberos-authentication-overview)
 
 **2001 · Windows XP** – võrreldes Windows 2000 ja ME-ga:
 
-- NT-tuum ka koduarvutites (Home ja Professional väljaanne), DOS-liin lõppes;
-- uus Luna kasutajaliides ja ClearType fondisilumine;
-- kiire kasutajavahetus (Fast User Switching) – mitu kasutajat sisse logitud korraga;
-- Remote Desktop ja Remote Assistance;
-- ühilduvusrežiim (Compatibility mode) vanadele programmidele;
-- tooteaktiveerimine (Product Activation);
-- SP2 (2004): Windows Firewall vaikimisi sees ja Security Center – esimene suur turvapööre.
+- **NT-tuum ka koduarvutites** – XP Home ja Professional ühendasid kaks arendusliini. Ka kodukasutajad said NT stabiilsuse, mälukaitse ja õigused ning DOS-põhine liin lõppes.
+- **Luna kasutajaliides ja ClearType** – värvikam, kodukasutajale mõeldud välimus. ClearType muutis teksti LCD-ekraanidel teravamaks, kasutades ekraanipikslite värvilisi alampiksleid.
+- **Kiire kasutajavahetus** – mitu kasutajat võis olla korraga sisse logitud ja nende vahel sai vahetada programme sulgemata. See oli võimalik just NT mitme kasutaja toe tõttu.
+- **Remote Desktop ja Remote Assistance** – arvutit sai kasutada üle võrgu, nagu istuks selle taga. Abi sai kutsuda sõbra või IT-toe, kes nägi ekraani ja sai aidata.
+- **Ühilduvusrežiim** – vanu Windows 9x jaoks tehtud programme sai käivitada nii, et Windows teeskles nende jaoks vanemat versiooni. See oli üleminekul DOS-liinilt NT-le hädavajalik.
+- **Tooteaktiveerimine** – litsents seoti arvuti riistvaraga ja aktiveeriti interneti või telefoni teel, et piirata piraatkoopiate kasutamist.
+- **SP2 (2004): tulemüür ja Security Center** – pärast suuri ussirünnakuid (Blaster, Sasser) lülitati Windows Firewall vaikimisi sisse ja Security Center hakkas jälgima tulemüüri, uuenduste ning viirusetõrje olekut. Sellest algas Microsofti „vaikimisi turvaline“ mõtteviis.
+
+*Allikad:* [Wikipedia: Windows XP](https://en.wikipedia.org/wiki/Windows_XP) · [Wikipedia: Windows XP SP2](https://en.wikipedia.org/wiki/Windows_XP#Service_Pack_2)
 
 **2007 · Windows Vista** – võrreldes XP-ga:
 
-- UAC (User Account Control) – ka administraator töötab vaikimisi tavaõigustega ja kinnitab tõstetud õigusi eraldi;
-- BitLocker kettakrüpteerimine;
-- uus graafika- ja draiverimudel (WDDM) ning Aero kasutajaliides;
-- ASLR, kohustuslik draiverite allkirjastamine ja tuumakaitse PatchGuard 64-bitises versioonis;
-- Windows Defender (nuhkvaratõrje) kaasas;
-- uus TCP/IP pinu, IPv6 vaikimisi sees; indekseeritud otsing Start-menüüs.
+- **UAC** (User Account Control) – XP-s töötas enamik kasutajaid administraatoriõigustega, nii et ka pahavara sai kõik õigused. Vistas töötab ka administraator vaikimisi tavaõigustega ja süsteemi muutmiseks tuleb kinnitada eraldi aknas. See on vähima õiguse põhimõtte rakendus.
+- **BitLocker** – krüpteerib terve süsteemiketta, nii et varastatud sülearvutist ei saa andmeid lugeda. Võtit hoitakse TPM-kiibis.
+- **WDDM ja Aero** – uus graafikadraiverite mudel viis suure osa draiverist kasutajarežiimi: kui graafikadraiver jookseb kokku, taaskäivitatakse see ilma sinise ekraanita. Aero kasutas graafikakaarti akende joonistamiseks (läbipaistvus, animatsioonid).
+- **ASLR, PatchGuard ja draiverite allkirjastamine** – ASLR paigutab programmid mällu juhuslikult, mis teeb rünnakud raskemaks. PatchGuard keelab tuuma muutmise. 64-bitises Windowsis peavad draiverid olema digitaalselt allkirjastatud, mistõttu pahatahtliku draiveri paigaldamine on raskem.
+- **Windows Defender ja uus võrgupinu** – nuhkvaratõrje oli OS-is kaasas. Ümber kirjutatud TCP/IP pinu toetas IPv6 vaikimisi. Kiirotsing indekseeris failid, nii et Start-menüüst leiab faili nime või sisu järgi.
+
+*Allikad:* [Wikipedia: Windows Vista](https://en.wikipedia.org/wiki/Windows_Vista) · [Microsoft: How User Account Control works](https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works) · [Microsoft: BitLocker overview](https://learn.microsoft.com/windows/security/operating-system-security/data-protection/bitlocker)
 
 **2009 · Windows 7** – võrreldes Vistaga:
 
-- uus tegumiriba: programmide kinnitamine (pin) ja hüpikloendid (jump lists);
-- akende haldus Aero Snap, Peek ja Shake;
-- seadistatav ja vähem pealetükkiv UAC;
-- BitLocker To Go irdketaste krüpteerimiseks;
-- AppLocker (lubatud rakenduste nimekiri) ja DirectAccess Enterprise-väljaandes;
-- XP Mode (virtuaalne Windows XP vanadele rakendustele), teegid (Libraries) ja HomeGroup;
-- väiksem mälukasutus ja kiirem töö samal riistvaral.
+- **Uus tegumiriba ja hüpikloendid** (jump lists) – programme sai tegumiribale kinnitada (pin) ning paremklõpsuga avanesid programmi viimati kasutatud failid. Tegumiriba toimib nii tänini.
+- **Aero Snap, Peek ja Shake** – akna lohistamine ekraani servale paigutab selle pool ekraani suuruseks. Peek näitab korraks töölauda ja Shake minimeerib kõik teised aknad. Need lihtsustasid mitme aknaga töötamist.
+- **Seadistatav UAC** – Vista UAC küsis kinnitust nii tihti, et kasutajad hakkasid seda pimesi kinnitama või lülitasid selle välja. Windows 7-s sai valida taseme ning tavalised sätete muudatused enam kinnitust ei nõudnud. Hea turve peab olema ka kasutatav.
+- **BitLocker To Go** – USB-mälupulga ja välise ketta krüpteerimine. See on oluline, sest kadunud mälupulk on sage andmelekke põhjus.
+- **AppLocker ja DirectAccess** – AppLockeriga saab administraator määrata, milliseid programme tohib käivitada (lubatud rakenduste nimekiri). DirectAccess ühendas sülearvuti automaatselt ettevõtte võrguga ilma käsitsi VPN-ita.
+- **XP Mode ja jõudlus** – vanu XP rakendusi sai käitada virtuaalses Windows XP-s. Windows 7 kasutas vähem mälu ja töötas samal riistvaral kiiremini kui Vista, mistõttu sellest sai pikaks ajaks ettevõtete standard.
+
+*Allikad:* [Wikipedia: Windows 7](https://en.wikipedia.org/wiki/Windows_7) · [Microsoft: How UAC Works (Windows 7)](https://technet.microsoft.com/en-us/library/dd835548)
 
 **2012 · Windows 8, 2013 · Windows 8.1** – võrreldes Windows 7-ga:
 
-- puuteekraanile mõeldud Start-ekraan paanidega ja täisekraanirakendused;
-- Windows Store – rakendused poest, liivakastis (AppContainer);
-- UEFI Secure Boot ja ELAM (pahavaratõrje käivitub enne teisi draivereid);
-- sisseehitatud viirusetõrje (Windows Defender asendas Microsoft Security Essentialsi);
-- sisselogimine Microsofti kontoga ja sätete sünkroonimine;
-- Hyper-V klientarvutis, Storage Spaces, File History, arvuti lähtestamine (Reset/Refresh);
-- kiire käivitus (Fast Startup); 8.1 tõi tagasi Start-nupu ja töölauale käivitumise.
+- **Start-ekraan ja puuteliides** – Start-menüü asemel avanes täisekraanil paanidega Start-ekraan, mis oli mõeldud tahvelarvutitele. Lauaarvuti kasutajad pidasid seda ebamugavaks. 8.1 tõi Start-nupu tagasi ja lubas arvutil käivituda otse töölauale.
+- **Windows Store ja AppContainer** – rakendused tulid kontrollitud poest ja töötasid liivakastis (AppContainer): rakendus näeb ainult seda, milleks tal on luba (nt kaamera, failid). See on mobiilsete OS-ide turvamudel.
+- **UEFI Secure Boot ja ELAM** – Secure Boot kontrollib, et alglaadur ja tuum on digitaalselt allkirjastatud, nii et alglaadimisviirus (bootkit) ei saa käivituda enne OS-i. ELAM laseb viirusetõrjel käivituda enne teisi draivereid.
+- **Sisseehitatud viirusetõrje** – Windows Defender sai täisväärtuslikuks viirusetõrjeks (varem oli see eraldi Microsoft Security Essentials). Igal Windowsi arvutil on nüüd vaikimisi pahavarakaitse.
+- **Microsofti konto, Hyper-V ja lähtestamine** – Microsofti kontoga sisse logides sünkroonitakse sätted arvutite vahel. Hyper-V võimaldas Pro-väljaandes virtuaalmasinaid käitada. Reset/Refresh taastas Windowsi ilma täieliku uuesti paigaldamiseta. Kiire käivitus (Fast Startup) kasutab talveunerežiimi tehnikat, et arvuti käivituks sekunditega.
+
+*Allikad:* [Wikipedia: Windows 8](https://en.wikipedia.org/wiki/Windows_8) · [Wikipedia: Windows 8.1](https://en.wikipedia.org/wiki/Windows_8.1) · [Microsoft: Secure Boot (Windows 8 / 8.1)](https://learn.microsoft.com/previous-versions/windows/it-pro/windows-8.1-and-8/dn486875(v=ws.11))
 
 **2015 · Windows 10** – võrreldes Windows 8.1-ga:
 
-- Start-menüü tagasi (koos paanidega), virtuaalsed töölauad ja Task View;
-- „Windows as a Service“: kumulatiivsed igakuised uuendused ja regulaarsed funktsiooniuuendused (algul kaks korda aastas);
-- Windows Hello (näo- ja sõrmejäljetuvastus) ning Windows Hello for Business;
-- virtualiseerimispõhine turve (VBS): Credential Guard ja Device Guard;
-- Microsoft Edge brauser, Cortana, DirectX 12;
-- WSL – Linuxi rakendused Windowsis;
-- haldus: Windows Update for Business, Windows Autopilot, MDM (Intune) tugi.
+- **Start-menüü tagasi ja virtuaalsed töölauad** – Start-menüü ühendas tuttava programminimekirja ja Windows 8 paanid. Task View ja virtuaalsed töölauad võimaldasid aknaid eri töölaudadele jagada.
+- **„Windows as a Service“** – uut Windowsi ei tule iga paari aasta tagant. Windows 10 uuenes pidevalt: igakuised kumulatiivsed turvauuendused ning regulaarsed funktsiooniuuendused (algul kaks korda aastas). IT-haldurile tähendab see pidevat testimist ja uuenduste juhtimist.
+- **Windows Hello** – näo-, sõrmejälje- või PIN-koodiga sisselogimine, kus võti on seotud seadme TPM-kiibiga. Windows Hello for Business asendab ettevõttes parooli tugevama autentimisega.
+- **Virtualiseerimispõhine turve** (VBS) – hüperviisor eraldab osa mälust isegi OS-i tuuma eest. Credential Guard hoiab paroolide räsisid ja Kerberose pileteid seal, nii et pahavara ei saa neid varastada (nt pass-the-hash rünnakus).
+- **WSL, Edge ja Autopilot** – WSL võimaldab käitada Linuxi käsureatööriistu otse Windowsis. Edge asendas Internet Exploreri. Autopilot ja Intune lasevad uue arvuti otse tehasest kasutajale saata, sest arvuti seadistab end esimesel sisselogimisel ise ettevõtte reeglite järgi.
+
+*Allikad:* [Wikipedia: Windows 10](https://en.wikipedia.org/wiki/Windows_10) · [Microsoft: How Credential Guard works](https://learn.microsoft.com/windows/security/identity-protection/credential-guard/how-it-works) · [Microsoft: What is WSL](https://learn.microsoft.com/windows/wsl/about)
 
 **2021 · Windows 11** – võrreldes Windows 10-ga:
 
-- kohustuslik TPM 2.0, Secure Boot ja uuem protsessor (riistvaraline turve kui baasnõue);
-- mälu terviklikkus (HVCI) ja VBS uutel seadmetel vaikimisi sees;
-- uus kasutajaliides: keskel tegumiriba ja Start-menüü, ümarad nurgad;
-- Snap Layouts / Snap Groups akende paigutamiseks;
-- üks funktsiooniuuendus aastas; Home/Pro tugi 24 kuud, Enterprise/Education 36 kuud;
-- Widgets, Teams-i vestlus tegumiribal, Androidi rakenduste alamsüsteem (WSA, lõpetati 2025);
-- 22H2: Smart App Control, vahekaardid File Exploreris, Windows Terminal vaikimisi.
+- **Kohustuslik TPM 2.0, Secure Boot ja uuem protsessor** – riistvaraline turve on baasnõue, mitte valikuline lisa. Seetõttu ei saa paljudele vanematele arvutitele Windows 11 ametlikult paigaldada.
+- **Mälu terviklikkus (HVCI) ja VBS vaikimisi** – uutel seadmetel on virtualiseerimispõhine turve kohe sees: tuuma saab käivitada ainult allkirjastatud ja kontrollitud koodi, mis muudab draiveripõhised rünnakud raskemaks.
+- **Uus kasutajaliides** – tegumiriba ja Start-menüü on ekraani keskel, aknanurgad ümarad ning sätete rakendus ümber kujundatud. Vanad juhtpaneeli osad on järk-järgult Sätetesse viidud.
+- **Snap Layouts** – kui hiir on akna maksimeerimisnupul, saab valida valmis paigutuse (nt kolm akent kõrvuti). See on mugav eriti suurtel ekraanidel.
+- **Üks funktsiooniuuendus aastas** – Windows 10 kahe uuenduse asemel tuleb üks: Home/Pro saavad igale versioonile 24 kuud tuge, Enterprise/Education 36 kuud. Nii jääb administraatoritel uuenduste planeerimiseks rohkem aega.
+- **Muud uuendused** – vidinad (Widgets) ja Androidi rakenduste alamsüsteem (WSA, lõpetati 2025). 22H2 lisas Smart App Controli, mis blokeerib tundmatud ja allkirjastamata programmid, ning vahekaardid File Exploreris.
+
+*Allikad:* [Wikipedia: Windows 11](https://en.wikipedia.org/wiki/Windows_11) · [Microsoft: Windows 11 hardware requirements](https://learn.microsoft.com/en-us/windows/compatibility/windows-11) · [Microsoft: What's new for Windows 11, version 22H2](https://support.microsoft.com/help/5018680)
 
 **2024 · Windows 11 24H2** – võrreldes 23H2-ga:
 
-- uus alusplatvorm (uus tuumaväljalase), mis on aluseks ka 25H2 ja 26H2 versioonile;
-- Copilot+ arvutid (NPU vähemalt 40 TOPS): Recall, Click to Do, reaalajas tõlgitud subtiitrid, Studio Effects;
-- tuuma osad Rust-keeles (mäluohutum kood), Sudo for Windows, Wi-Fi 7 tugi;
-- turvavaikeväärtused: SMB allkirjastamine nõutud, LSA kaitse, NTLMv1 eemaldatud;
-- protsessor peab toetama SSE4.2/POPCNT käske;
-- eemaldatud WordPad ja Steps Recorder, VBScript muudeti valikuliseks;
-- väiksemad uuendused (checkpoint cumulative updates), Enterprise-väljaandes hotpatch.
+- **Uus alusplatvorm** – tuum ja süsteemi alus uuendati (nn uus platvormiväljalase). See on 25H2 ja 26H2 ühine põhi, nii et need versioonid saavad tulla väikeste lubamispakettidena.
+- **Copilot+ arvutid** – vähemalt 40 TOPS-i jõudlusega tehisintellekti protsessoriga (NPU) arvutid said kohalikud AI-funktsioonid: Recall (ekraani ajaloo otsing), Click to Do, reaalajas tõlgitud subtiitrid ja kaameraefektid. Tehisintellekt töötab seadmes, mitte pilves.
+- **Rust tuumas, Sudo ja Wi-Fi 7** – osa tuuma koodist kirjutati ümber Rust-keelde, mis väldib terveid mäluvigade klasse (nt puhvri ületäitumist). Sudo for Windows laseb käsurealt üht käsku tõstetud õigustega käivitada, nagu Linuxis. Wi-Fi 7 toetab uusimat traadita võrgu standardit.
+- **Turvalisemad vaikeväärtused** – SMB-allkirjastamine on nõutud (kaitseb failijagamist vahelesegaja rünnakute eest), LSA kaitse hoiab sisselogimisandmeid mälus kaitstuna ja aegunud NTLMv1 eemaldati.
+- **Eemaldused ja uued nõuded** – WordPad ja Steps Recorder eemaldati ning VBScript muudeti valikuliseks (seda kasutati sageli pahavaras). Protsessor peab toetama SSE4.2/POPCNT käske, mistõttu väga vanadel protsessoritel 24H2 ei käivitu. Uuendused on väiksemad, sest arvuti laadib alla ainult muutunud osad. Enterprise-väljaandes on võimalik hotpatch ehk turvauuendus ilma taaskäivituseta.
+
+*Allikad:* [Microsoft: Windows 11, version 24H2: What's new for IT pros](https://techcommunity.microsoft.com/blog/windows-itpro-blog/windows-11-version-24h2-what%E2%80%99s-new-for-it-pros/4259108) · [Microsoft: What's new in Windows 11 Enterprise LTSC 2024](https://learn.microsoft.com/en-us/windows/whats-new/ltsc/whats-new-windows-11-2024) · [Wikipedia: Windows 11 version history](https://en.wikipedia.org/wiki/Windows_11_version_history)
 
 **2025 · Windows 11 25H2** – võrreldes 24H2-ga:
 
-- sama koodibaas kui 24H2: uus versioon tuli väikese lubamispaketina (enablement package) ühe taaskäivitusega;
-- 24H2 igakuiste uuendustega tulnud funktsioonid lülitati kõigile sisse;
-- eemaldati PowerShell 2.0 mootor ja käsureatööriist WMIC;
-- Enterprise/Education administraator saab poliitikaga eemaldada eelinstallitud poerakendusi;
-- tugiaja kell algas uuesti (Home/Pro 24 kuud, Enterprise/Education 36 kuud).
+- **Lubamispakett** (enablement package) – 25H2 kood oli 24H2 arvutites juba olemas, peidetuna. Uuendus on väike pakett, mis selle sisse lülitab ja versiooninumbri muudab. Paigaldus vajab ainult ühte taaskäivitust, nagu tavaline igakuine uuendus.
+- **Funktsioonid tulevad igakuiste uuendustega** – uued võimalused jõuavad arvutisse aasta jooksul järk-järgult ja 25H2 lülitas need kõigile sisse. Funktsiooniuuendus ei ole enam suur muutus, vaid pigem tugiaja pikendus.
+- **PowerShell 2.0 ja WMIC eemaldati** – vana PowerShell 2.0 mootorit kasutati ründetes turvapiirangutest mööda hiilimiseks. WMIC on vana käsurea tööriist, mille asemel tuleb nüüd kasutada PowerShelli CIM-käske (nt `Get-CimInstance`). Administraatorid peavad oma vanad skriptid üle vaatama.
+- **Eelinstallitud rakenduste eemaldamine poliitikaga** – Enterprise- ja Education-väljaandes saab administraator grupipoliitika või MDM-iga määrata, millised kaasasolevad poerakendused eemaldatakse. Nii on kooli- ja tööarvutid puhtamad.
+- **Uus tugiperiood** – uuele versioonile üleminek käivitab tugiaja kella uuesti (Home/Pro 24 kuud, Enterprise/Education 36 kuud). Seepärast tuleb versiooni uuendada ka siis, kui uusi funktsioone pole vaja.
 
-**2026 · Windows 11 26H2** – võrreldes 25H2-ga ([Windows Latest](https://www.windowslatest.com/2026/10/06/microsoft-reveals-whats-actually-new-in-windows-11-26h2-and-how-to-verify-it/)):
+*Allikad:* [Microsoft: An IT pro's guide to Windows 11, version 25H2](https://techcommunity.microsoft.com/blog/windows-itpro-blog/an-it-pro%E2%80%99s-guide-to-windows-11-version-25h2/4457409) · [Windows Central: Windows 11 version 25H2](https://www.windowscentral.com/software-apps/windows-11/windows-11-version-25h2-faq)
 
-- sama hooldusharu kui 24H2 ja 25H2; lubamispakett on x64-arvutil ligikaudu 174 KB;
-- Start-menüü väike ja suur suurus ning võimalus peita jaotisi; tegumiriba saab paigutada üles, vasakule või paremale;
-- otsing: tulemuste eelvaade, kirjavigade taluvus, veebisoovituste väljalülitamine;
-- tööarvutites lülitusid sisse varem „ajutiste ärikontrollidega“ peidetud funktsioonid (nt sätete varundamine);
-- ettevõtte arvutites ajapunktipõhine taastamine (point-in-time restore), lisakontrollid Smart App Controlile, Windows Hello toetab rohkem sõrmejäljelugejaid;
-- Task Manager näitab NPU ja tehisintellekti koormust, Settings Agent sätete otsimiseks loomulikus keeles;
-- uus tugiperiood: Home/Pro kuni oktoobrini 2028.
+**2026 · Windows 11 26H2** – võrreldes 25H2-ga:
+
+- **Väike lubamispakett** – 24H2, 25H2 ja 26H2 on sama koodibaas ja uuenduspakett on x64-arvutil vaid ligikaudu 174 KB. Paigaldus võtab mõne minuti. Erand on 26H1 Arm-arvutid, mis on teisel platvormil ega saa 26H2-te.
+- **Start-menüü ja tegumiriba sätted** – Start-menüül on väike ja suur suurus ning jaotisi (kinnitatud, hiljutised, kõik rakendused) saab peita. Tegumiriba saab taas paigutada üles, vasakule või paremale, mida Windows 11 algul ei lubanud.
+- **Parem otsing** – otsingutulemustel on eelvaade ja otsing talub kirjavigu. Veebi- ja poesoovitused saab välja lülitada, nii et otsing näitab ainult arvutis olevat.
+- **Uued vaikeväärtused tööarvutites** – varem „ajutiste ärikontrollidega“ peidetud funktsioonid (nt sätete varundamine) lülituvad sisse. Ettevõtte arvutites on ajapunktipõhine taastamine (point-in-time restore), Smart App Controlil on rohkem administraatori valikuid ja Windows Hello toetab rohkem sõrmejäljelugejaid.
+- **AI ja jälgimine** – tegumihaldur näitab NPU ja tehisintellekti koormust ning Settings Agent laseb sätteid otsida loomulikus keeles (nt „muuda ekraan tumedaks“).
+- **Uus tugiperiood** – Home/Pro saavad uuendusi kuni oktoobrini 2028. 24H2 Home/Pro tugi lõppes 13.10.2026, seega tuli neil arvutitel 26H2-le uuendada.
+
+*Allikad:* [Windows Latest: what's new in Windows 11 26H2](https://www.windowslatest.com/2026/10/06/microsoft-reveals-whats-actually-new-in-windows-11-26h2-and-how-to-verify-it/) · [Pureinfotech: Windows 11 26H2 vs 25H2](https://pureinfotech.com/windows-11-26h2-vs-25h2/)
 
 **Windows 10 elutsükli lõpp.** Windows 10 tasuta tugi lõppes 14. oktoobril 2025; laiendatud turvauuenduste (ESU) programm pikendas tarbijate turvauuendusi aasta vörra, kuni 13. oktoobrini 2026 ([Pureinfotech](https://pureinfotech.com/windows-10-end-support-october-14-2025/)). Organisatsioonid saavad ESU-d osta kuni kolmeks aastaks, s.t hiljemalt 2028. aasta oktoobrini ([heise](https://heise.de/-10001284)). See tähendab, et 2026. aasta novembris ei saa tavaline Windows 10 koduarvuti enam turvaparandusi.
 
