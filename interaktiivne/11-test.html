@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 11 – test: ummikud</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/11-ummikud.md">← Peatükk 11</a> · <a href="11-ummikud.html">Interaktiivne õpileht</a></nav>
+<h1>Test: ummikud</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on ummik (deadlock)?", "o": ["Programmi lõputu tsükkel", "Mälu otsasaamine", "Olukord, kus kaks või enam lõime ootavad üksteise käes olevaid ressursse ja keegi ei saa edasi", "Olukord, kus lõim kasutab 100% protsessoriaega"], "c": 2, "e": "Ummikus lõimed ootavad üksteist igavesti. Ummik ei lahene iseenesest."},
+{"q": "Miks on ummikuid testimisel raske leida?", "o": ["Ummikud tekivad ainult siis, kui mälu on täis", "Need tekivad ainult siis, kui lõimed satuvad kokku teatud ajastusega", "Need tekivad ainult Linuxis", "Testimisel on lukud alati välja lülitatud"], "c": 1, "e": "Ummik sõltub ajastusest. Programm võib töötada tuhat korda korrektselt ja jääda kinni alles suure koormuse all."},
+{"q": "Lõim A võtab luku L1 ja ootab L2, lõim B võtab L2 ja ootab L1. Mis juhtub?", "o": ["Tekib ummik", "Tekib elavlukk", "A ja B töötavad kordamööda", "Windows lahendab olukorra automaatselt"], "c": 0, "e": "See on klassikaline kahe luku ummik. Windows ei tuvasta ega lahenda rakenduste ummikuid ise."},
+{"q": "Kui palju protsessoriaega kasutavad tavaliselt ummikus olevad lõimed?", "o": ["100%, sest nad keerlevad tsüklis", "Täpselt pool", "Nii palju kui nende prioriteet lubab", "Peaaegu üldse mitte, sest nad on ooteolekus"], "c": 3, "e": "Ummikus lõimed ootavad (nt lukku). Kui programm ei reageeri ja kasutab 100% protsessorit, on tõenäolisem lõputu tsükkel või elavlukk."},
+{"q": "Mitu Coffmani tingimust peab korraga kehtima, et tekiks ummik?", "o": ["Kaks", "Kolm", "Kõik neli", "Üks"], "c": 2, "e": "Ummik tekib ainult siis, kui kehtivad kõik neli. Ühe murdmine välistab ummiku."},
+{"q": "Milline neist EI OLE Coffmani tingimus?", "o": ["Tsükliline ootamine", "Prioriteedi inversioon", "Vastastikune välistamine", "Hoia ja oota"], "c": 1, "e": "Coffmani tingimused on vastastikune välistamine, hoia ja oota, eelistamise puudumine ja tsükliline ootamine."},
+{"q": "Mida tähendab tingimus „hoia ja oota“?", "o": ["Lõim hoiab juba ühte ressurssi ja ootab samal ajal teist", "Lõim ootab, kuni kasutaja vajutab klahvi", "Ressurssi hoitakse vahemälus", "Lõim ootab kindla aja ja proovib uuesti"], "c": 0, "e": "Näiteks filosoof hoiab vasakut kahvlit ja ootab paremat."},
+{"q": "Mida tähendab tingimus „eelistamise puudumine“?", "o": ["Lõimedel pole prioriteete", "Planeerija ei saa lõime katkestada", "Kasutaja ei saa programmi sulgeda", "Ressurssi ei saa lõimelt jõuga ära võtta"], "c": 3, "e": "Kui lukku saaks lõimelt ära võtta ja teisele anda, ei saaks ummik püsida."},
+{"q": "Söövate filosoofide ülesandes võtavad kõik viis filosoofi korraga vasaku kahvli. Mis juhtub?", "o": ["Kaks filosoofi saavad korraga süüa", "Tekib näljutamine, kuid mitte ummik", "Tekib ummik: igaühel on üks kahvel ja keegi ei saa süüa", "Kõik saavad kordamööda süüa"], "c": 2, "e": "Iga filosoof ootab paremat kahvlit, mida hoiab naaber. Ooteahel on ring – tsükliline ootamine."},
+{"q": "Kuidas saab söövate filosoofide ummikut vältida?", "o": ["Lisatakse kuues filosoof", "Iga filosoof võtab esimesena väiksema numbriga kahvli", "Kõik võtavad esmalt vasaku kahvli", "Filosoofid söövad kiiremini"], "c": 1, "e": "Kindel järjekord murrab tsüklilise ootamise. Töötab ka „kelner“, kes laseb laua äärde korraga ainult neli filosoofi."},
+{"q": "Mis vahe on ummikul ja elavlukul?", "o": ["Elavlukus on lõimed aktiivsed ja reageerivad üksteisele, kuid ei jõua edasi; ummikus nad ootavad", "Elavlukk tekib ainult andmebaasides", "Elavlukk laheneb alati sekundi jooksul", "Vahet pole"], "c": 0, "e": "Näide: kaks inimest koridoris astuvad korraga samale poole. Elavlukk tekib sageli ummiku „parandamisel“ ilma juhusliku ooteajata."},
+{"q": "Mis on näljutamine (starvation)?", "o": ["Kõik lõimed ootavad üksteist", "Protsessil saab mälu otsa", "Lõim lõpetab töö liiga vara", "Üks lõim ei saa kunagi ressurssi, sest teised on alati eespool, kuigi süsteem töötab"], "c": 3, "e": "Näiteks madala prioriteediga lõim, kes ei saa protsessorit. Windows annab näljas lõimele ajutise prioriteeditõusu."},
+{"q": "Kuidas vältida elavlukku, kui lõimed proovivad lukku ajalõpu järel uuesti?", "o": ["Suurendada lõimede arvu", "Keelata katkestused", "Oodata enne uut katset juhuslik aeg", "Proovida kohe uuesti"], "c": 2, "e": "Kui kõik proovivad täpselt samal hetkel uuesti, korduvad konfliktid lõputult. Juhuslik ooteaeg (nagu Ethernetis) lõhub rütmi."},
+{"q": "Mida tähendab ressursijaotuse graafis nool ressursilt lõimele?", "o": ["Lõim on lõpetanud", "Lõim hoiab seda ressurssi", "Lõim ootab seda ressurssi", "Ressurss on vaba"], "c": 1, "e": "Ressurss → lõim tähendab „hoiab“, lõim → ressurss tähendab „ootab“."},
+{"q": "Millal tähendab tsükkel ressursijaotuse graafis kindlasti ummikut?", "o": ["Kui igal ressursil on ainult üks eksemplar", "Alati", "Ainult siis, kui lõimi on rohkem kui kolm", "Mitte kunagi"], "c": 0, "e": "Mitme eksemplari korral võib tsükkel laheneda, kui mõni tsüklist väljaspool olev lõim vabastab eksemplari."},
+{"q": "Printeril on 2 eksemplari. T1 ootab printerit, ühte printerit hoiab tsüklis olev T2, teist hoiab T4, kes ei oota midagi. Kas on ummik?", "o": ["Jah, sest graafis on tsükkel", "Jah, sest T4 hoiab printerit", "Ei saa öelda", "Ei – T4 lõpetab, vabastab printeri ja T1 saab selle"], "c": 3, "e": "Graafi taandamine: T4 saab lõpetada, seejärel T1 jne. Kõik lõimed saavad lõpetada, seega ummikut pole."},
+{"q": "Kuidas käsitleb Windows rakenduste ummikuid üldiselt?", "o": ["Kasutab pankuri algoritmi", "Taaskäivitab arvuti", "Ignoreerib neid – vastutus on arendajal", "Tuvastab ja lahendab automaatselt"], "c": 2, "e": "Täielik kaitse oleks liiga kallis ja OS ei tea ette, milliseid ressursse rakendus vajab. Seda nimetatakse jaanalinnu algoritmiks."},
+{"q": "Kuidas lahendab SQL Server ummiku?", "o": ["Kustutab lukustatud read", "Valib ohvri, kerib tema tehingu tagasi ja rakendus saab vea 1205", "Taaskäivitab serveri", "Ootab lõputult"], "c": 1, "e": "Luku monitor otsib tsükleid vaikimisi iga 5 sekundi järel. Ohvriks valitakse tavaliselt tehing, mida on kõige odavam tagasi kerida."},
+{"q": "Mida peaks rakendus tegema, kui SQL Server tagastab vea 1205?", "o": ["Proovima tehingut uuesti", "Kustutama andmebaasi", "Sulgema kõik ühendused jäädavalt", "Mitte midagi, viga ei mõjuta andmeid"], "c": 0, "e": "Ohvri tehing keriti tagasi. Kuna ummikuid ei saa andmebaasis täielikult välistada, peab rakendus tehingut uuesti proovima."},
+{"q": "Mis on pankuri algoritmis „ohutu olek“?", "o": ["Olek, kus kõik ressursid on vabad", "Olek, kus ükski lõim ei oota", "Olek, kus lõimi on vähem kui ressursse", "Olek, kus leidub järjekord, milles kõik lõimed saavad oma maksimaalse vajaduse ja lõpetada"], "c": 3, "e": "Pankur annab ressursi ainult siis, kui süsteem jääb pärast andmist ohutusse olekusse."},
+{"q": "12 ühikut; P0 max 10 hoiab 5, P1 max 4 hoiab 2, P2 max 9 hoiab 2. Kas olek on ohutu?", "o": ["Jah, järjekord P2 → P0 → P1", "Ei, sest vabu ühikuid on alla 5", "Jah, ohutu järjekord on P1 → P0 → P2", "Ei, ohutut järjekorda pole"], "c": 2, "e": "Vaba 3: P1 vajab 2 → vaba 5; P0 vajab 5 → vaba 10; P2 vajab 7 → valmis."},
+{"q": "Miks ei kasuta üldotstarbelised OS-id pankuri algoritmi?", "o": ["See põhjustab alati ummiku", "Programmid ei tea ette oma maksimaalset vajadust ja kontroll iga taotluse juures on aeglane", "Algoritm on patenditud", "See töötab ainult ühe protsessoriga"], "c": 1, "e": "Lisaks muutub lõimede arv pidevalt. Pankuri algoritm on õpetlik, kuid praktikas harva kasutatav."},
+{"q": "Milline võte murrab tsüklilise ootamise tingimuse?", "o": ["Lukkude võtmine alati samas järjekorras", "Suurem mälu", "Kõrgem prioriteet", "Rohkem tuumi"], "c": 0, "e": "Kui kõik võtavad lukud samas järjekorras (nt väiksema kontonumbriga enne), ei saa ooteahel ringiks sulguda. See on kõige levinum praktiline võte."},
+{"q": "Programmid annavad printimistöö printerijärjekorda (spooler), selle asemel et printerit ise hoida. Millist Coffmani tingimust see murrab?", "o": ["Hoia ja oota", "Eelistamise puudumine", "Tsükliline ootamine", "Vastastikune välistamine"], "c": 3, "e": "Programmide jaoks muutub printer jagatavaks: kõik saavad korraga tööd järjekorda lisada."},
+{"q": "Millise Windowsi tööriistaga saab vaadata, millist lõime või protsessi rippuv protsess ootab?", "o": ["Sündmuste vaatur → Turvalogi", "Seadmehaldur", "Ressursimonitor → „Analüüsi ooteahelat“", "Kettapuhastus"], "c": 2, "e": "„Analüüsi ooteahelat“ kasutab Windowsi Wait Chain Traversal funktsiooni. Lisaks aitavad WinDbg (!locks, !analyze -hang) ja Process Explorer."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>

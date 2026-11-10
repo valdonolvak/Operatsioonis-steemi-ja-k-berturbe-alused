@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 11 – ummikud: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/11-ummikud.md">← Peatükk 11</a> · <a href="11-test.html">Test →</a></nav>
+<h1>Ummikud – õpileht</h1>
+<p>Ummik tekib, kui lõimed ootavad üksteise käes olevaid ressursse ja keegi ei saa edasi. Sellel lehel tekitad ummiku söövate filosoofide laua taga ja lahendad selle, analüüsid ressursijaotuse graafi, proovid pankuri algoritmi ning harjutad Coffmani tingimusi ja ummikuga sarnaseid probleeme.</p>
+<div class="toc"><a href="#filosoofid">1. Söövad filosoofid</a><a href="#graaf">2. Ressursijaotuse graaf</a><a href="#pankur">3. Pankuri algoritm</a><a href="#coffman">4. Milline tingimus murtakse?</a><a href="#liigid">5. Ummik või midagi muud?</a></div>
+
+<!-- 1 -->
+<section id="filosoofid">
+<h2>1. Söövad filosoofid</h2>
+<p>Viis filosoofi (F0–F4) istub ümmarguse laua taga ja nende vahel on viis kahvlit (K0–K4). Söömiseks on vaja nii vasakut kui ka paremat kahvlit. Kõik muutuvad näljaseks <b>samal hetkel</b> – see on halvim võimalik ajastus. Söömine kestab 2 sammu, mõtlemine 2 sammu. Vali strateegia ja käivita.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span id="fstrats"></span></div>
+  <div class="row" style="margin-top:6px"><label class="tg" id="frandl"><input type="checkbox" id="frand"> <span>Juhuslik ooteaeg enne uut katset</span></label></div>
+  <svg id="ftable" class="svgbox" viewBox="0 0 640 390" width="100%"></svg>
+  <div class="legend"><span><i style="background:#9a998f"></i>mõtleb</span><span><i style="background:#c26a0a"></i>näljane</span><span><i style="background:#185fa5"></i>hoiab 1 kahvlit, ootab</span><span><i style="background:#3b6d11"></i>sööb</span></div>
+  <div class="row"><span><button class="btn primary" id="frun">▶ Käivita</button> <button class="btn" id="fstep">Üks samm</button> <button class="btn" id="freset">Lähtesta</button></span><span class="hint" id="ftime">Samm 0</span></div>
+  <div class="kpis" id="fkpi"></div>
+  <div class="info" id="finfo"></div>
+  <div class="log" id="flog"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="graaf">
+<h2>2. Ressursijaotuse graafi analüsaator</h2>
+<p>Määra, mida iga lõim hoiab ja mida ootab. Analüsaator taandab graafi: leiab lõime, kelle soovi saab täita, laseb tal lõpetada ja ressursid vabastada ning kordab seda. Kes lõpuks järele jääb, on ummikus.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Näide: <select id="gpre"><option value="a">Joonis 11-a: kolme lõime tsükkel</option><option value="b">Joonis 11-b: tsükkel, kuid printereid on 2</option><option value="two">Kaks lõime, kaks lukku</option><option value="chain">Ahel ilma tsüklita</option><option value="empty">Tühi</option></select></span><span>Printereid: <select id="pinst"><option>1</option><option>2</option></select></span></div>
+  <table class="t" style="margin-top:8px"><thead><tr><th>Lõim</th><th class="num">Hoiab printerit P</th><th class="num">Hoiab skannerit S</th><th class="num">Hoiab faili F</th><th>Ootab</th></tr></thead><tbody id="gtab"></tbody></table>
+  <svg id="gsvg" class="svgbox" viewBox="0 0 640 360" width="100%"></svg>
+  <div class="legend"><span><i style="background:var(--bad-line)"></i>ummikus</span><span><i style="background:var(--ok-line)"></i>saab lõpetada</span><span><i style="background:#9a998f"></i>ei osale</span><span>pidev nool ressurss → lõim: hoiab · katkendlik nool lõim → ressurss: ootab</span></div>
+  <div class="info" id="ginfo"></div>
+  <ol class="steps" id="gsteps"></ol>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="pankur">
+<h2>3. Pankuri algoritm</h2>
+<p>Süsteemis on 12 ühikut ressurssi (nt 12 GB mälu). Iga lõim on öelnud oma maksimaalse vajaduse. Vajuta „+1“, et lõim küsiks ühe ühiku. Pankur annab selle ainult siis, kui süsteem jääb <b>ohutusse olekusse</b>. Kui lõim on saanud kogu oma vajaduse, saab ta töö lõpetada ja kõik ühikud vabastada.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><label class="tg"><input type="checkbox" id="bon" checked> <span>Pankur sees (kontrolli ohutust)</span></label><button class="btn" id="breset">Algseis (peatüki näide)</button></div>
+  <table class="t" style="margin-top:8px"><thead><tr><th>Lõim</th><th class="num">Maks. vajadus</th><th class="num">Hoiab</th><th class="num">Vajab veel</th><th></th></tr></thead><tbody id="btab"></tbody></table>
+  <div class="kpis"><div>Vabu ühikuid<b id="bfree">3</b></div><div>Olek<b id="bstate">ohutu</b></div><div>Ohutu järjekord<b id="bseq" style="font-size:18px">P1 → P0 → P2</b></div></div>
+  <div class="info" id="binfo"></div>
+  <ol class="steps" id="bsteps"></ol>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="coffman">
+<h2>4. Milline Coffmani tingimus murtakse?</h2>
+<p>Iga võte ennetab ummikut sellega, et muudab ühe neljast tingimusest võimatuks. Vali, millise.</p>
+<div class="card">
+  <div class="tasks" id="ctasks"></div>
+  <div class="row"><span class="hint" id="cscore"></span><button class="btn" id="creset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="liigid">
+<h2>5. Ummik, elavlukk, näljutamine või prioriteedi inversioon?</h2>
+<p>Kõigis olukordades töö ei liigu, kuid põhjus on erinev. Vali õige nimetus.</p>
+<div class="card">
+  <div class="tasks" id="ltasks"></div>
+  <div class="row"><span class="hint" id="lscore"></span><button class="btn" id="lreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="11-test.html">Peatüki 11 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/11-ummikud.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* 1. Filosoofid */
+const N=5,FS={naive:'Kõik võtavad esmalt vasaku',order:'Kindel järjekord (väiksema numbriga kahvel enne)',waiter:'Kelner (laua ääres korraga max 4)',timeout:'Ajalõpp: vabasta kahvel ja proovi uuesti'};
+let fcur='naive',F,ftimer=null;
+const L=i=>i,R=i=>(i+1)%N;
+function fInit(){F={t:0,fork:Array(N).fill(-1),ph:[...Array(N)].map((_,i)=>({st:'hungry',held:[],timer:0,wait:0,back:0,meals:0,seated:false})),log:[],end:null,seats:0,rel:0};fDraw()}
+function firstFork(i){return fcur==='order'?Math.min(L(i),R(i)):L(i)}
+function fStep(){if(F.end)return;const P=F.ph,msgs=[];F.t++;
+  // söömine ja mõtlemine
+  P.forEach((p,i)=>{if(p.st==='eat'){if(--p.timer===0){p.held.forEach(k=>F.fork[k]=-1);p.held=[];p.st='think';p.timer=2;if(p.seated){p.seated=false;F.seats--}msgs.push(`F${i} sõi ja paneb kahvlid käest`)}}
+    else if(p.st==='think'){if(--p.timer===0)p.st='hungry'}});
+  // ajalõpp: vabasta
+  if(fcur==='timeout')P.forEach((p,i)=>{if(p.st==='one'&&p.wait>=1){F.fork[p.held[0]]=-1;p.held=[];p.st='hungry';p.wait=0;F.rel++;p.back=$('frand').checked?Math.floor(Math.random()*3):0;msgs.push(`F${i} ei saanud teist kahvlit ja paneb ka esimese käest`)}});
+  // kelner
+  if(fcur==='waiter')P.forEach((p,i)=>{if(p.st==='hungry'&&!p.seated&&F.seats<4){p.seated=true;F.seats++}});
+  // taotlused
+  const req={};
+  P.forEach((p,i)=>{if(p.st!=='hungry'&&p.st!=='one')return;if(p.back>0){p.back--;return}
+    if(fcur==='waiter'&&!p.seated)return;
+    const f1=firstFork(i),f2=f1===L(i)?R(i):L(i),want=p.held.length?f2:f1;
+    if(F.fork[want]===-1)(req[want]=req[want]||[]).push(i);else if(p.st==='one')p.wait++;});
+  Object.entries(req).forEach(([k,arr])=>{k=+k;const w=arr[0];F.fork[k]=w;const p=P[w];p.held.push(k);arr.slice(1).forEach(j=>{if(P[j].st==='one')P[j].wait++});
+    if(p.held.length===2){p.st='eat';p.timer=2;p.meals++;p.wait=0;msgs.push(`F${w} võtab K${k} ja hakkab sööma`)}else{p.st='one';p.wait=0;msgs.push(`F${w} võtab K${k}`)}});
+  F.log.unshift(`[${F.t}] `+(msgs.length?msgs.join('; '):'keegi ei saa midagi teha'));
+  // ummik?
+  if(fcur!=='timeout'&&P.every(p=>p.st==='one'&&p.wait>=1)&&F.fork.every(x=>x!==-1))F.end='dead';
+  const meals=P.reduce((s,p)=>s+p.meals,0);
+  if(fcur==='timeout'&&F.t>=12&&meals===0)F.end='live';
+  if(F.t>=24)F.end='ok';
+  fDraw();if(F.end&&ftimer){clearInterval(ftimer);ftimer=null;$('frun').textContent='▶ Käivita'}
+}
+function fDraw(){
+  const cx=320,cy=190,Rr=130,col={think:'#9a998f',hungry:'#c26a0a',one:'#185fa5',eat:'#3b6d11'},lbl={think:'mõtleb',hungry:'näljane',one:'ootab',eat:'sööb'};
+  let s=`<circle cx="${cx}" cy="${cy}" r="88" fill="var(--card)" stroke="var(--border)"/>`;
+  for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N,x=cx+Rr*Math.cos(a),y=cy+Rr*Math.sin(a),p=F.ph[i];
+    if(fcur==='waiter'&&p.st!=='think'&&!p.seated)s+=`<circle cx="${x}" cy="${y}" r="34" fill="none" stroke="${col.hungry}" stroke-dasharray="4 4"/>`;
+    s+=`<circle cx="${x}" cy="${y}" r="28" fill="${col[p.st]}"/><text x="${x}" y="${y+1}" text-anchor="middle" fill="#fff" font-weight="700" font-size="15">F${i}</text><text x="${x}" y="${y+16}" text-anchor="middle" fill="#fff" font-size="10">${lbl[p.st]}</text>`;
+    s+=`<text x="${x}" y="${y+45}" text-anchor="middle" fill="var(--muted)" font-size="11">söönud ${p.meals}×</text>`;}
+  for(let k=0;k<N;k++){const a=-Math.PI/2+(k+0.5)*2*Math.PI/N,o=F.fork[k];let r=62,x,y;
+    if(o!==-1){const b=-Math.PI/2+o*2*Math.PI/N;let d=a-b;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;const c=b+d*0.55,rr=Rr-46;x=cx+rr*Math.cos(c);y=cy+rr*Math.sin(c);}
+    else{x=cx+r*Math.cos(a);y=cy+r*Math.sin(a)}
+    s+=`<g transform="translate(${x},${y}) rotate(${a*180/Math.PI+90})"><rect x="-3" y="-14" width="6" height="28" rx="3" fill="${o===-1?'var(--text)':col[F.ph[o].st]}"/></g><text x="${cx+(r-22)*Math.cos(a)}" y="${cy+(r-22)*Math.sin(a)+4}" text-anchor="middle" font-size="10" fill="var(--muted)">K${k}</text>`}
+  if(F.end==='dead')s+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="20" font-weight="700" fill="var(--bad-line)">UMMIK</text>`;
+  else if(F.end==='live')s+=`<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="18" font-weight="700" fill="var(--bad-line)">ELAVLUKK</text>`;
+  $('ftable').innerHTML=s;
+  document.querySelectorAll('#fstrats button').forEach(b=>b.classList.toggle('on',b.dataset.s===fcur));
+  $('frandl').style.display=fcur==='timeout'?'':'none';
+  $('ftime').textContent='Samm '+F.t;
+  const meals=F.ph.reduce((s,p)=>s+p.meals,0);
+  $('fkpi').innerHTML=`<div>Söögikordi kokku<b>${meals}</b></div><div>Kahvleid käes<b>${F.fork.filter(x=>x!==-1).length}/5</b></div>`+(fcur==='timeout'?`<div>Tagasi pandud kahvleid<b>${F.rel}</b></div>`:'')+(fcur==='waiter'?`<div>Laua ääres<b>${F.seats}/4</b></div>`:'');
+  $('flog').textContent=F.log.join('\n');
+  const I=$('finfo');I.className='info'+(F.end==='dead'||F.end==='live'?' bad':F.end==='ok'?' ok':'');
+  I.innerHTML=F.end==='dead'?'<b>Ummik!</b> Iga filosoof hoiab vasakut kahvlit ja ootab paremat, mida hoiab naaber. Kõik neli Coffmani tingimust kehtivad: kahvlit saab hoida üks (välistamine), igaüks hoiab ühte ja ootab teist (hoia ja oota), kahvlit ei võeta käest ära (eelistamise puudumine) ja ooteahel F0 → F1 → … → F4 → F0 on ring (tsükkel). Ükski filosoof ei kasuta ka protsessoriaega – kõik lihtsalt ootavad.':
+   F.end==='live'?'<b>Elavlukk!</b> Filosoofid on kogu aeg tegevuses: võtavad kahvli, ei saa teist, panevad esimese tagasi ja proovivad <b>täpselt samal ajal</b> uuesti. Ummikut pole, kuid keegi ei söö. Lülita sisse „Juhuslik ooteaeg“ ja proovi uuesti.':
+   F.end==='ok'?'Kõik said süüa, ummikut ei tekkinud. '+({order:'Kindel järjekord murrab <b>tsüklilise ootamise</b>: F4 vajab kahvleid K4 ja K0 ning võtab esimesena K0, nagu ka F0. Üks neist jääb ootama ilma kahvlita ja ring ei saa sulguda.',waiter:'Kelner laseb laua äärde korraga ainult neli filosoofi. Viiele kahvlile ja neljale filosoofile ei saa tsüklit tekkida – vähemalt üks saab alati mõlemad kahvlid. See murrab samuti <b>tsüklilise ootamise</b>.',timeout:'Ajalõpp murrab tingimuse <b>eelistamise puudumine</b>: filosoof loovutab kahvli, kui teist ei saa (osa autoreid nimetab seda ka hoia ja oota murdmiseks). Juhuslik ooteaeg hoiab ära, et kõik prooviks jälle samal hetkel.'}[fcur]||''):
+   F.t===0?{naive:'Kõik on näljased. Vajuta „Üks samm“ ja vaata, mis juhtub, kui igaüks võtab esmalt vasaku kahvli.',order:'Iga filosoof võtab esimesena väiksema numbriga kahvli. F0–F3 jaoks on see vasak kahvel, F4 jaoks parem (K0).',waiter:'Enne kahvlite võtmist peab filosoof saama kelnerilt loa istuda. Korraga lubatakse laua äärde neli.',timeout:'Kui filosoof ei saa ühe sammu jooksul teist kahvlit, paneb ta esimese tagasi ja proovib uuesti.'}[fcur]:'Töö käib…';
+}
+$('fstrats').innerHTML=Object.entries(FS).map(([k,v])=>`<button class="btn" data-s="${k}">${v}</button>`).join(' ');
+document.querySelectorAll('#fstrats button').forEach(b=>b.onclick=()=>{fcur=b.dataset.s;fStop();fInit()});
+function fStop(){if(ftimer){clearInterval(ftimer);ftimer=null}$('frun').textContent='▶ Käivita'}
+$('fstep').onclick=fStep;$('freset').onclick=()=>{fStop();fInit()};$('frand').onchange=()=>{fStop();fInit()};
+$('frun').onclick=()=>{if(ftimer){fStop();return}if(F.end)fInit();ftimer=setInterval(fStep,500);$('frun').textContent='⏸ Peata'};
+fInit();
+
+/* 2. Graaf */
+const TH=['T1','T2','T3','T4'],RS=['P','S','F'],RN={P:'Printer P',S:'Skanner S',F:'Fail F'};
+const GP={a:{inst:1,h:[{F:1},{P:1},{S:1},{}],w:['P','S','F','']},b:{inst:2,h:[{F:1},{P:1},{S:1},{P:1}],w:['P','S','F','']},two:{inst:1,h:[{P:1},{S:1},{},{}],w:['S','P','','']},chain:{inst:1,h:[{F:1},{P:1},{S:1},{}],w:['P','S','','']},empty:{inst:1,h:[{},{},{},{}],w:['','','','']}};
+let G;
+function gSet(k){G=JSON.parse(JSON.stringify(GP[k]));$('pinst').value=G.inst;gTable();gDraw()}
+function gTable(){
+  $('gtab').innerHTML=TH.map((t,i)=>`<tr><td><b>${t}</b></td>`+RS.map(r=>`<td class="num"><input type="checkbox" data-t="${i}" data-r="${r}" data-k="1" ${G.h[i][r]>=1?'checked':''}></td>`).join('')+
+   `<td><select data-t="${i}"><option value="">—</option>${RS.map(r=>`<option value="${r}" ${G.w[i]===r?'selected':''}>${RN[r]}</option>`).join('')}</select></td></tr>`).join('');
+  $('gtab').querySelectorAll('input').forEach(c=>c.onchange=()=>{const i=+c.dataset.t,r=c.dataset.r;
+    if(c.checked){const used=G.h.reduce((s,h)=>s+(h[r]||0),0);const cap=r==='P'?G.inst:1;if(used>=cap){c.checked=false;gMsg(`${RN[r]}: kõik ${cap} eksemplari on juba kellegi käes.`);return}G.h[i][r]=1}else delete G.h[i][r];gDraw()});
+  $('gtab').querySelectorAll('select').forEach(s=>s.onchange=()=>{G.w[+s.dataset.t]=s.value;gDraw()});
+}
+let gmsg='';function gMsg(m){gmsg=m;gDraw();gmsg=''}
+function gAnalyze(){
+  const cap={P:G.inst,S:1,F:1},avail={};RS.forEach(r=>avail[r]=cap[r]-G.h.reduce((s,h)=>s+(h[r]||0),0));
+  const done=Array(4).fill(false),steps=[];const active=i=>G.w[i]||Object.keys(G.h[i]).length;
+  let prog=true;
+  while(prog){prog=false;for(let i=0;i<4;i++){if(done[i]||!active(i))continue;const w=G.w[i];
+    if(!w||avail[w]>0){const rel=Object.keys(G.h[i]);steps.push(`<b>${TH[i]}</b> `+(w?`saab ${RN[w]} (vaba ${avail[w]})`:'ei oota midagi')+` → lõpetab`+(rel.length?` ja vabastab: ${rel.map(r=>RN[r]).join(', ')}`:''));
+      rel.forEach(r=>avail[r]+=G.h[i][r]);done[i]=true;prog=true}}}
+  const dead=[0,1,2,3].filter(i=>active(i)&&!done[i]);
+  return {dead,done,steps,active};
+}
+function gDraw(){
+  const A=gAnalyze(),pos={};const order=['T1','P','T2','S','T3','F','T4'],cx=320,cy=180,rx=250,ry=140;
+  order.forEach((n,k)=>{const a=-Math.PI/2-Math.PI/7*2+k*2*Math.PI/7;pos[n]=[cx+rx*Math.cos(a),cy+ry*Math.sin(a)]});
+  const red=css('--bad-line'),grn=css('--ok-line'),gry='#9a998f',edge=css('--muted');
+  let s=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${edge}"/></marker><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="${red}"/></marker></defs>`;
+  const clip=(a,b,ra,rb)=>{const dx=b[0]-a[0],dy=b[1]-a[1],d=Math.hypot(dx,dy);return [a[0]+dx/d*ra,a[1]+dy/d*ra,b[0]-dx/d*rb,b[1]-dy/d*rb]};
+  const isDead=i=>A.dead.includes(i);
+  TH.forEach((t,i)=>{Object.keys(G.h[i]).forEach(r=>{const [x1,y1,x2,y2]=clip(pos[r],pos[t],48,30),d=isDead(i)&&A.dead.some(j=>G.w[j]===r);s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${d?red:edge}" stroke-width="${d?2.5:1.6}" marker-end="url(#${d?'arr':'ar'})"/>`});
+    if(G.w[i]){const [x1,y1,x2,y2]=clip(pos[t],pos[G.w[i]],30,48),d=isDead(i);s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${d?red:edge}" stroke-width="${d?2.5:1.6}" stroke-dasharray="6 4" marker-end="url(#${d?'arr':'ar'})"/>`}});
+  RS.forEach(r=>{const [x,y]=pos[r],n=r==='P'?G.inst:1;s+=`<rect x="${x-50}" y="${y-24}" width="100" height="48" rx="8" fill="var(--bg)" stroke="var(--border)" stroke-width="2"/><text x="${x}" y="${y-3}" text-anchor="middle" font-size="13" fill="var(--text)">${RN[r]}</text>`;
+    for(let k=0;k<n;k++)s+=`<circle cx="${x-(n-1)*9+k*18}" cy="${y+12}" r="5" fill="var(--text)"/>`});
+  TH.forEach((t,i)=>{const [x,y]=pos[t],c=!A.active(i)?gry:isDead(i)?red:grn;s+=`<circle cx="${x}" cy="${y}" r="28" fill="var(--bg)" stroke="${c}" stroke-width="3"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="15" font-weight="700" fill="var(--text)">${t}</text>`});
+  $('gsvg').innerHTML=s;
+  const I=$('ginfo');
+  if(gmsg){I.className='info bad';I.innerHTML=gmsg}
+  else if(A.dead.length){I.className='info bad';I.innerHTML=`<b>Ummik:</b> ${A.dead.map(i=>TH[i]).join(', ')} ootavad üksteist ja ükski neist ei saa lõpetada. Murra tsükkel: eemalda mõni „ootab“ või „hoiab“ või lisa printeri eksemplar.`}
+  else{I.className='info ok';I.innerHTML=A.steps.length?'<b>Ummikut pole.</b> Kõik lõimed saavad mingis järjekorras lõpetada:':'Graafis pole ühtegi seost. Märgi, mida lõimed hoiavad ja ootavad.'}
+  $('gsteps').innerHTML=A.steps.map(x=>'<li>'+x+'</li>').join('')+(A.dead.length?`<li>${A.dead.map(i=>TH[i]).join(', ')} – keegi ei saa enam edasi.</li>`:'');
+}
+$('gpre').onchange=()=>gSet($('gpre').value);
+$('pinst').onchange=()=>{G.inst=+$('pinst').value;if(G.h.reduce((s,h)=>s+(h.P||0),0)>G.inst){G.h.forEach((h,i)=>{if(h.P&&G.h.slice(0,i).some(x=>x.P))delete h.P})}gTable();gDraw()};
+gSet('a');
+
+/* 3. Pankur */
+const TOT=12;let B;
+function bInit(){B={max:[10,4,9],has:[5,2,2],fin:[false,false,false],msg:'Algseis on peatüki näide. Proovi: anna P2-le üks ühik juurde.',ok:null};bDraw()}
+const bFree=()=>TOT-B.has.reduce((a,b)=>a+b,0);
+function safe(has){let free=TOT-has.reduce((a,b)=>a+b,0);const done=B.fin.slice(),seq=[],steps=[];let prog=true;
+  while(prog){prog=false;for(let i=0;i<3;i++){if(done[i])continue;const need=B.max[i]-has[i];if(need<=free){steps.push(`P${i} vajab veel ${need} ≤ ${free} vaba → saab need, lõpetab ja vabastab kõik ${B.max[i]} → vaba ${free+has[i]}`);free+=has[i];done[i]=true;seq.push('P'+i);prog=true}}}
+  const left=[0,1,2].filter(i=>!done[i]);
+  if(left.length)steps.push(left.map(i=>`P${i} vajab veel ${B.max[i]-has[i]}`).join(', ')+` – vaba on ainult ${free}. Ohutut järjekorda pole.`);
+  return {ok:!left.length,seq,steps};}
+function bReq(i){const free=bFree();if(B.fin[i]||B.has[i]>=B.max[i])return;
+  if(free<1){B.msg=`P${i} küsib ühikut, kuid vabu ühikuid pole. P${i} peab ootama.`;B.ok=false;return bDraw()}
+  const h=B.has.slice();h[i]++;const s=safe(h);
+  if($('bon').checked&&!s.ok){B.msg=`<b>Pankur keeldub:</b> kui P${i} saaks ühiku, jääks süsteem ohtlikku olekusse. P${i} peab ootama, kuigi vabu ühikuid on ${free}.`;B.ok=false;B.lastSteps=s.steps;return bDraw(true)}
+  B.has=h;B.ok=s.ok;B.msg=`P${i} sai ühe ühiku.`+(s.ok?' Olek on endiselt ohutu.':' <b>Olek on ohtlik!</b> Ummikut veel pole, kuid kui kõik nüüd küsivad oma ülejäänud vajaduse, ei saa keegi lõpetada.');
+  const free2=bFree(),alive=[0,1,2].filter(j=>!B.fin[j]&&B.has[j]<B.max[j]);
+  if(free2===0&&alive.length&&[0,1,2].every(j=>B.fin[j]||B.has[j]<B.max[j]))B.msg=`P${i} sai ühe ühiku. <b>Ummik!</b> Vabu ühikuid pole ja iga lõim vajab veel vähemalt ühte. Kui nad seda küsivad, jäävad kõik igavesti ootama. Pankuriga poleks sellist olekut tekkinud.`;
+  bDraw()}
+function bFin(i){B.fin[i]=true;B.msg=`P${i} sai kogu vajaduse, tegi töö ja vabastas ${B.has[i]} ühikut.`;B.has[i]=0;bDraw()}
+function bDraw(showDeny){const s=safe(B.has),free=bFree();
+  $('btab').innerHTML=[0,1,2].map(i=>{const need=B.max[i]-B.has[i];return `<tr class="${B.fin[i]?'fin':''}"><td><b>P${i}</b></td><td class="num">${B.max[i]}</td><td class="num">${B.fin[i]?'–':B.has[i]}</td><td class="num">${B.fin[i]?'valmis':need}</td><td>`+(B.fin[i]?'':need>0?`<button class="btn" data-r="${i}">+1 küsib</button>`:`<button class="btn primary" data-f="${i}">Lõpeta ja vabasta</button>`)+'</td></tr>'}).join('');
+  $('btab').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>bReq(+b.dataset.r));$('btab').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>bFin(+b.dataset.f));
+  $('bfree').textContent=free;$('bstate').textContent=s.ok?'ohutu':'ohtlik';$('bstate').style.color=s.ok?'var(--ok)':'var(--bad)';
+  $('bseq').textContent=s.ok?(s.seq.join(' → ')||'kõik valmis'):'puudub';
+  $('binfo').className='info'+(B.ok===false?' bad':B.ok?' ok':'');$('binfo').innerHTML=B.msg;
+  $('bsteps').innerHTML=((showDeny&&B.lastSteps)?B.lastSteps:s.steps).map(x=>'<li>'+x+'</li>').join('');$('bsteps').insertAdjacentHTML('afterbegin',`<li style="list-style:none;margin-left:-1.3rem"><i>${showDeny?'Kontroll, kui ühik antaks:':'Ohutuse kontroll praeguses olekus:'}</i></li>`);
+}
+$('breset').onclick=bInit;$('bon').onchange=()=>{B.msg=$('bon').checked?'Pankur kontrollib iga taotlust.':'Pankur on väljas: ühik antakse alati, kui see on vaba. Proovi jõuda olekusse, kus vabu ühikuid pole ja keegi ei saa lõpetada.';B.ok=null;bDraw()};
+bInit();
+
+/* 4 ja 5 – valikharjutused */
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+quiz('ctasks','cscore','creset',['Välistamine','Hoia ja oota','Eelistamise puudumine','Tsükliline ootamine'],[
+ ['Kõik lõimed võtavad lukud alati samas järjekorras (nt väiksema kontonumbriga enne)',3,'Kui kõik liiguvad „ülesmäge“ samas järjekorras, ei saa ooteahel kunagi ringiks sulguda.'],
+ ['Lõim ootab kõiki vajalikke objekte korraga: WaitForMultipleObjects(…, bWaitAll=TRUE)',1,'Lõim ei hoia midagi, kuni ta ei saa kõike korraga. Seega ei saa ta hoida üht ja oodata teist.'],
+ ['Programmid ei kasuta printerit otse, vaid annavad töö printerijärjekorda (spooler)',0,'Printerit kasutab ainult spooleri teenus. Programmide jaoks on järjekord jagatav ressurss – iga programm saab sinna korraga tööd lisada.'],
+ ['Andmeid loetakse lugejad-kirjutajad lukuga, nii et paljud lõimed saavad korraga lugeda',0,'Lugemiseks ei ole vaja ainuõigust, nii et lugejate vahel vastastikust välistamist pole. (Kirjutajal on ikka ainuõigus.)'],
+ ['Monitor.TryEnter ajalõpuga – kui teist lukku ei saa, vabastab lõim ka esimese ja proovib hiljem',2,'Lõim loovutab ressursi, mille ta juba sai – justkui see võetaks temalt ära. Õpikutes liigitatakse see eelistamise puudumise murdmiseks (osa autoreid nimetab ka hoia ja oota).'],
+ ['SQL Server valib ohvri, kerib tema tehingu tagasi ja annab lukud teisele tehingule',2,'Ressurss võetakse tehingult jõuga ära ja tehing keritakse tagasi. See on tuvastamine ja taastamine eelistamise abil.'],
+ ['Valgusfoor ristmikul',3,'Valgusfoor määrab kindla järjekorra, kes sõidab. Autod ei saa enam kõik üksteist ringiratast oodata.'],
+ ['Lõim peab vabastama kõik oma ressursid, enne kui tohib uusi taotleda',1,'Lõim ei hoia midagi ajal, mil ta ootab uusi ressursse.']],
+ 'Kõige levinum praktiline võte on lukkude kindel järjekord.');
+quiz('ltasks','lscore','lreset',['Ummik','Elavlukk','Näljutamine','Prioriteedi inversioon'],[
+ ['Lõim A hoiab lukku 1 ja ootab lukku 2, lõim B hoiab lukku 2 ja ootab lukku 1. Protsessori kasutus on 0%.',0,'Klassikaline ummik: mõlemad ootavad igavesti ja ei kasuta protsessoriaega.'],
+ ['Kaks inimest kohtuvad kitsas koridoris ja astuvad korraga samale poole, siis jälle korraga teisele poole …',1,'Mõlemad on aktiivsed ja reageerivad teineteisele, kuid kumbki ei pääse mööda.'],
+ ['Madala prioriteediga varunduse lõim ei saa tunde protsessorit, sest kõrgema prioriteediga tööd tulevad pidevalt juurde.',2,'Süsteem tervikuna töötab, kuid üks lõim jääb alatasa ilma. Windows annab selliselt näljas lõimele ajutise prioriteeditõusu.'],
+ ['Kõrge prioriteediga lõim ootab lukku, mida hoiab madala prioriteediga lõim; keskmise prioriteediga lõim arvutab ja ei lase madalal lukku vabastada.',3,'See juhtus Mars Pathfinderiga. Lahendus on prioriteedi pärimine.'],
+ ['Kaks lõime vabastavad konflikti korral kohe oma luku ja proovivad täpselt samal hetkel uuesti. Protsessori kasutus on 100%, kuid tööd ei tehta.',1,'Elavlukk tekib sageli ummiku „parandamisel“. Lahendus on juhuslik ooteaeg enne uut katset.'],
+ ['Kaks andmebaasitehingut lukustavad tabelid vastupidises järjekorras ja SQL Server annab ühele veateate 1205.',0,'Tegu oli ummikuga, mille SQL Server tuvastas ja lahendas ohvri valimisega.'],
+ ['Lugejaid tuleb pidevalt juurde ja kirjutaja ei saa kunagi lugejad-kirjutajad lukku.',2,'Lugejad saavad tööd teha, kuid kirjutaja jääb lõputult ootama. Hea lukk eelistab ootavat kirjutajat.'],
+ ['UI-lõim ootab .Result abil asünkroonse meetodi tulemust, kuid meetodi jätk tahab samuti UI-lõimes töötada. Aken „ei vasta“.',0,'Mõlemad ootavad teineteist: UI-lõim ülesannet ja ülesanne UI-lõime. Lahendus on await.']],
+ 'Ummikus lõimed ootavad, elavlukus on aktiivsed, näljutamisel jääb ilma üks lõim, inversioonis takistab kolmas lõim.');
+</script>
+</body>
+</html>
