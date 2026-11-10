@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 1 – Windowsi interaktiivne ajajoon</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--dos:#854f0b;--dos-bg:#faeeda;--nt:#185fa5;--nt-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--dos:#fac775;--dos-bg:#633806;--nt:#85b7eb;--nt-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+nav a,a{color:var(--accent)}
+nav a{font-size:14px}
+p{margin:.5rem 0}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:1rem 0 .5rem}
+.chip{font:inherit;font-size:14px;padding:.3rem .9rem;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.chip[aria-pressed=true]{color:#042c53}}
+.legend{font-size:13px;color:var(--muted);margin-left:auto;display:flex;gap:14px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:0}
+.scroll{overflow-x:auto;border:1px solid var(--border);border-radius:12px;background:var(--card);margin:.5rem 0 1rem}
+.axis{position:relative;height:250px;min-width:760px;margin:0 44px 0 34px}
+.lane{position:absolute;left:0;right:0;height:2px;background:var(--border)}
+.lane-lbl{position:absolute;left:-22px;font-size:12px;color:var(--muted);transform:translateY(-50%)}
+.tick{position:absolute;bottom:6px;font-size:11px;color:var(--muted);transform:translateX(-50%)}
+.tick::before{content:"";position:absolute;left:50%;bottom:16px;width:1px;height:6px;background:var(--border)}
+.dot{position:absolute;transform:translate(-50%,-50%);width:16px;height:16px;border-radius:50%;border:3px solid;background:var(--bg);cursor:pointer;padding:0}
+.dot.dos{border-color:var(--dos)}.dot.nt{border-color:var(--nt)}
+.dot.sel{width:22px;height:22px}
+.dot.dos.sel{background:var(--dos)}.dot.nt.sel{background:var(--nt)}
+.dot:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.lbl{position:absolute;transform:translateX(-50%);font-size:12px;white-space:nowrap;cursor:pointer;color:var(--text);background:none;border:0;padding:0;font-family:inherit}
+.lbl.sel{font-weight:600}
+.dim{opacity:.25}
+.detail{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem;border-left:4px solid var(--nt)}
+.detail.dos{border-left-color:var(--dos)}
+.dhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.dhead h3{font-size:21px;font-weight:500;margin:0}
+.year{font-size:13px;font-weight:600;padding:2px 8px;border-radius:6px;margin-right:8px}
+.dos .year{background:var(--dos-bg);color:var(--dos)}.nt .year,.detail:not(.dos) .year{background:var(--nt-bg);color:var(--nt)}
+.vs{color:var(--muted);font-size:14px;margin:.15rem 0 .75rem}
+.feat{list-style:none;padding:0;margin:0}
+.feat li{border-top:1px solid var(--border)}
+.feat button{all:unset;display:flex;gap:10px;align-items:baseline;width:100%;padding:.55rem 0;cursor:pointer;font-weight:500}
+.feat button::before{content:"+";flex:none;width:18px;color:var(--muted);font-weight:400}
+.feat li.open button::before{content:"–"}
+.feat button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.feat .ex{display:none;padding:0 0 .7rem 28px;font-size:15px}
+.feat li.open .ex{display:block}
+.src{font-size:13px;color:var(--muted);margin-top:.75rem}
+.nav2{display:flex;justify-content:space-between;margin-top:1rem;gap:8px}
+button.btn{font:inherit;font-size:15px;padding:.45rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+/* järjestamine */
+.pool,.answer{display:flex;flex-wrap:wrap;gap:8px;min-height:48px;padding:10px;border-radius:12px}
+.pool{background:var(--card)}
+.answer{border:1px dashed var(--border)}
+.tile{font:inherit;font-size:15px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.tile.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.tile.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.tile small{color:var(--muted);margin-left:6px}
+.res{margin:.75rem 0 0;padding:.6rem 1rem;border-left:3px solid;font-size:15px}
+.res.ok{border-color:var(--ok-line)}.res.bad{border-color:var(--bad-line)}
+/* arva versioon */
+.qcard{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 .25rem}
+.qexp{color:var(--muted);font-size:15px;margin:0 0 1rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.opt{font:inherit;font-size:15px;text-align:left;padding:.6rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.score{font-size:14px;color:var(--muted)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/01-windowsi-ajalugu.md">← Peatükk 1</a> · <a href="01-test.html">Test →</a></nav>
+<h1>Windowsi interaktiivne ajajoon</h1>
+<p>Ajajoonel on kaks arendusliini. <strong>DOS-põhine liin</strong> (1985–2000) töötas MS-DOS-i peal. <strong>NT-liin</strong> (1993 kuni tänaseni) on iseseisev operatsioonisüsteem ja tänane Windows põhineb sellel. Klõpsa versioonil, et näha selle peamisi uuendusi võrreldes eelmise versiooniga. Klõpsa uuendusel, et lugeda selgitust.</p>
+
+<section id="ajajoon">
+<div class="toolbar" role="group" aria-label="Filter">
+  <button class="chip" data-f="all" aria-pressed="true">Kõik</button>
+  <button class="chip" data-f="dos" aria-pressed="false">DOS-liin</button>
+  <button class="chip" data-f="nt" aria-pressed="false">NT-liin</button>
+  <span class="legend"><span><i style="background:var(--dos)"></i>DOS-põhine</span><span><i style="background:var(--nt)"></i>NT-põhine</span></span>
+</div>
+<div class="scroll"><div class="axis" id="axis"></div></div>
+<div class="detail" id="detail" aria-live="polite"></div>
+<p class="hint">Klaviatuuriga: <code>←</code> ja <code>→</code> liiguvad versioonide vahel.</p>
+</section>
+
+<section id="jarjesta">
+<h2>Pane versioonid õigesse järjekorda</h2>
+<p>Klõpsa versioone selles järjekorras, nagu need ilmusid, vanimast uueimani. Valitud versiooni saad tagasi panna, kui klõpsad sellel uuesti.</p>
+<div class="pool" id="pool"></div>
+<p class="hint" style="margin:.5rem 0 .25rem">Sinu järjekord:</p>
+<div class="answer" id="answer"></div>
+<div class="nav2"><button class="btn" id="newset">Uus komplekt</button><button class="btn primary" id="check" disabled>Kontrolli</button></div>
+<div id="ordres"></div>
+</section>
+
+<section id="arva">
+<h2>Millises versioonis see tuli?</h2>
+<p>Näed ühte uuendust. Arva, millises Windowsi versioonis see esimest korda ilmus.</p>
+<div class="qcard" id="qcard" aria-live="polite"></div>
+</section>
+
+<script>
+const V=[{"id": 0, "lane": "dos", "y": 1985, "yl": "1985", "s": "1.0", "n": "Windows 1.0", "vs": "võrreldes puhta MS-DOS-iga", "b": [["Graafiline kasutajaliides DOS-i peal", "", "käskude tippimise asemel sai programme avada ja faile hallata ekraanil klõpsates. Windows ise oli DOS-i rakendus: arvuti käivitus DOS-i ja Windows pandi käima käsuga `win`."], ["Hiir ja kõrvuti aknad", "", "hiirest sai tavaline sisendseade. Aknad jaotati ekraanil kõrvuti (tiled) ega saanud üksteise peale ulatuda, sest tolleaegne graafikariistvara oli nõrk."], ["Koostööpõhine multitegumtöö", "(cooperative multitasking) ", "mitu programmi võis olla korraga avatud, kuid iga programm pidi ise juhtimise teistele loovutama. Kui programm seda ei teinud, jäi kogu süsteem seisma."], ["Ühised seadmedraiverid", "", "ekraani ja printeri draiver paigaldati üks kord Windowsile ning kõik Windowsi rakendused said seda kasutada. DOS-is pidi iga programm (nt tekstitöötlus) ise iga printerimudelit toetama."], ["Kaasasolevad rakendused", "", "MS-DOS Executive (failihaldur), Paint, Write, Notepad, Calculator, Calendar ja Cardfile näitasid, milleks graafilist liidest kasutada saab."]], "src": [["Wikipedia: Windows 1.0", "https://en.wikipedia.org/wiki/Windows_1.0"]]}, {"id": 1, "lane": "dos", "y": 1987, "yl": "1987", "s": "2.x", "n": "Windows 2.0 / 2.1", "vs": "võrreldes 1.0-ga", "b": [["Üksteise peale ulatuvad aknad", "(overlapping windows) ", "aknaid sai vabalt paigutada ja üksteise peale tõsta, nagu paberilehti laual. Sellest sai graafiliste kasutajaliideste standard."], ["Minimeerimine ja maksimeerimine", "", "akna sai peita ikooniks või laiendada üle ekraani. Nii oli mitme programmiga töötamine mugavam."], ["Kiirklahvid", "", "menüüsid ja aknaid sai juhtida ka klaviatuuriga. Sellest tulid ka kombinatsioonid, mida kasutatakse Windowsis siiani."], ["DDE", "(Dynamic Data Exchange) ", "programmid said omavahel andmeid vahetada, nt Exceli tabeli muutus kajastus automaatselt Wordi dokumendis. See oli esimene samm rakendustevahelise koostöö suunas."], ["Windows/386", "", "kasutas 386-protsessori virtuaalset 8086-režiimi: iga DOS-programm sai oma „virtuaalse arvuti“ ja mitu DOS-programmi töötasid korraga eraldi akendes. Samal ajal ilmusid ka esimesed Windowsi Word ja Excel."]], "src": [["Wikipedia: Windows 2.0", "https://en.wikipedia.org/wiki/Windows_2.0"], ["Wikipedia: Windows 2.1x", "https://en.wikipedia.org/wiki/Windows_2.1x"]]}, {"id": 2, "lane": "dos", "y": 1990, "yl": "1990–1993", "s": "3.x", "n": "Windows 3.0 / 3.1 / 3.11", "vs": "võrreldes 2.x-ga", "b": [["Kaitstud režiim", "(protected mode) ", "Windows sai kasutada kogu arvuti mälu, mitte ainult DOS-i 640 KB piiri. 386-režiimis lisandus virtuaalmälu (saalefail kettal), nii et korraga sai avada rohkem programme, kui füüsilisse mällu mahtus."], ["Program Manager ja File Manager", "", "programmid olid grupeeritud ikoonidena ühte aknasse ja failihaldur näitas kaustapuud. Windowsiga oli nüüd lihtne töötada ka arvutit vähem tundval inimesel ning 3.0-st sai esimene suur müügiedu."], ["TrueType fondid", "(3.1) ", "fondid olid skaleeritavad: sama kiri nägi igas suuruses ühtviisi hea välja nii ekraanil kui ka printeril („mida näed, seda saad“, WYSIWYG)."], ["OLE ja lohista-ja-kukuta", "(3.1) ", "ühte dokumenti sai põimida teise programmi objekti (nt Exceli tabeli Wordi), mis avanes topeltklõpsuga oma programmis. Faile sai liigutada hiirega lohistades."], ["Võrgutugi", "(3.11) ", "arvutid said töörühmas faile ja printereid jagada ilma eraldi võrgutarkvarata. Nii sai Windowsist ka kontorivõrkude operatsioonisüsteem."]], "src": [["Wikipedia: Windows 3.0", "https://en.wikipedia.org/wiki/Windows_3.0"], ["Wikipedia: Windows 3.1x", "https://en.wikipedia.org/wiki/Windows_3.1x"]]}, {"id": 3, "lane": "dos", "y": 1995, "yl": "1995", "s": "95", "n": "Windows 95", "vs": "võrreldes Windows 3.1-ga", "b": [["Start-menüü, tegumiriba ja töölaud", "", "kõik programmid leidis Start-nupust ja avatud aknad olid tegumiribal näha. See liidese põhimõte kehtib Windowsis tänini."], ["32-bitised rakendused", "(Win32) ", "uued programmid said kasutada rohkem mälu ja töötasid kiiremini. Eelisjärjestusega multitegumtöös jagab OS ise protsessori aega, nii et üks 32-bitine programm ei saa teisi kinni hoida. Vanad 16-bitised programmid jagasid aga endiselt ühte ühist ruumi."], ["Plug and Play", "", "OS tuvastas uue seadme (nt helikaardi) ja seadistas selle võimaluse korral ise. Varem pidi kasutaja ise draivereid paigaldama ja IRQ-sid ning muid ressursse käsitsi määrama."], ["Pikad failinimed", "", "DOS-i 8.3-vormingu (nt `ARUANNE1.DOC`) asemel sai faili nimeks panna kuni 255 märki, nt „Aruanne 2025 lõplik.doc“."], ["Sisseehitatud TCP/IP", "", "interneti protokollide tugi oli OS-is kaasas ja sissehelistamisega sai võrku ühendada ilma lisatarkvarata. See soodustas interneti levikut koduarvutites."]], "src": [["Wikipedia: Windows 95", "https://en.wikipedia.org/wiki/Windows_95"]]}, {"id": 4, "lane": "dos", "y": 1998, "yl": "1998", "s": "98", "n": "Windows 98 / 98 SE", "vs": "võrreldes Windows 95-ga", "b": [["Internet Explorer integreeriti kesta", "", "brauser oli OS-i osa ning kaustu sai vaadata nagu veebilehti (Active Desktop). Sellest kasvas USA-s Microsofti vastu monopolikohtuasi."], ["Laialdane USB tugi", "", "hiire, klaviatuuri, printeri ja muud seadmed sai ühendada ühe universaalse pistikuga, ilma arvutit taaskäivitamata."], ["FAT32 failisüsteem", "", "toetas suuremaid kettaid ja salvestas väikesed failid tõhusamalt (väiksemad klastrid), nii et kettaruumi raisati vähem."], ["Windows Update", "", "parandusi ja draivereid sai alla laadida Microsofti veebilehelt, ilma uut plaati ostmata. Sellest kasvas välja tänane uuendussüsteem."], ["WDM-draiverid, ACPI ja mitu monitori", "", "sama draiverimudel töötas nii Windows 98-s kui ka Windows 2000-s. ACPI võimaldas OS-il juhtida toidet (unerežiim, väljalülitus) ja ühe arvutiga sai kasutada mitut ekraani. 98 SE lisas interneti ühiskasutuse: üks arvuti sai jagada internetiühendust teistega."]], "src": [["Wikipedia: Windows 98", "https://en.wikipedia.org/wiki/Windows_98"]]}, {"id": 5, "lane": "dos", "y": 2000, "yl": "2000", "s": "ME", "n": "Windows ME", "vs": "võrreldes Windows 98-ga (viimane DOS-põhine Windows)", "b": [["System Restore", "(süsteemitaaste) ", "süsteem salvestas taastepunkte ja ebaõnnestunud paigalduse järel sai arvuti seadistused varasemasse olekusse tagasi viia, ilma et kasutaja failid kaoksid."], ["Süsteemifailide kaitse", "", "takistas programmidel olulisi Windowsi faile vanemate versioonidega üle kirjutada. Varem oli see sage põhjus, miks süsteem pärast tarkvara paigaldamist katki läks („DLL-põrgu“)."], ["Automaatsed uuendused", "", "Windows laadis uuendused ise taustal alla ja pakkus neid paigaldada, nii et kasutaja ei pidanud meeles pidama Windows Update'i lehel käimist."], ["DOS-i reaalrežiim peideti", "", "arvuti käivitus kiiremini, kuid paljud vanad DOS-i programmid ja mängud enam ei töötanud. ME-l oli ka halb stabiilsuse maine, mis kiirendas üleminekut NT-põhisele XP-le."], ["Multimeedia", "", "Windows Movie Maker (videotöötlus), Windows Media Player 7 ja UPnP (võrguseadmete automaatne leidmine) näitasid, et koduarvutit kasutati üha enam meedia jaoks."]], "src": [["Wikipedia: Windows Me", "https://en.wikipedia.org/wiki/Windows_Me"]]}, {"id": 6, "lane": "nt", "y": 1993, "yl": "1993", "s": "NT 3.1", "n": "Windows NT 3.1", "vs": "võrreldes Windows 3.1-ga", "b": [["Täielikult 32-bitine tuum, mis ei sõltu MS-DOS-ist", "", "NT on iseseisev operatsioonisüsteem, mis haldab riistvara ise. Kõik selle all töötab NT reeglite järgi, mitte DOS-i piirangutega."], ["Eelisjärjestusega multitegumtöö, lõimed ja SMP", "", "OS-i ajastaja otsustab, millal iga programm protsessorit kasutab, nii et ükski programm ei saa teisi kinni hoida. Programm võib jaguneda mitmeks lõimeks (thread), mis töötavad paralleelselt. SMP tähendab mitme protsessori samaaegset kasutamist ja seetõttu sobis NT ka serveriks."], ["Mälukaitse", "", "igal protsessil on oma aadressiruum ja ta ei saa teise protsessi mälu lugeda ega muuta. Kui üks programm jookseb kokku, suletakse see ja muud programmid jätkavad tööd."], ["NTFS ja ACL-ipõhised õigused", "", "NTFS failisüsteem säilitab iga faili ja kausta juures pääsuloendi (ACL): kes tohib lugeda, muuta või kustutada. Logimine (journaling) aitab ketta pärast voolukatkestust kiiresti korda saada."], ["Turvamudel", "", "kasutaja peab sisse logima (Ctrl+Alt+Del, mida ükski programm järele teha ei saa), igal kasutajal on oma konto ja õigused ning olulised sündmused kirjutatakse turvalogisse (audit). DOS-is ja Windows 9x-is tõelist kasutajate eristamist polnud."], ["Kaasaskantavus ja HAL", "", "riistvara abstraktsioonikiht (HAL) peidab protsessori ja emaplaadi erinevused, nii et sama NT töötas x86-, MIPS- ja Alpha-arvutitel. Sama põhimõte võimaldab tänapäeval Windowsit käitada ka ARM-protsessoritel."]], "src": [["Wikipedia: Windows NT 3.1", "https://en.wikipedia.org/wiki/Windows_NT_3.1"]]}, {"id": 7, "lane": "nt", "y": 1996, "yl": "1996", "s": "NT 4.0", "n": "Windows NT 4.0", "vs": "võrreldes NT 3.51-ga", "b": [["Windows 95 kasutajaliides", "", "NT sai Start-menüü, tegumiriba ja Exploreri. Kasutaja jaoks nägi turvaline NT nüüd välja samasugune nagu tuttav Windows 95, mis aitas NT-l ettevõtetes levida."], ["Graafika tuumarežiimi", "", "graafikaalamsüsteem (GDI) ja ekraanidraiverid viidi kasutajarežiimist tuumarežiimi. Graafika muutus kiiremaks, kuid vigane graafikadraiver võis nüüd kogu süsteemi kokku jooksutada (sinine ekraan). See on näide, kus kiiruse nimel loobuti osaliselt töökindlusest."], ["Task Manager", "(tegumihaldur) ", "sai vaadata töötavaid protsesse, protsessori ja mälu koormust ning hangunud programmi sulgeda. Tegumihaldur on üks administraatori põhitööriistu tänini."], ["IIS ja domeenivõrgud", "", "serveris oli kaasas IIS veebiserver, nii et NT Serverist sai ka veebiserver. Domeenide abil sai paljude arvutite kasutajakontosid hallata keskselt."], ["Internet Explorer ja DirectX", "", "brauser oli kaasas, DirectX-i (mängude ja multimeedia liidese) tugi oli aga piiratud. Seetõttu jäi NT 4.0 eelkõige tööarvutite ja serverite süsteemiks ning koduarvutites jätkus Windows 9x."]], "src": [["Wikipedia: Windows NT 4.0", "https://en.wikipedia.org/wiki/Windows_NT_4.0"]]}, {"id": 8, "lane": "nt", "y": 2000, "yl": "2000", "s": "2000", "n": "Windows 2000", "vs": "võrreldes NT 4.0-ga", "b": [["Active Directory", "", "kataloogiteenus, kus kasutajad, arvutid, grupid ja printerid on hierarhilises andmebaasis (domeenid, organisatsiooniüksused). NT 4.0 lame domeenimudel ei sobinud suurtele asutustele. AD on tänini enamiku organisatsioonide identiteedihalduse alus."], ["Grupipoliitika", "(Group Policy, GPO) ", "administraator saab ühe reegliga seadistada tuhandeid arvuteid, nt parooli nõuded, tulemüüri, paigaldatava tarkvara ja töölaua piirangud. Varem pidi iga arvutit eraldi seadistama."], ["Kerberos autentimine", "", "piletipõhine autentimine, kus parooli ei saadeta üle võrgu. Kerberos on turvalisem ja kiirem kui vana NTLM. NTLM jäi ühilduvuse jaoks alles ja sellest loobutakse alles nüüd (vt Windows Server 2025)."], ["Plug and Play, USB ja ACPI", "", "NT-liin sai lõpuks samad riistvara mugavused, mis Windows 98-l. Nii sai NT-põhist süsteemi kasutada ka sülearvutis (toitehaldus, unerežiim) ja koduarvutis."], ["EFS, kettakvoodid ja dünaamilised kettad", "", "EFS krüpteerib üksikuid faile kasutaja võtmega. Kvoodid piiravad, kui palju kettaruumi kasutaja tohib võtta. Dünaamilised kettad võimaldavad tarkvaralist RAID-i (peegeldamine, triibutamine)."], ["Windows Installer", "(MSI) ", "standardne paigaldusvorming, mis oskab paigalduse ebaõnnestumisel muudatused tagasi võtta ja mida saab grupipoliitikaga arvutitesse laiali jagada."]], "src": [["Wikipedia: Windows 2000", "https://en.wikipedia.org/wiki/Windows_2000"], ["Microsoft: Overview of Active Directory Domain Services", "https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview"], ["Microsoft: Kerberos Authentication Overview", "https://learn.microsoft.com/windows-server/security/kerberos/kerberos-authentication-overview"]]}, {"id": 9, "lane": "nt", "y": 2001, "yl": "2001", "s": "XP", "n": "Windows XP", "vs": "võrreldes Windows 2000 ja ME-ga", "b": [["NT-tuum ka koduarvutites", "", "XP Home ja Professional ühendasid kaks arendusliini. Ka kodukasutajad said NT stabiilsuse, mälukaitse ja õigused ning DOS-põhine liin lõppes."], ["Luna kasutajaliides ja ClearType", "", "värvikam, kodukasutajale mõeldud välimus. ClearType muutis teksti LCD-ekraanidel teravamaks, kasutades ekraanipikslite värvilisi alampiksleid."], ["Kiire kasutajavahetus", "", "mitu kasutajat võis olla korraga sisse logitud ja nende vahel sai vahetada programme sulgemata. See oli võimalik just NT mitme kasutaja toe tõttu."], ["Remote Desktop ja Remote Assistance", "", "arvutit sai kasutada üle võrgu, nagu istuks selle taga. Abi sai kutsuda sõbra või IT-toe, kes nägi ekraani ja sai aidata."], ["Ühilduvusrežiim", "", "vanu Windows 9x jaoks tehtud programme sai käivitada nii, et Windows teeskles nende jaoks vanemat versiooni. See oli üleminekul DOS-liinilt NT-le hädavajalik."], ["Tooteaktiveerimine", "", "litsents seoti arvuti riistvaraga ja aktiveeriti interneti või telefoni teel, et piirata piraatkoopiate kasutamist."], ["SP2 (2004): tulemüür ja Security Center", "", "pärast suuri ussirünnakuid (Blaster, Sasser) lülitati Windows Firewall vaikimisi sisse ja Security Center hakkas jälgima tulemüüri, uuenduste ning viirusetõrje olekut. Sellest algas Microsofti „vaikimisi turvaline“ mõtteviis."]], "src": [["Wikipedia: Windows XP", "https://en.wikipedia.org/wiki/Windows_XP"], ["Wikipedia: Windows XP SP2", "https://en.wikipedia.org/wiki/Windows_XP#Service_Pack_2"]]}, {"id": 10, "lane": "nt", "y": 2007, "yl": "2007", "s": "Vista", "n": "Windows Vista", "vs": "võrreldes XP-ga", "b": [["UAC", "(User Account Control) ", "XP-s töötas enamik kasutajaid administraatoriõigustega, nii et ka pahavara sai kõik õigused. Vistas töötab ka administraator vaikimisi tavaõigustega ja süsteemi muutmiseks tuleb kinnitada eraldi aknas. See on vähima õiguse põhimõtte rakendus."], ["BitLocker", "", "krüpteerib terve süsteemiketta, nii et varastatud sülearvutist ei saa andmeid lugeda. Võtit hoitakse TPM-kiibis."], ["WDDM ja Aero", "", "uus graafikadraiverite mudel viis suure osa draiverist kasutajarežiimi: kui graafikadraiver jookseb kokku, taaskäivitatakse see ilma sinise ekraanita. Aero kasutas graafikakaarti akende joonistamiseks (läbipaistvus, animatsioonid)."], ["ASLR, PatchGuard ja draiverite allkirjastamine", "", "ASLR paigutab programmid mällu juhuslikult, mis teeb rünnakud raskemaks. PatchGuard keelab tuuma muutmise. 64-bitises Windowsis peavad draiverid olema digitaalselt allkirjastatud, mistõttu pahatahtliku draiveri paigaldamine on raskem."], ["Windows Defender ja uus võrgupinu", "", "nuhkvaratõrje oli OS-is kaasas. Ümber kirjutatud TCP/IP pinu toetas IPv6 vaikimisi. Kiirotsing indekseeris failid, nii et Start-menüüst leiab faili nime või sisu järgi."]], "src": [["Wikipedia: Windows Vista", "https://en.wikipedia.org/wiki/Windows_Vista"], ["Microsoft: How User Account Control works", "https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works"], ["Microsoft: BitLocker overview", "https://learn.microsoft.com/windows/security/operating-system-security/data-protection/bitlocker"]]}, {"id": 11, "lane": "nt", "y": 2009, "yl": "2009", "s": "7", "n": "Windows 7", "vs": "võrreldes Vistaga", "b": [["Uus tegumiriba ja hüpikloendid", "(jump lists) ", "programme sai tegumiribale kinnitada (pin) ning paremklõpsuga avanesid programmi viimati kasutatud failid. Tegumiriba toimib nii tänini."], ["Aero Snap, Peek ja Shake", "", "akna lohistamine ekraani servale paigutab selle pool ekraani suuruseks. Peek näitab korraks töölauda ja Shake minimeerib kõik teised aknad. Need lihtsustasid mitme aknaga töötamist."], ["Seadistatav UAC", "", "Vista UAC küsis kinnitust nii tihti, et kasutajad hakkasid seda pimesi kinnitama või lülitasid selle välja. Windows 7-s sai valida taseme ning tavalised sätete muudatused enam kinnitust ei nõudnud. Hea turve peab olema ka kasutatav."], ["BitLocker To Go", "", "USB-mälupulga ja välise ketta krüpteerimine. See on oluline, sest kadunud mälupulk on sage andmelekke põhjus."], ["AppLocker ja DirectAccess", "", "AppLockeriga saab administraator määrata, milliseid programme tohib käivitada (lubatud rakenduste nimekiri). DirectAccess ühendas sülearvuti automaatselt ettevõtte võrguga ilma käsitsi VPN-ita."], ["XP Mode ja jõudlus", "", "vanu XP rakendusi sai käitada virtuaalses Windows XP-s. Windows 7 kasutas vähem mälu ja töötas samal riistvaral kiiremini kui Vista, mistõttu sellest sai pikaks ajaks ettevõtete standard."]], "src": [["Wikipedia: Windows 7", "https://en.wikipedia.org/wiki/Windows_7"], ["Microsoft: How UAC Works (Windows 7)", "https://technet.microsoft.com/en-us/library/dd835548"]]}, {"id": 12, "lane": "nt", "y": 2012, "yl": "2012–2013", "s": "8 / 8.1", "n": "Windows 8 / 8.1", "vs": "võrreldes Windows 7-ga", "b": [["Start-ekraan ja puuteliides", "", "Start-menüü asemel avanes täisekraanil paanidega Start-ekraan, mis oli mõeldud tahvelarvutitele. Lauaarvuti kasutajad pidasid seda ebamugavaks. 8.1 tõi Start-nupu tagasi ja lubas arvutil käivituda otse töölauale."], ["Windows Store ja AppContainer", "", "rakendused tulid kontrollitud poest ja töötasid liivakastis (AppContainer): rakendus näeb ainult seda, milleks tal on luba (nt kaamera, failid). See on mobiilsete OS-ide turvamudel."], ["UEFI Secure Boot ja ELAM", "", "Secure Boot kontrollib, et alglaadur ja tuum on digitaalselt allkirjastatud, nii et alglaadimisviirus (bootkit) ei saa käivituda enne OS-i. ELAM laseb viirusetõrjel käivituda enne teisi draivereid."], ["Sisseehitatud viirusetõrje", "", "Windows Defender sai täisväärtuslikuks viirusetõrjeks (varem oli see eraldi Microsoft Security Essentials). Igal Windowsi arvutil on nüüd vaikimisi pahavarakaitse."], ["Microsofti konto, Hyper-V ja lähtestamine", "", "Microsofti kontoga sisse logides sünkroonitakse sätted arvutite vahel. Hyper-V võimaldas Pro-väljaandes virtuaalmasinaid käitada. Reset/Refresh taastas Windowsi ilma täieliku uuesti paigaldamiseta. Kiire käivitus (Fast Startup) kasutab talveunerežiimi tehnikat, et arvuti käivituks sekunditega."]], "src": [["Wikipedia: Windows 8", "https://en.wikipedia.org/wiki/Windows_8"], ["Wikipedia: Windows 8.1", "https://en.wikipedia.org/wiki/Windows_8.1"], ["Microsoft: Secure Boot (Windows 8 / 8.1)", "https://learn.microsoft.com/previous-versions/windows/it-pro/windows-8.1-and-8/dn486875(v=ws.11"]]}, {"id": 13, "lane": "nt", "y": 2015, "yl": "2015", "s": "10", "n": "Windows 10", "vs": "võrreldes Windows 8.1-ga", "b": [["Start-menüü tagasi ja virtuaalsed töölauad", "", "Start-menüü ühendas tuttava programminimekirja ja Windows 8 paanid. Task View ja virtuaalsed töölauad võimaldasid aknaid eri töölaudadele jagada."], ["„Windows as a Service“", "", "uut Windowsi ei tule iga paari aasta tagant. Windows 10 uuenes pidevalt: igakuised kumulatiivsed turvauuendused ning regulaarsed funktsiooniuuendused (algul kaks korda aastas). IT-haldurile tähendab see pidevat testimist ja uuenduste juhtimist."], ["Windows Hello", "", "näo-, sõrmejälje- või PIN-koodiga sisselogimine, kus võti on seotud seadme TPM-kiibiga. Windows Hello for Business asendab ettevõttes parooli tugevama autentimisega."], ["Virtualiseerimispõhine turve", "(VBS) ", "hüperviisor eraldab osa mälust isegi OS-i tuuma eest. Credential Guard hoiab paroolide räsisid ja Kerberose pileteid seal, nii et pahavara ei saa neid varastada (nt pass-the-hash rünnakus)."], ["WSL, Edge ja Autopilot", "", "WSL võimaldab käitada Linuxi käsureatööriistu otse Windowsis. Edge asendas Internet Exploreri. Autopilot ja Intune lasevad uue arvuti otse tehasest kasutajale saata, sest arvuti seadistab end esimesel sisselogimisel ise ettevõtte reeglite järgi."]], "src": [["Wikipedia: Windows 10", "https://en.wikipedia.org/wiki/Windows_10"], ["Microsoft: How Credential Guard works", "https://learn.microsoft.com/windows/security/identity-protection/credential-guard/how-it-works"], ["Microsoft: What is WSL", "https://learn.microsoft.com/windows/wsl/about"]]}, {"id": 14, "lane": "nt", "y": 2021, "yl": "2021", "s": "11", "n": "Windows 11", "vs": "võrreldes Windows 10-ga", "b": [["Kohustuslik TPM 2.0, Secure Boot ja uuem protsessor", "", "riistvaraline turve on baasnõue, mitte valikuline lisa. Seetõttu ei saa paljudele vanematele arvutitele Windows 11 ametlikult paigaldada."], ["Mälu terviklikkus (HVCI) ja VBS vaikimisi", "", "uutel seadmetel on virtualiseerimispõhine turve kohe sees: tuuma saab käivitada ainult allkirjastatud ja kontrollitud koodi, mis muudab draiveripõhised rünnakud raskemaks."], ["Uus kasutajaliides", "", "tegumiriba ja Start-menüü on ekraani keskel, aknanurgad ümarad ning sätete rakendus ümber kujundatud. Vanad juhtpaneeli osad on järk-järgult Sätetesse viidud."], ["Snap Layouts", "", "kui hiir on akna maksimeerimisnupul, saab valida valmis paigutuse (nt kolm akent kõrvuti). See on mugav eriti suurtel ekraanidel."], ["Üks funktsiooniuuendus aastas", "", "Windows 10 kahe uuenduse asemel tuleb üks: Home/Pro saavad igale versioonile 24 kuud tuge, Enterprise/Education 36 kuud. Nii jääb administraatoritel uuenduste planeerimiseks rohkem aega."], ["Muud uuendused", "", "vidinad (Widgets) ja Androidi rakenduste alamsüsteem (WSA, lõpetati 2025). 22H2 lisas Smart App Controli, mis blokeerib tundmatud ja allkirjastamata programmid, ning vahekaardid File Exploreris."]], "src": [["Wikipedia: Windows 11", "https://en.wikipedia.org/wiki/Windows_11"], ["Microsoft: Windows 11 hardware requirements", "https://learn.microsoft.com/en-us/windows/compatibility/windows-11"], ["Microsoft: What's new for Windows 11, version 22H2", "https://support.microsoft.com/help/5018680"]]}, {"id": 15, "lane": "nt", "y": 2024, "yl": "2024", "s": "24H2", "n": "Windows 11 24H2", "vs": "võrreldes 23H2-ga", "b": [["Uus alusplatvorm", "", "tuum ja süsteemi alus uuendati (nn uus platvormiväljalase). See on 25H2 ja 26H2 ühine põhi, nii et need versioonid saavad tulla väikeste lubamispakettidena."], ["Copilot+ arvutid", "", "vähemalt 40 TOPS-i jõudlusega tehisintellekti protsessoriga (NPU) arvutid said kohalikud AI-funktsioonid: Recall (ekraani ajaloo otsing), Click to Do, reaalajas tõlgitud subtiitrid ja kaameraefektid. Tehisintellekt töötab seadmes, mitte pilves."], ["Rust tuumas, Sudo ja Wi-Fi 7", "", "osa tuuma koodist kirjutati ümber Rust-keelde, mis väldib terveid mäluvigade klasse (nt puhvri ületäitumist). Sudo for Windows laseb käsurealt üht käsku tõstetud õigustega käivitada, nagu Linuxis. Wi-Fi 7 toetab uusimat traadita võrgu standardit."], ["Turvalisemad vaikeväärtused", "", "SMB-allkirjastamine on nõutud (kaitseb failijagamist vahelesegaja rünnakute eest), LSA kaitse hoiab sisselogimisandmeid mälus kaitstuna ja aegunud NTLMv1 eemaldati."], ["Eemaldused ja uued nõuded", "", "WordPad ja Steps Recorder eemaldati ning VBScript muudeti valikuliseks (seda kasutati sageli pahavaras). Protsessor peab toetama SSE4.2/POPCNT käske, mistõttu väga vanadel protsessoritel 24H2 ei käivitu. Uuendused on väiksemad, sest arvuti laadib alla ainult muutunud osad. Enterprise-väljaandes on võimalik hotpatch ehk turvauuendus ilma taaskäivituseta."]], "src": [["Microsoft: Windows 11, version 24H2: What's new for IT pros", "https://techcommunity.microsoft.com/blog/windows-itpro-blog/windows-11-version-24h2-what%E2%80%99s-new-for-it-pros/4259108"], ["Microsoft: What's new in Windows 11 Enterprise LTSC 2024", "https://learn.microsoft.com/en-us/windows/whats-new/ltsc/whats-new-windows-11-2024"], ["Wikipedia: Windows 11 version history", "https://en.wikipedia.org/wiki/Windows_11_version_history"]]}, {"id": 16, "lane": "nt", "y": 2025, "yl": "2025", "s": "25H2", "n": "Windows 11 25H2", "vs": "võrreldes 24H2-ga", "b": [["Lubamispakett", "(enablement package) ", "25H2 kood oli 24H2 arvutites juba olemas, peidetuna. Uuendus on väike pakett, mis selle sisse lülitab ja versiooninumbri muudab. Paigaldus vajab ainult ühte taaskäivitust, nagu tavaline igakuine uuendus."], ["Funktsioonid tulevad igakuiste uuendustega", "", "uued võimalused jõuavad arvutisse aasta jooksul järk-järgult ja 25H2 lülitas need kõigile sisse. Funktsiooniuuendus ei ole enam suur muutus, vaid pigem tugiaja pikendus."], ["PowerShell 2.0 ja WMIC eemaldati", "", "vana PowerShell 2.0 mootorit kasutati ründetes turvapiirangutest mööda hiilimiseks. WMIC on vana käsurea tööriist, mille asemel tuleb nüüd kasutada PowerShelli CIM-käske (nt `Get-CimInstance`). Administraatorid peavad oma vanad skriptid üle vaatama."], ["Eelinstallitud rakenduste eemaldamine poliitikaga", "", "Enterprise- ja Education-väljaandes saab administraator grupipoliitika või MDM-iga määrata, millised kaasasolevad poerakendused eemaldatakse. Nii on kooli- ja tööarvutid puhtamad."], ["Uus tugiperiood", "", "uuele versioonile üleminek käivitab tugiaja kella uuesti (Home/Pro 24 kuud, Enterprise/Education 36 kuud). Seepärast tuleb versiooni uuendada ka siis, kui uusi funktsioone pole vaja."]], "src": [["Microsoft: An IT pro's guide to Windows 11, version 25H2", "https://techcommunity.microsoft.com/blog/windows-itpro-blog/an-it-pro%E2%80%99s-guide-to-windows-11-version-25h2/4457409"], ["Windows Central: Windows 11 version 25H2", "https://www.windowscentral.com/software-apps/windows-11/windows-11-version-25h2-faq"]]}, {"id": 17, "lane": "nt", "y": 2026, "yl": "2026", "s": "26H2", "n": "Windows 11 26H2", "vs": "võrreldes 25H2-ga", "b": [["Väike lubamispakett", "", "24H2, 25H2 ja 26H2 on sama koodibaas ja uuenduspakett on x64-arvutil vaid ligikaudu 174 KB. Paigaldus võtab mõne minuti. Erand on 26H1 Arm-arvutid, mis on teisel platvormil ega saa 26H2-te."], ["Start-menüü ja tegumiriba sätted", "", "Start-menüül on väike ja suur suurus ning jaotisi (kinnitatud, hiljutised, kõik rakendused) saab peita. Tegumiriba saab taas paigutada üles, vasakule või paremale, mida Windows 11 algul ei lubanud."], ["Parem otsing", "", "otsingutulemustel on eelvaade ja otsing talub kirjavigu. Veebi- ja poesoovitused saab välja lülitada, nii et otsing näitab ainult arvutis olevat."], ["Uued vaikeväärtused tööarvutites", "", "varem „ajutiste ärikontrollidega“ peidetud funktsioonid (nt sätete varundamine) lülituvad sisse. Ettevõtte arvutites on ajapunktipõhine taastamine (point-in-time restore), Smart App Controlil on rohkem administraatori valikuid ja Windows Hello toetab rohkem sõrmejäljelugejaid."], ["AI ja jälgimine", "", "tegumihaldur näitab NPU ja tehisintellekti koormust ning Settings Agent laseb sätteid otsida loomulikus keeles (nt „muuda ekraan tumedaks“)."], ["Uus tugiperiood", "", "Home/Pro saavad uuendusi kuni oktoobrini 2028. 24H2 Home/Pro tugi lõppes 13.10.2026, seega tuli neil arvutitel 26H2-le uuendada."]], "src": [["Windows Latest: what's new in Windows 11 26H2", "https://www.windowslatest.com/2026/10/06/microsoft-reveals-whats-actually-new-in-windows-11-26h2-and-how-to-verify-it/"], ["Pureinfotech: Windows 11 26H2 vs 25H2", "https://pureinfotech.com/windows-11-26h2-vs-25h2/"]]}];
+const $=id=>document.getElementById(id);
+const md=t=>t.replace(/`([^`]+)`/g,'<code>$1</code>');const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const Y0=1984,Y1=2027;
+let sel=V.findIndex(v=>v.s==='XP'),filt='all';
+
+/* ---------- ajajoon ---------- */
+function drawAxis(){
+  const ax=$('axis');ax.innerHTML='';
+  const H={dos:85,nt:170};
+  const pos=y=>((y-Y0)/(Y1-Y0)*100)+'%';
+  for(const k of ['dos','nt']){
+    const l=document.createElement('div');l.className='lane';l.style.top=H[k]+'px';ax.appendChild(l);
+  }
+  for(let y=1985;y<=2025;y+=5){const t=document.createElement('div');t.className='tick';t.style.left=pos(y);t.textContent=y;ax.appendChild(t)}
+  const side={dos:0,nt:0};
+  V.forEach((v,i)=>{
+    const vis=filt==='all'||filt===v.lane;
+    const d=document.createElement('button');
+    d.className='dot '+v.lane+(i===sel?' sel':'')+(vis?'':' dim');
+    d.style.left=pos(v.y);d.style.top=H[v.lane]+'px';
+    d.setAttribute('aria-label',v.n+', '+v.yl);d.title=v.n+' ('+v.yl+')';
+    d.onclick=()=>choose(i);ax.appendChild(d);
+    const up=(side[v.lane]++)%2===0;
+    const b=document.createElement('button');
+    b.className='lbl'+(i===sel?' sel':'')+(vis?'':' dim');b.textContent=v.s;b.tabIndex=-1;
+    b.style.left=pos(v.y);b.style.top=(H[v.lane]+(up?-34:14))+'px';
+    b.onclick=()=>choose(i);ax.appendChild(b);
+  });
+}
+function visible(){return V.map((v,i)=>i).filter(i=>filt==='all'||V[i].lane===filt)}
+function choose(i){sel=i;drawAxis();drawDetail();history.replaceState(null,'','#v'+i)}
+function drawDetail(){
+  const v=V[sel],vis=visible(),k=vis.indexOf(sel);
+  let h='<div class="dhead"><h3><span class="year">'+v.yl+'</span>'+v.n+'</h3><span class="hint">'+(v.lane==='dos'?'DOS-põhine liin':'NT-liin')+'</span></div>';
+  h+='<p class="vs">Peamised uuendused '+v.vs+'</p><ul class="feat">';
+  v.b.forEach(([t,x,e],n)=>{h+='<li><button aria-expanded="false" data-n="'+n+'">'+md(t)+(x?' <span class="hint">'+x.trim()+'</span>':'')+'</button><div class="ex">'+md(cap(e))+'</div></li>'});
+  h+='</ul><div class="nav2"><button class="btn" id="openall">Ava kõik selgitused</button><span></span></div>';
+  h+='<p class="src">Allikad: '+v.src.map(([t,u])=>'<a href="'+u+'" target="_blank" rel="noopener">'+t+'</a>').join(' · ')+'</p>';
+  h+='<div class="nav2"><button class="btn" id="pv"'+(k<=0?' disabled':'')+'>← '+(k>0?V[vis[k-1]].n:'')+'</button><button class="btn" id="nx"'+(k<0||k>=vis.length-1?' disabled':'')+'>'+(k>=0&&k<vis.length-1?V[vis[k+1]].n:'')+' →</button></div>';
+  const d=$('detail');d.className='detail '+v.lane;d.innerHTML=h;
+  d.querySelectorAll('.feat button').forEach(b=>b.onclick=()=>{const li=b.parentNode;li.classList.toggle('open');b.setAttribute('aria-expanded',li.classList.contains('open'))});
+  $('openall').onclick=()=>{const all=[...d.querySelectorAll('.feat li')];const open=!all.every(li=>li.classList.contains('open'));all.forEach(li=>{li.classList.toggle('open',open);li.querySelector('button').setAttribute('aria-expanded',open)});$('openall').textContent=open?'Sulge kõik selgitused':'Ava kõik selgitused'};
+  if(k>0)$('pv').onclick=()=>choose(vis[k-1]);
+  if(k>=0&&k<vis.length-1)$('nx').onclick=()=>choose(vis[k+1]);
+}
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  filt=c.dataset.f;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));
+  const vis=visible();if(!vis.includes(sel))sel=vis[0];drawAxis();drawDetail();
+});
+document.addEventListener('keydown',e=>{
+  if(['INPUT','TEXTAREA'].includes(e.target.tagName))return;
+  const r=$('ajajoon').getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
+  const vis=visible(),k=vis.indexOf(sel);
+  if(e.key==='ArrowRight'&&k<vis.length-1){choose(vis[k+1]);e.preventDefault()}
+  if(e.key==='ArrowLeft'&&k>0){choose(vis[k-1]);e.preventDefault()}
+});
+const m=location.hash.match(/^#v(\d+)$/);if(m&&V[+m[1]])sel=+m[1];
+drawAxis();drawDetail();
+(()=>{const s=document.querySelector('.scroll'),d=document.querySelector('.dot.sel');if(d)s.scrollLeft=d.offsetLeft-s.clientWidth/2})();
+
+/* ---------- järjestamine ---------- */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+let set=[],picked=[],checked=false;
+function newSet(){
+  /* 6 eri aastaga versiooni, et järjekord oleks üheselt määratud */
+  const byYear={};shuffle(V.map((v,i)=>i)).forEach(i=>{if(!(V[i].y in byYear))byYear[V[i].y]=i});
+  set=shuffle(Object.values(byYear)).slice(0,6);picked=[];checked=false;$('ordres').innerHTML='';drawOrder();
+}
+function drawOrder(){
+  const pool=$('pool'),ans=$('answer');pool.innerHTML='';ans.innerHTML='';
+  const right=set.slice().sort((a,b)=>V[a].y-V[b].y);
+  set.filter(i=>!picked.includes(i)).forEach(i=>{const b=document.createElement('button');b.className='tile';b.textContent=V[i].n;b.disabled=checked;b.onclick=()=>{picked.push(i);drawOrder()};pool.appendChild(b)});
+  picked.forEach((i,n)=>{const b=document.createElement('button');b.className='tile'+(checked?(right[n]===i?' ok':' bad'):'');b.innerHTML=(n+1)+'. '+V[i].n+(checked?'<small>'+V[i].yl+'</small>':'');b.onclick=()=>{if(checked)return;picked.splice(n,1);drawOrder()};ans.appendChild(b)});
+  if(!picked.length)ans.innerHTML='<span class="hint">Klõpsa ülal versioonidel.</span>';
+  $('check').disabled=checked||picked.length!==set.length;
+}
+$('check').onclick=()=>{
+  checked=true;drawOrder();
+  const right=set.slice().sort((a,b)=>V[a].y-V[b].y),ok=picked.filter((i,n)=>right[n]===i).length;
+  $('ordres').innerHTML='<div class="res '+(ok===set.length?'ok':'bad')+'">'+(ok===set.length?'<strong>Kõik õiges järjekorras!</strong>':'<strong>Õiges kohas '+ok+' / '+set.length+'.</strong> Õige järjekord: '+right.map(i=>V[i].n+' ('+V[i].yl+')').join(' → '))+'</div>';
+};
+$('newset').onclick=newSet;newSet();
+
+/* ---------- arva versioon ---------- */
+const F=[];V.forEach((v,i)=>v.b.forEach(([t,x,e])=>F.push({i,t,e})));
+let score={ok:0,n:0},q=null;
+function newQ(){
+  const f=F[Math.floor(Math.random()*F.length)];
+  const others=shuffle(V.map((v,i)=>i).filter(i=>i!==f.i&&V[i].y!==V[f.i].y)).slice(0,3);
+  q={f,opts:shuffle([f.i,...others]),ans:null};drawQ();
+}
+function drawQ(){
+  const {f,opts,ans}=q;
+  let h='<p class="score">Õigeid '+score.ok+' / '+score.n+'</p><p class="qtext">'+md(f.t)+'</p>';
+  h+=ans===null?'<p class="qexp">Millises versioonis see uuendus tuli?</p>':'<p class="qexp">'+md(cap(f.e))+'</p>';
+  h+='<div class="opts">';
+  opts.forEach(i=>{let c='opt';if(ans!==null){if(i===f.i)c+=' ok';else if(i===ans)c+=' bad'}h+='<button class="'+c+'" data-i="'+i+'"'+(ans!==null?' disabled':'')+'>'+V[i].n+(ans!==null?' <span class="hint">('+V[i].yl+')</span>':'')+'</button>'});
+  h+='</div><div class="nav2"><a href="#v'+f.i+'" id="look">'+(ans!==null?'Vaata ajajoonel: '+V[f.i].n:'')+'</a><button class="btn primary" id="nq"'+(ans===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('qcard').innerHTML=h;
+  $('qcard').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{q.ans=+b.dataset.i;score.n++;if(q.ans===f.i)score.ok++;drawQ();$('nq').focus()});
+  $('nq').onclick=newQ;
+  const lk=$('look');lk.onclick=e=>{e.preventDefault();choose(f.i);$('ajajoon').scrollIntoView({behavior:'smooth'})};
+}
+newQ();
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 1 – test: Windowsi ajalugu</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/01-windowsi-ajalugu.md">← Peatükk 1</a> · <a href="01-ajajoon.html">Interaktiivne ajajoon</a></nav>
+<h1>Test: Windowsi ajalugu</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis oli MS-DOS-i roll esimestes Windowsi versioonides (1.0–3.x)?", "o": ["Windows oli DOS-i peal töötav graafiline kest: arvuti käivitus DOS-i ja Windows pandi käima eraldi käsuga", "MS-DOS oli Windowsi sees töötav emulaator vanade programmide jaoks", "MS-DOS-i kasutati ainult serverites", "MS-DOS-il ei olnud Windowsiga mingit seost"], "c": 0, "e": "Windows 1.0 kuni 3.x olid DOS-i rakendused, mis käivitati käsuga <code>win</code>. Ka Windows 95, 98 ja ME toetusid veel DOS-ile. Alles NT-liin oli DOS-ist sõltumatu."},
+{"q": "Mis oli koostööpõhise (cooperative) multitegumtöö peamine puudus?", "o": ["Korraga sai olla avatud ainult üks programm", "Kui programm ei loovutanud juhtimist teistele, jäi kogu süsteem seisma", "See vajas mitut protsessorit", "See töötas ainult võrgus"], "c": 1, "e": "Koostööpõhises multitegumtöös peab iga programm ise juhtimise loovutama. Eelisjärjestusega (preemptive) multitegumtöös otsustab protsessoriaja jagamise operatsioonisüsteem, nii et üks programm ei saa teisi kinni hoida."},
+{"q": "Mida võimaldas Windows 3.0 kaitstud režiim (protected mode)?", "o": ["Paroolikaitset sisselogimisel", "Viirusetõrjet", "Kogu arvuti mälu kasutamist üle DOS-i 640 KB piiri ja 386-režiimis virtuaalmälu", "Failide krüpteerimist"], "c": 2, "e": "DOS-i programmid said kasutada ainult 640 KB mälu. Kaitstud režiim avas kogu mälu ning virtuaalmälu (saalefail kettal) võimaldas avada rohkem programme, kui füüsilisse mällu mahtus."},
+{"q": "Milles seisnes Windows 95 Plug and Play?", "o": ["Programmid käivitusid automaatselt pärast sisselogimist", "Arvuti sai ühendada internetiga ilma modemita", "Mängud käivitusid otse CD-lt", "OS tuvastas uue seadme ja seadistas selle võimaluse korral ise, ilma et kasutaja peaks ressursse käsitsi määrama"], "c": 3, "e": "Enne Plug and Play’d pidi kasutaja ise draivereid paigaldama ning IRQ-sid ja muid ressursse käsitsi määrama. Windows 2000 tõi Plug and Play toe ka NT-liini."},
+{"q": "Millest on tingitud „DLL-põrgu“ ja milline Windows ME uuendus seda leevendas?", "o": ["Programmid kirjutasid olulisi süsteemifaile üle vanemate versioonidega; leevendas süsteemifailide kaitse", "Liiga palju fonte; leevendas TrueType", "Viirused krüpteerisid faile; leevendas BitLocker", "Kettad said täis; leevendas FAT32"], "c": 0, "e": "Kui programm paigaldas oma vanema DLL-i versiooni, läksid teised programmid või kogu süsteem katki. System File Protection takistas süsteemifailide ülekirjutamist ja System Restore võimaldas seadistused varasemasse olekusse taastada."},
+{"q": "Mis aastal ilmus Windows NT 3.1?", "o": ["1985", "1990", "1993", "1995"], "c": 2, "e": "Windows NT 3.1 ilmus 1993. Selle arendust juhtis Dave Cutler. Versiooninumber 3.1 valiti, et see sobiks tolle aja Windows 3.1-ga."},
+{"q": "Milline omadus EI kuulunud Windows NT algsete eesmärkide hulka?", "o": ["Töökindlus ja mälukaitse", "Turvalisus ja mitme kasutaja tugi", "Kaasaskantavus eri protsessoriarhitektuuridele", "Täielik ühilduvus DOS-i reaalrežiimis töötavate draiveritega"], "c": 3, "e": "NT loodi nullist ja ei sõltunud DOS-ist. Seetõttu ei töötanud selles paljud vanad DOS-i draiverid ja mängud ning koduarvutites jäi pikaks ajaks kasutusse Windows 9x."},
+{"q": "Milleks on NT-s riistvara abstraktsioonikiht (HAL)?", "o": ["See krüpteerib kõvaketta", "See peidab protsessori ja emaplaadi erinevused, nii et sama OS töötab eri arhitektuuridel", "See haldab kasutajakontosid", "See on graafiline kasutajaliides"], "c": 1, "e": "HAL-i abil töötas NT x86-, MIPS- ja Alpha-arvutitel. Sama põhimõte võimaldab tänapäeval Windowsit käitada ka ARM-protsessoritel."},
+{"q": "Mida kontrollib NTFS-is pääsuloend (ACL)?", "o": ["Kes tohib faili või kausta lugeda, muuta või kustutada", "Kui palju kettaruumi fail võtab", "Millal faili viimati varundati", "Millises kettaosas fail asub"], "c": 0, "e": "ACL (Access Control List) on iga faili ja kausta juures. FAT-failisüsteemis sellist õiguste süsteemi polnud, nii et kõik kasutajad nägid kõiki faile."},
+{"q": "Windows NT 4.0 viis graafikaalamsüsteemi (GDI) ja ekraanidraiverid tuumarežiimi. Mis oli selle hind?", "o": ["Graafika muutus aeglasemaks", "Värvide arv vähenes", "Vigane graafikadraiver võis nüüd kogu süsteemi kokku jooksutada", "Kaotati võrgutugi"], "c": 2, "e": "Tuumarežiimis töötav kood saab teha kõike. Graafika muutus kiiremaks, kuid töökindlus vähenes. Vista WDDM-draiverimudel viis suure osa graafikadraiverist tagasi kasutajarežiimi."},
+{"q": "Milline Windows 2000 uuendus on tänini enamiku organisatsioonide identiteedihalduse alus?", "o": ["Windows Installer", "Active Directory", "Task Manager", "Luna kasutajaliides"], "c": 1, "e": "Active Directory hoiab kasutajaid, arvuteid, gruppe ja printereid hierarhilises andmebaasis. Koos sellega tulid grupipoliitika ja Kerberos autentimine."},
+{"q": "Miks on Kerberos turvalisem kui vana NTLM?", "o": ["Kerberos kasutab pikemaid paroole", "Kerberos töötab ainult kohtvõrgus", "Kerberos salvestab paroolid krüpteerimata", "Kerberos on piletipõhine ja parooli ei saadeta üle võrgu"], "c": 3, "e": "Kerberos annab kasutajale ajutised piletid, millega ta pääseb teenustele ligi. NTLM jäi ühilduvuse jaoks alles ja sellest loobutakse alles nüüd: Windows Server 2025 kuulutas selle aegunuks ja Windows 11 24H2 eemaldas NTLMv1."},
+{"q": "Mis oli Windows XP kõige olulisem muutus koduarvutite jaoks?", "o": ["Kodukasutajad said NT-tuuma koos mälukaitse ja õigustega ning DOS-põhine liin lõppes", "Windows hakkas töötama ainult puuteekraanil", "Kadus Start-menüü", "XP töötas ainult serverites"], "c": 0, "e": "XP Home ja Professional ühendasid kaks arendusliini. Pärast XP-d põhinevad kõik Windowsi versioonid NT-tuumal, ka Windows 11."},
+{"q": "Mis tõi Windows XP SP2 (2004) turvalisuses kaasa?", "o": ["BitLockeri", "UAC", "Windows Firewall lülitati vaikimisi sisse ja tuli Security Center", "TPM 2.0 nõude"], "c": 2, "e": "Pärast Blasteri ja Sasseri ussirünnakuid muudeti tulemüür vaikimisi sisselülitatuks. Sellest algas Microsofti „vaikimisi turvaline“ mõtteviis."},
+{"q": "Millist turvapõhimõtet rakendab Vistas tulnud UAC?", "o": ["Kaitset sügavuti (defense in depth) krüpteerimise abil", "Vähima õiguse põhimõtet: ka administraator töötab vaikimisi tavaõigustega", "Kahefaktorilist autentimist", "Andmete varundamist"], "c": 1, "e": "XP-s töötas enamik kasutajaid administraatoriõigustega, nii et ka pahavara sai kõik õigused. UAC nõuab süsteemi muutmiseks eraldi kinnitust."},
+{"q": "Miks muudeti Windows 7-s UAC seadistatavaks ja vähem pealetükkivaks?", "o": ["Microsoft loobus UAC-st", "UAC oli liiga aeglane", "UAC ei töötanud 64-bitises Windowsis", "Kasutajad hakkasid sagedasi kinnituskaste pimesi kinnitama või lülitasid UAC välja"], "c": 3, "e": "Turvameede, mis segab liiga palju, jääb kasutamata. Hea turve peab olema ka kasutatav."},
+{"q": "Mille eest kaitseb UEFI Secure Boot (Windows 8)?", "o": ["Pahavara eest, mis üritab käivituda enne operatsioonisüsteemi (bootkit)", "Andmepüügi e-kirjade eest", "Paroolide äraarvamise eest", "Võrguühenduse pealtkuulamise eest"], "c": 0, "e": "Secure Boot kontrollib, et alglaadur ja tuum oleksid digitaalselt allkirjastatud. Muudetud või võõrast alglaadurit ei käivitata. Windows 11 nõuab Secure Booti kohustuslikult."},
+{"q": "Mida tähendab „Windows as a Service“ (Windows 10)?", "o": ["Windowsi saab kasutada ainult pilves", "Windowsi eest tuleb maksta kuutasu", "Uut Windowsi ei tule iga paari aasta tagant, vaid süsteem uueneb pidevalt igakuiste ja regulaarsete funktsiooniuuendustega", "Windows töötab ainult serveris"], "c": 2, "e": "IT-haldurile tähendab see pidevat uuenduste testimist ja juhtimist, näiteks Windows Update for Businessi või Intune’i abil."},
+{"q": "Kuidas kaitseb Credential Guard paroolide räsisid ja Kerberose pileteid?", "o": ["Kustutab need pärast sisselogimist", "Hoiab neid virtualiseerimispõhise turbe (VBS) abil mälualas, mida isegi OS-i tuum ei näe", "Saadab need pilve", "Krüpteerib need kasutaja parooliga"], "c": 1, "e": "Hüperviisor eraldab osa mälust. Isegi administraatoriõigustega pahavara ei saa sealt räsisid varastada, mistõttu pass-the-hash rünnak on raskem."},
+{"q": "Miks nõuab Windows 11 TPM 2.0-d ja Secure Booti?", "o": ["Et arvuti töötaks kiiremini", "Et toetada vanu mänge", "Et vähendada voolutarbimist", "Riistvaraline turve on baasnõue: TPM hoiab võtmeid (BitLocker, Windows Hello) ja Secure Boot kaitseb käivitust"], "c": 3, "e": "Windows 10-s olid need valikulised. Seetõttu ei saa paljudele vanematele arvutitele Windows 11 ametlikult paigaldada."},
+{"q": "Mitu funktsiooniuuendust aastas saab Windows 11 ja kui kaua toetatakse Home/Pro versiooni?", "o": ["Kaks korda aastas, 18 kuud", "Üks kord aastas, 24 kuud", "Üks kord kahe aasta tagant, 10 aastat", "Igal kuul, 6 kuud"], "c": 1, "e": "Home ja Pro saavad igale versioonile 24 kuud tuge, Enterprise ja Education 36 kuud. Seetõttu tuleb versiooni uuendada ka siis, kui uusi funktsioone pole vaja."},
+{"q": "Mida tähendab Windows 11 25H2 ja 26H2 puhul „lubamispakett“ (enablement package)?", "o": ["Uus kood on arvutis juba igakuiste uuendustega olemas ja väike pakett lülitab selle sisse ning muudab versiooninumbri", "Iga uuendus paigaldab Windowsi täielikult uuesti", "Pakett lubab paigaldada Windowsi ilma litsentsita", "Pakett lülitab välja kõik turvafunktsioonid"], "c": 0, "e": "24H2, 25H2 ja 26H2 on sama koodibaas. 26H2 lubamispakett on x64-arvutil vaid umbes 174 KB ja paigaldus võtab mõne minuti."},
+{"q": "Mida eemaldati Windows 11 25H2-st ja mida see administraatorile tähendab?", "o": ["Start-menüü; tuleb kasutada käsurida", "Active Directory; tuleb kasutada Entra ID-d", "PowerShell 2.0 ja WMIC; vanad skriptid tuleb üle vaadata ja kasutada PowerShelli CIM-käske", "BitLocker; ketaste krüpteerimiseks tuleb kasutada muud tarkvara"], "c": 2, "e": "PowerShell 2.0 mootorit kasutati ründajate poolt turvapiirangutest mööda hiilimiseks. Näiteks <code>wmic bios get serialnumber</code> asemel tuleb kasutada <code>Get-CimInstance</code>."},
+{"q": "Miks kirjutati osa Windows 11 24H2 tuumast ümber Rust-keelde?", "o": ["Rust-kood töötab ainult ARM-protsessoritel", "Rust väldib terveid mäluvigade klasse, nt puhvri ületäitumist", "Rust on kiirem kui assembler", "Rust-kood ei vaja kompileerimist"], "c": 1, "e": "Suur osa Windowsi turvaaukudest on tekkinud mäluvigadest C- ja C++-koodis. Rusti kompilaator ei luba selliseid vigu teha."},
+{"q": "2026. aasta novembris on koolis Windows 10 arvuti, mida pole ESU programmi alla viidud. Mida tuleb teha?", "o": ["Mitte midagi, Windows 10 saab endiselt turvauuendusi", "Lülitada välja automaatsed uuendused", "Paigaldada Windows ME", "Uuendada Windows 11-le, kui riistvara lubab, või viia organisatsiooni ESU alla või välja vahetada; ilma uuendusteta arvutit ei tohi võrku lubada"], "c": 3, "e": "Windows 10 tasuta tugi lõppes 14.10.2025 ja tarbija-ESU 13.10.2026. Organisatsioonid saavad ESU-d osta kuni oktoobrini 2028."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
