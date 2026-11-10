@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 5 – test: süsteemimehhanismid</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/05-susteemimehhanismid.md">← Peatükk 5</a> · <a href="05-susteemimehhanismid.html">Interaktiivne leht</a></nav>
+<h1>Test: süsteemimehhanismid</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on katkestus (interrupt)?", "o": ["Asünkroonne sündmus, millega seade või taimer annab protsessorile märku", "Viga programmi koodis", "Programmi lõpetamine kasutaja poolt", "Failisüsteemi kirje"], "c": 0, "e": "Katkestus tuleb väljastpoolt, näiteks klaviatuurilt, võrgukaardilt, taimerilt või SSD-lt. Protsessor katkestab jooksva töö, salvestab oleku ja käivitab katkestuse teenindusrutiini (ISR)."},
+{"q": "Mis on ISR?", "o": ["Internetiteenuse pakkuja", "Katkestuse teenindusrutiin, mille protsessor katkestuse saabudes käivitab", "Windowsi teenus", "Mäluhalduri osa"], "c": 1, "e": "ISR (Interrupt Service Routine) peab olema lühike, sest selle töö ajal on samal ja madalamal IRQL-il katkestused maskitud."},
+{"q": "Mis on IRQL?", "o": ["Interneti protokoll", "Mäluaadressi tüüp", "Katkestuste prioriteeditase: kõrgema IRQL-iga katkestus võib madalama katkestada, mitte vastupidi", "Kettajärjekorra pikkus"], "c": 2, "e": "IRQL (Interrupt Request Level) järjestab katkestused. Tavaline kood töötab PASSIVE_LEVEL-il, planeerija DISPATCH_LEVEL-il ja seadmekatkestused kõrgemal."},
+{"q": "Millisel IRQL-il töötab tavaline programmikood?", "o": ["PASSIVE_LEVEL", "DISPATCH_LEVEL", "CLOCK_LEVEL", "HIGH_LEVEL"], "c": 0, "e": "PASSIVE_LEVEL (0) on madalaim tase. Iga seadmekatkestus saab sellel töötava koodi katkestada."},
+{"q": "Protsessor täidab ISR-i IRQL-il 9. Saabub katkestus IRQL-iga 5. Mis juhtub?", "o": ["Uus katkestus katkestab kohe ISR-i", "Uus katkestus jääb ootele, kuni IRQL langeb alla 5", "Uus katkestus kustutatakse", "Arvuti taaskäivitub"], "c": 1, "e": "Madalama või sama IRQL-iga katkestus on maskitud. See käivitub, kui kõrgema taseme töö on lõppenud."},
+{"q": "Miks lükkab Windows osa katkestuse tööst DPC-sse?", "o": ["Et töö kaoks", "Et säästa kettaruumi", "Et ISR oleks lühike ja ei blokeeriks pikalt teisi katkestusi; aeganõudev töö tehakse peagi madalamal IRQL-il", "Et kasutaja saaks seda kinnitada"], "c": 2, "e": "DPC (Deferred Procedure Call) töötab DISPATCH_LEVEL-il. Seadmekatkestused saavad seda katkestada, nii et süsteem jääb reageerimisvõimeliseks."},
+{"q": "Mis vahe on DPC-l ja APC-l?", "o": ["Vahet pole", "DPC töötab kasutajarežiimis, APC tuumarežiimis", "APC on katkestus, DPC erind", "DPC täidetakse peagi madalamal IRQL-il, APC kindla lõime kontekstis (nt S/V lõpetamisel)"], "c": 3, "e": "APC (Asynchronous Procedure Call) on seotud konkreetse lõimega. Näiteks S/V-operatsiooni tulemus antakse just seda alustanud lõimele."},
+{"q": "Mis on MSI/MSI-X katkestuste eelis?", "o": ["Seade kirjutab mällu sõnumi ja katkestusi saab jagada eri protsessorituumade vahel", "Need ei vaja draiverit", "Need töötavad ainult USB-seadmetega", "Need on aeglasemad, kuid turvalisemad"], "c": 0, "e": "NVMe-SSD-l võib olla iga tuuma jaoks eraldi järjekord ja katkestus, nii et tuumad ei pea üksteist ootama."},
+{"q": "Mis on erind (exception)?", "o": ["Asünkroonne sündmus väliselt seadmelt", "Sünkroonne sündmus, mille põhjustab täidetav käsk ise", "Windowsi teenus", "Kasutaja tegevus"], "c": 1, "e": "Erindid on näiteks nulliga jagamine, keelatud mäluaadress, leheviga ja katkestuspunkt."},
+{"q": "Milline sündmus on erind?", "o": ["Võrgupakett saabus", "Taimer töötas", "Programm jagas nulliga", "Kasutaja vajutas klahvi"], "c": 2, "e": "Ülejäänud kolm on katkestused, sest need tulevad väljastpoolt. Nulliga jagamine tuleb täidetavast käsust."},
+{"q": "Milline sündmus on katkestus?", "o": ["NVMe-SSD lõpetas lugemise", "Programm luges keelatud mäluaadressi", "Silur jõudis katkestuspunktini", "Protsessor kohtas tundmatut käsku"], "c": 0, "e": "Seade teatab töö lõpust katkestusega. Ülejäänud kolm tekivad täidetavast käsust ja on erindid."},
+{"q": "Kas leheviga (page fault) on katkestus või erind?", "o": ["Katkestus, sest selle tekitab mälukiip", "Ei kumbki", "Katkestus, sest see tuleb kettalt", "Erind, sest selle põhjustab mälu poole pöörduv käsk"], "c": 3, "e": "Leheviga on sünkroonne. Mäluhaldur lahendab selle tavaliselt (toob lehe saalefailist) ja programm jätkab, nagu midagi poleks juhtunud."},
+{"q": "Mis on struktureeritud erinditetöötlus (SEH)?", "o": ["Failisüsteemi tüüp", "Mehhanism, mis lubab programmil koodiosa ümber panna __try/__except ploki ja erindi ise käsitleda", "Draiverite allkirjastamine", "Katkestuste järjekord"], "c": 1, "e": "Kõrgema taseme keeltes on sama mõte try/catch plokis, näiteks PowerShellis ja C#-s."},
+{"q": "Programm jagab nulliga ega püüa erindit. Mis juhtub?", "o": ["Kogu Windows peatub", "Arvuti taaskäivitub", "Windows lõpetab selle protsessi ja Windows Error Reporting salvestab krahhiaruande", "Midagi ei juhtu, tulemuseks on 0"], "c": 2, "e": "Sündmusvaaturisse tekib kirje Application Error (sündmus 1000). Teised programmid töötavad edasi."},
+{"q": "Mida tähendab erindikood 0xc0000094?", "o": ["Täisarvuline nulliga jagamine (STATUS_INTEGER_DIVIDE_BY_ZERO)", "Juurdepääs keelatud", "Fail ei leitud", "Mälu otsas"], "c": 0, "e": "Juurdepääsurikkumise (access violation) kood on 0xc0000005. Neid koode näeb sündmusvaaturis ja krahhiaruannetes."},
+{"q": "Mis juhtub, kui erindit ei käsitleta tuumarežiimis?", "o": ["Lõpetatakse ainult see draiver", "Erind kirjutatakse logisse ja töö jätkub", "Kasutaja peab vajutama OK", "Süsteem seiskub (bugcheck, sinine ekraan)"], "c": 3, "e": "Tuumarežiimis puudub teine kaitsekiht. Kui tuumamälu võib olla rikutud, peatab Windows kogu süsteemi, et andmed rohkem kahjustada ei saaks."},
+{"q": "Mis on objektihalduri ülesanne?", "o": ["Luua, nimetada, kaitsta ja kustutada kõiki tuumaobjekte", "Joonistada aknaid", "Hallata võrguühendusi", "Planeerida lõimi"], "c": 0, "e": "Objektihaldur on käivitava süsteemi komponent ja kõigi tuumaobjektide ühtne värav, kus toimub ka turvakontroll."},
+{"q": "Millest koosneb objekt objektihalduri jaoks?", "o": ["Ainult nimest", "Päisest (nimi, turvakirjeldaja, viidete arv) ja kehast (tüübiomased andmed)", "Failist ja kaustast", "Lõimest ja protsessist"], "c": 1, "e": "Päis on kõigil objektidel ühesugune, seega saab objektihaldur kõiki objekte ühtmoodi nimetada, kaitsta ja loendada."},
+{"q": "Mis on ketta täht C: objektihalduri nimeruumis?", "o": ["Kaust kettal", "Failisüsteemi draiver", "Sümbolviide, mis osutab seadmeobjektile, nt \\Device\\HarddiskVolume3", "Protsess"], "c": 2, "e": "WinObj-is leiad selle kaustast \\GLOBAL??. Ketta täht on ainult nimi, mis suunab seadmele."},
+{"q": "Mida teeb objektihaldur objekti avamisel?", "o": ["Kopeerib objekti protsessi mällu", "Kontrollib turvaviitemonitori abil õigusi ja edukal kontrollil lisab kirje protsessi pidemetabelisse", "Kustutab objekti", "Annab protsessile objekti tuumamälu aadressi"], "c": 1, "e": "Protsess saab ainult pideme. Kui viidete arv langeb nulli, objekt kustutatakse."},
+{"q": "Mida võimaldab WoW64?", "o": ["Käitada 16-bitiseid DOS-i programme", "Käitada ARM64 programme Intelil", "Käitada Linuxi programme", "Käitada 32-bitiseid x86 programme 64-bitises Windowsis"], "c": 3, "e": "WoW64 tõlgib süsteemikutsed ja suunab osa faili- ja registriteid ümber."},
+{"q": "Kus asuvad 64-bitise Windowsi 32-bitised süsteemi-DLL-id?", "o": ["C:\\Windows\\System32", "C:\\Windows\\SysWOW64", "C:\\Windows\\WinSxS", "C:\\Program Files"], "c": 1, "e": "Nimed on segadust tekitavad: System32 sisaldab 64-bitiseid ja SysWOW64 32-bitiseid DLL-e. 32-bitised programmid paigaldatakse kausta Program Files (x86)."},
+{"q": "Kas 64-bitine Windows 11 käitab 16-bitist DOS-i programmi?", "o": ["Jah, WoW64 kaudu", "Jah, Prismi kaudu", "Ei; vaja on emulaatorit (nt DOSBox) või virtuaalmasinat", "Jah, ühilduvusrežiimis"], "c": 2, "e": "16-bitise koodi tugi (NTVDM) oli ainult 32-bitises Windowsis."},
+{"q": "Mis on Prism?", "o": ["x86/x64 emulaator ARM64 Windowsis, mis tõlgib käske jooksvalt", "Windowsi failisüsteem", "Graafikadraiver", "Turvaprotsessor"], "c": 0, "e": "Prism võimaldab Snapdragon X sülearvutitel käitada x86- ja x64-programme. ARM64 programmid töötavad omakeelselt ja kiiremini."},
+{"q": "Snapdragon X sülearvutile tahetakse paigaldada vana VPN-klient, millel on ainult x64 tuumadraiver. Mis juhtub?", "o": ["Prism emuleerib draiverit", "Draiver töötab WoW64 kaudu", "Draiver töötab omakeelselt", "Draiver ei tööta: emulatsioon ei toimi tuumadraiveritega, vaja on ARM64 draiverit"], "c": 3, "e": "Prism tõlgib ainult kasutajarežiimi koodi. Enne ARM64-arvutite ostmist tasub kontrollida, kas kõigil vajalikel seadmetel ja turvatarkvaral on ARM64 draiver."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>

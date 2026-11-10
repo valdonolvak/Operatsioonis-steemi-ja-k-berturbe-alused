@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 5 – süsteemimehhanismid: interaktiivne leht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--p:#3b6d11;--p-bg:#eaf3de;--d:#854f0b;--d-bg:#faeeda;--i:#a32d2d;--i-bg:#fcebeb;--c:#5f4b8b;--c-bg:#eeeaf7;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--p:#c0dd97;--p-bg:#27500a;--d:#fac775;--d-bg:#633806;--i:#f7c1c1;--i-bg:#791f1f;--c:#c9b8f0;--c-bg:#3b2d5c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:900px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:3em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+input[type=text],input[type=number]{font:inherit;font-size:15px;padding:.35rem .6rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:pointer}
+/* IRQL */
+.irq{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px}
+@media (max-width:720px){.irq{grid-template-columns:1fr}}
+.levels{display:flex;flex-direction:column-reverse;gap:2px;font-size:12.5px}
+.lv{display:flex;justify-content:space-between;padding:2px 8px;border-radius:5px;background:var(--bg);border:1px solid var(--border);color:var(--muted)}
+.lv.cur{font-weight:700;color:#fff;border-color:transparent}
+.lv.cur.p{background:var(--p)}.lv.cur.d{background:var(--d)}.lv.cur.i{background:var(--i)}.lv.cur.c{background:var(--c)}
+@media (prefers-color-scheme:dark){.lv.cur{color:#1c1c1b}}
+.lv.masked{text-decoration:line-through;opacity:.5}
+.devs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.cpu{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem}
+.stack{display:flex;flex-direction:column-reverse;gap:4px;margin-top:6px}
+.fr{border-radius:6px;padding:.25rem .6rem;font-size:13.5px}
+.fr.p{background:var(--p-bg);color:var(--p)}.fr.d{background:var(--d-bg);color:var(--d)}.fr.i{background:var(--i-bg);color:var(--i)}.fr.c{background:var(--c-bg);color:var(--c)}
+.fr.top{box-shadow:0 0 0 2px currentColor}
+.queues{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;font-size:13px}
+.q{background:var(--bg);border:1px dashed var(--border);border-radius:8px;padding:.4rem .6rem;min-height:3em}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:10px;height:170px;overflow:auto;white-space:pre-wrap}
+.log .p{color:var(--p)}.log .d{color:var(--d)}.log .i{color:var(--i)}.log .c{color:var(--c)}
+/* sort */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:110px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;text-align:left}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* erind */
+.dlg{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem;margin-top:12px;font-size:15px}
+.dlg.err{border-color:var(--bad-line)}
+.evt{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;white-space:pre-wrap}
+/* nimeruum */
+.ns{display:grid;grid-template-columns:240px minmax(0,1fr);gap:12px}
+@media (max-width:720px){.ns{grid-template-columns:1fr}}
+.dirs,.objs{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.4rem;font-family:var(--mono);font-size:13px;max-height:320px;overflow:auto}
+.dirs button,.objs button{all:unset;display:block;width:100%;box-sizing:border-box;padding:2px 6px;border-radius:5px;cursor:pointer}
+.dirs button.sel,.objs button.sel{background:var(--accent-bg);color:var(--accent)}
+.objs table{width:100%;border-collapse:collapse}
+.objs td{padding:2px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+.objs tr{cursor:pointer}.objs tr:hover td{background:var(--card)}
+.objs tr.sel td{background:var(--accent-bg)}
+.res{list-style:none;padding:0;margin:.5rem 0 0;counter-reset:r}
+.res li{counter-increment:r;padding:.35rem .6rem .35rem 2.2rem;position:relative;font-size:14.5px;border-left:2px solid var(--border);margin-left:.8rem}
+.res li::before{content:counter(r);position:absolute;left:-.8rem;top:.35rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+@media (prefers-color-scheme:dark){.res li::before{color:#042c53}}
+/* wow64 */
+.qtext{font-size:17px;font-weight:500;margin:0 0 .75rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.opt{font:inherit;font-size:15px;text-align:left;padding:.55rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.dim{opacity:.55}
+.score{font-size:14px;color:var(--muted);margin:0 0 .25rem}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:6px;background:var(--accent-bg);color:var(--accent);margin-right:6px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/05-susteemimehhanismid.md">← Peatükk 5</a> · <a href="05-test.html">Test →</a></nav>
+<h1>Süsteemimehhanismid – proovi ise</h1>
+<p>Süsteemimehhanismid on tuuma üldised tööriistad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras, WoW64 ja Prism lasevad käitada vanu ja teise arhitektuuri programme.</p>
+<div class="toc"><a href="#irql">1. Katkestused ja IRQL</a><a href="#ke">2. Katkestus või erind?</a><a href="#erind">3. Nulliga jagamine</a><a href="#nimeruum">4. Objektihalduri nimeruum</a><a href="#wow">5. Kas see programm käivitub?</a></div>
+
+<!-- 1 -->
+<section id="irql">
+<h2>1. Katkestused ja IRQL</h2>
+<p>Protsessoril töötab tavaline lõim (PASSIVE_LEVEL). Saada seadmetelt katkestusi ja liigu sammhaaval edasi. Vaata, kuidas kõrgema IRQL-iga katkestus katkestab madalama, kuidas madalam peab ootama ja kuidas ISR lükkab töö DPC-sse.</p>
+<div class="card">
+  <div class="devs" id="devs"></div>
+  <div class="irq">
+    <div><h3>IRQL (x64)</h3><div class="levels" id="levels"></div><p class="hint">Seadmete DIRQL-väärtused (3–12) on siin näitlikud. Päriselt määrab need Windows.</p></div>
+    <div>
+      <div class="cpu"><h3>Protsessor täidab praegu</h3><div class="stack" id="stack"></div></div>
+      <div class="queues"><div class="q"><b>Ootel katkestused</b><div id="pend"></div></div><div class="q"><b>DPC-järjekord</b><div id="dpcq"></div></div></div>
+    </div>
+  </div>
+  <div class="row"><span><button class="btn primary" id="step">Samm →</button> <button class="btn" id="auto">▶ Automaatselt</button></span><span><button class="btn" id="scen">Näidisstsenaarium</button> <button class="btn" id="ireset">Alusta uuesti</button></span></div>
+  <div class="info" id="iinfo">Vajuta mõnel seadmel, et see saadaks katkestuse, või proovi näidisstsenaariumi.</div>
+  <div class="log" id="ilog"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="ke">
+<h2>2. Katkestus või erind?</h2>
+<p><strong>Katkestus</strong> tuleb väljastpoolt (seade, taimer) ja on asünkroonne. <strong>Erind</strong> tuleb täidetavast käsust endast ja on sünkroonne. Vali ülal sündmus ja klõpsa õigel kastil.</p>
+<div class="pool" id="kpool"></div>
+<div class="buckets">
+  <div class="bucket" data-b="k"><h3>Katkestus</h3><p class="hint">väline seade või taimer · asünkroonne</p><div class="chips"></div></div>
+  <div class="bucket" data-b="e"><h3>Erind</h3><p class="hint">täidetav käsk · sünkroonne</p><div class="chips"></div></div>
+</div>
+<div class="row"><button class="btn" id="kreset">Uus komplekt</button><button class="btn primary" id="kcheck" disabled>Kontrolli</button></div>
+<div id="kres"></div>
+</section>
+
+<!-- 3 -->
+<section id="erind">
+<h2>3. Nulliga jagamine</h2>
+<p>Programm arvutab keskmise hinde: <code>summa / hinnete_arv</code>. Sisesta hinded komadega eraldatult või jäta väli tühjaks (õpilasel pole hindeid). Vaata, mis juhtub erindiga ja ilma.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Hinded: <input type="text" id="grades" value="5, 4, 5" style="width:180px"></span><label class="tg"><input type="checkbox" id="catch"> Programm püüab erindi (<code>try / catch</code>)</label><button class="btn primary" id="run">Käivita</button></div>
+  <pre class="evt" id="code"></pre>
+  <div id="eout"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="nimeruum">
+<h2>4. Objektihalduri nimeruum</h2>
+<p>Nii näeb objektihalduri nimeruum välja tööriistas WinObj (lihtsustatult). Sirvi kaustu ja klõpsa objektil. <strong>Ülesanne:</strong> leia, millisele seadmeobjektile viitab ketta täht <code>C:</code>.</p>
+<div class="card">
+  <div class="ns"><div class="dirs" id="dirs"></div><div class="objs" id="objs"></div></div>
+  <div class="info" id="ninfo">Vali vasakult kaust.</div>
+  <h3 style="margin-top:1.2rem">Failitee lahendamine</h3>
+  <p>Kirjuta failitee ja vaata, kuidas objektihaldur selle seadmeni lahendab.</p>
+  <div class="row" style="margin-top:0"><input type="text" id="path" value="C:\Users\mari\markmed.txt" style="flex:1;min-width:220px"><button class="btn primary" id="resolve">Lahenda</button></div>
+  <ol class="res" id="resol"></ol>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="wow">
+<h2>5. Kas see programm käivitub?</h2>
+<p>Igas olukorras on antud programm ja arvuti. Vali, kuidas Windows programmi käitab.</p>
+<div class="card" id="wcard" aria-live="polite"></div>
+</section>
+
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ---------- 1. IRQL ---------- */
+const LV=[[15,'HIGH_LEVEL','c'],[14,'IPI_LEVEL','c'],[13,'CLOCK_LEVEL','c'],[12,'',''],[11,'',''],[10,'',''],[9,'DIRQL · NVMe-SSD','i'],[8,'',''],[7,'DIRQL · võrgukaart','i'],[6,'',''],[5,'DIRQL · klaviatuur','i'],[4,'',''],[3,'',''],[2,'DISPATCH_LEVEL','d'],[1,'APC_LEVEL','d'],[0,'PASSIVE_LEVEL','p']];
+const DEV={kbd:['⌨️ Klaviatuur',5,'klahvivajutus',2,'Lõim „Word“ saab tähe'],nic:['🌐 Võrgukaart',7,'võrgupakett',3,'Lõim „brauser“ saab andmed'],ssd:['💾 NVMe-SSD',9,'lugemine valmis',2,'Lõim „Explorer“ saab faili'],clk:['⏱️ Taimer',13,'taimeri tiks',1,'Planeerija kontrollib ajakvanti']};
+let st,pend,dpcq,ilog,timer=null,t=0;
+function cls(l){return l>=13?'c':l>=3?'i':l>=1?'d':'p'}
+function iReset(){st=[{n:'Lõim „Word“ (tavaline kood)',l:0,k:'p'}];pend=[];dpcq=[];t=0;$('ilog').innerHTML='';stopAuto();iInfo('Vajuta mõnel seadmel, et see saadaks katkestuse, või proovi näidisstsenaariumi.');drawI()}
+function L(h,c){$('ilog').innerHTML+='<span class="'+(c||'')+'">t='+String(t).padStart(2,'0')+'  '+h+'</span>\n';$('ilog').scrollTop=1e6}
+function iInfo(h,c){$('iinfo').className='info'+(c?' '+c:'');$('iinfo').innerHTML=h}
+function cur(){return st[st.length-1].l}
+function fire(k){const d=DEV[k];pend.push({k,l:d[1]});L(d[0]+' annab katkestuse (IRQL '+d[1]+')','i');
+  if(d[1]>cur())iInfo(d[0]+' katkestus on ootel. Järgmisel sammul katkestab see praeguse töö, sest tema IRQL '+d[1]+' on kõrgem kui praegune '+cur()+'.');
+  else iInfo(d[0]+' katkestus peab <b>ootama</b>: protsessor töötab juba IRQL '+cur()+'-l ja sama või madalama tasemega katkestus on maskitud.','bad');drawI()}
+function step(){
+  t++;
+  pend.sort((a,b)=>b.l-a.l);
+  if(pend.length&&pend[0].l>cur()){const p=pend.shift(),d=DEV[p.k];
+    st.push({n:'ISR · '+d[0].slice(3),l:d[1],k:cls(d[1]),dev:p.k,left:2});
+    L('→ IRQL '+d[1]+': käivitub '+d[0].slice(3)+' ISR, eelmine töö salvestatakse','i');
+    iInfo('Protsessor <b>katkestab</b> jooksva töö, salvestab oleku ja tõstab IRQL-i '+d[1]+'-le. Käivitub katkestuse teenindusrutiin (ISR). Kõik IRQL ≤ '+d[1]+' katkestused on nüüd maskitud.');drawI();return}
+  const top=st[st.length-1];
+  if(top.dev&&!top.dpc){top.left--;if(top.left>0){L('ISR töötab: '+top.n,'i');iInfo('ISR töötab IRQL '+top.l+'-l. Kui nüüd saabub kõrgema IRQL-iga katkestus, katkestab see ISR-i. Madalamad peavad ootama.');drawI();return}
+    {st.pop();const d=DEV[top.dev];
+      if(top.dev==='clk'){L('ISR lõpp: taimer – planeerija DPC järjekorda','c');dpcq.push({n:'Planeerija DPC',dev:'clk',left:d[3]})}
+      else{dpcq.push({n:'DPC · '+d[0].slice(3)+' ('+d[2]+')',dev:top.dev,left:d[3]});L('ISR lõpp: '+d[0].slice(3)+' – töö lükatakse DPC-sse, IRQL langeb '+cur(),'i')}
+      iInfo('ISR tegi ainult hädavajaliku (kinnitas seadmele, võttis andmed vastu) ja lisas ülejäänud töö <b>DPC-järjekorda</b>. IRQL langeb tagasi '+cur()+'-le. Nii ei blokeeri üks seade pikalt teisi katkestusi.');}
+    drawI();return}
+  if(top.dpc){top.left--;L('DPC töötab: '+top.n,'d');if(top.left<=0){st.pop();const d=DEV[top.dev];L('DPC lõpp → '+d[4],'p');iInfo('DPC lõpetas töö ja äratas andmeid ootava lõime: <b>'+d[4]+'</b>. Kui DPC-järjekord on tühi, langeb IRQL tagasi PASSIVE_LEVEL-ile.','ok')}else iInfo('DPC töötab DISPATCH_LEVEL-il. Seadmekatkestused saavad seda endiselt katkestada, kuid lõimed (PASSIVE) peavad ootama.');drawI();return}
+  if(dpcq.length&&cur()<2){const q=dpcq.shift();st.push({n:q.n,l:2,k:'d',dpc:true,dev:q.dev,left:q.left});L('→ IRQL 2: DPC-järjekorrast võetakse '+q.n,'d');iInfo('IRQL langes alla DISPATCH_LEVEL-i, seega täidetakse nüüd DPC-järjekorra töö. DPC-d töötavad enne tavalisi lõimi.');drawI();return}
+  L('Lõim töötab (PASSIVE_LEVEL)','p');iInfo('Protsessor täidab tavalist lõime PASSIVE_LEVEL-il. Iga seadmekatkestus saab selle katkestada.');drawI();
+}
+function drawI(){
+  const c=cur();
+  $('levels').innerHTML=LV.map(([n,name,k])=>'<div class="lv'+(n===c?' cur '+k:'')+(n<=c&&n>0&&name?'':'')+'"><span>'+(name||'&nbsp;')+'</span><span>'+n+'</span></div>').join('');
+  $('stack').innerHTML=st.map((f,i)=>'<div class="fr '+f.k+(i===st.length-1?' top':'')+'">IRQL '+f.l+' · '+f.n+(i<st.length-1?' <span class="hint">(katkestatud)</span>':'')+'</div>').join('');
+  $('pend').innerHTML=pend.length?pend.map(p=>DEV[p.k][0]+' (IRQL '+p.l+')').join('<br>'):'<span class="hint">tühi</span>';
+  $('dpcq').innerHTML=dpcq.length?dpcq.map(q=>q.n).join('<br>'):'<span class="hint">tühi</span>';
+  $('devs').innerHTML=Object.keys(DEV).map(k=>'<button class="btn" data-k="'+k+'">'+DEV[k][0]+' <span class="hint">IRQL '+DEV[k][1]+'</span></button>').join('');
+  document.querySelectorAll('#devs button').forEach(b=>b.onclick=()=>fire(b.dataset.k));
+}
+function stopAuto(){if(timer){clearInterval(timer);timer=null;$('auto').textContent='▶ Automaatselt'}}
+$('auto').onclick=()=>{if(timer)return stopAuto();timer=setInterval(step,1100);$('auto').textContent='⏸ Peata'};
+$('step').onclick=step;$('ireset').onclick=iReset;
+$('scen').onclick=()=>{iReset();fire('nic');step();fire('ssd');fire('kbd');iInfo('Näidis: võrgukaardi ISR-i ajal saabusid SSD (IRQL 9) ja klaviatuuri (IRQL 5) katkestused. Vajuta „Samm“ ja jälgi: SSD katkestab võrgukaardi töö kohe, klaviatuur peab ootama, kuni IRQL langeb alla 5.')};
+iReset();
+
+/* ---------- 2. katkestus/erind ---------- */
+const KE=[['Kasutaja vajutas klahvi','k','Klaviatuur annab märku väljastpoolt.'],['Võrgupakett saabus','k','Võrgukaart teatab uuest paketist.'],['Taimer tiksus (ajakvant läbi)','k','Taimer on väline seade.'],['NVMe-SSD lõpetas lugemise','k','Seade teatab töö lõpust MSI-X katkestusega.'],['Hiirt liigutati','k','Sisendseade annab märku.'],['USB-pulk ühendati','k','Kontroller teatab uuest seadmest.'],['Programm jagas nulliga','e','Käsk ise põhjustab erindi EXCEPTION_INT_DIVIDE_BY_ZERO.'],['Programm luges keelatud mäluaadressi','e','Juurdepääsurikkumine (access violation, 0xc0000005) tuleb täidetavast käsust.'],['Leheviga: vajalik mäluleht on saalefailis','e','Leheviga (page fault) on erind, mille mäluhaldur tavaliselt lahendab ja programm jätkab.'],['Silur jõudis katkestuspunktini (breakpoint)','e','Käsk int 3 tekitab erindi.'],['Protsessor kohtas tundmatut käsku','e','Keelatud käsk (illegal instruction) on erind.'],['Programm üritas tavaõigustes täita privilegeeritud käsku','e','Privilegeeritud käsu proovimine kasutajarežiimis on erind.']];
+let kset=[],kpl={},ksel=null,kchk=false;
+function newK(){kset=shuffle([...shuffle(KE.filter(x=>x[1]==='k')).slice(0,4),...shuffle(KE.filter(x=>x[1]==='e')).slice(0,4)].map(x=>KE.indexOf(x)));kpl={};ksel=null;kchk=false;$('kres').innerHTML='';drawK()}
+function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KE[i][1]===w?' ok':' bad';b.className=c;b.textContent=KE[i][0];
+  b.onclick=e=>{e.stopPropagation();if(kchk)return;if(w==='pool')ksel=ksel===i?null:i;else{delete kpl[i];ksel=i}drawK()};return b}
+function drawK(){const pool=$('kpool');pool.innerHTML='';kset.filter(i=>!(i in kpl)).forEach(i=>pool.appendChild(kchip(i,'pool')));
+  if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
+  document.querySelectorAll('#ke .bucket').forEach(bk=>{const c=bk.querySelector('.chips');c.innerHTML='';kset.filter(i=>kpl[i]===bk.dataset.b).forEach(i=>c.appendChild(kchip(i,bk.dataset.b)))});
+  $('kcheck').disabled=kchk||Object.keys(kpl).length!==kset.length}
+document.querySelectorAll('#ke .bucket').forEach(bk=>bk.onclick=()=>{if(kchk||ksel===null)return;kpl[ksel]=bk.dataset.b;ksel=null;drawK()});
+$('kcheck').onclick=()=>{kchk=true;drawK();const w=kset.filter(i=>kpl[i]!==KE[i][1]);
+  $('kres').innerHTML='<div class="fb '+(w.length?'bad':'ok')+'"><strong>'+(w.length?'Õigesti '+(kset.length-w.length)+' / '+kset.length:'Kõik õigesti!')+'</strong>'+(w.length?w.map(i=>'<b>'+KE[i][0]+'</b> – '+KE[i][2]).join('<br>'):'Küsi endalt: kas sündmus tuli väljastpoolt või täidetavast käsust?')+'</div>'};
+$('kreset').onclick=newK;newK();
+
+/* ---------- 3. erind ---------- */
+function drawCode(){const c=$('catch').checked;
+  $('code').textContent=c?'try {\n    keskmine = summa / hinnete_arv\n    Write-Output "Keskmine: $keskmine"\n} catch [DivideByZeroException] {\n    Write-Output "Hindeid pole, keskmist ei saa arvutada."\n}':'keskmine = summa / hinnete_arv\nWrite-Output "Keskmine: $keskmine"'}
+$('catch').onchange=drawCode;drawCode();
+$('run').onclick=()=>{
+  const g=$('grades').value.split(/[,;\s]+/).filter(x=>x!=='').map(Number);
+  if(g.some(x=>!Number.isInteger(x))){$('eout').innerHTML='<div class="info bad">Sisesta täisarvulised hinded, nt 5, 4, 3.</div>';return}
+  const s=g.reduce((a,b)=>a+b,0),n=g.length,c=$('catch').checked,now=new Date().toLocaleString('et-EE');
+  if(n>0){$('eout').innerHTML='<div class="dlg">summa = '+s+', hinnete_arv = '+n+'<br><b>Keskmine: '+(Math.floor(s*100/n)/100)+'</b></div><div class="info ok">Jagaja ei ole 0, erindit ei teki. Proovi nüüd tühja väljaga.</div>';return}
+  if(c){$('eout').innerHTML='<div class="dlg">summa = 0, hinnete_arv = 0<br>Protsessor tekitas erindi <code>EXCEPTION_INT_DIVIDE_BY_ZERO</code>.<br><b>catch-plokk püüdis selle:</b> „Hindeid pole, keskmist ei saa arvutada.“</div><div class="info ok">Programm <b>käsitles</b> erindit ja töötab edasi. Windows ei pidanud sekkuma. See on struktureeritud erinditetöötlus (SEH, C-s <code>__try/__except</code>).</div>';return}
+  $('eout').innerHTML='<div class="dlg err"><b>hinded.exe on lakanud töötamast.</b><br>Probleem põhjustas programmi töö lõpetamise.</div>'+
+   '<p class="hint" style="margin:.75rem 0 0">Sündmusvaatur → Windowsi logid → Rakendus:</p><div class="evt">Tase:        Viga\nAllikas:     Application Error\nSündmuse ID: 1000\nKuupäev:     '+now+'\nVigane rakendus:  hinded.exe\nErindikood:       0xc0000094\nVea nihe:         0x0000000000001a2f</div>'+
+   '<div class="info bad">Keegi ei püüdnud erindit. Windows <b>lõpetas protsessi</b> ja Windows Error Reporting salvestas krahhiaruande. Kood <code>0xc0000094</code> = STATUS_INTEGER_DIVIDE_BY_ZERO. Teised programmid töötavad edasi, sest viga oli kasutajarežiimis. Tuumarežiimis oleks töötlemata erind peatanud kogu süsteemi.</div>';
+};
+
+/* ---------- 4. nimeruum ---------- */
+const NS={
+ '\\':[['Device','Directory'],['GLOBAL??','Directory'],['BaseNamedObjects','Directory'],['KnownDlls','Directory'],['Sessions','Directory'],['Driver','Directory'],['ObjectTypes','Directory']],
+ '\\Device':[['HarddiskVolume1','Device','EFI süsteemipartitsioon'],['HarddiskVolume3','Device','Windowsi partitsioon (C:)'],['HarddiskVolume4','Device','Andmepartitsioon (D:)'],['Harddisk0','Directory','Füüsiline ketas 0'],['Tcp','Device','TCP draiveri seadmeobjekt'],['Afd','Device','Soklite tugi (Winsock)'],['KeyboardClass0','Device','Klaviatuur'],['NamedPipe','Device','Nimega torud']],
+ '\\GLOBAL??':[['C:','SymbolicLink','\\Device\\HarddiskVolume3'],['D:','SymbolicLink','\\Device\\HarddiskVolume4'],['PhysicalDrive0','SymbolicLink','\\Device\\Harddisk0\\DR0'],['NUL','SymbolicLink','\\Device\\Null'],['COM1','SymbolicLink','\\Device\\Serial0'],['PIPE','SymbolicLink','\\Device\\NamedPipe']],
+ '\\BaseNamedObjects':[['MinuSündmus','Event','Rakenduse loodud nimega sündmus. Teine protsess saab selle samal nimel avada.'],['Global_Lukk','Mutant','Mutex, millega kaks protsessi tagavad, et korraga töötab ainult üks.'],['ÜhineMälu','Section','Jagatud mälu kahe protsessi vahel.']],
+ '\\KnownDlls':[['kernel32.dll','Section','Eellaaditud süsteemi-DLL. Programmid kasutavad seda, mitte samanimelist faili enda kaustas.'],['ntdll.dll','Section','Eellaaditud Native API DLL.'],['user32.dll','Section','Eellaaditud süsteemi-DLL.']],
+ '\\Sessions':[['0','Directory','Seanss 0: teenused'],['1','Directory','Seanss 1: sisseloginud kasutaja']],
+ '\\Driver':[['Ntfs','Driver','NTFS failisüsteemi draiveri objekt'],['Tcpip','Driver','TCP/IP draiver'],['kbdclass','Driver','Klaviatuuri klassidraiver']],
+ '\\ObjectTypes':[['Process','Type','Objekti tüüp'],['Thread','Type','Objekti tüüp'],['File','Type','Objekti tüüp'],['Event','Type','Objekti tüüp'],['Key','Type','Objekti tüüp'],['Token','Type','Objekti tüüp'],['SymbolicLink','Type','Objekti tüüp']]
+};
+let ndir='\\',nsel=null,found=false;
+function drawNS(){
+  $('dirs').innerHTML=Object.keys(NS).map(d=>'<button class="'+(d===ndir?'sel':'')+'" data-d="'+d+'">'+(d==='\\'?'\\':'  '+d)+'</button>').join('');
+  const rows=NS[ndir].map(([n,ty,ex],i)=>'<tr class="'+(nsel===i?'sel':'')+'" data-i="'+i+'"><td>'+(ty==='Directory'?'📁 ':ty==='SymbolicLink'?'↪ ':'')+n+'</td><td>'+ty+'</td><td>'+(ty==='SymbolicLink'?ex:'')+'</td></tr>').join('');
+  $('objs').innerHTML='<div class="hint" style="padding:2px 6px">'+ndir+'</div><table><tr><td class="hint">Nimi</td><td class="hint">Tüüp</td><td class="hint">Sihtmärk</td></tr>'+rows+'</table>';
+  document.querySelectorAll('#dirs button').forEach(b=>b.onclick=()=>{ndir=b.dataset.d;nsel=null;drawNS();$('ninfo').innerHTML='Kaust <code>'+ndir+'</code>'+({'\\GLOBAL??':' – siin on ketta tähed ja muud DOS-i nimed. Need on sümbolviited seadmeobjektidele.','\\Device':' – seadmeobjektid, mille draiverid on loonud.','\\BaseNamedObjects':' – rakenduste loodud nimega objektid (sündmused, mutexid, jagatud mälu).','\\KnownDlls':' – eellaaditud süsteemi-DLL-id. See takistab ka DLL-i võltsimist rakenduse kaustas.','\\ObjectTypes':' – kõik objektitüübid, mida objektihaldur tunneb.'}[ndir]||'.')});
+  document.querySelectorAll('#objs tr[data-i]').forEach(r=>r.onclick=()=>{nsel=+r.dataset.i;const [n,ty,ex]=NS[ndir][nsel];
+    if(ty==='Directory'){const p=(ndir==='\\'?'\\':ndir+'\\')+n;if(NS[p]){ndir=p;nsel=null;drawNS();return}}
+    drawNS();
+    if(ty==='SymbolicLink'){const ok=ndir==='\\GLOBAL??'&&n==='C:';if(ok)found=true;
+      $('ninfo').className='info'+(ok?' ok':'');$('ninfo').innerHTML=(ok?'<b>Leidsid!</b> ':'')+'<code>'+ndir+'\\'+n+'</code> on <b>sümbolviide</b>, mis osutab objektile <code>'+ex+'</code>.'+(ok?' Ketta täht C: ei ole ketas ega kaust, vaid lihtsalt nimi, mis suunab Windowsi partitsiooni seadmeobjektile.':'')}
+    else{$('ninfo').className='info';$('ninfo').innerHTML='<code>'+n+'</code> · tüüp <b>'+ty+'</b>'+(ex?' – '+ex:'')}});
+}
+drawNS();
+$('resolve').onclick=()=>{
+  let p=$('path').value.trim();const m=p.match(/^([A-Za-z]):\\?(.*)$/);
+  if(!m){$('resol').innerHTML='<li>Sisesta tee kujul <code>C:\\kaust\\fail.txt</code>.</li>';return}
+  const L=m[1].toUpperCase(),rest=m[2],link=(NS['\\GLOBAL??'].find(x=>x[0]===L+':')||[])[2];
+  let h='<li>Rakendus kutsub <code>CreateFileW(L"'+p+'")</code>.</li><li>ntdll.dll teisendab tee NT kujule: <code>\\??\\'+L+':\\'+rest+'</code>. <code>\\??</code> tähendab kasutaja seansi DOS-nimesid, mis lõpuks viivad kausta <code>\\GLOBAL??</code>.</li>';
+  if(!link){$('resol').innerHTML=h+'<li>Objektihaldur otsib <code>\\GLOBAL??\\'+L+':</code> ega leia seda. Tulemus: <code>STATUS_OBJECT_PATH_NOT_FOUND</code> – „Süsteem ei leia määratud teed“.</li>';return}
+  h+='<li>Objektihaldur leiab <code>\\GLOBAL??\\'+L+':</code>. See on <b>sümbolviide</b> → <code>'+link+'</code>.</li>';
+  h+='<li>Tee muutub kujule <code>'+link+'\\'+rest+'</code>. Objektihaldur jõuab seadmeobjektini <code>'+link+'</code>.</li>';
+  h+='<li>Ülejäänud osa <code>\\'+rest+'</code> antakse selle seadme failisüsteemi draiverile (NTFS), mis leiab faili. SRM kontrollib õigusi ja protsess saab pideme.</li>';
+  $('resol').innerHTML=h;
+};
+$('resolve').click();
+
+/* ---------- 5. WoW64 / ARM64 ---------- */
+const WO=['Omakeelselt','WoW64 kaudu','Prism emuleerib','Ei käivitu'];
+const WS=[
+ ['32-bitine x86 programm (nt vana installer)','64-bitine Windows 11, Intel/AMD protsessor',1,'WoW64 tõlgib 32-bitise programmi süsteemikutsed 64-bitistele ja kasutab DLL-e kaustast SysWOW64.'],
+ ['64-bitine x64 programm','64-bitine Windows 11, Intel/AMD protsessor',0,'64-bitine programm 64-bitises süsteemis töötab otse, ilma tõlketa.'],
+ ['16-bitine DOS-i õppeprogramm','64-bitine Windows 11, Intel/AMD protsessor',3,'64-bitine Windows ei käita 16-bitist koodi. Lahendus on emulaator (nt DOSBox) või võrgust eraldatud virtuaalmasin.'],
+ ['Windows 3.1 programm (16-bitine)','64-bitine Windows 10',3,'16-bitine NTVDM kadus 64-bitisest Windowsist juba ammu.'],
+ ['x64 programm (nt vana raamatupidamistarkvara)','Snapdragon X sülearvuti, Windows 11 ARM64',2,'Prism tõlgib x64 käsud jooksvalt ARM64 käskudeks. Töötab, kuid võib olla aeglasem kui omakeelne versioon.'],
+ ['ARM64 programm (nt Edge)','Snapdragon X sülearvuti, Windows 11 ARM64',0,'ARM64 programm töötab ARM64 protsessoril omakeelselt ja kõige kiiremini.'],
+ ['x64 tuumadraiver (nt vana VPN-klient)','Snapdragon X sülearvuti, Windows 11 ARM64',3,'Emulatsioon ei toimi tuumadraiveritega. Seadmel peab olema ARM64 draiver.'],
+ ['32-bitine x86 programm','Snapdragon X sülearvuti, Windows 11 ARM64',2,'ARM64 Windowsis emuleerib Prism ka 32-bitiseid x86 programme.'],
+ ['ARM64 programm','64-bitine Windows 11, Intel/AMD protsessor',3,'x64 protsessor ei mõista ARM64 käske ja vastupidist emulaatorit Windowsis pole.']
+];
+let wq=shuffle(WS.map((_,i)=>i)),wp=0,ws={ok:0,n:0},wa=null;
+function drawW(){
+  if(wp>=wq.length){$('wcard').innerHTML='<p class="qtext">Tulemus: '+ws.ok+' / '+ws.n+'</p><p>'+(ws.ok===ws.n?'Suurepärane!':'Loe ptk 5.4 uuesti.')+'</p><div class="row"><span></span><button class="btn primary" id="wag">Alusta uuesti</button></div>';$('wag').onclick=()=>{wq=shuffle(WS.map((_,i)=>i));wp=0;ws={ok:0,n:0};wa=null;drawW()};return}
+  const [prog,mach,c,e]=WS[wq[wp]];
+  let h='<p class="score">Olukord '+(wp+1)+' / '+wq.length+' · õigeid '+ws.ok+'</p><p class="qtext"><span class="pill">Programm</span>'+prog+'<br><span class="pill">Arvuti</span>'+mach+'</p><div class="opts">';
+  WO.forEach((o,i)=>{let cl='opt';if(wa!==null)cl+=i===c?' ok':i===wa?' bad':' dim';h+='<button class="'+cl+'" data-i="'+i+'"'+(wa!==null?' disabled':'')+'>'+o+'</button>'});
+  h+='</div>';if(wa!==null)h+='<div class="fb '+(wa===c?'ok':'bad')+'"><strong>'+(wa===c?'Õige!':'Vale. Õige: '+WO[c])+'</strong>'+e+'</div>';
+  h+='<div class="row"><span></span><button class="btn primary" id="wn"'+(wa===null?' disabled':'')+'>Järgmine →</button></div>';
+  $('wcard').innerHTML=h;
+  document.querySelectorAll('#wcard .opt').forEach(b=>b.onclick=()=>{wa=+b.dataset.i;ws.n++;if(wa===c)ws.ok++;drawW();$('wn').focus()});
+  $('wn').onclick=()=>{wp++;wa=null;drawW()};
+}
+drawW();
+</script>
+</body>
+</html>
