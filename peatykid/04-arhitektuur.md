@@ -21,6 +21,9 @@ Kihid ülalt alla:
 
 Joonis: tavaline Windows (vasakul) ja turvaline maailm (paremal) töötavad hüperviisori peal; isegi tuumarežiimi pahavara ei näe VTL 1 mälu. Sama sisu on all tabelina.
 
+> 🖱️ **Proovi ise:** [klõpsatav arhitektuuri kaart](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#kaart). Iga komponendi juures näed selle rolli ja režiimi. Seejärel [pane kihid õigesse järjekorda](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#kihid).
+
+
 | Kiht | Režiim | Näited |
 | --- | --- | --- |
 | Kasutajarakendused | kasutaja | Edge, Office, PowerShell |
@@ -69,6 +72,9 @@ Käivitav süsteem (Windows Executive) sisaldab haldureid:
 
 Kitsamas mõttes tuum (kernel) teeb madala taseme tööd: lõimede planeerimine ja kontekstivahetus, katkestuste ja erindite suunamine, protsessoritevaheline sünkroniseerimine. Tuum ise ei otsusta poliitikat (nt kellel on õigus faili avada) – see on käivitava süsteemi töö.
 
+> 🖱️ **Proovi ise:** [kes seda teeb?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#kes) Otsusta 14 ülesande puhul, kas neid teeb käivitav süsteem, tuum, HAL, draiver või hüperviisor.
+
+
 ### 4.7 Riistvara abstraktsioonikiht (HAL)
 
 HAL peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu HAL-ile ei pea tuum teadma iga kiibistiku eripära. Tänapäeval on suur osa sellest tööst standardiseeritud (ACPI, UEFI) ja HAL on väiksem kui 1990. aastatel.
@@ -95,6 +101,9 @@ Graafiline alamsüsteem on `win32k.sys` (tuumarežiim) ja kasutajarežiimi teegi
 | LsaIso.exe | Credential Guardi isoleeritud LSA (VTL 1) |
 | winlogon.exe | sisse- ja väljalogimine, Ctrl+Alt+Del |
 | explorer.exe | kasutaja graafiline kest |
+
+> 🖱️ **Proovi ise:** [süsteemiprotsesside puu](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#protsessid). Klõpsa protsessidel ja tunne need kirjelduse järgi ära.
+
 
 ### 4.11 Virtualiseerimispõhine turve (VBS)
 
@@ -129,6 +138,9 @@ Kõik kolm süsteemi eraldavad kasutaja- ja tuumarežiimi, kuid tuum on ehitatud
 
 **Hoone võrdlus.** VTL 0 on kontorihoone, kus administraatoril on kõigi uste võtmed. VTL 1 on pangaseif hoone keldris, mille ukse avab ainult hüperviisor – hoone võtmed seda ei ava.
 
+> 🖱️ **Proovi ise:** [Credential Guard paroolivarga vastu](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#cg). Käivita rünnak Credential Guardiga ja ilma ning vaata, mida ründaja konsoolis näeb.
+
+
 ### Kokkuvõte
 
 - Windows on kihiline: rakendused → DLL-id → süsteemikutse → executive → tuum → HAL → riistvara.
@@ -136,6 +148,9 @@ Kõik kolm süsteemi eraldavad kasutaja- ja tuumarežiimi, kuid tuum on ehitatud
 - Hüperviisor ja VBS lisavad turvakihi, mis kaitseb ka tuuma enda eest.
 
 ### Kontrollküsimused
+
+> 🧪 **Interaktiivne test:** [kontrolli oma teadmisi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-test.html). Test koosneb 25 valikvastusega küsimusest. Iga vastuse järel näed selgitust ning lõpus saad valesti vastatud küsimusi korrata.
+
 
 1. Nimeta Windows NT disainieesmärgid.
 2. Joonista Windowsi kihiline arhitektuur ja märgi, mis on kasutaja- ja mis tuumarežiimis.
