@@ -366,6 +366,7 @@ Lunaraha maksmist riik ei soovita: see ei taga andmete tagasisaamist ega seda, e
 **Turvaaudit ja nõuetele vastavus WSL-is.** Ava WSL Ubuntu ja käivita turvaauditi tööriist Lynis:
 
 ```bash
+sudo apt update -y
 sudo apt install -y lynis
 sudo lynis audit system --quick | tee lynis.txt
 grep -E 'Warning|Suggestion' /var/log/lynis-report.dat | head -20
