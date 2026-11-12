@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 13 – vahemälu: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.slider{display:grid;grid-template-columns:220px 1fr 80px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+@media (max-width:600px){.slider{grid-template-columns:1fr 80px}.slider label{grid-column:1/3}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.scaleT{display:grid;gap:5px;margin-top:8px}
+.scaleT .r{display:grid;grid-template-columns:150px 1fr 190px;gap:8px;align-items:center;font-size:13.5px}
+.scaleT .b{height:18px;border-radius:4px;background:var(--accent)}
+.scaleT .r span:last-child{color:var(--muted)}
+@media (max-width:640px){.scaleT .r{grid-template-columns:110px 1fr}.scaleT .r span:last-child{grid-column:1/3}}
+.arr{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:420px}
+.arr div{height:36px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-size:10.5px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--mono)}
+.arr div.l0{border-left:3px solid var(--text)}
+.arr div.cur{outline:3px solid var(--text);outline-offset:-1px}
+.arr div.hit{background:#cfe6b8;color:#27500a}
+.arr div.miss{background:#f3c9c9;color:#791f1f}
+.arr div.inc{box-shadow:inset 0 -5px 0 var(--accent)}
+.cl{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;font-family:var(--mono);font-size:12px}
+.cl span{border:1px solid var(--border);border-radius:6px;padding:4px 8px;background:var(--bg)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.blk{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.blk div{border:1px solid var(--border);border-radius:8px;background:var(--bg);padding:6px;text-align:center;font-size:13px;min-height:52px}
+.blk div b{display:block;font-family:var(--mono);font-size:16px}
+.blk div.dirty{border:2px solid #c26a0a;background:#faeeda}
+.blk div.empty{color:var(--muted);border-style:dashed}
+.blk div.lost{border:2px solid var(--bad-line);background:var(--bad-bg)}
+.file{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:8px}
+.file div{height:34px;border-radius:4px;background:var(--bg);border:1px solid var(--border);font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.file div.c{background:#cfe6b8;color:#27500a}
+.file div.pre{background:#d6e6f7;color:#0c447c}
+.file div.cur{outline:3px solid var(--text);outline-offset:-1px}
+.file div.wait{background:#f3c9c9;color:#791f1f}
+.dnsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.dnsrow{grid-template-columns:1fr}}
+.dbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px}
+.dbox b.ip{font-family:var(--mono);font-size:18px;display:block;margin:4px 0}
+.ttlbar{height:8px;background:var(--card);border-radius:4px;overflow:hidden;margin-top:4px}
+.ttlbar div{height:100%;background:var(--accent)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/13-vahemalu.md">← Peatükk 13</a> · <a href="13-test.html">Test →</a></nav>
+<h1>Vahemälu – õpileht</h1>
+<p>Vahemälu hoiab lähedal koopiat andmetest, mida tõenäoliselt varsti uuesti vaja läheb. Sellel lehel näed mälutasemete kiiruste erinevust, arvutad keskmise pöördumisaja, võrdled massiivi läbimise viise, proovid kirjutusviise, failide vahemälu ja ettelugemist ning DNS-i vahemälu TTL-i.</p>
+<div class="toc"><a href="#hierarhia">1. Hierarhia ja keskmine aeg</a><a href="#lokaalsus">2. Lokaalsus</a><a href="#kirjutus">3. Läbi- või tagasikirjutus</a><a href="#ettelugemine">4. Failide vahemälu</a><a href="#dns">5. DNS ja TTL</a><a href="#valik">6. Milline kirjutusviis?</a></div>
+
+<!-- 1 -->
+<section id="hierarhia">
+<h2>1. Kui 1 nanosekund oleks 1 sekund</h2>
+<p>Arvuti mälutasemete kiirused erinevad miljoneid kordi. Allpool on need venitatud inimlikku mõõtkavasse: 1 ns = 1 sekund. Riba pikkus on logaritmilises skaalas.</p>
+<div class="card">
+  <div class="scaleT" id="hscale"></div>
+  <h3 style="margin-top:1.2rem">Keskmise pöördumisaja kalkulaator</h3>
+  <div class="slider"><label for="h1">L1 tabamusmäär</label><input type="range" id="h1" min="0" max="100" value="95"><b id="h1v" class="mono"></b></div>
+  <div class="slider"><label for="h2">L2 tabamusmäär (L1 möödalaskudest)</label><input type="range" id="h2" min="0" max="100" value="80"><b id="h2v" class="mono"></b></div>
+  <div class="slider"><label for="hr">RAM-i pöördumisaeg</label><input type="range" id="hr" min="50" max="150" step="10" value="100"><b id="hrv" class="mono"></b></div>
+  <div class="row" style="margin-top:4px"><label class="tg"><input type="checkbox" id="hl2" checked> <span>L2-vahemälu on olemas (4 ns)</span></label></div>
+  <div class="kpis" id="hkpi"></div>
+  <div class="info" id="hinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="lokaalsus">
+<h2>2. Ruumiline lokaalsus: massiivi läbimine</h2>
+<p>Massiiv on 8 × 8 elementi ja mälus <b>ridade kaupa</b>. Üks vahemälurida mahutab 4 elementi (paks vasak serv näitab rea algust). Kui element pole vahemälus, tuuakse terve rida. Vali läbimise järjekord ja vahemälu suurus ning käivita.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-o="row">Ridade kaupa: m[r, c]</button> <button class="btn" data-o="col">Veergude kaupa: m[c, r]</button></span><span>Vahemälu: <select id="lcap"><option value="4">4 rida</option><option value="8">8 rida</option></select></span></div>
+  <div class="arr" id="larr" style="margin-top:10px"></div>
+  <div class="hint" style="margin-top:6px">Vahemälus olevad read (LRU, vasakul kõige värskem):</div>
+  <div class="cl" id="lcache"></div>
+  <div class="row"><span><button class="btn primary" id="lrun">▶ Käivita</button> <button class="btn" id="lstep">Üks samm</button> <button class="btn" id="lreset">Lähtesta</button></span><span class="hint" id="lprog"></span></div>
+  <div class="kpis" id="lkpi"></div>
+  <div class="info" id="linfo"></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="kirjutus">
+<h2>3. Läbikirjutus või tagasikirjutus?</h2>
+<p>Failis on neli plokki A–D. Vajuta plokil „Salvesta“ – ploki versioon suureneb. Vaata, millal jõuab muudatus kettale ja mis juhtub voolukatkestusel. Ketta kirjutus võtab selles mudelis 5 ms, RAM-i kirjutus on peaaegu hetkeline.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-w="wb">Tagasikirjutus (write-back)</button> <button class="btn" data-w="wt">Läbikirjutus (write-through)</button></span><button class="btn" id="wreset">Algseis</button></div>
+  <div class="row"><span id="wbtns"></span></div>
+  <div class="two" style="margin-top:8px">
+    <div><b>Vahemälu (RAM)</b><div class="blk" id="wcache"></div></div>
+    <div><b>Ketas</b><div class="blk" id="wdisk"></div></div>
+  </div>
+  <div class="row"><span><button class="btn" id="wlazy">⏱ Laisk kirjutaja käivitub</button> <button class="btn" id="wpower">⚡ Voolukatkestus</button></span></div>
+  <div class="kpis" id="wkpi"></div>
+  <div class="info" id="winfo"></div>
+  <div class="legend"><span><i style="background:#faeeda;border:2px solid #c26a0a;border-radius:3px"></i>muudetud (dirty) – kettal veel vana versioon</span><span><i style="background:var(--bad-bg);border:2px solid var(--bad-line);border-radius:3px"></i>muudatus kadus</span></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="ettelugemine">
+<h2>4. Failide vahemälu ja ettelugemine</h2>
+<p>Fail koosneb 24 plokist. Rakendus loeb neid ükshaaval. Kui plokk on vahemälus (roheline), saab rakendus selle kohe; kui ei ole, peab ta ootama ketast (punane). Ettelugemine loeb järjestikuse lugemise märkamisel järgmised plokid taustal ette (sinine).</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><label class="tg"><input type="checkbox" id="rahead" checked> <span>Ettelugemine sees</span></label><span><select id="rdisk"><option value="5">HDD (5 ms ploki kohta)</option><option value="0.1">NVMe-SSD (0,1 ms)</option><option value="30">Võrguketas üle VPN-i (30 ms)</option></select></span></div>
+  <div class="file" id="rfile"></div>
+  <div class="row"><span><button class="btn primary" id="rseq">▶ Loe fail järjest</button> <button class="btn" id="rrand">Loe 8 juhuslikku plokki</button> <button class="btn" id="rboot">↻ Taaskäivita (vahemälu tühjaks)</button></span></div>
+  <div class="kpis" id="rkpi"></div>
+  <div class="info" id="rinfo"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="dns">
+<h2>5. DNS-i vahemälu ja TTL</h2>
+<p>Kooli veebileht <code>www.kool.ee</code> kolitakse uuele serverile. Õpilase arvuti hoiab DNS-i vastust vahemälus nii kaua, kui ütleb kirje TTL. Liiguta aega edasi ja vaata, millise serverini arvuti jõuab.</p>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Kirje TTL: <select id="dttl"><option value="3600">3600 s (1 tund)</option><option value="300">300 s (5 min)</option><option value="60">60 s</option></select></span><button class="btn" id="dreset">Algseis</button></div>
+  <div class="dnsrow">
+    <div class="dbox"><b>DNS-server (autoriteetne)</b><b class="ip" id="dauth"></b><span class="hint" id="dauthn"></span></div>
+    <div class="dbox"><b>Õpilase arvuti vahemälu</b><b class="ip" id="dcache"></b><span class="hint" id="dcachen"></span><div class="ttlbar"><div id="dttlbar"></div></div></div>
+    <div class="dbox"><b>Aeg</b><b class="ip" id="dtime"></b><span class="hint">simulatsiooni algusest</span></div>
+  </div>
+  <div class="row"><span><button class="btn primary" id="dask">🌐 Õpilane avab www.kool.ee</button> <button class="btn" id="dchange">🛠 Admin muudab IP uueks</button> <button class="btn" id="d1">+1 min</button> <button class="btn" id="d10">+10 min</button> <button class="btn" id="dflush">ipconfig /flushdns</button></span></div>
+  <div class="info" id="dinfo"></div>
+  <div class="log" id="dlog"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="valik">
+<h2>6. Milline kirjutusviis sobib?</h2>
+<p>Vali igale olukorrale sobivaim lahendus.</p>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="13-test.html">Peatüki 13 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/13-vahemalu.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
+
+/* 1. Hierarhia */
+const LV=[['L1-vahemälu',1],['L2-vahemälu',4],['L3-vahemälu',15],['RAM',100],['NVMe-SSD',75000],['Kõvaketas (HDD)',7e6],['Pilv (teine manner)',1e8]];
+function human(s){if(s<60)return s===1?'1 sekund':fmt(s,0)+' sekundit';if(s<3600)return fmt(s/60)+' minutit';if(s<86400)return fmt(s/3600)+' tundi';if(s<86400*60)return fmt(s/86400)+' päeva';if(s<86400*365*2)return fmt(s/86400/30)+' kuud';return fmt(s/86400/365)+' aastat'}
+$('hscale').innerHTML=LV.map(([n,ns])=>`<div class="r"><span>${n}</span><div class="b" style="width:${Math.max(2,Math.log10(ns)/8*100)}%"></div><span>${ns<1000?ns+' ns':ns<1e6?fmt(ns/1000)+' µs':fmt(ns/1e6)+' ms'} → ${human(ns)}</span></div>`).join('');
+function hDraw(){const h1=+$('h1').value/100,h2=+$('h2').value/100,tr=+$('hr').value,l2=$('hl2').checked;
+  $('h1v').textContent=Math.round(h1*100)+'%';$('h2v').textContent=Math.round(h2*100)+'%';$('hrv').textContent=tr+' ns';$('h2').disabled=!l2;
+  const amat=l2?1+(1-h1)*(4+(1-h2)*tr):1+(1-h1)*tr;
+  $('hkpi').innerHTML=`<div>Keskmine pöördumisaeg<b>${fmt(amat,2)} ns</b></div><div>Ilma vahemäluta<b>${tr} ns</b></div><div>Kiirendus<b>${fmt(tr/amat)}×</b></div>`;
+  $('hinfo').innerHTML=(l2?`Valem: 1 + (1 − ${fmt(h1,2)}) × (4 + (1 − ${fmt(h2,2)}) × ${tr}) = <b>${fmt(amat,2)} ns</b>. `:`Valem: 1 + (1 − ${fmt(h1,2)}) × ${tr} = <b>${fmt(amat,2)} ns</b>. `)+
+   (h1>=0.99?'Väga kõrge tabamusmääraga töötab mälu peaaegu L1 kiirusel.':h1<0.8?'Madala tabamusmääraga kulub suur osa ajast RAM-i ootamisele – programm ei kasuta lokaalsust.':'Proovi muuta L1 tabamusmäära 95%-lt 99%-le ja vaata, kui palju keskmine aeg muutub.')}
+['h1','h2','hr'].forEach(i=>$(i).oninput=hDraw);$('hl2').onchange=hDraw;hDraw();
+
+/* 2. Lokaalsus */
+let lo='row',L;const LN=4;
+function lInit(){L={k:0,cache:[],hit:0,miss:0,st:Array(64).fill(''),timer:L&&L.timer};if(L.timer){clearInterval(L.timer);L.timer=null}$('lrun').textContent='▶ Käivita';lDraw()}
+function idx(k){const a=Math.floor(k/8),b=k%8;return lo==='row'?a*8+b:b*8+a}
+function lStep(){if(L.k>=64)return;const i=idx(L.k),line=Math.floor(i/LN),cap=+$('lcap').value;
+  const p=L.cache.indexOf(line);if(p>=0){L.hit++;L.cache.splice(p,1);L.st[i]='hit'}else{L.miss++;L.st[i]='miss';if(L.cache.length>=cap)L.cache.pop()}
+  L.cache.unshift(line);L.cur=i;L.k++;lDraw();
+  if(L.k>=64&&L.timer){clearInterval(L.timer);L.timer=null;$('lrun').textContent='▶ Käivita'}}
+function lDraw(){document.querySelectorAll('#lokaalsus [data-o]').forEach(b=>b.classList.toggle('on',b.dataset.o===lo));
+  const inC=new Set(L.cache);
+  $('larr').innerHTML=[...Array(64).keys()].map(i=>`<div class="${i%LN===0?'l0 ':''}${L.st[i]}${i===L.cur?' cur':''}${inC.has(Math.floor(i/LN))?' inc':''}">${Math.floor(i/8)},${i%8}</div>`).join('');
+  $('lcache').innerHTML=L.cache.length?L.cache.map(l=>`<span>rida ${l}: m[${Math.floor(l*LN/8)}, ${l*LN%8}–${l*LN%8+LN-1}]</span>`).join(''):'<span class="hint">tühi</span>';
+  $('lprog').textContent=`Pöördumine ${L.k} / 64`;
+  $('lkpi').innerHTML=`<div>Tabamusi<b>${L.hit}</b></div><div>Möödalaske<b>${L.miss}</b></div><div>Tabamusmäär<b>${L.k?Math.round(L.hit/L.k*100):0}%</b></div><div>Hinnanguline aeg<b>${L.hit*1+L.miss*100} ns</b></div>`;
+  const I=$('linfo');I.className='info'+(L.k===64?(L.miss>32?' bad':' ok'):'');
+  I.innerHTML=L.k<64?(L.k?'Roheline = tabamus, punane = möödalask. Sinine alumine serv = element on parajasti vahemälus.':'Vajuta „Käivita“. Elemendi silt näitab [rida, veerg].'):
+   lo==='row'?`Ridade kaupa: iga möödalask toob 4 elementi ja järgmised 3 on tabamused – tabamusmäär on <b>75%</b>. Päris protsessoris mahub ritta 16 täisarvu, nii et tabamusmäär on veel kõrgem.`:
+   (+$('lcap').value===4?`Veergude kaupa: järgmine element on alati <b>teisel</b> vahemälureal. Kui jõutakse veeru lõppu, on vajalik rida juba välja tõrjutud – <b>kõik ${L.miss} pöördumist olid möödalasud</b>. Proovi suuremat vahemälu.`:
+   `Veergude kaupa suurema vahemäluga: kõik 8 rida mahuvad korraga vahemällu, nii et järgmised veerud leiavad oma andmed. Tabamusmäär on parem, kuid päris massiiv (4000 × 4000) ei mahu ühessegi vahemällu – seal aitab ainult õige läbimisjärjekord.`);
+}
+document.querySelectorAll('#lokaalsus [data-o]').forEach(b=>b.onclick=()=>{lo=b.dataset.o;lInit()});
+$('lcap').onchange=lInit;$('lstep').onclick=lStep;$('lreset').onclick=lInit;
+$('lrun').onclick=()=>{if(L.timer){clearInterval(L.timer);L.timer=null;$('lrun').textContent='▶ Käivita';return}if(L.k>=64)lInit();L.timer=setInterval(lStep,140);$('lrun').textContent='⏸ Peata'};
+lInit();
+
+/* 3. Kirjutus */
+let wm='wb',W;const BL=['A','B','C','D'];
+function wInit(){W={cache:{},disk:{A:1,B:1,C:1,D:1},latest:{A:1,B:1,C:1,D:1},dw:0,wait:0,saves:0,lost:[],msg:'Kõik plokid on kettal versioonis 1. Salvesta mõnda plokki mitu korda.',bad:false,ok:false};wDraw()}
+function wSave(b){if(W.down){W.down=false;W.lost=[]}
+  W.latest[b]++;W.saves++;W.cache[b]={v:W.latest[b],dirty:wm==='wb'};
+  if(wm==='wt'){W.disk[b]=W.latest[b];W.dw++;W.wait+=5;W.msg=`Plokk ${b} v${W.latest[b]} kirjutati korraga vahemällu ja kettale. Rakendus ootas 5 ms.`}
+  else{W.wait+=0.01;W.msg=`Plokk ${b} v${W.latest[b]} on vahemälus ja märgitud muudetuks. Rakendus jätkas kohe, kettal on veel v${W.disk[b]}.`}
+  W.bad=W.ok=false;wDraw()}
+function wLazy(){const d=Object.entries(W.cache).filter(([b,c])=>c.dirty);d.forEach(([b,c])=>{W.disk[b]=c.v;c.dirty=false;W.dw++});
+  W.msg=d.length?`Laisk kirjutaja kirjutas kettale ${d.length} muudetud plokki (${d.map(x=>x[0]+' v'+x[1].v).join(', ')}). Kui plokki salvestati vahepeal mitu korda, kirjutati kettale ainult viimane versioon – vahepealseid polnud vaja.`:'Muudetud plokke pole, laisal kirjutajal pole midagi teha.';W.ok=!!d.length;W.bad=false;wDraw()}
+function wPower(){const lost=BL.filter(b=>W.latest[b]!==W.disk[b]);W.lost=lost;W.cache={};W.down=true;
+  W.msg=lost.length?`<b>Voolukatkestus!</b> RAM-i sisu kadus. Kettal on vanad versioonid: ${lost.map(b=>`${b} v${W.disk[b]} (oli v${W.latest[b]})`).join(', ')}. Need muudatused on <b>kadunud</b>. UPS või akutoega kontrolleri vahemälu oleks andnud aega need kettale kirjutada.`:
+   `<b>Voolukatkestus!</b> RAM-i sisu kadus, kuid kõik muudatused olid juba kettal – andmeid ei kadunud.`;
+  BL.forEach(b=>W.latest[b]=W.disk[b]);W.bad=!!lost.length;W.ok=!lost.length;wDraw()}
+function wDraw(){document.querySelectorAll('#kirjutus [data-w]').forEach(b=>b.classList.toggle('on',b.dataset.w===wm));
+  $('wbtns').innerHTML=BL.map(b=>`<button class="btn" data-b="${b}">💾 Salvesta ${b}</button>`).join(' ');
+  $('wbtns').querySelectorAll('button').forEach(x=>x.onclick=()=>wSave(x.dataset.b));
+  $('wcache').innerHTML=BL.map(b=>{const c=W.cache[b];return c?`<div class="${c.dirty?'dirty':''}">${b}<b>v${c.v}</b>${c.dirty?'muudetud':'puhas'}</div>`:`<div class="empty">${b}<b>–</b>pole</div>`}).join('');
+  $('wdisk').innerHTML=BL.map(b=>`<div class="${W.lost.includes(b)?'lost':''}">${b}<b>v${W.disk[b]}</b>${W.lost.includes(b)?'vana!':''}</div>`).join('');
+  $('wlazy').disabled=wm==='wt';
+  $('wkpi').innerHTML=`<div>Salvestusi<b>${W.saves}</b></div><div>Kettale kirjutusi<b>${W.dw}</b></div><div>Rakendus ootas<b>${fmt(W.wait,2)} ms</b></div>`;
+  $('winfo').className='info'+(W.bad?' bad':W.ok?' ok':'');$('winfo').innerHTML=W.msg}
+document.querySelectorAll('#kirjutus [data-w]').forEach(b=>b.onclick=()=>{wm=b.dataset.w;wInit()});
+$('wlazy').onclick=wLazy;$('wpower').onclick=wPower;$('wreset').onclick=wInit;wInit();
+
+/* 4. Ettelugemine */
+const NB=24;let R,rtimer=null;
+function rInit(keep){R={c:Array(NB).fill(''),hit:0,miss:0,pre:0,wait:0,reads:0,last:-5,seq:0,cur:-1,msg:keep||'Vahemälu on tühi (külm). Vajuta „Loe fail järjest“.'};rDraw()}
+function rRead(i){const d=+$('rdisk').value;R.cur=i;R.reads++;
+  if(R.c[i]){R.hit++;R.c[i]='c'}else{R.miss++;R.c[i]='wait';R.wait+=d}
+  R.seq=(i===R.last+1)?R.seq+1:0;R.last=i;
+  if($('rahead').checked&&R.seq>=1){for(let j=i+1;j<=Math.min(NB-1,i+4);j++)if(!R.c[j]){R.c[j]='pre';R.pre++}}
+  rDraw();setTimeout(()=>{if(R.c[i]==='wait')R.c[i]='c';rDraw()},150)}
+function rRun(list,done){if(rtimer)return;let k=0;rtimer=setInterval(()=>{if(k>=list.length){clearInterval(rtimer);rtimer=null;R.cur=-1;R.msg=done();rDraw();return}rRead(list[k++])},180)}
+function rDraw(){const d=+$('rdisk').value;
+  $('rfile').innerHTML=R.c.map((s,i)=>`<div class="${s}${i===R.cur?' cur':''}">${i}</div>`).join('');
+  $('rkpi').innerHTML=`<div>Tabamusi<b>${R.hit}</b></div><div>Ootas ketast<b>${R.miss}</b></div><div>Ette loetud<b>${R.pre}</b></div><div>Ooteaeg kokku<b>${fmt(R.wait,1)} ms</b></div>`;
+  $('rinfo').innerHTML=R.msg}
+$('rseq').onclick=()=>{const before=R.miss;R.msg='Loen järjest…';rRun([...Array(NB).keys()],()=>{const m=R.miss-before;
+  return m===0?'<b>Soe vahemälu:</b> kõik plokid olid juba RAM-is – ootamist polnud. Nii on fail teisel avamisel kiire.':
+   $('rahead').checked?`Rakendus pidi ootama ketast ainult <b>${m}</b> korda. Pärast kahte järjestikust lugemist märkas vahemäluhaldur mustrit ja hakkas plokke ette lugema (sinine) – rakendus leidis need juba RAM-ist. Proovi ettelugemine välja lülitada ja võrdle.`:
+   `Ilma ettelugemiseta pidi rakendus ootama ketast <b>iga ploki</b> juures (${m} korda). Lülita ettelugemine sisse, taaskäivita ja võrdle.`})};
+$('rrand').onclick=()=>{const before=R.miss,l=[];while(l.length<8){const x=Math.floor(Math.random()*NB);if(!l.includes(x)&&(l.length===0||Math.abs(x-l[l.length-1])>1))l.push(x)}R.msg='Loen juhuslikest kohtadest…';
+  rRun(l,()=>`Juhuslikul lugemisel järjestikust mustrit pole, nii et ettelugemine ei käivitunud. Ootamisi: ${R.miss-before}. Nii loeb andmebaas – seepärast on tal oma puhver ja ta kasutab kiireid SSD-sid.`)};
+$('rboot').onclick=()=>{if(rtimer)return;rInit('Arvuti taaskäivitati – RAM-i sisu ja seega failide vahemälu on tühi (külm vahemälu). Esimene lugemine on jälle aeglane.')};
+$('rdisk').onchange=()=>rDraw();$('rahead').onchange=()=>{if(!rtimer)rInit()};rInit();
+
+/* 5. DNS */
+const OLD='193.40.5.10',NEW='185.7.20.44';let D;
+function dInit(){D={t:0,auth:OLD,cache:null,exp:0,log:[]};dMsg('Algseis: veebileht on vanal serveril '+OLD+'. Õpilase arvuti vahemälu on tühi.','');}
+function tstr(t){const m=Math.floor(t/60),s=t%60;return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function dMsg(m,c){D.msg=m;D.cls=c;D.log.unshift(`[${tstr(D.t)}] `+m.replace(/<[^>]+>/g,''));dDraw()}
+function dExpire(){if(D.cache&&D.t>=D.exp)D.cache=null}
+function dDraw(){dExpire();const ttl=+$('dttl').value;
+  $('dauth').textContent=D.auth;$('dauthn').textContent=D.auth===OLD?'vana server':'uus server';
+  $('dcache').textContent=D.cache||'tühi';$('dcachen').textContent=D.cache?`TTL alles ${D.exp-D.t} s`+(D.cache!==D.auth?' · AEGUNUD KOOPIA':''):'järgmine päring läheb DNS-serverisse';
+  $('dttlbar').style.width=D.cache?((D.exp-D.t)/ttl*100)+'%':'0';$('dttlbar').style.background=D.cache&&D.cache!==D.auth?'var(--bad-line)':'var(--accent)';
+  $('dtime').textContent=tstr(D.t);$('dinfo').className='info'+(D.cls?' '+D.cls:'');$('dinfo').innerHTML=D.msg;$('dlog').textContent=D.log.join('\n')}
+$('dask').onclick=()=>{dExpire();const ttl=+$('dttl').value;
+  if(D.cache){const ok=D.cache===D.auth;dMsg(`Vastus tuli <b>vahemälust</b>: ${D.cache} → `+(ok?'veebileht avanes.':`<b>vana server!</b> DNS-is on juba uus aadress, kuid arvuti ei küsi seda enne, kui TTL (${D.exp-D.t} s) on läbi.`),ok?'ok':'bad')}
+  else{D.cache=D.auth;D.exp=D.t+ttl;dMsg(`Vahemälus kirjet polnud – arvuti küsis DNS-serverilt ja sai ${D.auth}. Vastus salvestati vahemällu ${ttl} sekundiks.`,'ok')}};
+$('dchange').onclick=()=>{if(D.auth===NEW)return dMsg('IP on juba uus.','');D.auth=NEW;dMsg(`Admin muutis DNS-kirje: www.kool.ee → ${NEW}. Vana server lülitatakse välja.`,'')};
+$('d1').onclick=()=>{D.t+=60;dDraw()};$('d10').onclick=()=>{D.t+=600;dDraw()};
+$('dflush').onclick=()=>{D.cache=null;dMsg('ipconfig /flushdns – DNS-kliendi vahemälu tühjendati. Järgmine päring läheb DNS-serverisse.','ok')};
+$('dreset').onclick=dInit;$('dttl').onchange=dInit;dInit();
+
+/* 6. Valik */
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+quiz('qtasks','qscore','qreset',['Tagasikirjutus','Läbikirjutus','Vahemälust mööda'],[
+ ['Videotöötlusprogramm kirjutab renderdamise ajal palju ajutisi faile, mis kustutatakse lõpus.',0,'Ajutised failid ei ole kriitilised ja neid muudetakse sageli – tagasikirjutus on kiire ja paljud kirjutused ei jõuagi kettale.'],
+ ['Panga tehingulogi: klient tohib saada vastuse „makse tehtud“ alles siis, kui kirje on kindlalt kettal.',1,'Tehingulogi peab olema püsisalvestis enne kinnitust. Andmebaasid kasutavad läbikirjutust või FlushFileBuffers-it.'],
+ ['SQL Serveri andmefailid – andmebaasil on oma puhvrikogum, mis teab, milliseid lehti hoida.',2,'Andmebaas avab failid FILE_FLAG_NO_BUFFERING-uga, et samu andmeid ei hoitaks RAM-is kaks korda.'],
+ ['USB-mälupulk, mille kasutaja võib iga hetk välja tõmmata.',1,'Windows kasutab eemaldatavatel ketastel vaikimisi „Kiire eemaldamise“ poliitikat, st kirjutusvahemälu on väljas.'],
+ ['Serveri RAID-kontroller, millel on akutoega vahemälu ja server on UPS-i taga.',0,'Aku ja UPS kaitsevad vahemälu sisu voolukatkestuse eest, seega saab ohutult kasutada kiiret tagasikirjutust.'],
+ ['Õpilase sülearvuti sisemine NVMe-ketas tavakasutuses (dokumendid, brauser).',0,'Tagasikirjutus on vaikimisi sees, sest see on palju kiirem ja sülearvutil on aku. Laisk kirjutaja viib andmed kettale sekundi jooksul.'],
+ ['Varundusprogramm loeb kord ööpäevas 2 TB faile, mida keegi muidu ei kasuta.',2,'Kui varundus loeks kõik läbi vahemälu, tõrjuks ta välja kasutajate tegelikult vajalikud andmed. Varundus- ja kopeerimistööriistad (nt robocopy /J) kasutavad puhverdamata sisend-väljundit.']],
+ 'Tagasikirjutus on kiire, läbikirjutus kindel. Vahemälust mööda minnakse siis, kui rakendusel on oma puhver või kui andmeid ei loeta uuesti.');
+</script>
+</body>
+</html>

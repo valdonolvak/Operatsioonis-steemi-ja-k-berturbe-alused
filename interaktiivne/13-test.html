@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 13 – test: vahemälu</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/13-vahemalu.md">← Peatükk 13</a> · <a href="13-vahemalu.html">Interaktiivne õpileht</a></nav>
+<h1>Test: vahemälu</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on vahemälu?", "o": ["Lehefaili teine nimi", "Kiire ja väike mälu, mis hoiab aeglasemast allikast loetud andmete koopiat", "Kõvaketta osa, kuhu salvestatakse kustutatud failid", "Protsessori register"], "c": 1, "e": "Vahemälu kiirendab järgmisi pöördumisi, sest andmeid ei pea uuesti aeglasest allikast tooma."},
+{"q": "Miks vahemälu üldse töötab?", "o": ["Programmid kasutavad samu ja lähestikku asuvaid andmeid korduvalt (lokaalsus)", "Vahemälu on alati suurem kui RAM", "OS teab ette, milliseid andmeid vaja läheb", "Vahemälu kustutab vanad andmed"], "c": 0, "e": "Ajaline ja ruumiline lokaalsus tagavad, et väike vahemälu teenindab suurt osa pöördumistest."},
+{"q": "Programm suurendab tsüklis miljon korda sama muutujat. Millist lokaalsust see näitab?", "o": ["Ruumilist", "Võrgulokaalsust", "Mitte ühtegi", "Ajalist"], "c": 3, "e": "Sama andmeid kasutatakse lühikese aja jooksul korduvalt."},
+{"q": "Programm loeb massiivi elemente järjest algusest lõpuni. Millist lokaalsust see kasutab?", "o": ["Ainult protsessori registreid", "Mitte ühtegi", "Ruumilist", "Ajalist"], "c": 2, "e": "Järgmine element asub mälus eelmise kõrval ja tuuakse vahemällu sama reaga."},
+{"q": "Kui suur on tänapäeva protsessorite tavaline vahemälurida?", "o": ["1 MB", "64 baiti", "1 bait", "4 KB"], "c": 1, "e": "Möödalaskmise korral tuuakse RAM-ist terve 64-baidine rida, mitte üksik bait."},
+{"q": "Vahemälu vastab 1 ns-ga, RAM 100 ns-ga ja tabamusmäär on 95%. Mis on keskmine pöördumisaeg?", "o": ["6 ns", "5 ns", "95 ns", "1 ns"], "c": 0, "e": "1 + 0,05 × 100 = 6 ns. 99% tabamusmääraga oleks see 2 ns."},
+{"q": "Miks on kahemõõtmelise massiivi läbimine C#-s veergude kaupa aeglasem kui ridade kaupa?", "o": ["Veergude kaupa tehakse rohkem liitmisi", "C# ei luba veergude kaupa lugeda", "Veerge on rohkem kui ridu", "Massiiv on mälus ridade kaupa, nii et veergude kaupa on iga järgmine element teisel vahemälureal"], "c": 3, "e": "Mõlemad teevad sama arvu tehteid, kuid veergude kaupa on peaaegu iga pöördumine möödalask."},
+{"q": "Milline neist on kiireim?", "o": ["RAM", "NVMe-SSD", "L1-vahemälu", "L3-vahemälu"], "c": 2, "e": "L1 ~1 ns, L3 ~10–20 ns, RAM ~100 ns, NVMe-SSD ~50–100 µs."},
+{"q": "Kui L1-vahemälu pöördumine võtaks 1 sekundi, kui kaua võtaks ligikaudu kõvakettalt lugemine?", "o": ["Paar tundi", "Paar kuud", "Paar sekundit", "Paar minutit"], "c": 1, "e": "5–10 ms on 5–10 miljonit korda rohkem kui 1 ns – inimlikus mõõtkavas 2–3 kuud."},
+{"q": "Kes haldab protsessori L1-, L2- ja L3-vahemälu?", "o": ["Riistvara (protsessor ise)", "Windowsi vahemäluhaldur", "Kasutaja", "Seadmehaldur"], "c": 0, "e": "OS-i vahemäluhaldur haldab RAM-i kui ketta- ja võrguandmete vahemälu."},
+{"q": "Mis on läbikirjutus (write-through)?", "o": ["Andmed kirjutatakse ainult vahemällu", "Andmed loetakse ette", "Vahemälu tühjendatakse iga sekundi järel", "Andmed kirjutatakse korraga vahemällu ja püsisalvestisse"], "c": 3, "e": "Läbikirjutus on turvaline, kuid aeglasem, sest kirjutaja ootab püsisalvestit."},
+{"q": "Mis on tagasikirjutuse (write-back) peamine risk?", "o": ["See kasutab liiga palju kettaruumi", "See rikub failinimed", "Toitekatkestusel võivad kettale jõudmata andmed kaduda", "See on väga aeglane"], "c": 2, "e": "Muudetud (dirty) andmed on alles ainult RAM-is, kuni need kettale kirjutatakse."},
+{"q": "Programm salvestab sama plokki 10 korda järjest ja laisk kirjutaja käivitub alles pärast seda. Mitu korda kirjutatakse tagasikirjutusel plokk kettale?", "o": ["Mitte kordagi", "Üks kord", "10 korda", "20 korda"], "c": 1, "e": "Kettale kirjutatakse ainult viimane versioon. Läbikirjutusel oleks kirjutusi 10."},
+{"q": "Miks vajab RAID-kontrolleri tagasikirjutav vahemälu akut (BBWC/FBWC)?", "o": ["Et voolukatkestusel vahemälu sisu ei kaoks enne kettale jõudmist", "Et kontroller töötaks kiiremini", "Et kettad ei kuumeneks", "Aku on vajalik ainult sülearvutites"], "c": 0, "e": "Aku hoiab vahemälu sisu alles, kuni vool taastub ja andmed saab kettale kirjutada."},
+{"q": "Mida teeb Windowsi laisk kirjutaja (lazy writer)?", "o": ["Loeb faile ette", "Tühjendab DNS-i vahemälu", "Tihendab mälu", "Kirjutab muudetud vahemälulehed taustal kettale"], "c": 3, "e": "Tavaliselt jõuavad muudatused kettale umbes sekundi jooksul."},
+{"q": "Mida teeb intelligentne ettelugemine (read-ahead)?", "o": ["Krüpteerib faile enne lugemist", "Loeb ainult juhuslikke plokke", "Tuvastab järjestikuse lugemise ja loeb järgmised plokid ette RAM-i", "Kirjutab muudetud andmed kettale"], "c": 2, "e": "Rakendus leiab järgmised plokid juba vahemälust ega pea ketast ootama. Juhuslikul lugemisel see ei aita."},
+{"q": "Miks kasutavad andmebaasid lippu FILE_FLAG_NO_BUFFERING?", "o": ["Windows nõuab seda kõigilt programmidelt", "Neil on oma puhver ja nad ei taha samu andmeid RAM-is kaks korda hoida", "Et faile kiiremini kustutada", "Et kasutada vähem protsessoriaega"], "c": 1, "e": "Lisaks peab andmebaas teadma, et tehingulogi on tõesti kettal – selleks kasutatakse läbikirjutust või FlushFileBuffers-it."},
+{"q": "Õpetaja avab 200 MB faili teist korda järjest ja see avaneb palju kiiremini. Miks?", "o": ["Faili lehed olid veel RAM-is (soe vahemälu)", "Fail tihendati esimesel avamisel", "Võrk muutus kiiremaks", "Excel jättis faili meelde oma seadetes"], "c": 0, "e": "Vahemäluhaldur hoiab faili lehti ootenimekirjas. Pärast taaskäivitust on vahemälu jälle külm."},
+{"q": "Mis on „külm vahemälu“?", "o": ["Vahemälu, mis asub jahutatud serveriruumis", "Vahemälu ainult lugemiseks", "Aegunud DNS-kirjed", "Tühi vahemälu, nt pärast taaskäivitust"], "c": 3, "e": "Külma vahemälu korral on esimesed pöördumised möödalasud ja seega aeglased."},
+{"q": "Miks on USB-mälupulkadel Windowsis vaikimisi „Kiire eemaldamine“?", "o": ["Et pulka ei saaks krüpteerida", "Et pulgale ei saaks kirjutada", "Kirjutusvahemälu on väljas, et pulga väljatõmbamisel andmed ei kaoks", "Et pulk töötaks kiiremini"], "c": 2, "e": "Kasutaja võib pulga iga hetk välja tõmmata. Läbikirjutus vähendab andmekao riski."},
+{"q": "Mis on TTL DNS-i vahemälus?", "o": ["Domeeni registreerimise kestus", "Aeg, kui kaua võib vastust vahemälus kasutada ilma uuesti küsimata", "Paketi suurus", "DNS-serveri IP-aadress"], "c": 1, "e": "Kuni TTL kehtib, kasutab arvuti vahemälus olevat vastust isegi siis, kui DNS-is on kirje juba muudetud."},
+{"q": "Admin muutis veebiserveri IP-aadressi, kuid mõni arvuti jõuab ikka vanale serverile. Mida saab selles arvutis teha?", "o": ["Käivitada ipconfig /flushdns", "Käivitada ipconfig /release", "Kustutada lehefaili", "Lülitada välja ettelugemise"], "c": 0, "e": "Vahemälus on aegunud kirje. Enne kolimist tasub ka TTL väiksemaks teha."},
+{"q": "Kuidas kasutasid Spectre ja Meltdown vahemälu?", "o": ["Nad kustutasid vahemälu sisu", "Nad suurendasid vahemälu, et arvuti aeglustuks", "Nad krüpteerisid vahemälu", "Ajastuse kõrvalkanalina: pöördumise kiirus näitas, kas andmed olid vahemälus"], "c": 3, "e": "Mõõtes pöördumisaega sai järeldada, milliseid andmeid spekulatiivselt loeti. Kaitseks on mikrokoodi ja OS-i uuendused."},
+{"q": "Mis on DNS-i vahemälu mürgitamine?", "o": ["Brauser salvestab liiga palju pilte", "TTL muutub negatiivseks", "Ründaja sokutab DNS-serveri vahemällu vale vastuse ja suunab kasutajad võltsserverile", "DNS-server kustutab kõik kirjed"], "c": 2, "e": "Vale vastus kehtib kuni TTL lõpuni. Kaitse: DNSSEC, juhuslikud lähteportid, usaldusväärsed edastusserverid."},
+{"q": "Millise jõudlusloenduriga saab vaadata Windowsi failivahemälu tabamusmäära?", "o": ["\\System\\Threads", "\\Cache\\Copy Read Hits %", "\\Processor\\% Processor Time", "\\Network Interface\\Bytes Total/sec"], "c": 1, "e": "Lisaks näitab \\Cache\\Lazy Write Flushes/sec laisa kirjutaja tööd ja \\Memory\\Cache Bytes vahemälu suurust."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
