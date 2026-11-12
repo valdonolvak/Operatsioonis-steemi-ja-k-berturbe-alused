@@ -193,6 +193,9 @@ openssl x509 -in server.crt -noout -text | less
 
 ```bash
 openssl s_server -accept 8443 -cert server.crt -key server.key -www
+
+#Teises aknas (terminali aknas)
+cd ~/pki   # sellega minnakse kausta, kuhu loodi sertifikaadid, mida eelnevalt tegite
 openssl s_client -connect localhost:8443 -CAfile ca.crt -brief      # teises aknas
 ```
 
