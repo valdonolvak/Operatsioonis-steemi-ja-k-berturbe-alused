@@ -114,31 +114,88 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .proc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px}
 .proc.dead{opacity:.5;border-style:dashed}
 .proc .btn{font-size:13px;padding:.3rem .6rem;margin:2px 2px 0 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
 </style>
 </head>
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/12-maluhaldus.md">← Peatükk 12</a> · <a href="12-test.html">Test →</a></nav>
 <h1>Mäluhaldus – õpileht</h1>
-<p>Mäluhaldur annab igale protsessile oma virtuaalse aadressiruumi, tõlgib aadressid füüsilisteks ja otsustab, millised lehed RAM-is hoida. Sellel lehel näed killustumist, tõlgid aadresse, võrdled lehtede asendamise algoritme, arvutad TLB mõju, jälgid eraldatud mälu ja harjutad mälu ründekaitseid.</p>
+<p>Mäluhaldur annab igale protsessile oma virtuaalse aadressiruumi, tõlgib aadressid füüsilisteks ja otsustab, millised lehed RAM-is hoida. See leht aitab aru saada, <b>miks</b> mäluhaldus on üles ehitatud just nii, nagu ta on – iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
+<div class="why">
+<h4>Suur pilt: milleks mäluhaldust üldse vaja on?</h4>
+<p>Arvutis töötab korraga kümneid programme (brauser, Word, Teams, viirusetõrje, sadu taustaprotsesse), kuid RAM on üks. Kui programmid kasutaksid RAM-i otse, tekiks kolm probleemi:</p>
+</div>
+<div class="big3">
+<div><b>1. Kaitse puudub</b>Brauseri viga võiks kirjutada üle Wordi andmed või tuuma. Pahavara saaks lugeda teise programmi mälust paroole.</div>
+<div><b>2. Aadressid põrkuvad</b>Iga programm tahab, et tema kood algaks kindlast kohast. Kaks programmi ei saa olla RAM-is samal aadressil.</div>
+<div><b>3. Mälu ei jätku</b>Programmid vajavad kokku rohkem mälu, kui RAM-i on. Midagi tuleb hoida mujal (kettal).</div>
+</div>
+<div class="why">
+<p><b>Lahendus on virtuaalmälu.</b> Iga programm saab oma „kujuteldava“ mälu (virtuaalse aadressiruumi), mis algab nullist ja on tohutu suur. Programm ei tea, kus RAM-is tema andmed tegelikult asuvad. Protsessori <b>MMU</b> tõlgib igal pöördumisel virtuaalaadressi füüsiliseks aadressiks <b>lehetabeli</b> järgi. Mälu jagatakse selleks 4 KB tükkideks – <b>lehtedeks</b>.</p>
+<p><b>Kuidas lehte kasutada?</b> Harjutused on järjekorras, iga järgmine ehitab eelmisele:</p>
+<ol>
+<li><b>Killustumine</b> – miks jaotatakse mälu lehtedeks, mitte antakse programmile üks järjestikune tükk.</li>
+<li><b>Aadressi tõlkimine</b> – kuidas virtuaalaadress muutub füüsiliseks ja miks protsessid üksteise mälu ei näe.</li>
+<li><b>Lehtede asendamine</b> – mis juhtub, kui RAM saab täis.</li>
+<li><b>TLB</b> – miks tõlkimine arvutit aeglaseks ei tee.</li>
+<li><b>Eraldatud mälu</b> – kuidas Windows arvestab, kui palju mälu programmidele lubada.</li>
+<li><b>Ründekaitsed</b> – kuidas mäluhaldus aitab rünnete vastu.</li>
+</ol>
+</div>
 <div class="toc"><a href="#killustumine">1. Killustumine</a><a href="#tolkimine">2. Aadressi tõlkimine</a><a href="#asendamine">3. Lehtede asendamine</a><a href="#tlb">4. TLB ja suured lehed</a><a href="#commit">5. Eraldatud mälu</a><a href="#kaitsed">6. Ründekaitsed</a></div>
 
 <!-- 1 -->
 <section id="killustumine">
 <h2>1. Killustumine: pidev ala või lehed?</h2>
-<p>Mälu on 64 KB. Programmid tulevad ja lähevad. Vali mälumudel ja käi stsenaarium samm-sammult läbi. Viimasel sammul tahab tulla programm F (16 KB).</p>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kõige lihtsam viis mälu jagada on anda igale programmile <b>üks järjestikune tükk</b> – nagu bussile parklas, mis vajab mitut kõrvuti asuvat kohta. Probleem tekib siis, kui programmid lõpetavad eri ajal: nende kohale jäävad „augud“ ja uus programm ei pruugi ühessegi auku mahtuda, kuigi vaba ruumi on kokku piisavalt. Seda nimetatakse <b>väliseks killustumiseks</b>.</p>
+<p><b>Lehekülgedeks jaotamine</b> lahendab selle: mälu jagatakse võrdseteks 4 KB tükkideks ja programmi tükid võivad olla RAM-is ükskõik kus – nagu raamat, mille peatükid on riiulil eri kohtades, kuid sisukord (lehetabel) ütleb, kust iga peatüki leiab.</p>
+<p><b>Mida teha:</b> käi stsenaarium läbi mõlema mudeliga. Mälu on 64 KB, programmid A–E tulevad ja osa neist lõpetab. Viimasel sammul tahab tulla programm F (16 KB). Kas ta mahub?</p>
+</div>
 <div class="card">
   <div class="row" style="margin-top:0"><span><button class="btn" data-m="cont">Muutuvad sektsioonid (pidev ala)</button> <button class="btn" data-m="page">Lehekülgedeks jaotamine (4 KB lehed)</button></span></div>
   <div id="kmem"></div>
   <div class="row"><span><button class="btn primary" id="knext">Järgmine samm →</button> <button class="btn" id="kreset">Algusesse</button></span><span class="hint" id="kstep"></span></div>
   <div class="kpis" id="kkpi"></div>
   <div class="info" id="kinfo"></div>
+  <details class="more"><summary>Kus see päriselt esineb?</summary>
+  <p>Windows ei anna protsessidele füüsilist mälu ühe tükina – seepärast välist killustumist RAM-is protsesside vahel ei teki. Sama probleem esineb aga mujal:</p>
+  <ul><li><b>Kuhjas</b> – kui programm eraldab ja vabastab eri suurusega objekte, võib kuhja tekkida auke (Windowsi madala killustumisega kuhi LFH on loodud seda vähendama).</li>
+  <li><b>Kettal</b> – faili osad võivad olla kettal laiali. HDD-l on see aeglane, seepärast on Windowsis „Optimeeri draive“ (defragmentimine). SSD-l see jõudlust praktiliselt ei mõjuta.</li>
+  <li><b>Draiverid</b>, mis vajavad seadme jaoks järjestikust füüsilist mälu – pikalt töötanud arvutis võib seda olla raske leida.</li></ul>
+  <p><b>Sisemine killustumine</b> on lehtede hind: keskmiselt jääb iga mälupiirkonna viimasest lehest pool tühjaks. 4 KB lehtede puhul on see väike kadu.</p></details>
 </div>
 </section>
 
 <!-- 2 -->
 <section id="tolkimine">
 <h2>2. Aadressi tõlkimine</h2>
-<p>Lihtsustatud arvutis on aadressid 16-bitised ja leht on 4 KB. Seega on viimased 3 kuueteistkümnendnumbrit (12 bitti) <b>nihe</b> ja esimene number <b>lehe number</b>. Sisesta virtuaalaadress või lase lehel ülesanne anda.</p>
+<div class="why">
+<h4>Miks aadresse tõlgitakse?</h4>
+<p>Programm kasutab ainult <b>virtuaalaadresse</b> – tema jaoks algab mälu nullist. Tegelikult on tema lehed RAM-is seal, kus parajasti ruumi oli. Protsessori MMU tõlgib <b>igal mälupöördumisel</b> virtuaalaadressi füüsiliseks. Kuna igal protsessil on oma lehetabel, võib sama virtuaalaadress kahes protsessis viia täiesti eri kohta – nii ei näe protsessid üksteise mälu.</p>
+<h4>Kuidas aadressi lugeda?</h4>
+<p>Üks kuueteistkümnendnumber (0–F) on 4 bitti. Leht on 4 KB = 4096 = 2<sup>12</sup> baiti, seega kulub baidi asukoha määramiseks lehe sees 12 bitti = <b>3 viimast numbrit</b>. See on <b>nihe</b>. Kõik, mis jääb ette, on <b>lehe number</b>.</p>
+<p>Näide: <code>0x2A7F</code> → leht <b>2</b>, nihe <b>A7F</b> (bait nr 2687 lehe sees). Võrdlus: „raamatu 2. peatükk, rida 2687“. Lehetabel ütleb, millisel riiulikohal (raamis) 2. peatükk asub. Rea number peatüki sees ei muutu – <b>nihe jääb tõlkimisel alati samaks</b>.</p>
+<p><b>Mida teha:</b> tõlgi näiteaadress, siis vaheta protsessi B peale ja tõlgi sama aadress uuesti. Proovi ka aadressi <code>0x3000</code> (leht, mida RAM-is pole) ja <code>0x9000</code> (leht, mis ei kuulu protsessile).</p>
+</div>
 <div class="card">
   <div class="row" style="margin-top:0"><span><button class="btn" data-p="A">Protsess A</button> <button class="btn" data-p="B">Protsess B</button></span><span>Virtuaalaadress: <input type="text" id="tva" value="0x2A7F" style="width:90px;font-family:var(--mono)"> <button class="btn primary" id="tgo">Tõlgi</button></span></div>
   <div class="addr" id="taddr"></div>
@@ -151,13 +208,26 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="row" style="margin-top:4px"><span>Aadress: <input type="text" id="xva" value="0x7FF6A1B2C3D4" style="width:160px;font-family:var(--mono)"></span></div>
   <div class="bits" id="xbits"></div>
   <p class="hint">Iga 9-bitine indeks (0–511) valib kirje ühest 512-kirjelisest tabelist; 12-bitine nihe valib baidi 4096-baidise lehe sees.</p>
+  <details class="more"><summary>Miks päris arvutis on 4 tabelit, mitte üks?</summary>
+  <p>Ülal olevas lihtsustatud arvutis on ainult 16 lehte, nii et lehetabel on tilluke. 64-bitises Windowsis on protsessi aadressiruum 128 TB – see on <b>34 miljardit</b> 4 KB lehte. Kui iga protsessi jaoks hoida ühte tabelit kõigi lehtedega (8 baiti kirje kohta), võtaks see sadu gigabaite.</p>
+  <p>Programm kasutab aga tavaliselt vaid väikest osa oma aadressiruumist (paar sada MB). Seepärast on tabel ehitatud <b>puuna</b>: esimene tase (PML4) jagab aadressiruumi 512 suureks osaks, iga osa jaguneb omakorda 512-ks jne. Kui mingit piirkonda ei kasutata, jäetakse kogu selle alampuu tabelid loomata. Nii kulub lehetabelitele vaid mõni megabait.</p>
+  <p>Hind: tõlkimiseks tuleb lugeda 4 tabelikirjet. Selle probleemi lahendab TLB (harjutus 4).</p></details>
 </div>
 </section>
 
 <!-- 3 -->
 <section id="asendamine">
 <h2>3. Lehtede asendamise simulaator</h2>
-<p>Programm pöördub lehtede poole järjekorras, mis on antud allpool. Kui leht pole RAM-is, tekib leheviga (punane). Kui raamid on täis, valib algoritm, milline leht välja viia.</p>
+<div class="why">
+<h4>Miks lehti asendada tuleb?</h4>
+<p>RAM-i on vähem, kui programmid kokku vajavad. Kui programm pöördub lehe poole, mida RAM-is pole, tekib <b>leheviga</b> ja mäluhaldur peab lehe kettalt tooma. Kui kõik raamid on hõivatud, tuleb enne <b>mõni teine leht välja viia</b>.</p>
+<p>Valik on oluline: kui viia välja leht, mida kohe uuesti vaja on, tekib kohe uus leheviga. RAM-ist lugemine võtab ~100 ns, SSD-lt lugemine ~100 000 ns. Iga liigne leheviga on seega tuhat korda kallim kui tavaline mälupöördumine.</p>
+<h4>Kuidas tabelit lugeda?</h4>
+<ul><li>Iga <b>veerg</b> on üks pöördumine ajas (vasakult paremale). Ülemises reas on lehe number, mida programm vajab.</li>
+<li>Iga <b>rida</b> näitab, mis leht on selles raamis pärast seda pöördumist.</li>
+<li><span style="color:var(--bad);font-weight:700">Punane</span> lahter = leheviga, leht toodi sellesse raami. <span style="color:var(--ok);font-weight:700">Roheline</span> = tabamus, leht oli juba olemas.</li></ul>
+<p><b>Mida teha:</b> vaata peatüki näidet algoritmidega FIFO ja LRU ning loe allpool olevat samm-sammult selgitust. Siis vali „Belady anomaalia“ ja võrdle FIFO tulemust 3 ja 4 raamiga.</p>
+</div>
 <div class="card">
   <div class="row" style="margin-top:0"><span>Näide: <select id="rpre"><option value="ch">Peatüki näide</option><option value="bel">Belady anomaalia</option><option value="loc">Lokaalsus (tsükkel)</option><option value="scan">Suur fail läbi (skaneerimine)</option></select></span><span>Raame: <select id="rfr"><option>3</option><option>4</option><option>5</option></select></span></div>
   <div class="row"><span style="flex:1">Lehtede järjekord: <input type="text" id="rref" style="width:100%;max-width:420px;font-family:var(--mono)"></span></div>
@@ -166,13 +236,24 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="kpis" id="rkpi"></div>
   <table class="t" style="margin-top:10px"><thead><tr><th>Algoritm</th><th class="num">3 raami</th><th class="num">4 raami</th><th class="num">5 raami</th></tr></thead><tbody id="rcmp"></tbody></table>
   <div class="info" id="rinfo"></div>
+  <details class="more" open><summary>Samm-sammult selgitus</summary><ol class="steps long" id="rsteps"></ol></details>
+  <details class="more"><summary>Mida Windows tegelikult kasutab?</summary>
+  <p>Windows ei kasuta ühtki neist algoritmidest puhtal kujul. Igal protsessil on oma <b>tööhulk</b> (RAM-is olevad lehed). Kui vaba mälu jääb vähe, vähendab <b>tööhulga haldur</b> tööhulki: ta vaatab lehe <i>Accessed</i>-bitti (nagu kella-algoritm) ja eemaldab lehed, mida pole hiljuti kasutatud.</p>
+  <p>Eemaldatud leht ei kao kohe: muutmata leht läheb <b>ootenimekirja</b>, muudetud leht kirjutatakse enne lehefaili. Kui programm lehte uuesti vajab, saab selle ootenimekirjast kiiresti tagasi (pehme leheviga). Nii parandab Windows halva valiku kiiresti.</p>
+  <p>Kui aktiivselt kasutatavad lehed ei mahu üldse RAM-i, aitab ainult RAM-i lisamine või vähem programme – see on <b>ülekoormus</b> (thrashing).</p></details>
 </div>
 </section>
 
 <!-- 4 -->
 <section id="tlb">
 <h2>4. TLB ja suured lehed</h2>
-<p>Iga TLB möödalask tähendab, et protsessor peab lugema mälust kõik lehetabeli tasemed. Vaata, kui palju mõjutab tabamusmäär keskmist mälupöördumise aega.</p>
+<div class="why">
+<h4>Miks TLB-d vaja on?</h4>
+<p>Lehetabelid asuvad ise RAM-is. Kui protsessor tahab lugeda ühte baiti, peaks ta enne lugema RAM-ist <b>4 lehetabeli kirjet</b> (4 taset) ja alles siis andmed – kokku 5 mälupöördumist ühe asemel. Arvuti oleks 5 korda aeglasem.</p>
+<p><b>TLB</b> (Translation Lookaside Buffer) on protsessoris olev väike ja väga kiire tabel, mis mäletab viimaseid tõlkeid: „leht 0x7FF6A1B2C → raam 0x1F3A“. Võrdlus: sa ei otsi sõbra numbrit iga kord telefoniraamatust, vaid helistad viimaste kõnede nimekirjast.</p>
+<p>Kuna programmid kasutavad sama lehte korduvalt (lokaalsus – ühes 4 KB lehes on 1000 täisarvu), leitakse tõlge TLB-st üle 99% juhtudest. Tõlkimine muutub peaaegu nähtamatuks.</p>
+<p><b>Mida teha:</b> vaata, kuidas muutub keskmine aeg, kui tabamusmäär langeb 99%-lt 90%-le. Siis vali allpool lehe suuruseks 2 MB ja vaata, kui palju mälu TLB nüüd katab.</p>
+</div>
 <div class="card">
   <div class="slider"><label for="lh">TLB tabamusmäär</label><input type="range" id="lh" min="80" max="100" step="0.5" value="99"><b id="lhv" class="mono"></b></div>
   <div class="slider"><label for="lm">Mälupöördumine (ns)</label><input type="range" id="lm" min="50" max="150" step="10" value="100"><b id="lmv" class="mono"></b></div>
@@ -180,6 +261,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="kpis" id="lkpi"></div>
   <div class="info" id="linfo"></div>
   <h3 style="margin-top:1.2rem">Kui palju mälu katab TLB?</h3>
+  <p style="font-size:14.5px">TLB-s on piiratud arv kirjeid ja iga kirje katab ühe lehe. Kui programm kasutab rohkem mälu, kui TLB katab (nt suur andmebaas), tuleb tõlkeid pidevalt uuesti lehetabelist lugeda. <b>Suurem leht</b> tähendab, et üks kirje katab rohkem mälu – seepärast kasutavad SQL Server ja hüperviisorid 2 MB lehti.</p>
   <div class="row" style="margin-top:4px"><span>TLB kirjeid: <select id="le"><option>64</option><option>512</option><option selected>1536</option><option>2048</option></select></span><span>Lehe suurus: <select id="lp"><option value="4">4 KB</option><option value="2048">2 MB</option><option value="1048576">1 GB</option></select></span></div>
   <div class="kpis" id="lcov"></div>
 </div>
@@ -188,20 +270,57 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <!-- 5 -->
 <section id="commit">
 <h2>5. Reserveeritud, eraldatud ja kasutatud mälu</h2>
-<p>Arvutis on 8 GB RAM-i. Süsteem ise on eraldanud ja kasutab 2 GB. Vali lehefaili suurus ja käivita programmide toiminguid. Jälgi, mis juhtub eraldatud mälu limiidi ja RAM-iga.</p>
+<div class="why">
+<h4>Kolm sammu: reserveeri, eralda, kasuta</h4>
+<p>Windowsis küsib programm mälu kolmes etapis. Lihtsam on seda mõista lennureisi abil:</p>
+<ul>
+<li><b>Reserveerimine</b> = paned lennuki istekohtade plaanil read enda nimele kinni. Midagi pole veel makstud ega lubatud. Mälus: protsess jätab aadressivahemiku endale, kuid RAM-i ega lehefaili see ei võta.</li>
+<li><b>Eraldamine (commit)</b> = ostad pileti. Lennufirma <b>lubab</b>, et sul on koht. Windows müüb „pileteid“ ainult nii palju, kui kohti on: <b>eraldatud mälu limiit = RAM + lehefail</b>. Kui limiit on täis, ei saa programm rohkem mälu, isegi kui RAM-is on parajasti vaba ruumi.</li>
+<li><b>Kasutamine</b> = istud lennukis oma kohale. Alles siis võtab leht päriselt RAM-i. Kui RAM on täis, viib Windows kauem kasutamata lehti lehefaili.</li>
+</ul>
+<p><b>Linux</b> käitub nagu lennufirma, mis müüb rohkem pileteid kui kohti (<b>ülebroneerimine</b>, overcommit): ta eeldab, et kõik ei kasuta oma mälu ära. Kui siiski kõik tulevad, tõstetakse keegi lennukist maha – <b>OOM killer</b> lõpetab suurima protsessi.</p>
+<p><b>Mida teha (järjekorras):</b></p>
+<ol>
+<li>Brauser: vajuta „Reserveeri 4 GB“ – vaata, et ribad ei muutu.</li>
+<li>Brauser: „Eralda 2 GB“ kaks korda – eraldatud mälu kasvab, RAM mitte.</li>
+<li>Brauser: „Kasuta 2 GB“ kaks korda – nüüd kasvab ka RAM.</li>
+<li>Mäng: reserveeri kaks korda, siis eralda ja kasuta, kuni RAM saab täis ja seejärel kuni Windows keeldub eraldamast.</li>
+<li>Vajuta „Algseis“, keera lehefail nulli ja korda – limiit on nüüd ainult 8 GB.</li>
+<li>Vali Linux ja tee sama – vaata, mis juhtub.</li>
+</ol>
+</div>
 <div class="card">
   <div class="row" style="margin-top:0"><span><button class="btn" data-os="win">Windows</button> <button class="btn" data-os="lin">Linux (ülejaotus lubatud)</button></span><button class="btn" id="creset">Algseis</button></div>
   <div class="slider"><label for="cpf">Lehefail / swap (GB)</label><input type="range" id="cpf" min="0" max="16" value="8"><b id="cpfv" class="mono"></b></div>
   <div class="procs" id="cprocs"></div>
   <div class="bars" id="cbars"></div>
   <div class="info" id="cinfo"></div>
+  <details class="more"><summary>Kus neid numbreid Windowsis näha?</summary>
+  <ul><li><b>Tegumihaldur → Jõudlus → Mälu → „Eraldatud: 14/20 GB“</b> – esimene arv on eraldatud mälu kogus (commit charge), teine limiit (RAM + lehefail). See vastab ülemisele ribale.</li>
+  <li><b>„Kasutusel“</b> – kui palju RAM-i on päriselt kasutusel. See vastab alumisele ribale.</li>
+  <li><b>Tegumihaldur → Üksikasjad</b>: veerg „Kinnitatud suurus“ (Commit size) näitab protsessi eraldatud mälu, veerg „Mälu (privaatne tööhulk)“ tema lehti RAM-is.</li></ul>
+  <p><b>Järeldus:</b> lehefaili keelamine ei tee arvutit kiiremaks – see vähendab limiiti ja programmid saavad mäluvea varem. Kui arvuti on aeglane, sest RAM on täis, aitab rohkem RAM-i.</p></details>
 </div>
 </section>
 
 <!-- 6 -->
 <section id="kaitsed">
 <h2>6. Milline kaitse peatab ründe?</h2>
-<p>Iga rünne kasutab ära mäluviga. Vali kaitse, mis selle ründe kõige otsesemalt peatab või muudab väga raskeks.</p>
+<div class="why">
+<h4>Kuidas mäluviga rünnakuks muutub?</h4>
+<p>Kui funktsioon kutsutakse välja, pannakse <b>pinusse</b> tema kohalikud muutujad (nt puhver kasutaja sisestatud teksti jaoks) ja <b>tagastusaadress</b> – koht, kuhu programm peab funktsiooni lõpus tagasi hüppama. Kui programm kopeerib kasutaja teksti puhvrisse ilma pikkust kontrollimata, kirjutab pikk tekst puhvrist üle ja <b>muudab tagastusaadressi</b>. Funktsiooni lõpus hüppab programm siis sinna, kuhu ründaja tahab.</p>
+<p>Ründajal on kaks peamist võimalust: panna oma masinkood samasse sisendisse ja hüpata sinna, või kasutada programmi enda koodijuppe (ROP – return-oriented programming). Iga kaitse sulgeb ühe tee.</p>
+</div>
+<div class="card">
+  <h3 style="margin-top:0">Puhvri ületäitumine pinus</h3>
+  <div class="slider"><label for="sl">Sisestatud teksti pikkus</label><input type="range" id="sl" min="0" max="12" value="5"><b id="slv" class="mono"></b></div>
+  <div class="stack" id="sst"></div>
+  <div class="slab"><span>puhver (8 baiti)</span><span>tagastusaadress</span></div>
+  <div class="row"><span>Ründaja meetod: <label class="tg"><input type="radio" name="sm" value="code" checked> <span>oma kood pinus</span></label> <label class="tg"><input type="radio" name="sm" value="rop"> <span>programmi koodijupid (ROP)</span></label></span></div>
+  <div class="row"><span>Kaitsed: <label class="tg"><input type="checkbox" id="sdep"> <span>DEP</span></label> <label class="tg"><input type="checkbox" id="saslr"> <span>ASLR</span></label> <label class="tg"><input type="checkbox" id="sss"> <span>Varjupinu</span></label></span></div>
+  <div class="info" id="sinfo"></div>
+</div>
+<p style="margin-top:1.2rem">Nüüd harjuta: vali iga ründe kohta kaitse, mis selle kõige otsesemalt peatab või muudab väga raskeks.</p>
 <div class="card">
   <div class="tasks" id="qtasks"></div>
   <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
@@ -236,6 +355,20 @@ function kRun(){ // tagastab oleku pärast ki sammu
     }}
   return {cont,frames,log,fail};
 }
+const KEC=['<b>A (12 KB)</b> laaditakse mälu algusesse – mälu on tühi, nii et esimene vaba koht on aadressil 0.',
+ '<b>B (10 KB)</b> pannakse kohe A järele. OS kasutab reeglit <b>„esimene sobiv auk“</b> (first fit): mälu otsitakse algusest ja programm pannakse esimesse vabasse alasse, kuhu ta mahub.',
+ '<b>C (14 KB)</b> pannakse B järele – see on esimene koht, kuhu ta mahub.',
+ '<b>D (8 KB)</b> pannakse C järele.',
+ '<b>E (12 KB)</b> pannakse D järele. Mälu lõppu jääb veel 8 KB vaba ruumi.',
+ '<b>B lõpetab.</b> Tema kohale jääb A ja C vahele 10 KB suurune auk. Sinna mahub edaspidi ainult programm, mis on 10 KB või väiksem.',
+ '<b>D lõpetab.</b> Tekib teine auk (8 KB). Vaba mälu on nüüd kokku 26 KB, kuid see on <b>kolmes eraldi tükis</b>: 10 + 8 + 8 KB. Järgmisena tahab tulla 16 KB programm – kas ta mahub?'];
+const KEP=['<b>A (12 KB)</b> vajab 12 / 4 = 3 lehte ja saab raamid 0–2.',
+ '<b>B (10 KB)</b> vajab 3 lehte, sest 10 / 4 = 2,5 ja poolt lehte anda ei saa. Viimasest lehest jääb 2 KB kasutamata – see on <b>sisemine killustumine</b> (triibuline osa).',
+ '<b>C (14 KB)</b> vajab 4 lehte; ka tema viimases lehes jääb 2 KB tühjaks.',
+ '<b>D (8 KB)</b> vajab täpselt 2 lehte, raiskamist pole.',
+ '<b>E (12 KB)</b> vajab 3 lehte. Vaba on veel üks raam.',
+ '<b>B lõpetab</b> – raamid 3–5 vabanevad.',
+ '<b>D lõpetab</b> – raamid 10–11 vabanevad. Vabu raame on 6 (24 KB) ja need asuvad mälus eri kohtades. Lehtedega pole see probleem – vaata järgmist sammu.'];
 function kDraw(){const r=kRun();
   document.querySelectorAll('#killustumine [data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===km));
   let h='';
@@ -256,7 +389,7 @@ function kDraw(){const r=kRun();
   $('kinfo').innerHTML=!ki?'Mälu on tühi. Vajuta „Järgmine samm“.':
    r.fail&&km==='cont'?`<b>Väline killustumine!</b> Programm F vajab 16 KB. Vaba mälu on kokku piisavalt, kuid see on laiali väikeste tükkidena ja ükski tükk pole 16 KB. Pidev ala nõuab, et kogu programm oleks järjest. Vaheta mudel „Lehekülgedeks jaotamine“ ja proovi uuesti.`:
    ki===KS.length&&km==='page'?`<b>F mahtus!</b> F sai 4 lehte, mis on RAM-is eri kohtades – lehetabel seob need kokku üheks pidevaks virtuaalseks alaks. Välist killustumist pole. Alles jääb <b>sisemine killustumine</b>: kui programm vajab nt 10 KB, saab ta 3 lehte (12 KB) ja 2 KB jääb viimases lehes kasutamata (triibuline osa).`:
-   last+'.'+(ki===7&&km==='cont'?' Vaata, kuhu vabad tükid jäid.':'');
+   (km==='cont'?KEC:KEP)[ki-1];
 }
 document.querySelectorAll('#killustumine [data-m]').forEach(b=>b.onclick=()=>{km=b.dataset.m;kDraw()});
 $('knext').onclick=()=>{ki++;kDraw()};$('kreset').onclick=()=>{ki=0;kDraw()};kDraw();
@@ -272,9 +405,9 @@ function tDraw(){document.querySelectorAll('#tolkimine [data-p]').forEach(b=>b.c
   $('taddr').innerHTML=`<span class="pg">${h.slice(2,3)}<small>leht ${pg}</small></span><span class="off">${h.slice(3)}<small>nihe ${hex(off,3)}</small></span>`;
   tTab(pg);const e=PT[tp][pg];
   if(pg>7){I.className='info bad';I.innerHTML=`Leht ${pg} on väljaspool protsessi kasutatavat ala (lehetabelis on lehed 0–7). Pöördumine annab vea <b>access violation</b> ja programm tavaliselt lõpetatakse.`;return}
-  if(!e[0]){I.className='info bad';I.innerHTML=`<b>Leheviga!</b> Lehe ${pg} kirjes on <i>Present</i> = 0 – leht pole RAM-is (nt viidud lehefaili) või pole veel kasutatud. Protsessor katkestab käsu, mäluhaldur toob lehe vabasse raami, uuendab lehetabelit ja käsk käivitatakse uuesti.`;return}
+  if(!e[0]){I.className='info bad';I.innerHTML=`<div class="calc">1. Jaga aadress: ${h} → leht <b>${pg}</b>, nihe <b>${hex(off,3)}</b><br>2. Vaata lehetabelist: leht ${pg} → P = 0 – tõlkimine ebaõnnestub</div><b>Leheviga!</b> Lehe ${pg} kirjes on <i>Present</i> = 0 – leht pole RAM-is (nt viidud lehefaili) või pole veel kasutatud. Protsessor katkestab käsu, mäluhaldur toob lehe vabasse raami, uuendab lehetabelit ja käsk käivitatakse uuesti.`;return}
   const pa=(e[1]<<12)|off;I.className='info ok';
-  I.innerHTML=`Leht <b>${pg}</b> → raam <b>${e[1]}</b> (${hex(e[1],1)}). Füüsiline aadress = raam + nihe = <b class="mono">${hex(pa)}</b>. `+(tp==='B'?`Protsessis A viiks sama virtuaalaadress ${PT.A[pg][0]?'raami '+PT.A[pg][1]:'leheveani'} – protsessid ei näe üksteise mälu.`:`Vaheta protsessi B peale: sama virtuaalaadress viib teise kohta.`);
+  I.innerHTML=`<div class="calc">1. Jaga aadress: ${h} → leht <b>${pg}</b>, nihe <b>${hex(off,3)}</b><br>2. Vaata lehetabelist: leht ${pg} → raam <b>${e[1]}</b> (${hex(e[1],1)}), P = 1 ehk leht on RAM-is<br>3. Pane kokku: raam ${hex(e[1],1)} + nihe ${hex(off,3).slice(2)} → füüsiline aadress <b>${hex(pa)}</b></div>`+(tp==='B'?`Protsessis A viiks sama virtuaalaadress ${PT.A[pg][0]?'raami '+PT.A[pg][1]:'leheveani'} – protsessid ei näe üksteise mälu.`:`Vaheta protsessi B peale: sama virtuaalaadress viib teise kohta.`);
 }
 function tTab(hit){$('tptab').innerHTML=PT[tp].map(([p,f],i)=>`<div class="${p?'':'np'}${i===hit?' hit':''}">leht ${i}<br><b>${p?'raam '+f:'—'}</b><br><small>${p?'P=1':'P=0'}</small></div>`).join('')}
 function tNew(){let pg;do{pg=Math.floor(Math.random()*8)}while(!PT[tp][pg][0]);tq=(pg<<12)|Math.floor(Math.random()*4096);$('tq').innerHTML=`Protsess ${tp}, virtuaalaadress <code>${hex(tq)}</code>.`;$('tans').value='';$('tfb').textContent='';$('tfb').className='info';$('tfb').style.minHeight='0'}
@@ -315,6 +448,16 @@ function rDraw(){document.querySelectorAll('#ralgs button').forEach(b=>b.classLi
   $('rkpi').innerHTML=`<div>Lehevigu<b>${r.faults}</b></div><div>Tabamusi<b>${ref.length-r.faults}</b></div><div>Tabamusmäär<b>${Math.round((ref.length-r.faults)/ref.length*100)}%</b></div>`;
   $('rcmp').innerHTML=Object.keys(ALG).map(a=>`<tr${a===ralg?' class="avg"':''}><td>${ALG[a]}</td>`+[3,4,5].map(k=>`<td class="num">${replace(ref,k,a).faults}</td>`).join('')+'</tr>').join('');
   const f3=replace(ref,3,'fifo').faults,f4=replace(ref,4,'fifo').faults;
+  $('rsteps').innerHTML=r.cols.map((c,t)=>{let s=`<b>Pöördumine ${t+1}, leht ${c.p}:</b> `;
+    if(c.hit)return '<li>'+s+`leht on juba raamis ${c.slot} → <span style="color:var(--ok)">tabamus</span>, midagi ei muutu.`+(ralg==='clock'?' Lehe <i>Accessed</i>-bitt pannakse 1-ks.':ralg==='lru'?' LRU jätab meelde, et lehte kasutati just praegu.':'')+'</li>';
+    s+=`lehte pole RAM-is → <span style="color:var(--bad)">leheviga</span>. `;
+    if(c.victim===null)return '<li>'+s+`Raam ${c.slot} on vaba, leht laaditakse sinna.</li>`;
+    const prev=ref.slice(0,t),last=prev.lastIndexOf(c.victim),next=ref.indexOf(c.victim,t+1);
+    const why={fifo:`FIFO: leht ${c.victim} tuli mällu kõige varem kõigist raamides olevatest lehtedest`,
+      lru:`LRU: lehte ${c.victim} kasutati viimati pöördumisel ${last+1} – kõige kauem aega tagasi`,
+      opt:next<0?`OPT: lehte ${c.victim} pole <b>enam kunagi</b> vaja`:`OPT: lehte ${c.victim} on järgmisena vaja alles pöördumisel ${next+1} – teistest hiljem`,
+      clock:`Kell: osuti leidis esimese lehe, mille <i>Accessed</i>-bitt oli 0 (enne seda olnud lehed said teise võimaluse ja nende bitt nulliti)`}[ralg];
+    return '<li>'+s+`Raamid on täis. ${why} → välja viiakse <b>leht ${c.victim}</b> raamist ${c.slot}.`+(ralg!=='opt'&&next>=0&&next-t<=3?(next-t===1?' <i>Kahjuks läheb seda lehte vaja juba järgmisel pöördumisel – tekib uus leheviga.</i>':` <i>Kahjuks läheb seda lehte vaja juba ${next-t} pöördumise pärast.</i>`):'')+'</li>'}).join('');
   $('rinfo').innerHTML={fifo:'FIFO viib välja kõige vanema lehe, olenemata sellest, kas seda kasutatakse sageli.',lru:'LRU viib välja lehe, mida pole kõige kauem kasutatud. See põhineb lokaalsusel: hiljuti kasutatud lehti vajatakse tõenäoliselt uuesti.',clock:'Kell käib raame ringiratast läbi. Ülaindeks on <i>Accessed</i>-bitt: 1 tähendab, et lehte on hiljuti kasutatud – see saab teise võimaluse ja bitt nullitakse. Välja viiakse esimene leht, mille bitt on 0. See on LRU odav lähend.',opt:'Optimaalne algoritm viib välja lehe, mida järgmisena vajatakse kõige hiljem. Seda ei saa päriselt teha (tulevik pole teada), kuid see näitab, milline on parim võimalik tulemus.'}[ralg]+
    (f4>f3?` <b>Belady anomaalia:</b> FIFO annab 3 raamiga ${f3} ja 4 raamiga ${f4} leheviga – rohkem mälu, rohkem vigu!`:'');
 }
@@ -327,7 +470,7 @@ $('rref').value=RP.ch;rDraw();
 function lDraw(){const h=+$('lh').value/100,m=+$('lm').value,L=+$('ll').value;$('lhv').textContent=fmt(h*100)+'%';$('lmv').textContent=m+' ns';$('llv').textContent=L;
   const hit=1+m,miss=1+L*m+m,eat=h*hit+(1-h)*miss;
   $('lkpi').innerHTML=`<div>TLB tabamus<b>${hit} ns</b></div><div>TLB möödalask<b>${miss} ns</b></div><div>Keskmine<b>${fmt(eat)} ns</b></div><div>Aeglustus võrreldes ideaaliga<b>${fmt((eat/m-1)*100)}%</b></div>`;
-  $('linfo').innerHTML=`Ilma TLB-ta võtaks iga pöördumine ${miss-1} ns ehk ${L+1} korda kauem. ${h>=0.99?'Tänu lokaalsusele on tabamusmäär tavaliselt üle 99% ja tõlkimine on peaaegu nähtamatu.':'Kui programm hüppab mälus palju ringi (suur andmebaas, VM), langeb tabamusmäär – siis aitavad suured lehed.'}`;
+  $('linfo').innerHTML=`<div class="calc">TLB tabamus: 1 ns (TLB) + ${m} ns (andmed) = ${hit} ns<br>TLB möödalask: 1 ns + ${L} × ${m} ns (lehetabelid) + ${m} ns (andmed) = ${miss} ns<br>Keskmine: ${fmt(h,3)} × ${hit} + ${fmt(1-h,3)} × ${miss} = <b>${fmt(eat)} ns</b></div>Ilma TLB-ta võtaks iga pöördumine ${miss-1} ns ehk ${L+1} korda kauem. ${h>=0.99?'Tänu lokaalsusele on tabamusmäär tavaliselt üle 99% ja tõlkimine on peaaegu nähtamatu.':'Kui programm hüppab mälus palju ringi (suur andmebaas, VM), langeb tabamusmäär – siis aitavad suured lehed.'}`;
   const e=+$('le').value,p=+$('lp').value,kb=e*p;
   $('lcov').innerHTML=`<div>TLB katab<b>${kb>=1048576?fmt(kb/1048576)+' GB':kb>=1024?fmt(kb/1024)+' MB':kb+' KB'}</b></div><div>16 GB mälu jaoks on vaja kirjeid<b>${fmt(16*1048576/p,0)}</b></div>`;}
 ['lh','lm','ll'].forEach(i=>$(i).oninput=lDraw);['le','lp'].forEach(i=>$(i).onchange=lDraw);lDraw();
@@ -362,6 +505,19 @@ document.querySelectorAll('#commit [data-os]').forEach(b=>b.onclick=()=>{cos=b.d
 $('cpf').oninput=cDraw;$('creset').onclick=cInit;cInit();
 
 /* 6. Kaitsed */
+function sDraw(){const n=+$('sl').value,code=document.querySelector('input[name=sm]:checked').value==='code',dep=$('sdep').checked,aslr=$('saslr').checked,ss=$('sss').checked;
+  $('slv').textContent=n+' märki';const txt='TERE!ABCDEFG';
+  $('sst').innerHTML=[...Array(12).keys()].map(i=>i<8?`<div class="buf${i<n?' fill':''}">${i<n?txt[i]:''}</div>`:`<div class="ret${i<n?' over':''}">${i<n?txt[i]:['7F','F6','A1','B2'][i-8]}</div>`).join('');
+  const I=$('sinfo');let m,c='';
+  if(n<=8){m=`Tekst mahub puhvrisse. Tagastusaadress on puutumata ja funktsiooni lõpus naaseb programm õigesse kohta. ${n===8?'Puhver on täpselt täis – üks märk veel ja algab ületäitumine.':'Liiguta liugurit paremale.'}`;c='ok'}
+  else if(n<12){m=`<b>Ületäitumine!</b> Tekst kirjutas üle osa tagastusaadressist. Funktsiooni lõpus hüppab programm suvalisse kohta ja jookseb kokku (access violation). Nii avastatakse sageli turvavigu – ründaja proovib nüüd sisendi pikkust ja sisu nii sättida, et aadress oleks tema valitud.`;c='bad'}
+  else{if(ss){m=`<b>Rünne peatatud – varjupinu.</b> Protsessor hoidis tagastusaadressi koopiat eraldi kaitstud pinus. Funktsiooni lõpus võrdles ta mõlemat, leidis erinevuse ja lõpetas programmi. See töötab mõlema meetodi vastu.`;c='ok'}
+   else if(code&&dep){m=`<b>Rünne peatatud – DEP.</b> Tagastusaadress viitab ründaja koodile pinus, kuid pinu lehtedel on NX-lipp. Protsessor keeldub sealt koodi käivitamast ja programm lõpetatakse. Ründaja peab proovima ROP-i.`;c='ok'}
+   else if(!code&&aslr){m=`<b>Rünne suure tõenäosusega ebaõnnestub – ASLR.</b> ROP vajab programmi koodijuppide täpseid aadresse, kuid DLL-id on laaditud juhuslikule aadressile. Ründaja peab aadressi ära arvama või leidma teise vea, mis aadressi lekitab. Pane tähele, et DEP siin ei aita – ROP kasutab programmi enda (käivitatavat) koodi.`;c='ok'}
+   else if(code&&aslr){m=`<b>Rünne võib õnnestuda.</b> ASLR muudab pinu aadressi juhuslikuks, nii et ründajal on raskem teada, kuhu hüpata, kuid ilma DEP-ita saab pinus olevat koodi käivitada. Ründajad kasutavad nt pika „NOP-liuguga“ koodi, et tabada ka ligikaudu õiget kohta. Lülita sisse DEP.`;c='bad'}
+   else{m=`<b>Rünne õnnestus!</b> Tagastusaadress on täielikult ründaja oma. ${code?'Programm hüppab pinus olevale ründaja koodile ja täidab selle.':'Programm hüppab DLL-i koodijuppidele, mille ahel teeb ründaja soovitud tegevuse.'} ${!code&&dep?'DEP on küll sees, kuid see ei aita: ROP kasutab programmi enda koodi, mis ongi käivitatav. ':''}Lülita sisse kaitseid ja vaata, milline neist aitab.`;c='bad'}}
+  I.className='info '+c;I.innerHTML=m}
+['sl'].forEach(i=>$(i).oninput=sDraw);['sdep','saslr','sss'].forEach(i=>$(i).onchange=sDraw);document.querySelectorAll('input[name=sm]').forEach(r=>r.onchange=sDraw);sDraw();
 function quiz(box,score,reset,opts,items,done){let ans={};
   function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
     $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
