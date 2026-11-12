@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 19 – kui Windows jookseb kokku: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.seq{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-top:10px}
+.seq div{border:1px solid var(--border);border-radius:8px;padding:6px 4px;text-align:center;font-size:12px;background:var(--bg);min-height:48px;display:flex;align-items:center;justify-content:center;transition:.25s}
+.seq div.done{background:var(--bad-bg);border-color:var(--bad-line)}
+.seq div.done.g{background:var(--ok-bg);border-color:var(--ok-line)}
+.seq div.cur{box-shadow:0 0 0 3px var(--accent);font-weight:700}
+.scr{margin-top:12px;border-radius:12px;padding:22px 26px;font-family:system-ui;color:#fff;min-height:150px;transition:.3s}
+.scr.blk{background:#111}.scr.blu{background:#1059b0}.scr.off{background:#e9e7e0;color:#555}.scr.win{background:linear-gradient(135deg,#0b3d91,#3f8de0)}
+.scr .big{font-size:22px;font-weight:300;margin-bottom:12px}
+.scr code{background:rgba(255,255,255,.14);color:#fff;padding:1px 6px;border-radius:4px}
+.mem{display:flex;gap:3px;margin-top:10px;flex-wrap:wrap}
+.mem span{font-size:11px;padding:4px 7px;border-radius:5px;background:var(--card);border:1px solid var(--border)}
+.mem span.k{background:#e6f1fb;border-color:#185fa5}.mem span.d{background:#fcebeb;border-color:#a32d2d}.mem span.p{background:#faeeda;border-color:#854f0b}.mem span.f{background:#eaf3de;border-color:#3b6d11}
+.codes{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.codes .btn{font-family:var(--mono);font-size:12.5px;padding:.25rem .55rem}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:10px}
+.kv div{background:var(--card);border-radius:10px;padding:.6rem .8rem;font-size:14px;line-height:1.5}
+.kv div b{display:block;font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+.dbg{background:#0f1720;color:#d6e2ee;font-family:var(--mono);font-size:12.5px;border-radius:10px;padding:12px 14px;min-height:260px;max-height:440px;overflow:auto;white-space:pre-wrap;margin-top:8px;line-height:1.45}
+.dbg .c{color:#7fd1ff}.dbg .y{color:#ffd479;font-weight:700}.dbg .m{color:#8b98a5}
+.dbgin{display:flex;gap:6px;margin-top:6px}
+.dbgin input{flex:1;font-family:var(--mono)}
+.cmds{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.cmds .btn{font-family:var(--mono);font-size:12.5px;padding:.25rem .55rem}
+.ev{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:8px}
+.ev td,.ev th{border-bottom:1px solid var(--border);padding:4px 6px;text-align:left}
+.mq{display:grid;gap:10px;margin-top:10px}
+.mq .q{border:1px solid var(--border);border-radius:10px;padding:.7rem .9rem;background:var(--bg);font-size:14.5px}
+.mq .q .opts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.mq .q .btn{font-size:13px;padding:.3rem .6rem}
+.mq .q.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.mq .q.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.mq .q .ex{font-size:13.5px;margin-top:6px}
+.mq .q pre{background:var(--card);border-radius:8px;padding:6px 9px;font-size:12.5px;margin:6px 0 0;white-space:pre-wrap}
+.tm{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.tm>div{border:1px solid var(--border);border-radius:10px;padding:.6rem .7rem;background:var(--bg);font-size:13px}
+.tm>div.no{opacity:.45}.tm>div.best{border-color:var(--ok-line);background:var(--ok-bg);box-shadow:0 0 0 2px var(--ok-line)}
+.tm>div b{display:block;font-size:14px}
+.bar{height:9px;border-radius:5px;background:var(--card);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+.boot{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.boot span{border-radius:8px;padding:5px 10px;font-size:13px;border:1px solid var(--border);background:var(--bg)}
+.boot span.r{background:var(--bad-bg);border-color:var(--bad-line)}.boot span.g{background:var(--ok-bg);border-color:var(--ok-line)}.boot span.b{background:var(--accent-bg);border-color:var(--accent)}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px;margin-top:8px}
+.acts .btn{text-align:left;font-size:13.5px}
+.osg{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.osg th,.osg td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top}
+.osg th{background:var(--card)}
+.osg td.h{cursor:pointer}.osg td.h:hover{background:var(--accent-bg)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/19-krahhid.md">← Peatükk 19</a> · <a href="19-test.html">Test →</a></nav>
+<h1>Kui Windows jookseb kokku – õpileht</h1>
+<p>See leht õpetab krahhi <b>mõistma, uurima ja parandama</b>. Iga harjutuse juures on selgitus <b>„Miks see oluline on?“</b>, juhend <b>„Mida teha“</b> ja avatavad <b>lisainfo</b> plokid. Need on samad teadmised, mida küsitakse testis.</p>
+<div class="why">
+<h4>Suur pilt: krahh on detektiivilugu</h4>
+<p>Kui Windows jookseb kokku, jätab see endast maha <b>kolm jälge</b>. Krahhi uurimine tähendab nende jälgede kokkupanemist:</p>
+<div class="kv">
+<div><b>1. Peatuskood</b>Ütleb, <b>mis liiki</b> viga juhtus (nt <code>0xD1</code> – draiver pöördus vale mälu poole). Nagu arsti diagnoos „palavik“ – sümptom, mitte põhjus.</div>
+<div><b>2. Mälutõmmis</b>Mälu „fotograafia“ krahhi hetkel. WinDbg näitab sellest, <b>milline draiver</b> töötas ja mida tegi – tõenäolise süüdlase.</div>
+<div><b>3. Logid</b>Sündmusvaatur ja töökindluse monitor näitavad, <b>millal</b> krahhid algasid ja <b>mis muutus</b> enne seda (uuendus, uus draiver).</div>
+</div>
+<p style="margin-top:10px"><b>Kuldreegel:</b> peatuskood ütleb vea <i>tüübi</i>, tõmmis ütleb <i>süüdlase</i>, logi ütleb <i>põhjuse ajaloo</i>. Ükski neist üksi ei piisa.</p>
+<p><b>Õppimise järjekord:</b> 1. krahhi käik → 2. peatuskoodid → 3. WinDbg → 4. detektiiviülesanded → 5. tõmmise tüübid → 6. taastamine → 7. logid → 8. Linux ja macOS.</p>
+</div>
+<div class="toc"><a href="#jada">1. Krahhi käik</a><a href="#kood">2. Peatuskoodid</a><a href="#windbg">3. WinDbg</a><a href="#detektiiv">4. Detektiiv</a><a href="#tommis">5. Tõmmise tüüp</a><a href="#taaste">6. Taastamine</a><a href="#logi">7. Sündmuslogi</a><a href="#os">8. Linux ja macOS</a></div>
+
+<!-- 1 -->
+<section id="jada">
+<h2>1. Mis toimub krahhi ajal?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kui tead, mida Windows krahhi ajal teeb, saad aru, <b>miks</b> mõnikord tõmmist ei teki, miks arvuti „jääb ripakile“ või miks pärast taaskäivitust on logis teatud sündmused. Kogu protsess kestab tavaliselt mõne sekundi.</p>
+<p>Kõige olulisem detail: <b>tõmmist ei kirjutata tavalise failina</b>. Krahhi ajal ei saa Windows usaldada oma failisüsteemi ega kettadraivereid – need võivad olla rikutud. Seepärast kirjutab eraldi „varudraiver“ mälu sisu <b>otse lehefaili kettasektoritesse</b> ja alles järgmisel käivitusel tehakse sellest fail <code>MEMORY.DMP</code>.</p>
+<p><b>Mida teha:</b> vajuta „Järgmine samm“ ja jälgi ekraani, mälu ja ketast. Proovi ka „Lehefail puudub“ – mis juhtub tõmmisega?</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><label class="tg"><input type="checkbox" id="jnopf"> <span>Lehefail puudub süsteemikettal</span></label> <label class="tg"><input type="checkbox" id="jpow"> <span>Toitekatkestus (mitte bugcheck)</span></label></span><span><button class="btn primary" id="jnext">Järgmine samm →</button> <button class="btn" id="jreset">Algusest</button></span></div>
+  <div class="seq" id="jseq"></div>
+  <div class="scr win" id="jscr"></div>
+  <div class="mem" id="jmem"></div>
+  <div class="info" id="jinfo"></div>
+  <details class="more"><summary>Lisainfo: miks peatatakse teised protsessorituumad?</summary><p>Mitmetuumalises arvutis töötavad teised tuumad samal ajal edasi. Kui üks tuum avastab, et tuuma andmestruktuur on rikutud, võivad teised just samal hetkel neid andmeid kasutada ja kirjutada rikutud andmeid kettale. Seepärast saadab <code>KeBugCheckEx</code> kõigile teistele tuumadele protsessoritevahelise katkestuse (IPI) ja need peatuvad. Alles siis, kui kogu süsteem on „külmunud“, kirjutatakse tõmmis – nii on see järjepidev.</p></details>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="kood">
+<h2>2. Peatuskoodide dekooder</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Peatuskood on esimene vihje. Kui oskad levinumaid koode ära tunda, tead kohe, kust otsima hakata: <b>draiverist, riistvarast või kettast</b>. Kood koosneb numbrist (nt <code>0x000000D1</code>) ja nimest (<code>DRIVER_IRQL_NOT_LESS_OR_EQUAL</code>) ning sellel on <b>neli parameetrit</b>, mille tähendus sõltub koodist.</p>
+<p><b>IRQL lihtsalt:</b> protsessoril on prioriteeditasemed. Tavaline kood töötab madalal tasemel ja võib oodata, kuni mälu lehefailist laaditakse. Katkestuste töötlemine toimub kõrgel tasemel, kus <b>oodata ei tohi</b>. Kui draiver pöördub kõrgel tasemel mälu poole, mida pole RAM-is, ei saa Windows seda laadida → <code>0xD1</code>.</p>
+<p><b>Mida teha:</b> klõpsa koodil või sisesta number (nt <code>d1</code>, <code>0x124</code>). Vaata tähendust, parameetreid ja esimest sammu.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Peatuskood: <input type="text" id="kin" value="0xD1" style="width:120px;font-family:var(--mono)"></span><span class="hint">tähe suurus ja 0x pole olulised</span></div>
+  <div class="codes" id="kcodes"></div>
+  <div id="kout"></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="windbg">
+<h2>3. WinDbg-simulaator</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p><b>WinDbg</b> on Microsofti silur, millega IT-tugi ja arendajad uurivad mälutõmmiseid. Tõeline WinDbg on keeruline, kuid krahhi analüüsiks piisab sageli <b>mõnest käsust</b>. See simulaator näitab realistlikku (lühendatud) väljundit neljast tõmmisest.</p>
+<p><b>Loe väljundist:</b> <code>BUGCHECK_CODE</code> (mis viga), <code>BUGCHECK_P1…P4</code> (parameetrid), <code>PROCESS_NAME</code>, <code>STACK_TEXT</code> (kutsete ahel – loe <b>alt üles</b>: alumine funktsioon kutsus ülemise), <code>IMAGE_NAME</code> (tõenäoline süüdlane). Seejärel <code>lmvm &lt;moodul&gt;</code> näitab draiveri versiooni ja kuupäeva.</p>
+<p><b>Mida teha:</b> vali tõmmis, käivita <code>!analyze -v</code>, leia süüdlane, uuri teda <code>lmvm</code>-iga ja vasta küsimusele allpool.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Tõmmis: <select id="dsel"></select></span></div>
+  <div class="dbg" id="dout"></div>
+  <div class="dbgin"><input type="text" id="din" placeholder="sisesta käsk, nt !analyze -v" autocomplete="off"><button class="btn primary" id="drun">Käivita</button></div>
+  <div class="cmds" id="dcmds"></div>
+  <div class="mq" id="dq"></div>
+  <details class="more"><summary>Lisainfo: sümbolid ja miks ntoskrnl.exe pole tavaliselt süüdi</summary>
+  <p><b>Sümbolid</b> (PDB-failid) seovad masinkoodi aadressid funktsioonide nimedega. Ilma nendeta näed pinus ainult <code>nt+0x3f4a20</code>. WinDbg laadib Microsofti sümbolid automaatselt internetist (<code>.symfix</code> + <code>.reload</code>). Kolmandate osapoolte draiverite sümboleid tavaliselt pole – siis näed draiveri nime ja nihet, mis enamasti piisab.</p>
+  <p><b>ntoskrnl.exe</b> on Windowsi tuum. Kui WinDbg näitab süüdlasena seda, tähendab see sageli, et tuum <i>avastas</i> vea, mitte et ta selle <i>tekitas</i> – näiteks draiver rikkus mälu tükk aega varem või RAM-moodul andis vale biti. Siis aitab mitme tõmmise võrdlemine, Driver Verifier või mälutest.</p></details>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="detektiiv">
+<h2>4. Detektiiviülesanded</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Päris elus ei ütle keegi, mis krahhi põhjustas. Pead koguma vihjed (peatuskood, tõmmis, logid, mis muutus) ja tegema järelduse. Kõige olulisem oskus on eristada <b>draiveri-</b>, <b>riistvara-</b> ja <b>toiteprobleemi</b>, sest lahendused on täiesti erinevad.</p>
+<ul>
+<li><b>Sama kood + sama draiver iga kord</b> → draiver.</li>
+<li><b>Erinevad koodid, erinevad süüdlased, WHEA-sündmused</b> → riistvara (RAM, protsessor, kuumus).</li>
+<li><b>Sündmus 41, aga pole 1001 ega tõmmist</b> → arvuti kustus hetkega: toide või ülekuumenemine.</li>
+<li><b>Krahhid kadusid turvarežiimis</b> → kolmanda osapoole draiver või programm.</li>
+</ul>
+<p><b>Mida teha:</b> loe iga juhtumi vihjeid ja vali kõige tõenäolisem põhjus või järgmine samm.</p>
+</div>
+<div class="card"><div class="mq" id="detq"></div><div class="row"><span class="hint" id="dets"></span><button class="btn" id="detr">Alusta uuesti</button></div></div>
+</section>
+
+<!-- 5 -->
+<section id="tommis">
+<h2>5. Millist mälutõmmist valida?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Tõmmise tüüp on <b>kompromiss</b>: mida rohkem andmeid, seda lihtsam on analüüsida, kuid seda suurem on fail, seda kauem võtab kirjutamine aega ja seda <b>tundlikumaid andmeid</b> (paroolid, võtmed, dokumentide sisu) see sisaldab. Lisaks peab lehefail olema piisavalt suur, muidu tõmmist ei teki.</p>
+<p><b>Mida teha:</b> sisesta arvuti RAM-i maht, lehefaili suurus ja olukord. Vaata, millised tõmmised on võimalikud, kui suured need on ja milline sobib kõige paremini.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>RAM: <select id="tram"><option>8</option><option selected>16</option><option>32</option><option>64</option><option>256</option></select> GB</span><span>Lehefail: <select id="tpf"><option value="0">puudub</option><option value="1">1 GB</option><option value="auto" selected>süsteemi hallatav</option><option value="ram">= RAM + 1 MB</option></select></span></div>
+  <div class="row"><span>Olukord: <select id="tsit"><option value="pc">õpetaja sülearvuti, krahh kord kuus</option><option value="ms">tahan saata tõmmise Microsofti toele</option><option value="hv">Hyper-V host 20 VM-iga</option><option value="app">vaja uurida ka kasutajaprotsessi olekut</option><option value="sec">arvutis on väga tundlikud andmed (raamatupidamine)</option></select></span></div>
+  <div class="tm" id="tout"></div>
+  <div class="info" id="tinfo"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="taaste">
+<h2>6. Taastamise simulaator: arvuti ei käivitu</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kõige hullem krahh on see, mis kordub <b>iga käivitusega</b> – nii juhtus CrowdStrike’i juhtumil 2024. Siis ei saa Windowsis midagi parandada, sest Windows ei käivitugi. Appi tuleb <b>Windows RE</b> (taastekeskkond), mis avaneb automaatselt pärast <b>kahte ebaõnnestunud käivitust</b>.</p>
+<p>Windows RE-s on mitu tööriista ja <b>õige valik sõltub põhjusest</b>: vigase draiveri puhul aitab turvarežiim, vigase Windowsi uuenduse puhul uuenduse eemaldamine, laialdase probleemi puhul kiire masinataaste (QMR). <b>BitLocker</b> lisab keerukust: paljud parandustoimingud nõuavad taastevõtit.</p>
+<p><b>Mida teha:</b> vali olukord ja seadistus, seejärel proovi Windows RE tööriistu. Proovi sama olukorda ka QMR-iga ja ilma ning BitLockeri võtmega ja ilma.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Olukord: <select id="rsc"><option value="cs">Viirusetõrje tuumadraiveri vigane uuendus (nagu CrowdStrike)</option><option value="wu">Vigane Windowsi kvaliteediuuendus</option><option value="drv">Kasutaja paigaldas vigase graafikadraiveri</option><option value="disk">SSD läks rikki</option><option value="bcd">Käivitusfailid (BCD) rikutud</option></select></span></div>
+  <div class="row"><span><label class="tg"><input type="checkbox" id="rqmr" checked> <span>QMR lubatud</span></label> <label class="tg"><input type="checkbox" id="rbl" checked> <span>Ketas BitLockeriga</span></label> <label class="tg"><input type="checkbox" id="rkey" checked> <span>Taastevõti leitav (Entra ID / AD)</span></label></span><button class="btn" id="rreset">Algusest</button></div>
+  <div class="boot" id="rboot"></div>
+  <div class="acts" id="racts"></div>
+  <div class="info" id="rinfo"></div>
+  <details class="more"><summary>Lisainfo: kuidas pääseda Windows RE-sse käsitsi?</summary><ul>
+  <li>Windowsis: <i>Sätted → Süsteem → Taaste → Täpsem käivitus → Taaskäivita kohe</i>.</li>
+  <li>Hoia <b>Shift</b> all ja vali Start-menüüst <b>Taaskäivita</b>.</li>
+  <li>Käsuviibas: <code>shutdown /r /o /t 0</code>.</li>
+  <li>Kui Windows ei käivitu: katkesta käivitus kaks korda järjest (toitenupp) – kolmandal korral avaneb Windows RE.</li>
+  <li>Paigaldusmeediast (USB): „Paranda arvuti“.</li>
+  <li>Kontrolli olekut: <code>reagentc /info</code> (Windows RE status: Enabled).</li></ul></details>
+</div>
+</section>
+
+<!-- 7 -->
+<section id="logi">
+<h2>7. Sündmuslogi: mis tüüpi sündmus see on?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kasutaja ütleb sageli lihtsalt „arvuti jooksis kokku“, kuid see võib tähendada väga erinevaid asju: programm sulgus, arvuti taaskäivitus uuenduse tõttu, tekkis bugcheck või kadus vool. <b>Sündmuslogi</b> ütleb, mis tegelikult juhtus. Kõige olulisemad: <b>41</b> (ootamatu taaskäivitus), <b>1001</b> (bugcheck), <b>6008</b> (eelmine väljalülitus ootamatu), <b>1074</b> (planeeritud taaskäivitus), <b>1000</b> (rakenduse krahh), <b>WHEA 18/19</b> (riistvara).</p>
+<p><b>Mida teha:</b> liigita iga sündmus. Kiire filter PowerShellis: <code>Get-WinEvent -FilterHashtable @{LogName='System'; Id=41,1001,6008,1074}</code>.</p>
+</div>
+<div class="card"><div class="tasks" id="lgt"></div><div class="row"><span class="hint" id="lgs"></span><button class="btn" id="lgr">Alusta uuesti</button></div></div>
+</section>
+
+<!-- 8 -->
+<section id="os">
+<h2>8. Krahh Linuxis ja macOS-is</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>IT-spetsialist puutub kokku mitme operatsioonisüsteemiga. Hea uudis: <b>põhimõte on sama</b> – kui tuum avastab vea, mida ei saa ohutult parandada, peatub süsteem, salvestab võimalusel mälu ja logib vea. Erinevad on ainult nimed ja tööriistad.</p>
+<p><b>Mida teha:</b> klõpsa tabeli lahtril, et näha selgitust. Seejärel vasta küsimustele.</p>
+</div>
+<div class="card">
+  <div style="overflow-x:auto"><table class="osg" id="ost"></table></div>
+  <div class="info" id="osinfo">Klõpsa lahtril.</div>
+  <div class="mq" id="osq"></div><div class="row"><span class="hint" id="oss"></span><button class="btn" id="osr">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="19-test.html">Peatüki 19 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/19-krahhid.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+function mq(box,score,reset,items){let ans={};items=items.map(([q,o,c,e],i)=>{const r=(i*3+box.length)%o.length,oo=o.slice(r).concat(o.slice(0,r));return [q,oo,oo.indexOf(o[c]),e]});
+  function draw(){$(box).innerHTML=items.map(([q,opts,c,e],i)=>{const a=ans[i];return `<div class="q${a!==undefined?(a===c?' ok':' bad'):''}">${q}<div class="opts">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</div>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    if(score){const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][2]===v).length;$(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`:''}}
+  if(reset)$(reset).onclick=()=>{ans={};draw()};draw()}
+
+/* 1. Krahhi käik */
+const JS=['Normaalne töö','Viga','KeBugCheckEx','Peata tuumad','Ekraan','Tõmmis','Taaskäivitus','Järgmine käivitus'];
+let js=0;
+function jDraw(){const nopf=$('jnopf').checked,pow=$('jpow').checked;
+  $('jseq').innerHTML=JS.map((n,i)=>`<div class="${i<=js&&i>0?'done':''}${i===7&&js===7?' g':''}${i===js?' cur':''}${pow&&i>=2&&i<=5?'" style="opacity:.3':''}">${n}</div>`).join('');
+  const S=$('jscr'),M=$('jmem'),I=$('jinfo');let mem=[];
+  const base=[['k','tuumamälu'],['k','draiverid'],['','kasutaja protsessid'],['','failide vahemälu']];
+  if(pow){const st=[
+    ['win','<div class="big">Töö käib</div>Õpetaja koostab tunnikava.','Arvuti töötab tavaliselt.'],
+    ['off','<div class="big">⚡ Ekraan läheb hetkega mustaks</div>','<b>Toitekatkestus või ülekuumenemise kaitse:</b> protsessor lakkab töötamast hetkega. Windows ei saa midagi teha – <code>KeBugCheckEx</code> ei käivitu, ekraani ei kuvata, tõmmist ei kirjutata.'],
+    ['off','',''],['off','',''],['off','',''],['off','',''],
+    ['off','<div class="big">…vool tagasi, arvuti käivitub</div>','Kasutaja vajutab toitenuppu.'],
+    ['win','<div class="big">Windows käivitus</div>Sündmusvaaturis: <code>41 Kernel-Power</code>, <code>6008</code>. <b>Pole</b> sündmust 1001 ega MEMORY.DMP-d.','<b>Järeldus:</b> sündmus 41 ilma tõmmise ja sündmuseta 1001 tähendab, et Windows ei jõudnud krahhi registreerida. Otsi põhjust <b>toitest</b> (toiteplokk, juhe, UPS), <b>ülekuumenemisest</b> (tolm, ventilaator) või vahel ka emaplaadist. Draiverite uuesti paigaldamine ei aita.']];
+    if(js>=2&&js<=5){js=6}
+    const x=st[js];S.className='scr '+x[0];S.innerHTML=x[1];I.className='info'+(js===7?' ok':'');I.innerHTML=x[2];M.innerHTML='';$('jnext').disabled=js>=7;return}
+  const st=[
+    ['win','<div class="big">Töö käib</div>Õpetaja ühendab sülearvuti kooli Wi-Fi-ga.','Kõik töötab. Mälus on tuum, draiverid, programmid ja failide vahemälu. Kettal on Windows ja <b>lehefail</b> (<code>C:\\pagefile.sys</code>), mille kettasektorite asukoha teab Windows juba käivitusest saadik.'],
+    ['win','<div class="big">…</div>','<b>1. Viga.</b> Wi-Fi draiver <code>netwtw10.sys</code> töötleb katkestust (kõrge IRQL) ja pöördub aadressi poole, mis on lehefailis, mitte RAM-is. Kõrgel IRQL-il ei tohi kettalt laadida – protsessor tekitab erindi ja tuum avastab, et olukorda ei saa ohutult jätkata.'],
+    ['win','<div class="big">…</div>','<b>2. KeBugCheckEx(0xD1, aadress, IRQL, lugemine/kirjutamine, koodi aadress).</b> Tuum kutsub krahhi funktsiooni ja annab sellele peatuskoodi ning neli parameetrit, mis kirjeldavad viga. Nüüdsest ei tööta enam ükski tavaline programm.'],
+    ['win','<div class="big">…</div>','<b>3. Teised protsessorituumad peatatakse</b> protsessoritevahelise katkestusega (IPI), et nad ei kirjutaks rikutud andmeid kettale. Registreeritud draiverid saavad lisada tõmmisesse oma andmeid.'],
+    ['blk','<div class="big">Teie seadmel tekkis probleem ja see tuleb taaskäivitada.</div>Peatuskood: <code>DRIVER_IRQL_NOT_LESS_OR_EQUAL</code><br>Mis tõrkus: <code>netwtw10.sys</code>','<b>4. Ekraan.</b> Windows 11-s (alates 2025) on ekraan must ja lihtne: peatuskood ja süüdlane draiver. Varasemates versioonides oli see sinine ja kurva näoga „:(“.'],
+    ['blk','<div class="big">Teie seadmel tekkis probleem…</div>'+(nopf?'Tõmmise kirjutamine ebaõnnestus.':'Kogutakse andmeid… 100%'),nopf?'<b>5. Tõmmist ei saa kirjutada!</b> Lehefaili süsteemikettal pole, seega pole ette teada kettasektoreid, kuhu mälu kirjutada. Failisüsteemi kasutada ei saa (see võib olla rikutud). <b>Tulemus: pärast taaskäivitust pole MEMORY.DMP-d</b> – krahhi põhjust on palju raskem leida.':'<b>5. Tõmmis.</b> Tavaline salvestusdraiverite pinu võib olla rikutud, seepärast kasutab Windows <b>eraldi krahhitõmmise draiveri koopiat</b> (dump stack), mis laaditi käivitusel ette. See kirjutab mälu sisu otse lehefaili sektoritesse – failisüsteemi kasutamata.'],
+    ['off','<div class="big">Taaskäivitus…</div>','<b>6. Taaskäivitus</b> (kui „Taaskäivita automaatselt“ on lubatud). Serverites lülitatakse see vahel välja, et administraator näeks ekraani.'],
+    ['win','<div class="big">Windows käivitus</div>'+(nopf?'Sündmusvaaturis: <code>41 Kernel-Power</code>, <code>1001 BugCheck</code> (tõmmist ei salvestatud).':'Sündmusvaaturis: <code>41 Kernel-Power</code>, <code>1001 BugCheck: 0x000000d1 … Tõmmis salvestati: C:\\Windows\\MEMORY.DMP</code>'),nopf?'<b>7. Järgmine käivitus.</b> Logis on peatuskood (1001), kuid tõmmist pole. Lahendus edaspidiseks: luba lehefail süsteemikettal või seadista <code>DedicatedDumpFile</code>.':'<b>7. Järgmine käivitus.</b> Windows leiab lehefailist tõmmise andmed, kopeerib need faili <code>MEMORY.DMP</code> (ja väikese koopia kausta <code>Minidump</code>), kirjutab sündmuse 1001 ja WER saadab aruande. Nüüd saab tõmmise avada WinDbg-s.']];
+  const x=st[js];S.className='scr '+x[0];S.innerHTML=x[1];I.className='info'+(js===7?(nopf?' bad':' ok'):'');I.innerHTML=x[2];
+  mem=base.map(([c,n])=>`<span class="${c}">${n}</span>`);
+  if(js>=1&&js<=5)mem.push('<span class="d">⚠ netwtw10.sys viga</span>');
+  if(js>=5&&!nopf)mem.push('<span class="p">💾 lehefail ← tõmmis</span>');
+  if(js===7&&!nopf)mem=['<span class="f">📄 C:\\Windows\\MEMORY.DMP</span>','<span class="f">📄 Minidump\\111226-12500-01.dmp</span>'];
+  if(js===6)mem=['<span>mälu tühjeneb</span>'];
+  M.innerHTML=mem.join('');$('jnext').disabled=js>=7}
+$('jnext').onclick=()=>{js=Math.min(7,js+1);jDraw()};$('jreset').onclick=()=>{js=0;jDraw()};$('jnopf').onchange=$('jpow').onchange=()=>{js=0;jDraw()};jDraw();
+
+/* 2. Peatuskoodid */
+const KD={
+ '0A':['IRQL_NOT_LESS_OR_EQUAL','Tuumakood pöördus mäluaadressi poole liiga kõrgel prioriteeditasemel (IRQL) või kehtetu aadressi poole.',['pöördumise aadress','IRQL pöördumise ajal','0 = lugemine, 1 = kirjutamine','koodi aadress, mis pöördus'],'draiver (sageli võrgu-, USB- või viirusetõrje draiver); harvem RAM','Vaata tõmmisest IMAGE_NAME; võta tagasi viimati uuendatud draiver.','d'],
+ 'D1':['DRIVER_IRQL_NOT_LESS_OR_EQUAL','Nagu 0x0A, kuid Windows teab kindlalt, et viga tekkis draiveri koodis. Draiver pöördus lehefaili kuuluva või kehtetu aadressi poole liiga kõrgel IRQL-il.',['pöördumise aadress','IRQL','0 = lugemine, 1 = kirjutamine, 8 = käivitamine','draiveri koodi aadress'],'draiver – peaaegu alati','Tõmmisest IMAGE_NAME → „Taasta draiver“ või tootja uuem versioon.','d'],
+ '50':['PAGE_FAULT_IN_NONPAGED_AREA','Pöörduti mäluaadressi poole, mida pole üldse olemas (ega ole ka lehefailis).',['aadress, mille poole pöörduti','0 = lugemine, 2 = kirjutamine, 10 = käivitamine','koodi aadress','sisemine'],'draiver, viirusetõrje/EDR (CrowdStrike 2024!), vigane RAM, rikutud failisüsteem','Tõmmis; kui süüdlane muutub iga kord → mälutest.','d'],
+ '1A':['MEMORY_MANAGEMENT','Mäluhalduri sisemised andmestruktuurid on rikutud.',['alamkood (mis täpselt valesti)','sõltub alamkoodist','sõltub alamkoodist','sõltub alamkoodist'],'sageli vigane RAM, aga ka draiver','Mälutest (mdsched.exe / MemTest86), XMP/kiirendamine välja.','h'],
+ '3B':['SYSTEM_SERVICE_EXCEPTION','Süsteemikutse töötlemisel (kui programm palus tuumalt teenust) tekkis käsitlemata erind.',['erindi kood','koodi aadress','konteksti aadress','0'],'draiver, sageli graafikadraiver; ka viirusetõrje','Tõmmis; graafikadraiveri puhul DDU-ga puhas paigaldus.','d'],
+ '7E':['SYSTEM_THREAD_EXCEPTION_NOT_HANDLED','Süsteemi lõim tekitas erindi, mida keegi ei käsitlenud.',['erindi kood','aadress','erindi kirje','konteksti kirje'],'draiver','IMAGE_NAME tõmmisest; kui ilmub käivitusel – turvarežiim.','d'],
+ '7B':['INACCESSIBLE_BOOT_DEVICE','Windows ei pääse käivituse ajal ligi süsteemikettale.',['seadme objekt','olek','0','0'],'kettakontrolleri režiim BIOS-is muudetud (AHCI ↔ RAID/RST), puuduv salvestusdraiver, rikkis ketas','Pane BIOS-is SATA/NVMe režiim tagasi; kontrolli ketta tervist; Windows RE käivitusparandus.','b'],
+ '9F':['DRIVER_POWER_STATE_FAILURE','Draiver ei reageerinud unerežiimi minekul või ärkamisel õigeaegselt.',['alamkood','seadme objekt','sõltub','sõltub'],'draiver (võrgukaart, USB, graafika), vahel püsivara','Uuenda draiver ja BIOS; toitehalduse sätted.','d'],
+ 'C2':['BAD_POOL_CALLER','Draiver kasutas tuuma mälukogumit (pool) valesti – nt vabastas sama mälu kaks korda.',['alamkood','sõltub','sõltub','sõltub'],'draiver','Driver Verifier püüab süüdlase kinni.','d'],
+ 'EF':['CRITICAL_PROCESS_DIED','Kriitiline süsteemiprotsess (nt csrss.exe, wininit.exe, smss.exe) lõpetas töö. Ilma selleta ei saa Windows töötada.',['protsessi objekt','0 = protsess, 1 = lõim','0','0'],'rikutud süsteemifailid, ketta vead, pahavara, vigane uuendus','sfc /scannow, DISM /RestoreHealth, chkdsk; Windows RE-s uuenduse eemaldamine.','s'],
+ '124':['WHEA_UNCORRECTABLE_ERROR','Riistvara ise teatas parandamatust veast (Windows Hardware Error Architecture).',['vea allikas (0 = protsessori masinakontroll)','WHEA kirje aadress','sõltub','sõltub'],'RIISTVARA: protsessor, RAM, ülekuumenemine, kiirendamine, toide, emaplaat','BIOS vaikeseaded, temperatuurid, kiirendamine välja, mälutest; WHEA-Logger sündmused.','h'],
+ '133':['DPC_WATCHDOG_VIOLATION','Draiver hoidis protsessorit kõrgel IRQL-il liiga kaua – Windowsi „valvekoer“ peatas süsteemi.',['0 = üks DPC liiga kaua, 1 = kokku liiga kaua','aeg','piir','sisemine'],'salvestusdraiver (SATA AHCI, NVMe), SSD püsivara, võrgudraiver','Uuenda SSD püsivara ja kettakontrolleri draiver.','d'],
+ '139':['KERNEL_SECURITY_CHECK_FAILURE','Tuum avastas rikutud andmestruktuuri (nt lingitud loendi) – võimalik mälu ülekirjutamine.',['kontrolli tüüp','trap frame','erindi kirje','0'],'draiver, harvem RAM','Tõmmis, Driver Verifier, mälutest.','d'],
+ 'E2':['MANUALLY_INITIATED_CRASH','Krahh tekitati meelega – parempoolne Ctrl + Scroll Lock kaks korda (CrashOnCtrlScroll) või silur.',['0','0','0','0'],'kasutaja või administraator (testimine, hangunud süsteemi tõmmise saamiseks)','Midagi parandada pole – nii saab tõmmise hangunud süsteemist.','m']};
+const KT={d:'Draiver',h:'Riistvara',b:'Käivitus/ketas',s:'Süsteemifailid',m:'Meelega'};
+$('kcodes').innerHTML=Object.keys(KD).map(k=>`<button class="btn" data-k="${k}">0x${k} ${KD[k][0].split('_').slice(0,2).join('_')}…</button>`).join('');
+$('kcodes').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('kin').value='0x'+b.dataset.k;kDraw()});
+function kDraw(){let v=$('kin').value.trim().toUpperCase().replace(/^0X/,'').replace(/^0+/,'');
+  v=Object.keys(KD).find(k=>k.replace(/^0+/,'')===v)||v;
+  document.querySelectorAll('#kcodes button').forEach(b=>b.classList.toggle('on',b.dataset.k===v));
+  const K=KD[v];if(!K){$('kout').innerHTML=`<div class="info bad">Koodi <code>0x${v}</code> selles dekooderis pole. Täielik loend: Microsoft Learn „Bug check code reference“. Vihje: kood kirjutatakse logis 8-kohalisena, nt <code>0x000000d1</code> = <code>0xD1</code>.</div>`;return}
+  $('kout').innerHTML=`<div class="kv"><div><b>Nimi</b><code>${K[0]}</code></div><div><b>Liik</b>${KT[K[5]]}</div><div><b>Täisnumber logis</b><code>0x${v.padStart(8,'0')}</code></div></div>
+  <div class="info"><b>Tähendus:</b> ${K[1]}</div>
+  <table class="t"><tbody>${K[2].map((p,i)=>`<tr><td><code>P${i+1}</code></td><td>${p}</td></tr>`).join('')}</tbody></table>
+  <div class="info ${K[5]==='h'?'bad':K[5]==='m'?'ok':''}"><b>Tüüpiline põhjus:</b> ${K[3]}<br><b>Esimene samm:</b> ${K[4]}</div>`}
+$('kin').oninput=kDraw;kDraw();
+
+/* 3. WinDbg */
+const DUMPS={
+ wifi:{n:'111226-12500-01.dmp – õpilase sülearvuti (Wi-Fi)',code:'d1',p:['ffffd28a`3c1e7000','0000000000000002','0000000000000000','fffff806`5a8c41b2'],proc:'System',img:'netwtw10.sys',mod:'netwtw10',stack:['nt!KeBugCheckEx','nt!KiBugCheckDispatch+0x69','nt!KiPageFault+0x463','netwtw10+0x841b2','netwtw10+0x7a0c3','ndis!ndisMiniportDpc+0xe2','nt!KiExecuteAllDpcs+0x30e','nt!KiRetireDpcList+0x1ef'],
+   lm:'netwtw10   (no symbols)\n    Image path: \\SystemRoot\\System32\\drivers\\Netwtw10.sys\n    Timestamp:  Mon Oct 27 2025\n    CompanyName: Intel Corporation\n    ProductVersion: 23.140.0.3\n    FileDescription: Intel® Wireless WiFi Link Driver',
+   q:['Kes on tõenäoline süüdlane?',['ntoskrnl.exe (Windowsi tuum)','netwtw10.sys (Intel Wi-Fi draiver)','ndis.sys (võrgu raamistik)','kasutaja'],1,'IMAGE_NAME on netwtw10.sys ja pinus on see kohe pärast lehevea käsitlejat. <code>nt!KeBugCheckEx</code> on lihtsalt krahhi funktsioon, ndis kutsus draiveri välja. P2 = 2 tähendab, et viga juhtus IRQL 2 (DISPATCH_LEVEL) peal. Lahendus: võta draiver tagasi.']},
+ cs:{n:'MEMORY.DMP – raamatupidaja arvuti, käivitustsükkel (19.07.2024)',code:'50',p:['ffff840500000074','0000000000000000','fffff80266cbe35b','0000000000000002'],proc:'System',img:'csagent.sys',mod:'csagent',stack:['nt!KeBugCheckEx','nt!MiSystemFault+0x1e4','nt!MmAccessFault+0x400','nt!KiPageFault+0x371','csagent+0xe35b','csagent+0x3d0b9','csagent+0x3ae1f','nt!IopLoadDriver+0x4c2'],
+   lm:'csagent   (no symbols)\n    Image path: \\SystemRoot\\System32\\drivers\\CrowdStrike\\csagent.sys\n    CompanyName: CrowdStrike, Inc.\n    FileDescription: CrowdStrike Falcon\n    Start type: BOOT_START',
+   q:['Miks jäi see arvuti käivitustsüklisse?',['Ketas oli täis','csagent.sys on boot-start draiver, mis loeb vigase sisufaili iga käivitusega uuesti','Windowsi uuendus ebaõnnestus','Kasutaja vajutas valet nuppu'],1,'Pinus on <code>nt!IopLoadDriver</code> – krahh juhtub juba draiveri laadimisel. Kuna draiver laaditakse käivituse alguses (BOOT_START) ja loeb sama vigase faili, kordub krahh igal käivitusel. Lahendus: Windows RE → turvarežiim → kustuta vigane fail (või QMR).']},
+ ram:{n:'111026-9875-01.dmp – arvutiklassi PC-07 (üks viiest)',code:'1a',p:['0000000000041792','ffffa8800f2c1a48','0000000000100000','0000000000000000'],proc:'chrome.exe',img:'ntoskrnl.exe',mod:'nt',stack:['nt!KeBugCheckEx','nt!MiDeleteVa+0x153a','nt!MiDeletePagablePteRange+0x48e','nt!MiDeleteVirtualAddresses+0x4b','nt!MiDeleteVad+0x1bd','nt!MmCleanProcessAddressSpace+0x137','nt!PspExitThread+0x5f6'],
+   lm:'nt   (pdb symbols)\n    Image path: ntoskrnl.exe\n    CompanyName: Microsoft Corporation\n    ProductVersion: 10.0.26100.6899',other:'Teised 4 tõmmist samast arvutist: 0x50 (win32kfull.sys), 0x3B (dxgkrnl.sys), 0x124 (WHEA), 0x1A (ntoskrnl.exe).',
+   q:['IMAGE_NAME on ntoskrnl.exe ja teistes tõmmistes on iga kord erinev süüdlane. Mis on järgmine samm?',['Paigalda Windows uuesti','Käivita mälutest (MemTest86 / mdsched.exe)','Uuenda Chrome’i','Kustuta MEMORY.DMP'],1,'Erinevad koodid, erinevad moodulid, sh 0x124 WHEA ja 0x1A MEMORY_MANAGEMENT → tüüpiline riistvara (RAM) muster. Tuum ainult avastas rikutud mälu. Windowsi uuesti paigaldamine ei aitaks.']},
+ man:{n:'MEMORY.DMP – õppe-VM, testkrahh',code:'e2',p:['0','0','0','0'],proc:'csrss.exe',img:'kbdhid.sys',mod:'kbdhid',stack:['nt!KeBugCheckEx','kbdhid!KbdHidProcessCrashDump+0x1fe','kbdhid!KbdHidProcessKeyboardInput+0x2c4','HIDCLASS!HidpDistributeInterruptReport+0x1b8','nt!IopfCompleteRequest+0x1c2'],
+   lm:'kbdhid   (pdb symbols)\n    Image path: \\SystemRoot\\System32\\drivers\\kbdhid.sys\n    CompanyName: Microsoft Corporation\n    FileDescription: Keyboard HID Driver',
+   q:['Kas kbdhid.sys (klaviatuuri draiver) on vigane?',['Jah, see tuleb uuendada','Ei – krahh tekitati meelega Ctrl + Scroll Lock klahvidega ja klaviatuuri draiver lihtsalt täitis käsu','Jah, klaviatuur on rikkis'],1,'Peatuskood 0xE2 MANUALLY_INITIATED_CRASH. Funktsioon <code>KbdHidProcessCrashDump</code> on just see, mis CrashOnCtrlScroll seade lubab. Näide sellest, et IMAGE_NAME tuleb alati tõlgendada koos peatuskoodiga.']}};
+function analyze(D){const K=KD[D.code.toUpperCase()]||['?'];return `<span class="m">*******************************************************************************
+*                        Bugcheck Analysis                                    *
+*******************************************************************************</span>
+
+${K[0]} (${D.code})
+${K[1]}
+
+<span class="y">BUGCHECK_CODE:  ${D.code}</span>
+BUGCHECK_P1: ${D.p[0]}
+BUGCHECK_P2: ${D.p[1]}
+BUGCHECK_P3: ${D.p[2]}
+BUGCHECK_P4: ${D.p[3]}
+
+PROCESS_NAME:  ${D.proc}
+
+STACK_TEXT:
+${D.stack.map((s,i)=>`${String(i).padStart(2,'0')} ${s}`).join('\n')}
+
+<span class="y">MODULE_NAME: ${D.mod}
+IMAGE_NAME:  ${D.img}</span>
+FAILURE_BUCKET_ID:  ${D.code.toUpperCase()==='E2'?'MANUALLY_INITIATED_CRASH':('AV_'+D.mod+'!unknown_function').toUpperCase()}
+${D.other?'\n<span class="c">Märkus: '+D.other+'</span>':''}`}
+const DH={'!analyze -v':'automaatne analüüs','lmvm':'mooduli info','k':'pinu','!irql':'IRQL','.symfix':'sümbolid','lm':'kõik moodulid','help':'abi'};
+let dk='wifi',dlog=[];
+$('dsel').innerHTML=Object.entries(DUMPS).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('');
+function dRun(c){const D=DUMPS[dk];c=c.trim();let o='';const lc=c.toLowerCase();
+  if(lc==='!analyze -v'||lc==='!analyze')o=analyze(D);
+  else if(lc.startsWith('lmvm')){const m=lc.split(/\s+/)[1];o=!m?'Kasutus: lmvm &lt;mooduli nimi&gt;, nt lmvm '+D.mod:(m===D.mod.toLowerCase()?D.lm:(m==='nt'?'nt   (pdb symbols)\n    Image path: ntoskrnl.exe\n    CompanyName: Microsoft Corporation':'Moodulit '+m+' ei leitud. Proovi: lmvm '+D.mod))}
+  else if(lc==='k'||lc==='kb')o='Child-SP          Call Site\n'+D.stack.map(s=>'ffffd80`a1b2xxxx  '+s).join('\n')+'\n<span class="c">Loe alt üles: alumine funktsioon kutsus ülemise. Ülemine rida on krahhi funktsioon ise.</span>';
+  else if(lc==='!irql')o='Debugger saved IRQL for processor 0x0 -- '+(D.code==='d1'?'2 (DISPATCH_LEVEL)\n<span class="c">DISPATCH_LEVEL peal ei tohi lehefaili kasutada – sellepärast 0xD1.</span>':'0 (LOW_LEVEL)');
+  else if(lc==='.symfix'||lc==='.reload')o='Symbol search path is: srv*\nLoading symbols from https://msdl.microsoft.com/download/symbols … ok';
+  else if(lc==='lm')o='start             end                 module name\nfffff802`6a200000 fffff802`6b246000   nt\nfffff802`6b250000 fffff802`6b2f6000   hal\nfffff806`5a800000 fffff806`5ad61000   '+D.mod+'\nfffff806`50c00000 fffff806`50d24000   ndis\n…';
+  else if(lc==='help'||lc==='?')o='Käsud: !analyze -v · k · lmvm &lt;moodul&gt; · !irql · lm · .symfix';
+  else o=`Tundmatu käsk: ${c}. Proovi: !analyze -v`;
+  dlog.push(`<span class="c">0: kd&gt; ${c}</span>\n${o}`);$('dout').innerHTML=dlog.join('\n\n');$('dout').scrollTop=1e6}
+function dLoad(){dk=$('dsel').value;dlog=[`<span class="m">Microsoft (R) Windows Debugger
+Loading Dump File [${DUMPS[dk].n.split(' – ')[0]}]
+Kernel Bitmap Dump File: Kernel address space is available
+Bugcheck code ${DUMPS[dk].code.toUpperCase().padStart(8,'0')}
+Use !analyze -v to get detailed debugging information.</span>`];$('dout').innerHTML=dlog[0];
+  $('dcmds').innerHTML=['!analyze -v','k','lmvm '+DUMPS[dk].mod,'!irql','lm'].map(c=>`<button class="btn" data-c="${c}">${c}</button>`).join('');
+  $('dcmds').querySelectorAll('button').forEach(b=>b.onclick=()=>dRun(b.dataset.c));
+  mq('dq',null,null,[DUMPS[dk].q])}
+$('dsel').onchange=dLoad;$('drun').onclick=()=>{dRun($('din').value);$('din').value=''};$('din').onkeydown=e=>{if(e.key==='Enter'){dRun($('din').value);$('din').value=''}};dLoad();
+
+/* 4. Detektiiv */
+mq('detq','dets','detr',[
+ ['<b>Juhtum A.</b> Mari sülearvuti jookseb kokku alati, kui ta paneb kaane kinni (unerežiim). Kolm tõmmist: kõik <code>0x9F DRIVER_POWER_STATE_FAILURE</code>, IMAGE_NAME iga kord <code>rtwlane.sys</code>.',['RAM on vigane','Võrgukaardi draiver ei toeta unerežiimi korrektselt','Aku on vana','Pahavara'],1,'Sama kood + sama draiver + seotud kindla tegevusega (unerežiim) → draiver. Lahendus: uuenda Realteki võrgukaardi draiverit ja BIOS-i; ajutiselt keela seadmehalduris „Luba arvutil seade energia säästmiseks välja lülitada“.'],
+ ['<b>Juhtum B.</b> Serveriruumi server taaskäivitub mõnikord öösel. Logis: <code>41 Kernel-Power</code> ja <code>6008</code>. Sündmust 1001 pole, MEMORY.DMP-d pole, lehefail on olemas.',['Vigane draiver','Toide (UPS, toiteplokk) või ülekuumenemine','Windowsi uuendus','Kasutaja lülitas välja'],1,'Kui lehefail on olemas, aga tõmmist ja sündmust 1001 pole, siis Windows ei jõudnud krahhi registreerida – arvuti kustus hetkega. Kontrolli UPS-i logi, toiteplokke, temperatuure. Planeeritud taaskäivitusel oleks olnud sündmus 1074.'],
+ ['<b>Juhtum C.</b> Arvutiklassi PC-12 krahhid: <code>0x1A</code>, <code>0x50</code>, <code>0x124</code>, <code>0x3B</code> – iga kord erinev moodul. Algasid pärast seda, kui arvutit ruumis ümber tõsteti.',['Uuenda kõik draiverid','Kontrolli riistvara: RAM-moodulid pesadesse kindlalt, mälutest','Paigalda Windows uuesti','Lülita viirusetõrje välja'],1,'Juhuslikud koodid + WHEA (0x124) + füüsiline liigutamine → riistvara. Tõenäoliselt on RAM-moodul pesas lahti tulnud. Ava korpus, pane moodulid kindlalt kohale, käivita MemTest86.'],
+ ['<b>Juhtum D.</b> Pärast teisipäevast Windowsi uuendust ei käivitu 30 kooli arvutit: kohe pärast logo ilmub <code>0x7B INACCESSIBLE_BOOT_DEVICE</code>. Teised samasugused arvutid, mis uuendust ei saanud, töötavad.',['Kõik kettad läksid korraga rikki','Windows RE → „Desinstalli värskendused“ (viimane kvaliteediuuendus)','Vaheta emaplaat','Paigalda viirusetõrje'],1,'Kõik korraga + seos uuendusega → uuendus. 30 ketast ei lähe korraga rikki. Windows RE-s on tööriist viimase uuenduse eemaldamiseks. Õppetund: uuendused kõigepealt testgrupile (uuendusrõngad, ptk 18).'],
+ ['<b>Juhtum E.</b> Õpetaja arvuti jookseb kokku 1–2 korda päevas, <code>0xD1</code>, süüdlane alati <code>netwtw10.sys</code>. Turvarežiimis (ilma võrguta) töötab terve päeva. Mis on <b>kõige parem</b> esimene samm?',['Osta uus arvuti','Seadmehaldur → Wi-Fi kaart → „Taasta draiver“','Kustuta MEMORY.DMP','Lülita krahhitõmmised välja'],1,'Kõik vihjed näitavad Wi-Fi draiverile. Kõige kiirem ja kergemini tagasipööratav samm on eelmise draiveri taastamine. Muuda korraga ainult üht asja ja jälgi paar päeva.'],
+ ['<b>Juhtum F.</b> Gamer kurdab, et arvuti jookseb kokku ainult raskete mängude ajal, kood <code>0x124 WHEA_UNCORRECTABLE_ERROR</code>. BIOS-is on protsessor kiirendatud ja RAM-il XMP sees.',['Uuenda mängu','Taasta BIOS-i vaikeseaded (kiirendamine välja), kontrolli temperatuure','Paigalda graafikadraiver uuesti','Lülita tulemüür välja'],1,'0x124 = riistvara teatas veast. Koormus + kiirendamine on klassikaline põhjus: protsessor või mälu ei tööta kõrgendatud sagedusel stabiilselt. Kõigepealt vaikeseaded, siis temperatuurid ja jahutus.'],
+ ['<b>Juhtum G.</b> Administraator tahab hangunud serverist (ei reageeri hiire ega klaviatuuri peale, ping ei vasta) tõmmist, et tootjale saata. Mida teha?',['Tõmba toitejuhe välja','Kasuta CrashOnCtrlScroll (Ctrl + Scroll Lock ×2) või serveri NMI-nuppu / iLO/iDRAC „Generate NMI“','Oota, kuni ta ise taaskäivitub','Käivita Windows Update'],1,'Toitejuhtme väljatõmbamine ei anna tõmmist. CrashOnCtrlScroll (kui eelnevalt seadistatud) või NMI tekitab meelega krahhi (0xE2 või 0x80) ja Windows salvestab mälu – nii näeb, miks süsteem hangus.']]);
+
+/* 5. Tõmmise tüüp */
+function tDraw(){const ram=+$('tram').value,pf=$('tpf').value,sit=$('tsit').value;
+  const kern=Math.max(0.3,ram*0.07),act=kern+ram*(sit==='hv'?0.08:0.25);
+  const T=[['small','Väike (minidump)',0.002,'peatuskood, parameetrid, laaditud draiverid, krahhi lõime pinu','madal'],
+   ['kern','Tuuma',kern,'kogu tuuma mälu (kõik draiverid ja tuuma andmed), ilma kasutajaprotsessideta','keskmine – võib sisaldada võtmeid ja paroolide räsisid'],
+   ['auto','Automaatne (vaikimisi)',kern,'nagu tuuma tõmmis; Windows suurendab vajadusel lehefaili ise','keskmine'],
+   ['act','Aktiivne',act,'tuum + aktiivsed kasutajaprotsessid, ilma Hyper-V külaliste mäluta','kõrge'],
+   ['full','Täielik',ram,'kogu füüsiline mälu','väga kõrge – dokumendid, paroolid, kõik']];
+  const pfGB=pf==='0'?0:pf==='1'?1:pf==='ram'?ram+0.001:9999;
+  const ok=t=>pfGB>=(t[0]==='small'?0.002:t[0]==='auto'?(pf==='auto'?0:t[2]):t[2]);
+  const best={pc:'auto',ms:'small',hv:'act',app:'full',sec:'small'}[sit];
+  $('tout').innerHTML=T.map(t=>`<div class="${ok(t)?'':'no'}${t[0]===best&&ok(t)?' best':''}"><b>${t[1]}</b>${t[2]<0.01?'~256 KB–2 MB':'~'+t[2].toFixed(t[2]<10?1:0)+' GB'}<div class="bar"><i style="width:${Math.min(100,t[2]/ram*100)}%"></i></div><div style="margin-top:6px">${t[3]}</div><div class="hint">Tundlikkus: ${t[4]}</div>${ok(t)?'':'<div style="color:var(--bad);margin-top:4px">❌ lehefail liiga väike</div>'}</div>`).join('');
+  const W={pc:'<b>Automaatne</b> on tavaarvutile parim: sisaldab kõiki draivereid (enamik krahhe on draiverite põhjustatud) ja Windows hoolitseb lehefaili suuruse eest ise.',ms:'<b>Minidump</b> on väike (paar MB) ja seda saab lihtsalt saata. Microsofti tugi ja WinDbg leiavad sellest peatuskoodi ja tõenäolise süüdlase. Kui sellest ei piisa, küsitakse tuuma tõmmist.',hv:'<b>Aktiivne</b> tõmmis on loodud just Hyper-V hostidele: täielik tõmmis sisaldaks kõigi 20 VM-i mälu ja oleks sadu gigabaite, aktiivne jätab külaliste mälu välja.',app:'<b>Täielik</b> tõmmis on vajalik, kui tuleb uurida ka kasutajaprotsessi olekut krahhi hetkel. Lehefail peab olema vähemalt RAM + 1 MB. Rakenduse enda krahhi uurimiseks on parem kasutajarežiimi tõmmis (ProcDump).',sec:'<b>Väike</b> tõmmis sisaldab kõige vähem tundlikke andmeid. Suuremaid tõmmiseid ei tohi saata väljapoole ilma kaalumata – neis võivad olla paroolid, krüptovõtmed ja dokumentide sisu. NB! BitLocker kaitseb faili ainult kettal – koopia USB-pulgal on loetav.'}[sit];
+  const I=$('tinfo');I.className='info'+(pf==='0'?' bad':'');I.innerHTML=(pf==='0'?'<b>Lehefail puudub – ükski tõmmis ei teki</b> (v.a kui on seadistatud DedicatedDumpFile). Krahhi ajal ei saa Windows failisüsteemi kasutada, vaid kirjutab lehefaili sektoritesse.<br>':pf==='1'?'<b>1 GB lehefail</b> on enamiku tõmmiste jaoks liiga väike – ainult minidump mahub kindlalt. Automaatne režiim tahaks lehefaili suurendada, kuid fikseeritud suurus seda ei luba.<br>':'')+W+` <span class="hint">(Suurused on ligikaudsed.)</span>`}
+['tram','tpf','tsit'].forEach(i=>$(i).onchange=tDraw);tDraw();
+
+/* 6. Taastamine */
+const RA=[['qmr','☁ Kiire masinataaste'],['sr','🔧 Käivitusparandus'],['safe','🛡 Turvarežiim'],['unup','↩ Desinstalli värskendused'],['pitr','⏪ Süsteemi-/ajapunktitaaste'],['cmd','⌨ Käsuviip'],['reset','♻ Lähtesta see arvuti']];
+let rstate=0,rdone=false;
+function rBoot(){const b=[];b.push('<span class="r">1. käivitus: krahh</span>','<span class="r">2. käivitus: krahh</span>','<span class="b">→ Windows RE avanes automaatselt</span>');if(rdone)b.push('<span class="g">✓ Windows käivitus</span>');$('rboot').innerHTML=b.join('')}
+function rAct(a){const s=$('rsc').value,qmr=$('rqmr').checked,bl=$('rbl').checked,key=$('rkey').checked;const I=$('rinfo');let ok=false,m='';
+  const needKey=bl&&!key;
+  const L={
+   cs:{qmr:qmr?[1,'<b>QMR töötab!</b> Arvuti loob võrguühenduse, Microsoft on avaldanud selle laialdase probleemi jaoks sihitud paranduse, mis eemaldab vigase faili. Arvuti käivitub – IT-tugi ei pidanud kohale tulema. Just selle juhtumi pärast QMR loodi.']:[0,'QMR pole lubatud. Ettevõtte arvutites on QMR vaikimisi väljas – IT peab selle Intune’i või <code>reagentc</code>-ga lubama. Kasuta teist tööriista.'],
+      sr:[0,'Käivitusparandus kontrollib käivitusfaile ja BCD-d – need on korras. Probleem on draiveris, mida käivitusparandus ei tunne. „Käivitusparandus ei suutnud arvutit parandada.“'],
+      safe:needKey?[0,'Turvarežiimi minek nõuab <b>BitLockeri taastevõtit</b>, kuid seda ei leita (server, kus võtmed on, jooksis samuti kokku!). See oli CrowdStrike’i juhtumi suurim probleem. Õppetund: hoia võtmed ka teises kohas (Entra ID, väljatrükk seifis).']:[1,'<b>Töötab.</b> Turvarežiimis kolmanda osapoole draiver vigast sisufaili ei laadinud. CrowdStrike’i ja Microsofti juhis oligi: turvarežiim (või Windows RE käsuviip) → kustuta <code>C:\\Windows\\System32\\drivers\\CrowdStrike\\C-00000291*.sys</code> → taaskäivita tavaliselt. Nüüd kujuta ette, et sama tuleb teha 500 arvutiga ükshaaval. '+(bl?'BitLockeri võti leiti Entra ID-st.':'')],
+      unup:[0,'Windowsi uuendusi pole viga – vigane on kolmanda osapoole fail. Uuenduse eemaldamine ei aita.'],
+      pitr:needKey?[0,'Taaste vajab BitLockeri võtit, mida ei leita.']:[1,'Süsteemitaaste/ajapunktitaaste viib süsteemi eilsesse olekusse, enne vigast sisufaili. Töötab, kuid aeglasem ja võib tagasi võtta ka muid muudatusi.'],
+      cmd:needKey?[0,'Käsuviip küsib BitLockeri taastevõtit, et kettale ligi pääseda. Võtit ei leita.']:[1,'Käsuviibas (<code>manage-bde -unlock C: -RecoveryPassword …</code>, siis <code>del C:\\Windows\\System32\\drivers\\CrowdStrike\\C-00000291*.sys</code>) saab vigase faili kustutada. Töötab, kuid nõuab teadmisi ja iga arvuti juures käsitsi tegutsemist.'],
+      reset:[1,'Töötab, kuid kõik programmid ja seaded kaovad – päevadepikkune töö iga arvuti kohta. Liiga suur hind lihtsa probleemi eest.']},
+   wu:{qmr:qmr?[1,'QMR leidis Microsofti sihitud paranduse, mis võtab vigase uuenduse tagasi (Microsoft avaldab selliseid, kui probleem on laialdane). Arvuti käivitub.']:[0,'QMR pole lubatud.'],
+      sr:[0,'Käivitusfailid on korras – käivitusparandus ei leia midagi.'],
+      safe:[0,'Turvarežiim käivitub samuti vigase uuendusega süsteemi – see ei paranda midagi, ainult laseb vahel tööd teha.'],
+      unup:[1,'<b>Õige valik.</b> „Desinstalli uusim kvaliteediuuendus“ eemaldab vigase uuenduse ja arvuti käivitub. Siis peata uuendused, kuni Microsoft avaldab parandatud versiooni.'+(needKey?' (BitLocker võib küsida võtit – praegu oleks see probleem.)':'')],
+      pitr:needKey?[0,'Vaja BitLockeri võtit.']:[1,'Töötab samuti – viib süsteemi tagasi enne uuendust.'],
+      cmd:[0,'Teoreetiliselt saab DISM-iga uuenduse eemaldada, kuid see on palju keerulisem kui menüüvalik.'],reset:[1,'Töötab, kuid on liiga drastiline.']},
+   drv:{qmr:qmr?[0,'QMR otsib parandusi <b>laialdaste</b> probleemide jaoks. Ühe kasutaja paigaldatud draiveri jaoks Microsoftil parandust pole.']:[0,'QMR pole lubatud – ja see poleks siin ka aidanud.'],
+      sr:[0,'Käivitusfailid on korras.'],
+      safe:needKey?[0,'Vaja BitLockeri võtit.']:[1,'<b>Õige valik.</b> Turvarežiimis kasutatakse Microsofti põhilist graafikadraiverit. Seadmehalduris: Kuvaadapterid → Atribuudid → Draiver → „Taasta draiver“ (või desinstalli). Taaskäivita.'],
+      unup:[0,'Draiverit paigaldas kasutaja ise, mitte Windows Update – uuenduste eemaldamine ei aita.'],
+      pitr:needKey?[0,'Vaja BitLockeri võtit.']:[1,'Töötab, kui taastepunkt loodi enne draiveri paigaldust (Windows teeb seda tavaliselt automaatselt).'],
+      cmd:[0,'Võimalik (pnputil), kuid turvarežiim on lihtsam.'],reset:[1,'Töötab, kuid liiga drastiline.']},
+   disk:{qmr:[0,'Tarkvaraparandus ei aita rikkis kettale.'],sr:[0,'Käivitusparandus: „Ketast ei leitud“ või kirjutamise vead. Ketas on rikkis.'],safe:[0,'Turvarežiim kasutab sama ketast – ei käivitu.'],unup:[0,'Ketas ei vasta.'],pitr:[0,'Taastepunkt asub samal rikkis kettal.'],cmd:[0,'Käsuviibas näitab <code>diskpart → list disk</code>, et ketas puudub või annab vigu. Diagnoos on kinnitust leidnud.'],
+      reset:[0,'Ei saa paigaldada rikkis kettale. <b>Lahendus:</b> vaheta ketas, paigalda Windows (Autopilot/WDS) ja taasta andmed <b>varukoopiast</b> (OneDrive, failiserver). Windows RE ei saa riistvara parandada.']},
+   bcd:{qmr:qmr?[0,'QMR otsib Microsofti parandusi laialdastele probleemidele; rikutud BCD on kohalik probleem. Proovi käivitusparandust.']:[0,'QMR pole lubatud.'],
+      sr:[1,'<b>Õige valik.</b> Käivitusparandus leiab, et BCD (käivituse konfiguratsiooni andmebaas) on rikutud, ja loob selle uuesti. Arvuti käivitub.'],
+      safe:[0,'Turvarežiimi valik on BCD-s – kui BCD on rikutud, ei jõuta isegi turvarežiimini.'],unup:[0,'Uuendused pole põhjus.'],pitr:[0,'Süsteemitaaste ei paranda BCD-d usaldusväärselt.'],
+      cmd:[1,'Käsitsi parandus: <code>bcdboot C:\\Windows</code> (vajadusel <code>bootrec /rebuildbcd</code>) loob käivitusfailid uuesti. Toimib, kuid käivitusparandus teeb sama automaatselt.'],reset:[1,'Töötab, kuid liiga drastiline.']}};
+  [ok,m]=L[s][a];ok=!!ok;rdone=ok;I.className='info '+(ok?'ok':'bad');I.innerHTML=`<b>${RA.find(x=>x[0]===a)[1]}:</b> ${m}`;rBoot();
+  document.querySelectorAll('#racts button').forEach(b=>b.classList.toggle('on',b.dataset.a===a))}
+$('racts').innerHTML=RA.map(([k,v])=>`<button class="btn" data-a="${k}">${v}</button>`).join('');
+$('racts').querySelectorAll('button').forEach(b=>b.onclick=()=>rAct(b.dataset.a));
+function rReset(){rdone=false;rBoot();document.querySelectorAll('#racts button').forEach(b=>b.classList.remove('on'));$('rinfo').className='info';
+  $('rinfo').innerHTML={cs:'Kõik kooli arvutid jäid hommikul krahhi tsüklisse (<code>0x50</code>, <code>csagent.sys</code>). Vali Windows RE tööriist.',wu:'Pärast öist Windowsi uuendust ei käivitu arvuti (<code>0x7B</code>). Vali tööriist.',drv:'Kasutaja paigaldas eile tootja kodulehelt uue graafikadraiveri. Täna jookseb arvuti kokku kohe sisselogimisel. Vali tööriist.',disk:'Arvuti näitab „INACCESSIBLE_BOOT_DEVICE“ ja kettast kostab klõpsumist. Vali tööriist.',bcd:'Pärast katkenud paigaldust teatab arvuti „Boot configuration data is missing“. Vali tööriist.'}[$('rsc').value]}
+['rsc','rqmr','rbl','rkey'].forEach(i=>$(i).onchange=rReset);$('rreset').onclick=rReset;rReset();
+
+/* 7. Logi */
+quiz('lgt','lgs','lgr',['Süsteemi krahh (bugcheck)','Ootamatu väljalülitus','Planeeritud taaskäivitus','Rakenduse/teenuse probleem','Riistvaraviga'],[
+ ['<code>1001 BugCheck</code>: The computer has rebooted from a bugcheck. The bugcheck was: 0x000000d1 (…). A dump was saved in: C:\\Windows\\MEMORY.DMP.',0,'1001 on krahhi „surmatunnistus“: peatuskood, parameetrid ja tõmmise asukoht.'],
+ ['<code>41 Kernel-Power</code>: The system has rebooted without cleanly shutting down first. (BugcheckCode 0)',1,'41 tähendab, et süsteem ei lülitunud korrektselt välja. BugcheckCode 0 tähendab, et krahhi ei registreeritud – tõenäoliselt toide või ülekuumenemine.'],
+ ['<code>1074 User32</code>: The process C:\\Windows\\servicing\\TrustedInstaller.exe has initiated the restart of computer PC-12 on behalf of user NT AUTHORITY\\SYSTEM for the following reason: Operating System: Upgrade (Planned)',2,'1074 = keegi (siin Windows Update) palus taaskäivitust. Kasutaja võib seda pidada „kokkujooksmiseks“, kuid see oli planeeritud.'],
+ ['<code>1000 Application Error</code>: Faulting application name: EXCEL.EXE, faulting module name: mso40uiwin32client.dll',3,'Rakenduse krahh – suleti ainult Excel. Windows töötas edasi. Lahendus: Office’i parandus, lisandmoodulid välja.'],
+ ['<code>19 WHEA-Logger</code>: A corrected hardware error has occurred. Component: Memory, Error Source: Machine Check Exception',4,'WHEA = riistvara teatas veast. „Corrected“ tähendab, et see õnnestus parandada, kuid korduvad parandatud vead ennustavad tulevast krahhi. Kontrolli RAM-i.'],
+ ['<code>6008 EventLog</code>: The previous system shutdown at 02:14:33 on 11.11.2026 was unexpected.',1,'6008 kirjutatakse järgmisel käivitusel, kui eelmine väljalülitus polnud korrektne. Käib tavaliselt koos 41-ga.'],
+ ['<code>7031 Service Control Manager</code>: The Print Spooler service terminated unexpectedly. It has done this 1 time(s). The following corrective action will be taken in 60000 milliseconds: Restart the service.',3,'Teenus jooksis kokku, Windows taaskäivitab selle ise. Ülejäänud süsteem töötab.'],
+ ['<code>4101 Display</code>: Display driver nvlddmkm stopped responding and has successfully recovered.',3,'Graafikadraiver lähtestati (TDR). Ekraan vilkus, kuid krahhi ei tekkinud. Korduval juhul uuenda draiverit või kontrolli GPU temperatuuri.'],
+ ['<code>18 WHEA-Logger</code>: A fatal hardware error has occurred. Component: Processor Core. Error Source: Machine Check Exception',4,'Fataalne riistvaraviga – sellele järgnes krahh 0x124. Kontrolli temperatuure ja kiirendamist.']],
+ 'Põhireegel: 1001 = bugcheck, 41/6008 ilma 1001-ta = toide, 1074 = planeeritud, 1000/7031/4101 = üks komponent, WHEA = riistvara.');
+
+/* 8. OS */
+const OSR=[['Tuuma krahhi nimi',['bugcheck (sinine, nüüd must ekraan)','Bugcheck on Windowsi termin. Rahvakeeles BSOD – Blue Screen of Death. 2025. aastast Windows 11-s must ja lihtsam ekraan.'],['kernel panic; kergem viga „oops“','<b>Oops</b>: tuum avastas vea, lõpetas vigase lõime, kuid süsteem töötab edasi – ebakindlalt. <b>Panic</b>: süsteem peatub. Serverites seatakse sageli <code>kernel.panic_on_oops=1</code>.'],['kernel panic','macOS taaskäivitub automaatselt ja näitab pärast teadet „Your computer restarted because of a problem“.']],
+ ['Mälu salvestamine',['MEMORY.DMP, Minidump – lehefaili kaudu','Eraldi dump-draiver kirjutab lehefaili sektoritesse, järgmisel käivitusel kopeeritakse faili.'],['kdump','Käivitusel reserveeritakse mälu teisele „päästetuumale“. Paanika korral käivitab kexec selle tuuma, mis salvestab rikutud süsteemi mälu kausta <code>/var/crash</code>. Sama idee kui Windowsi eraldi dump-draiveril: ära usalda rikutud tuuma.'],['paanikaaruanne','macOS salvestab tekstilise aruande (pinu, laaditud tuumalaiendused – kexts). Täielikku mälutõmmist tavakasutaja ei saa.']],
+ ['Logid',['Sündmusvaatur: 41, 1001, 6008; perfmon /rel','Töökindluse monitor näitab krahhe ajajoonel koos paigaldustega.'],['journalctl -k -b -1, dmesg','<code>-b -1</code> = eelmine käivitus (just see, mis kokku jooksis), <code>-k</code> = ainult tuuma teated. Püsiv logi peab olema lubatud (<code>/var/log/journal</code>).'],['Konsool → Crash/Panic reports','Failid <code>/Library/Logs/DiagnosticReports/*.panic</code>.']],
+ ['Analüüs',['WinDbg !analyze -v','IMAGE_NAME näitab tõenäolist süüdlast.'],['crash tööriist','<code>crash vmlinux vmcore</code> – sarnased käsud nagu WinDbg-s (bt = pinu, log = tuumalogi).'],['aruande lugemine','Rida „Panicked task“ ja „Kernel Extensions in backtrace“ näitavad süüdlast – sageli kolmanda osapoole kext.']],
+ ['Taaste',['Windows RE, turvarežiim, QMR','Windows RE avaneb pärast kaht ebaõnnestunud käivitust.'],['GRUB: vanem tuum, päästerežiim','GRUB-i menüüs saab valida eelmise tuuma versiooni – Linuxi „taasta draiver“. Päästerežiim (rescue.target) on nagu turvarežiim.'],['macOS Recovery','Inteli Macil ⌘R, Apple Siliconil hoia toitenuppu all. Seal: Kettautiliit, Time Machine taaste, macOS uuesti paigaldamine.']]];
+$('ost').innerHTML='<tr><th></th><th>Windows</th><th>Linux</th><th>macOS</th></tr>'+OSR.map((r,i)=>`<tr><th>${r[0]}</th>${[1,2,3].map(j=>`<td class="h" data-i="${i}" data-j="${j}">${r[j][0]}</td>`).join('')}</tr>`).join('');
+$('ost').querySelectorAll('td.h').forEach(td=>td.onclick=()=>{const r=OSR[td.dataset.i];$('osinfo').innerHTML=`<b>${['','Windows','Linux','macOS'][td.dataset.j]} – ${r[0].toLowerCase()}:</b> ${r[td.dataset.j][1]}`});
+mq('osq','oss','osr',[
+ ['Linuxi server logis on teade „BUG: unable to handle page fault … Oops“, kuid server töötab edasi. Kas kõik on korras?',['Jah, oops on ohutu','Ei – tuumas oli viga, süsteem võib olla ebastabiilne; uuri ja planeeri taaskäivitus','Oops tähendab, et ketas on täis'],1,'Oops lõpetab ainult vigase lõime, kuid tuuma olek võib olla rikutud. Seepärast seadistatakse serverites sageli panic_on_oops, et süsteem taaskäivituks kohe.'],
+ ['Mis on Linuxi kdump-i ja Windowsi dump-draiveri ühine idee?',['Mõlemad kustutavad mälu','Rikutud tuuma ei usaldata – mälu salvestab eraldi, eelnevalt ette valmistatud komponent','Mõlemad saadavad mälu internetti'],1,'Krahhi ajal võib tuum olla rikutud, nii et salvestamiseks kasutatakse eraldi koodi: Windowsis dump stack, Linuxis teine (kexec) tuum.'],
+ ['Linuxi arvuti ei käivitu pärast tuuma uuendust. Mis on Windowsi „Taasta draiver“ / „Desinstalli värskendused“ analoog?',['GRUB-i menüüs vanema tuuma valimine','rm -rf /','Kettautiliit'],0,'Linux hoiab tavaliselt alles 1–2 eelmist tuuma. GRUB-i menüüs („Advanced options“) saab käivitada eelmise, töötava tuumaga ja probleemse eemaldada.']]);
+</script>
+</body>
+</html>
