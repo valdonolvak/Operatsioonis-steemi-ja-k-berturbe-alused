@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 18 – Windowsi turvalisus: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.sidparts{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;font-family:var(--mono)}
+.sidparts div{border-radius:8px;padding:6px 10px;text-align:center;font-size:15px;font-weight:700}
+.sidparts div small{display:block;font-family:system-ui;font-weight:400;font-size:11px;margin-top:2px}
+.tok{display:grid;grid-template-columns:170px 1fr;gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:10px;font-size:13.5px}
+.tok>div{padding:.45rem .7rem;border-bottom:1px solid var(--border);background:var(--bg)}
+.tok>div:nth-child(odd){background:var(--card);font-weight:600}
+.chip2{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:2px 9px;margin:2px;font-size:12.5px;cursor:pointer;background:var(--bg)}
+.chip2:hover{border-color:var(--accent)}
+.chip2.deny{border-style:dashed;color:var(--muted);text-decoration:line-through}
+.chip2.hi{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.chip2.danger{border-color:var(--bad-line);color:var(--bad)}
+.acl{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.acl td,.acl th{border-bottom:1px solid var(--border);padding:5px 6px;text-align:left}
+.acl tr.off td{opacity:.35}
+.acl tr.cur td{background:var(--accent-bg)}
+.acl tr.hitd td{background:var(--bad-bg)}
+.acl tr.hita td{background:var(--ok-bg)}
+.acl .btn{font-size:12px;padding:.2rem .5rem}
+.tag{display:inline-block;border-radius:5px;padding:1px 7px;font-size:12px;font-weight:600}
+.tag.a{background:var(--ok-bg);color:var(--ok)}.tag.d{background:var(--bad-bg);color:var(--bad)}
+.rights{display:flex;gap:6px;flex-wrap:wrap}
+.matrix{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.matrix th,.matrix td{border:1px solid var(--border);padding:6px;text-align:center}
+.matrix th{background:var(--card);font-weight:600}
+.matrix td.m{cursor:pointer;font-size:18px}
+.matrix td.m:hover{outline:2px solid var(--accent);outline-offset:-2px}
+.matrix td.sel{outline:3px solid var(--accent);outline-offset:-3px}
+.matrix td.g{background:var(--ok-bg)}.matrix td.y{background:var(--warn-bg)}.matrix td.r{background:var(--bad-bg)}
+.matrix td.rh{text-align:left;font-weight:600;background:var(--card)}
+.chain{display:grid;gap:6px;margin-top:10px}
+.chain .st{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:.5rem .7rem;background:var(--bg);font-size:14px}
+.chain .st b.n{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--card);font-family:var(--mono)}
+.chain .st.done{border-color:var(--bad-line);background:var(--bad-bg)}
+.chain .st.stop{border-color:var(--ok-line);background:var(--ok-bg);box-shadow:0 0 0 2px var(--ok-line)}
+.chain .st.na{opacity:.35}
+.chain .st small{display:block;color:var(--muted);font-size:12.5px}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px;margin-top:8px}
+.defs label{display:flex;gap:7px;align-items:flex-start;border:1px solid var(--border);border-radius:8px;padding:.4rem .6rem;background:var(--bg);font-size:13.5px;cursor:pointer}
+.defs label.on{border-color:var(--accent);background:var(--accent-bg)}
+.fw{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+.fw td,.fw th{border-bottom:1px solid var(--border);padding:5px 6px;text-align:left}
+.fw tr.hit td{background:var(--accent-bg);font-weight:600}
+.fw tr.off td{opacity:.4}
+.pk{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.pk .btn{font-size:12.5px;padding:.3rem .6rem}
+.ev{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;margin-top:8px}
+.ev td,.ev th{border-bottom:1px solid var(--border);padding:4px 6px;text-align:left}
+.ev tr.w td{background:var(--warn-bg)}.ev tr.r td{background:var(--bad-bg)}
+.mq{display:grid;gap:10px;margin-top:10px}
+.mq .q{border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;background:var(--bg);font-size:14.5px}
+.mq .q .opts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.mq .q .btn{font-size:13px;padding:.3rem .6rem}
+.mq .q.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.mq .q.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.mq .q .ex{font-size:13.5px;margin-top:6px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:10px}
+.kv div{background:var(--card);border-radius:10px;padding:.6rem .8rem;font-size:14px;line-height:1.5}
+.kv div b{display:block}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/18-turvalisus.md">← Peatükk 18</a> · <a href="18-test.html">Test →</a></nav>
+<h1>Windowsi turvalisus – õpileht</h1>
+<p>See leht aitab mõista, <b>kuidas Windows otsustab, kes tohib mida teha</b>, ja kuidas kaitstakse pahavara ning rünnete eest. Iga harjutuse juures on selgitus <b>„Miks see oluline on?“</b>, juhend <b>„Mida teha“</b> ja avatavad <b>lisainfo</b> plokid. Loe need läbi – need on samad teadmised, mida küsitakse testis.</p>
+<div class="why">
+<h4>Suur pilt: kolm küsimust</h4>
+<p>Kogu Windowsi turvamudel vastab kolmele küsimusele:</p>
+<div class="kv">
+<div><b>1. Kes sa oled? (autentimine)</b>Sisselogimisel tõestad oma identiteeti (parool, PIN, nägu, pääsvõti). Windows annab sulle <b>juurdepääsutokeni</b> – „ID-kaardi“, millel on sinu <b>SID</b>, rühmad, privileegid ja terviklikkuse tase.</div>
+<div><b>2. Mida sa tohid? (autoriseerimine)</b>Igal failil, kaustal ja registrivõtmel on <b>turvakirjeldaja</b> ja selles <b>DACL</b> – loend „kes mida tohib“. Iga kord, kui programm objekti avab, võrdleb tuumas olev <b>SRM</b> tokenit DACL-iga.</div>
+<div><b>3. Mida sa tegid? (audit)</b>Olulised sündmused (sisselogimised, ebaõnnestunud katsed, õiguste muutused) kirjutatakse <b>turvalogisse</b>. Ilma logita ei saa rünnakut hiljem uurida.</div>
+</div>
+<p style="margin-top:10px">Nende ümber on <b>kaitsekihid</b>: uuendused, viirusetõrje ja EDR, rakenduste kontroll, tulemüür, krüpteerimine ja riistvaraline usaldusahel. Põhimõte on <b>kaitse sügavuti</b>: kui üks kiht ebaõnnestub, peatab ründaja järgmine.</p>
+<p><b>Õppimise järjekord:</b> 1. CIA → 2. SID → 3. token → 4. DACL (kõige olulisem!) → 5. UAC → 6. autentimine → 7. lunavara ahel → 8. tulemüür → 9. turvalogi.</p>
+</div>
+<div class="toc"><a href="#cia">1. CIA</a><a href="#sid">2. SID</a><a href="#token">3. Token</a><a href="#acl">4. DACL-i kontroll</a><a href="#uac">5. UAC</a><a href="#auth">6. Autentimine</a><a href="#ahel">7. Lunavara ahel</a><a href="#tulemuur">8. Tulemüür</a><a href="#logi">9. Turvalogi</a></div>
+
+<!-- 1 CIA -->
+<section id="cia">
+<h2>1. Konfidentsiaalsus, terviklus või käideldavus?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Infoturbe eesmärgid on <b>CIA-kolmik</b>. Kui oskad iga intsidendi juures öelda, millist neist see rikub, tead ka, milline kaitse oleks aidanud:</p>
+<ul>
+<li><b>Konfidentsiaalsus</b> (C) – andmeid näevad ainult need, kellel on õigus. Rikkumine = <i>leke</i>. Kaitse: õigused, krüpteerimine, MFA.</li>
+<li><b>Terviklus</b> (I) – andmeid ei muudeta loata ega märkamatult. Rikkumine = <i>muutmine, võltsimine</i>. Kaitse: õigused, digiallkirjad, kontrollsummad, auditilogi.</li>
+<li><b>Käideldavus</b> (A) – andmed ja teenused on kättesaadavad, kui neid vaja on. Rikkumine = <i>teenus maas, andmed kättesaamatud</i>. Kaitse: varundus, RAID, uuendused, DDoS-kaitse.</li>
+</ul>
+<p><b>Mida teha:</b> vali iga olukorra jaoks peamine rikutud eesmärk. Mõni intsident rikub mitut – vali see, mis on <b>kõige otsesem</b>, ja loe selgitust.</p>
+</div>
+<div class="card"><div class="tasks" id="ciat"></div><div class="row"><span class="hint" id="cias"></span><button class="btn" id="ciar">Alusta uuesti</button></div></div>
+</section>
+
+<!-- 2 SID -->
+<section id="sid">
+<h2>2. SID-i lahtiharutaja</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p><b>SID</b> (Security Identifier) on kasutaja, rühma või arvuti püsiv unikaalne tunnus. Windows salvestab õigustesse <b>SID-i, mitte nime</b>: nime saab muuta, SID jääb samaks. Kui konto kustutada ja luua uuesti sama nimega, saab see uue SID-i ja vanad õigused enam ei kehti – õiguste loendis näed siis tundmatut SID-i <code>S-1-5-21-…-1104</code>.</p>
+<p>SID koosneb osadest: versioon, autoriteet, <b>domeeni või arvuti osa</b> (sama kõigil selle domeeni kontodel) ja lõpus <b>RID</b> – konto järjekorranumber. Mõned RID-id on alati samad: 500 on sisseehitatud Administrator, 512 Domain Admins. Ründajad otsivadki RID 500 kontot, sest seda ei saa lukustada.</p>
+<p><b>Mida teha:</b> sisesta SID või vali näide. Oma SID-i näed käsuga <code>whoami /user</code>.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>SID: <input type="text" id="sidin" value="S-1-5-21-3623811015-3361044348-30300820-1013" style="width:min(470px,90vw);font-family:var(--mono)"></span></div>
+  <div class="row"><span id="sidp"></span></div>
+  <div class="sidparts" id="sidparts"></div>
+  <div class="info" id="sidinfo"></div>
+  <details class="more"><summary>Lisainfo: tuntud SID-id, mida administraator peab ära tundma</summary>
+  <table class="t"><tbody>
+  <tr><td><code>S-1-1-0</code></td><td>Everyone – kõik, ka anonüümsed. Õigusi sellele rühmale anna väga ettevaatlikult.</td></tr>
+  <tr><td><code>S-1-5-11</code></td><td>Authenticated Users – kõik sisselogitud kasutajad (domeenis kõik domeeni kontod).</td></tr>
+  <tr><td><code>S-1-5-18</code></td><td>SYSTEM (LocalSystem) – võimsaim konto arvutis, rohkem kui administraator. Teenused töötavad sageli selle all.</td></tr>
+  <tr><td><code>S-1-5-19</code>, <code>S-1-5-20</code></td><td>LocalService ja NetworkService – piiratud õigustega teenusekontod (vähimate õiguste põhimõte).</td></tr>
+  <tr><td><code>S-1-5-32-544</code></td><td>BUILTIN\Administrators – kohalik administraatorite rühm.</td></tr>
+  <tr><td><code>S-1-5-32-545</code></td><td>BUILTIN\Users – kohalik kasutajate rühm.</td></tr>
+  <tr><td><code>…-500</code></td><td>sisseehitatud Administrator konto (iga arvuti ja domeeni oma).</td></tr>
+  <tr><td><code>…-512</code>, <code>…-513</code></td><td>Domain Admins, Domain Users.</td></tr>
+  <tr><td><code>S-1-16-4096/8192/12288/16384</code></td><td>terviklikkuse tasemed Low / Medium / High / System.</td></tr>
+  </tbody></table></details>
+</div>
+</section>
+
+<!-- 3 Token -->
+<section id="token">
+<h2>3. Juurdepääsutokeni uurija</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p><b>Token</b> on nagu ID-kaart, mille kasutaja saab sisselogimisel ja mida iga tema programm kaasas kannab. Igal objekti avamisel näitab programm tokenit ja SRM otsustab selle järgi. Tokenis on:</p>
+<ul><li><b>kasutaja SID</b> – kes sa oled;</li><li><b>rühmade SID-id</b> – kõik rühmad, kuhu kuulud (ka pesastatud rühmad);</li><li><b>privileegid</b> – õigused teha süsteemi tasemel toiminguid (varundada, siluda protsesse, kella muuta);</li><li><b>terviklikkuse tase</b> – Low, Medium, High või System.</li></ul>
+<p><b>Oluline tõrkeotsingus:</b> token luuakse <b>sisselogimisel</b>. Kui administraator lisab kasutaja rühma, ei muutu juba olemasolev token – kasutaja peab välja ja uuesti sisse logima (või failiserveri puhul uue ühenduse looma).</p>
+<p><b>Mida teha:</b> vali kasutaja ja klõpsa tokeni kirjetel – iga kirje kohta tuleb selgitus. Võrdle eriti „Anna – tavaline aken“ ja „Anna – administraatorina“.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span id="tusers"></span></div>
+  <div class="tok" id="tok"></div>
+  <div class="info" id="tokinfo"></div>
+</div>
+</section>
+
+<!-- 4 ACL -->
+<section id="acl">
+<h2>4. DACL-i kontrolli simulaator</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>See on Windowsi juurdepääsukontrolli <b>süda</b>. Kui saad aru, kuidas SRM otsustab, oskad lahendada enamiku õiguste probleeme („miks Mari ei saa faili muuta?“) ja kujundada õigusi turvaliselt.</p>
+<p>Igal objektil on <b>DACL</b> – loend kirjetest (<b>ACE</b>). Iga ACE ütleb: <i>keda</i> (SID), <i>luba või keela</i>, <i>milliseid õigusi</i>. Lisaks on ACE kas <b>otsene</b> (määratud just sellele failile) või <b>päritud</b> (tuleb ülemkaustast).</p>
+<p><b>SRM-i algoritm:</b></p>
+<ol>
+<li><b>Terviklikkus (MIC):</b> kui tokeni tase on madalam kui objekti oma, ei tohi objekti muuta – olenemata ACL-ist.</li>
+<li><b>NULL DACL</b> (DACL puudub) → kõigil kõik õigused.</li>
+<li>ACE-d sorteeritakse: <b>otsesed keelud → otsesed load → päritud keelud → päritud load</b>.</li>
+<li>Iga ACE puhul: kui SID on tokenis ja ACE <b>keelab</b> mõnda soovitud õigust → <b>keelatud kohe</b>. Kui <b>lubab</b> → need õigused kogutakse.</li>
+<li>Kui kõik soovitud õigused on kogutud → <b>lubatud</b>.</li>
+<li>Kui ACE-d said otsa ja kõiki õigusi pole → <b>keelatud</b> (vaikimisi keeld).</li>
+</ol>
+<p><b>Mida teha:</b> vali olukord, kasutaja ja soovitud õigused. Vajuta „Kontrolli samm-sammult“ ja jälgi, millise ACE juures otsus tehakse. Seejärel muuda ACE-sid (lülita välja, vaheta luba ↔ keeld, otsene ↔ päritud) ja vaata, kuidas tulemus muutub.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Olukord: <select id="apre"></select></span></div>
+  <div class="row"><span>Kasutaja: <select id="auser"></select></span><span class="rights" id="arights"></span></div>
+  <table class="acl"><thead><tr><th>#</th><th>SID</th><th>Tüüp</th><th>Õigused</th><th>Päritolu</th><th></th></tr></thead><tbody id="atab"></tbody></table>
+  <div class="hint" id="ameta" style="margin-top:4px"></div>
+  <div class="row"><span><button class="btn primary" id="astep">Kontrolli samm-sammult →</button> <button class="btn" id="aall">Näita tulemust</button> <button class="btn" id="areset">Lähtesta</button></span></div>
+  <ol class="steps" id="asteps"></ol>
+  <div class="info" id="ainfo"></div>
+  <details class="more"><summary>Lisainfo: õiguste kujundamise head tavad</summary>
+  <ul>
+  <li><b>Anna õigused rühmadele, mitte üksikkasutajatele.</b> Kui Mari lahkub, eemaldad ta rühmast – ei pea otsima kõiki kaustu, kus tal õigusi oli. Microsofti soovitus on AGDLP: kontod → globaalsed rühmad → domeeni lokaalsed rühmad → õigused.</li>
+  <li><b>Keela säästlikult.</b> Kui kasutajal pole vaja õigust, ära seda anna – vaikimisi keeld teeb ülejäänu. Keelav ACE on vajalik ainult erandite jaoks (nt „kõik õpetajad, aga mitte praktikandid“).</li>
+  <li><b>Ära kasuta „Everyone: täielik juurdepääs“.</b> Linuxis on vaste <code>chmod 777</code> – mõlemad on levinud turvaviga.</li>
+  <li><b>Pärimine</b> (inheritance) teeb halduse lihtsaks: määra õigused kõrgemal kaustal ja need kehtivad kõigile failidele. Kui keegi katkestab pärimise mõnes alamkaustas, unustatakse see sageli – kontrolli <code>icacls</code>-iga.</li>
+  <li><b>Tegelikud õigused</b> (Effective Access) – kausta atribuudid → Turve → Täpsemalt → Tegelik juurdepääs. Windows arvutab sama algoritmiga, mida siin simulaator näitab.</li>
+  <li><b>Võrgukaustas</b> kehtib lisaks jagamise õigus – lõpptulemus on rangem kahest (ptk 16).</li>
+  </ul></details>
+</div>
+</section>
+
+<!-- 5 UAC -->
+<section id="uac">
+<h2>5. UAC ja administraatori kaitse</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kui kasutaja töötab pidevalt administraatori õigustega, saab iga programm – ka pahavara – kohe täieliku kontrolli arvuti üle. Windows lahendab seda kolmel viisil:</p>
+<ul>
+<li><b>Tavakasutaja</b> – pole üldse administraatori õigusi. Paigaldamiseks peab administraator sisestama oma parooli. Kõige turvalisem igapäevatöö viis.</li>
+<li><b>Administraator + UAC</b> (Vista–Windows 11) – kasutajal on <b>jagatud token</b>: igapäevaselt töötab ta piiratud tokeniga (Medium). „Käivita administraatorina“ küsib kinnitust ja annab täieliku tokeni (High). <b>NB!</b> Microsofti sõnul ei ole UAC turvapiir – on teada mitmeid viise sellest mööda hiilida, sest mõlemad tokenid kuuluvad samale kontole.</li>
+<li><b>Administraatori kaitse</b> (Windows 11, 2026) – kasutajal pole püsivaid administraatoriõigusi. Iga tõstmise jaoks luuakse <b>eraldi süsteemi hallatav ajutine konto</b> ja küsitakse <b>Windows Hello</b> kinnitust. Pärast toimingut õigused kaovad.</li>
+</ul>
+<p><b>Mida teha:</b> vali konto tüüp ja tegevus. Vaata, mis juhtub ja milline token kasutusele tuleb.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Konto: <select id="uacc"><option value="std">Tavakasutaja</option><option value="uac" selected>Administraator + UAC</option><option value="ap">Administraator + administraatori kaitse</option></select></span></div>
+  <div class="pk" id="uacts"></div>
+  <div class="info" id="uinfo"></div>
+</div>
+</section>
+
+<!-- 6 Auth -->
+<section id="auth">
+<h2>6. Millise ründe vastu milline autentimine aitab?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Üle 80% sissetungidest algab varastatud või nõrgast paroolist. <b>Mitmikautentimine (MFA)</b> nõuab kaht eri tüüpi tõendit: midagi, mida <b>tead</b> (parool, PIN), midagi, mis sul <b>on</b> (telefon, turvavõti, TPM-iga arvuti) ja/või midagi, mis sa <b>oled</b> (sõrmejälg, nägu).</p>
+<p>Kuid MFA-meetodid pole võrdsed. Peamine küsimus: <b>kas meetod on seotud õige veebilehega?</b> SMS-koodi saab kasutaja õngitsuslehele sisestada samamoodi nagu parooli. Pääsvõtit ja Windows Hello for Businessi ei saa – need on krüptograafiliselt seotud õige domeeniga ja brauser ei paku neid võltslehele. Seepärast nimetatakse neid <b>õngitsuskindlateks</b>.</p>
+<p><b>Mida teha:</b> klõpsa tabeli lahtritel. ✅ = kaitseb, ⚠ = kaitseb osaliselt, ❌ = ei kaitse, — = ei puutu asjasse. Iga lahtri juures on selgitus.</p>
+</div>
+<div class="card">
+  <div style="overflow-x:auto"><table class="matrix" id="amx"></table></div>
+  <div class="info" id="amxinfo"></div>
+  <details class="more"><summary>Lisainfo: rünnete selgitused</summary>
+  <ul>
+  <li><b>Õngitsusleht</b> – võltsleht, mis näeb välja nagu Microsoft 365 sisselogimine. Kaasaegsed õngitsuskomplektid (nt Evilginx) edastavad kõik sisestused reaalajas päris lehele – ka SMS-koodi – ja varastavad sessiooniküpsise.</li>
+  <li><b>Lekkinud parool mujalt</b> – kasutaja kasutab sama parooli mitmes kohas; kui mõni leht lekib, proovivad ründajad seda igal pool (credential stuffing). Kontrolli: haveibeenpwned.com.</li>
+  <li><b>Parooli äraarvamine</b> – ründaja proovib levinud paroole paljude kontode peal (password spraying: „Kevad2026!“). Konto lukustus ja MFA aitavad.</li>
+  <li><b>MFA-väsimus</b> – ründajal on parool ja ta saadab öösel kümneid kinnituspäringuid, kuni kasutaja vajutab „Kinnita“. Kaitse: numbri sisestamine (number matching).</li>
+  <li><b>SIM-vahetus</b> – ründaja veenab mobiilioperaatorit andma talle ohvri numbriga uue SIM-kaardi ja saab SMS-koodid.</li>
+  <li><b>Varastatud sülearvuti</b> – ründaja hoiab seadet käes. Kaitseb BitLocker + PIN/biomeetria, mida varas ei tea.</li>
+  </ul></details>
+</div>
+</section>
+
+<!-- 7 Ahel -->
+<section id="ahel">
+<h2>7. Lunavararünnaku ahel</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Lunavararünnak ei ole üks hetk, vaid <b>mitu etappi</b>, mis kestavad sageli päevi või nädalaid: sissetung → pahavara käivitamine → õiguste tõstmine → mandaatide vargus → külgliikumine → varukoopiate hävitamine → krüpteerimine. <b>Iga etapp on võimalus rünnak peatada.</b> See on kaitse sügavuti põhimõte praktikas: pole vaja peatada ründajat esimesel sammul – piisab, kui ükskõik milline kiht ta kinni püüab.</p>
+<p>Isegi kui kõik ebaõnnestub, päästab andmed <b>võrguühenduseta või muutumatu varukoopia</b> – lunavara ei pääse sellele ligi.</p>
+<p><b>Mida teha:</b> vali rünnaku algus. Alguses pole ühtegi kaitset – vaata, kuidas rünnak läbib kõik etapid. Siis lülita kaitseid ükshaaval sisse ja vaata, millise etapi juures rünnak peatub. Milline <b>üks</b> kaitse annab kõige rohkem?</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Rünnaku algus: <select id="rvec"><option value="mail">Õngitsuskiri makroga Wordi dokumendiga</option><option value="vpn">Lekkinud parooliga VPN-i sisselogimine</option></select></span><button class="btn" id="rclear">Eemalda kõik kaitsed</button></div>
+  <div class="defs" id="rdefs"></div>
+  <div class="chain" id="rchain"></div>
+  <div class="info" id="rinfo"></div>
+</div>
+</section>
+
+<!-- 8 Tulemüür -->
+<section id="tulemuur">
+<h2>8. Tulemüürireeglite simulaator</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Windowsi tulemüür otsustab iga ühenduse kohta: <b>luba või keela</b>. See on <b>olekupõhine</b> (stateful): tulemüür mäletab sinu algatatud ühendusi ja laseb nende vastused sisse, kuid keelab võõra algatatud sissetulevad ühendused. Seepärast töötab veebilehitsemine ilma ühegi sissetuleva reeglita.</p>
+<p><b>Hindamise järjekord:</b> 1) kas pakett kuulub olemasolevasse ühendusse? → luba; 2) kas sobib <b>keelav</b> reegel? → keela (keeld võidab); 3) kas sobib <b>lubav</b> reegel? → luba; 4) muidu <b>vaikimisi tegevus</b> (sissetulev: keela, väljaminev: luba). Reeglid kehtivad ainult oma <b>profiilis</b> (domeen, privaatne, avalik).</p>
+<p><b>Mida teha:</b> vali ühendus ja vaata, milline reegel otsustab. Lülita reegleid välja ja muuda vaikimisi väljamineva liikluse tegevust „Keela“ peale – mis juhtub tavalise veebilehitsemisega?</p>
+</div>
+<div class="card">
+  <table class="fw"><thead><tr><th></th><th>Reegel</th><th>Suund</th><th>Tingimus</th><th>Profiil</th><th>Tegevus</th></tr></thead><tbody id="fwr"></tbody></table>
+  <div class="row"><span>Vaikimisi: sissetulev <b>Keela</b>, väljaminev <select id="fwdef"><option value="allow">Luba</option><option value="block">Keela</option></select></span></div>
+  <div class="pk" id="fwp"></div>
+  <ol class="steps" id="fwsteps"></ol>
+  <div class="info" id="fwinfo"></div>
+</div>
+</section>
+
+<!-- 9 Logi -->
+<section id="logi">
+<h2>9. Turvalogi analüüs: mis öösel juhtus?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Turvalogi on nagu valvekaamera salvestis: see ei takista rünnakut, kuid näitab, mis juhtus. Ründajad püüavad jälgi peita – seepärast saadetakse logid organisatsioonis kohe keskserverisse (SIEM), kus ründaja neid kustutada ei saa.</p>
+<p>Olulisemad sündmused: <b>4624</b> edukas sisselogimine (tüüp 2 – klaviatuur, 3 – võrk, 10 – kaugtöölaud), <b>4625</b> ebaõnnestunud, <b>4672</b> administraatori õigused, <b>4688</b> uus protsess, <b>4720</b> kasutaja loodi, <b>4732</b> kasutaja lisati kohalikku rühma, <b>1102</b> turvalogi tühjendati.</p>
+<p><b>Mida teha:</b> loe allolevat logi (server <code>SRV-KOOL01</code>, öö vastu teisipäeva) ja vasta küsimustele. Värvilised read on kahtlased.</p>
+</div>
+<div class="card">
+  <div style="overflow-x:auto"><table class="ev"><thead><tr><th>Aeg</th><th>ID</th><th>Konto</th><th>Üksikasjad</th></tr></thead><tbody id="evt"></tbody></table></div>
+  <div class="mq" id="evq"></div>
+  <div class="row"><span class="hint" id="evs"></span><button class="btn" id="evr">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="18-test.html">Peatüki 18 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/18-turvalisus.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+function mq(box,score,reset,items){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,opts,c,e],i)=>{const a=ans[i];return `<div class="q${a!==undefined?(a===c?' ok':' bad'):''}"><b>${i+1}.</b> ${q}<div class="opts">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</div>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][2]===v).length;$(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`:''}
+  $(reset).onclick=()=>{ans={};draw()};draw()}
+
+/* 1. CIA */
+quiz('ciat','cias','ciar',['Konfidentsiaalsus','Terviklus','Käideldavus'],[
+ ['Õpetaja saatis õpilaste hinnetega Exceli kogemata vale meililisti.',0,'Andmed jõudsid inimesteni, kellel polnud õigust neid näha – <b>leke</b>. Kaitse: tundlikkuse sildid, DLP-reeglid, krüpteeritud saatmine.'],
+ ['Lunavara krüpteeris kooli failiserveri – keegi ei saa faile avada.',2,'Andmed on olemas, kuid <b>kättesaamatud</b>. Kaitse: võrguühenduseta varukoopia. (Kui ründaja varastas ka andmed, on rikutud ka konfidentsiaalsus.)'],
+ ['Õpilane sai õpetaja parooli ja muutis e-päevikus oma hinnet.',1,'Andmeid <b>muudeti loata</b>. Kaitse: MFA, auditilogi (kes ja millal muutis), vähimad õigused.'],
+ ['E-päevik ei avane, sest selle serverit ummistatakse miljonite päringutega (DDoS).',2,'Teenus pole kättesaadav. Kaitse: DDoS-kaitse teenus, koormuse jaotamine.'],
+ ['Pahavara asendas süsteemifaili oma versiooniga, et käivituda koos Windowsiga.',1,'Süsteemi <b>terviklus</b> on rikutud. Kaitse: Secure Boot, koodi allkirjastamine, HVCI, failide terviklikkuse kontroll.'],
+ ['Varastati krüpteerimata sülearvuti, millel olid töötajate isikukoodid.',0,'Varas saab andmeid lugeda – konfidentsiaalsus. Kaitse: BitLocker. (Omaniku jaoks on andmed ka kadunud – käideldavus –, kuid peamine kahju on leke.)'],
+ ['Keegi muutis arve PDF-is pangakonto numbrit enne, kui raamatupidaja selle maksis.',1,'Dokumenti <b>võltsiti</b>. Kaitse: digiallkiri (muudatus muudaks allkirja kehtetuks), kinnitus teise kanali kaudu.'],
+ ['Failiserveri ketas läks rikki ja varukoopiat polnud.',2,'Andmed pole enam kättesaadavad. Kaitse: RAID ja varundus.']],
+ 'Leke → konfidentsiaalsus; muutmine → terviklus; kättesaamatus → käideldavus.');
+
+/* 2. SID */
+const KN={'S-1-1-0':'Everyone – kõik kasutajad','S-1-5-11':'Authenticated Users – kõik sisselogitud','S-1-5-18':'SYSTEM (LocalSystem) – võimsaim konto arvutis','S-1-5-19':'LocalService – piiratud teenusekonto','S-1-5-20':'NetworkService – teenusekonto võrguligipääsuga','S-1-5-32-544':'BUILTIN\\Administrators – kohalikud administraatorid','S-1-5-32-545':'BUILTIN\\Users – kohalikud kasutajad','S-1-5-32-555':'Remote Desktop Users','S-1-16-4096':'terviklikkuse tase Low','S-1-16-8192':'terviklikkuse tase Medium','S-1-16-12288':'terviklikkuse tase High','S-1-16-16384':'terviklikkuse tase System'};
+const RID={500:'sisseehitatud Administrator konto – seda ei saa lukustada, ründajad otsivad just seda; soovitus: nimeta ümber või lülita välja ja kasuta LAPS-i',501:'Guest (külaline) – peaks olema välja lülitatud',502:'krbtgt – Kerberose piletite allkirjastamise konto domeenis; kui selle räsi lekib, saab ründaja võltsida mis tahes pileteid („Golden Ticket“)',512:'Domain Admins – domeeni administraatorid; liikmeid peaks olema väga vähe',513:'Domain Users – kõik domeeni kasutajad',514:'Domain Guests',515:'Domain Computers – kõik domeeni arvutid',516:'Domain Controllers',519:'Enterprise Admins – kogu metsa administraatorid',544:'Administrators'};
+function sidDraw(){const s=$('sidin').value.trim().toUpperCase(),p=s.split('-');const I=$('sidinfo');
+  if(p[0]!=='S'||p.length<3||p.slice(1).some(x=>!/^\d+$/.test(x))){$('sidparts').innerHTML='';I.className='info bad';I.innerHTML='See ei ole SID. SID algab „S-1-“ ja koosneb numbritest, nt <code>S-1-5-21-1111-2222-3333-1001</code>.';return}
+  const C=['#6b6a65','#6b6a65','#0f7b7b','#185fa5','#3b6d11'];let parts=[['S','SID'],[p[1],'versioon'],[p[2],{1:'World',5:'NT Authority',16:'terviklikkuse silt'}[p[2]]||'autoriteet']];
+  const rest=p.slice(3);
+  if(p[3]==='21'&&rest.length>=5){parts.push(['21','domeen/arvuti'],[rest.slice(1,4).join('-'),'domeeni või arvuti unikaalne osa'],[rest[4],'RID'])}else rest.forEach((x,i)=>parts.push([x,i===rest.length-1?'alamautoriteet / RID':'alamautoriteet']));
+  $('sidparts').innerHTML=parts.map(([v,l],i)=>`<div style="background:${['#f1efe8','#f1efe8','#e1f3f2','#e6f1fb','#e6f1fb','#eaf3de'][Math.min(i,5)]};color:${C[Math.min(i,4)]}">${v}<small>${l}</small></div>`).join('<span style="align-self:center">-</span>');
+  I.className='info';
+  if(KN[s]){I.innerHTML=`<b>Tuntud SID:</b> ${KN[s]}. See SID on igas Windowsi arvutis sama.`}
+  else if(p[3]==='21'&&rest.length>=5){const r=+rest[4];I.innerHTML=`Domeeni või arvuti konto. Keskmine osa <code>${rest.slice(1,4).join('-')}</code> on sama kõigil selle domeeni (või arvuti) kontodel. <b>RID ${r}</b>: `+(RID[r]||(r>=1000?'tavaline kasutaja või rühm (loodud järjekorras, alates 1000).':'sisseehitatud konto või rühm.'))}
+  else I.innerHTML='Erikonto või -rühm. Vaata lisainfost tuntud SID-ide tabelit.'}
+$('sidin').oninput=sidDraw;
+$('sidp').innerHTML='Näited: '+[['Kasutaja','S-1-5-21-3623811015-3361044348-30300820-1013'],['Administrator (500)','S-1-5-21-3623811015-3361044348-30300820-500'],['Domain Admins','S-1-5-21-3623811015-3361044348-30300820-512'],['krbtgt','S-1-5-21-3623811015-3361044348-30300820-502'],['SYSTEM','S-1-5-18'],['Administrators','S-1-5-32-544'],['Everyone','S-1-1-0'],['High','S-1-16-12288']].map(([n,v])=>`<button class="btn" style="font-size:12.5px;padding:.25rem .55rem" data-v="${v}">${n}</button>`).join(' ');
+$('sidp').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('sidin').value=b.dataset.v;sidDraw()});sidDraw();
+
+/* 3. Token */
+const TOK={
+ mari:{n:'Mari – õpetaja',user:'KOOL\\mari',groups:['Everyone','Authenticated Users','Domain Users','Õpetajad','Klassijuhatajad','BUILTIN\\Users'],deny:[],priv:['SeShutdownPrivilege','SeChangeNotifyPrivilege','SeIncreaseWorkingSetPrivilege'],il:'Medium'},
+ jaan:{n:'Jaan – õpilane',user:'KOOL\\jaan',groups:['Everyone','Authenticated Users','Domain Users','Õpilased','BUILTIN\\Users'],deny:[],priv:['SeChangeNotifyPrivilege'],il:'Medium'},
+ annaL:{n:'Anna – admin, tavaline aken',user:'KOOL\\anna',groups:['Everyone','Authenticated Users','Domain Users','IT-tugi','BUILTIN\\Users','BUILTIN\\Administrators'],deny:['BUILTIN\\Administrators'],priv:['SeShutdownPrivilege','SeChangeNotifyPrivilege','SeUndockPrivilege'],il:'Medium'},
+ annaH:{n:'Anna – administraatorina',user:'KOOL\\anna',groups:['Everyone','Authenticated Users','Domain Users','IT-tugi','BUILTIN\\Users','BUILTIN\\Administrators'],deny:[],priv:['SeDebugPrivilege','SeBackupPrivilege','SeRestorePrivilege','SeTakeOwnershipPrivilege','SeLoadDriverPrivilege','SeImpersonatePrivilege','SeShutdownPrivilege','SeChangeNotifyPrivilege'],il:'High'},
+ sys:{n:'SYSTEM – teenus',user:'NT AUTHORITY\\SYSTEM',groups:['Everyone','Authenticated Users','BUILTIN\\Administrators'],deny:[],priv:['SeTcbPrivilege','SeDebugPrivilege','SeImpersonatePrivilege','SeCreateTokenPrivilege','SeLoadDriverPrivilege','SeBackupPrivilege','SeRestorePrivilege','SeTakeOwnershipPrivilege'],il:'System'},
+ low:{n:'Mari – brauseri vaheleht',user:'KOOL\\mari',groups:['Everyone','Authenticated Users','Domain Users','Õpetajad','Klassijuhatajad','BUILTIN\\Users','AppContainer (piiratud)'],deny:[],priv:['SeChangeNotifyPrivilege'],il:'Low'}};
+const PEX={SeDebugPrivilege:'<b>SeDebugPrivilege</b> – lubab avada ja lugeda <i>mis tahes</i> protsessi mälu, ka süsteemi omi. Silujatel vajalik. <span style="color:var(--bad)">Ohtlik:</span> just sellega loeb Mimikatz lsass-ist parooliräsisid.',
+ SeBackupPrivilege:'<b>SeBackupPrivilege</b> – lubab lugeda kõiki faile ACL-ist hoolimata (varundus peab saama kõik kopeerida). <span style="color:var(--bad)">Ohtlik:</span> ründaja saab nii kopeerida SAM-i või NTDS.dit-i (domeeni paroolibaas).',
+ SeRestorePrivilege:'<b>SeRestorePrivilege</b> – lubab kirjutada kõiki faile ACL-ist hoolimata (taastamiseks). Ohtlik: saab asendada süsteemifaile.',
+ SeTakeOwnershipPrivilege:'<b>SeTakeOwnershipPrivilege</b> – lubab võtta mis tahes objekti omanikuks. Omanik saab muuta õigusi – seega sisuliselt kõik.',
+ SeLoadDriverPrivilege:'<b>SeLoadDriverPrivilege</b> – lubab laadida tuumadraivereid. Ohtlik: haavatava draiveri kaudu (BYOVD, ptk 14) saab tuuma õigused.',
+ SeImpersonatePrivilege:'<b>SeImpersonatePrivilege</b> – lubab tegutseda teise kasutaja nimel, kes on ühendunud (nt veebiserver kliendi nimel). Ohtlik: nn „Potato“-rünnetega saab teenusekontolt SYSTEM-õigused.',
+ SeTcbPrivilege:'<b>SeTcbPrivilege</b> – „tegutse operatsioonisüsteemi osana“. Ainult SYSTEM-il; võimaldab luua suvalisi tokeneid.',
+ SeCreateTokenPrivilege:'<b>SeCreateTokenPrivilege</b> – lubab luua uusi tokeneid. Ainult LSA vajab seda.',
+ SeShutdownPrivilege:'<b>SeShutdownPrivilege</b> – lubab arvuti välja lülitada. Tavaline ja ohutu.',
+ SeChangeNotifyPrivilege:'<b>SeChangeNotifyPrivilege</b> – „bypass traverse checking“: lubab läbida kaustu, kuhu kasutajal pole õigust, et jõuda alamkausta, kuhu on. Kõigil on see; ohutu.',
+ SeIncreaseWorkingSetPrivilege:'<b>SeIncreaseWorkingSetPrivilege</b> – lubab suurendada protsessi tööhulka (ptk 12). Ohutu.',
+ SeUndockPrivilege:'<b>SeUndockPrivilege</b> – sülearvuti dokist eemaldamine. Ohutu.'};
+const GEX={'Everyone':'<b>Everyone</b> (S-1-1-0) – iga token sisaldab seda. Õigus „Everyone“ kehtib kõigile.','Authenticated Users':'<b>Authenticated Users</b> (S-1-5-11) – kõik, kes on sisse loginud (mitte anonüümsed).','Domain Users':'<b>Domain Users</b> – kõik domeeni kasutajad. Lisatakse automaatselt.','BUILTIN\\Users':'<b>BUILTIN\\Users</b> – kohalik kasutajate rühm; domeeni kasutajad on selles läbi Domain Users-i (pesastatud rühmad).','BUILTIN\\Administrators':'<b>BUILTIN\\Administrators</b> – kohalik administraatorite rühm.','Õpetajad':'<b>Õpetajad</b> – domeeni rühm, millele kooli administraator on andnud õigusi.','Klassijuhatajad':'<b>Klassijuhatajad</b> – teine rühm. Mari õigused liituvad üle kõigi rühmade.','Õpilased':'<b>Õpilased</b> – domeeni rühm.','IT-tugi':'<b>IT-tugi</b> – rühm, kelle liikmed on arvutite kohalikud administraatorid.','AppContainer (piiratud)':'<b>AppContainer</b> – liivakast: protsess pääseb ainult selgelt lubatud ressurssidele.'};
+const ILX={Low:'<b>Low</b> – liivakast. Brauseri vaheleht ei saa kirjutada sinu dokumentidesse ega registrisse (need on Medium), isegi kui ACL lubaks. Kui pahavara vahelehe üle võtab, on ta „puuris“.',Medium:'<b>Medium</b> – tavaline kasutaja. Kõik igapäevased programmid.',High:'<b>High</b> – tõstetud administraator. Saab muuta süsteemi faile ja seadeid.',System:'<b>System</b> – teenused ja tuum.'};
+let tu='mari';
+$('tusers').innerHTML=Object.entries(TOK).map(([k,v])=>`<button class="btn" data-u="${k}">${v.n}</button>`).join(' ');
+$('tusers').querySelectorAll('button').forEach(b=>b.onclick=()=>{tu=b.dataset.u;tDraw()});
+function tDraw(){document.querySelectorAll('#tusers button').forEach(b=>b.classList.toggle('on',b.dataset.u===tu));const T=TOK[tu];
+  const dangerous=['SeDebugPrivilege','SeBackupPrivilege','SeRestorePrivilege','SeTakeOwnershipPrivilege','SeLoadDriverPrivilege','SeImpersonatePrivilege','SeTcbPrivilege','SeCreateTokenPrivilege'];
+  $('tok').innerHTML=`<div>Kasutaja SID</div><div><span class="chip2 hi" data-x="user">${T.user}</span></div><div>Rühmad</div><div>${T.groups.map(g=>`<span class="chip2${T.deny.includes(g)?' deny':''}" data-g="${g}">${g}${T.deny.includes(g)?' (ainult keelamiseks)':''}</span>`).join('')}</div><div>Privileegid</div><div>${T.priv.map(p=>`<span class="chip2${dangerous.includes(p)?' danger':''}" data-p="${p}">${p}</span>`).join('')}</div><div>Terviklikkus</div><div><span class="chip2 hi" data-il="1">${T.il}</span></div>`;
+  $('tok').querySelectorAll('.chip2').forEach(c=>c.onclick=()=>{let m='';if(c.dataset.p)m=PEX[c.dataset.p];else if(c.dataset.g)m=(T.deny.includes(c.dataset.g)?'<b>Administrators – ainult keelamiseks (deny-only).</b> UAC on tavalises aknas administraatorite rühma „välja lülitanud“: rühm on tokenis, kuid ainult selleks, et keelavad ACE-d kehtiksid. Luba see rühm ei anna. Seepärast ei saa Anna tavalises aknas süsteemifaile muuta, kuigi ta on administraator. ':'')+GEX[c.dataset.g];else if(c.dataset.il)m=ILX[T.il];else m=`<b>${T.user}</b> – kasutaja SID. Õigused salvestatakse SID-i järgi, mitte nime järgi.`;$('tokinfo').innerHTML=m});
+  $('tokinfo').innerHTML={mari:'Mari on tavakasutaja. Tal on ainult ohutud privileegid ja tase Medium. Tema õigused failidele tulevad rühmadest Õpetajad ja Klassijuhatajad. <i>Klõpsa kirjetel.</i>',jaan:'Jaani token on lihtne: rühm Õpilased ja üldrühmad. Kõik, mis pole Õpilastele, Domain Usersile või Everyone’ile antud, on talle keelatud. <i>Klõpsa kirjetel.</i>',annaL:'<b>Anna on administraator, kuid see aken töötab piiratud tokeniga.</b> Administrators on märgitud „ainult keelamiseks“, ohtlikud privileegid on eemaldatud ja tase on Medium. Nii ei saa tema e-posti klient või brauser kogemata süsteemi muuta. <i>Klõpsa rühmal Administrators.</i>',annaH:'<b>„Käivita administraatorina“ annab täieliku tokeni:</b> Administrators on aktiivne, lisandusid võimsad privileegid (punasega) ja tase on High. Seda tokenit kasutab ainult see üks aken. <i>Klõpsa punastel privileegidel – miks need ohtlikud on?</i>',sys:'<b>SYSTEM</b> on arvuti kõige võimsam konto – võimsam kui administraator. Teenused töötavad selle all. Kui ründaja saab SYSTEM-õigused, kontrollib ta kogu arvutit.',low:'<b>Brauseri vaheleht</b> töötab Mari nimel, kuid tasemel <b>Low</b> ja AppContaineris. Isegi kui Maril on dokumentidele õigus, ei saa see protsess neisse kirjutada. See piirab veebist tulnud ründe kahju.'}[tu]}
+tDraw();
+
+/* 4. ACL */
+const RN={R:'Loe',W:'Kirjuta',D:'Kustuta',P:'Muuda õigusi'};
+const AUS={mari:TOK.mari,jaan:TOK.jaan,annaL:TOK.annaL,annaH:TOK.annaH,low:TOK.low};
+const APRE={
+ hinded:{n:'Hindefail (peatüki näide)',owner:'BUILTIN\\Administrators',il:'Medium',dacl:[{s:'Õpilased',t:'d',r:'W',i:0},{s:'Õpetajad',t:'a',r:'RWD',i:0},{s:'Domain Users',t:'a',r:'R',i:1},{s:'BUILTIN\\Administrators',t:'a',r:'RWDP',i:1}],u:'jaan',want:'W',
+   e:'Hinded on kaustas, kuhu kõigil domeeni kasutajatel on (päritud) lugemisõigus, õpetajatel muutmisõigus ja õpilastele on kirjutamine keelatud. Proovi Jaani ja Mariga, lugemise ja kirjutamisega.'},
+ inh:{n:'Otsene luba vs päritud keeld',owner:'BUILTIN\\Administrators',il:'Medium',dacl:[{s:'Õpilased',t:'d',r:'W',i:1},{s:'KOOL\\jaan',t:'a',r:'RW',i:0},{s:'Domain Users',t:'a',r:'R',i:1}],u:'jaan',want:'W',
+   e:'Ülemkaustas on õpilastele kirjutamine keelatud (päritud keeld). Sellele ühele failile on Jaanile otse antud kirjutamisõigus (nt tema enda töö). Kumb võidab?'},
+ sum:{n:'Load liituvad üle rühmade',owner:'BUILTIN\\Administrators',il:'Medium',dacl:[{s:'Õpetajad',t:'a',r:'R',i:0},{s:'Klassijuhatajad',t:'a',r:'W',i:0}],u:'mari',want:'RW',
+   e:'Õpetajad saavad lugeda, klassijuhatajad kirjutada. Mari on mõlemas rühmas. Kas ta saab faili lugeda ja kirjutada?'},
+ none:{n:'Unustatud õigus (vaikimisi keeld)',owner:'BUILTIN\\Administrators',il:'Medium',dacl:[{s:'BUILTIN\\Administrators',t:'a',r:'RWDP',i:0}],u:'mari',want:'R',
+   e:'Administraator lõi kausta ja andis õigused ainult administraatoritele. Mari ei pääse – miks?'},
+ every:{n:'„Everyone – keela“ viga',owner:'BUILTIN\\Administrators',il:'Medium',dacl:[{s:'Everyone',t:'d',r:'D',i:0},{s:'BUILTIN\\Administrators',t:'a',r:'RWDP',i:0},{s:'Õpetajad',t:'a',r:'RWD',i:0}],u:'annaH',want:'D',
+   e:'Keegi tahtis kaitsta faile kustutamise eest ja lisas „Everyone – keela kustutamine“. Kas administraator Anna saab vana faili kustutada?'},
+ nulld:{n:'NULL DACL (DACL puudub)',owner:'KOOL\\mari',il:'Medium',dacl:null,u:'jaan',want:'RWD',
+   e:'Programm lõi faili ilma DACL-ita. Mis juhtub?'},
+ mic:{n:'Brauser (Low) kirjutab dokumenti',owner:'KOOL\\mari',il:'Medium',dacl:[{s:'KOOL\\mari',t:'a',r:'RWDP',i:1}],u:'low',want:'W',
+   e:'Mari dokumendile on Marile täielik õigus. Brauseri vaheleht töötab Mari nimel, kuid tasemel Low. Kas see saab dokumenti muuta?'},
+ own:{n:'Omanik saab alati õigusi muuta',owner:'KOOL\\mari',il:'Medium',dacl:[{s:'Everyone',t:'d',r:'RW',i:0}],u:'mari',want:'P',
+   e:'Mari lukustas end kogemata välja: „Everyone – keela lugemine ja kirjutamine“. Kas ta saab õigused parandada?'}};
+let AC,ak=-1,ares=null;
+$('apre').innerHTML=Object.entries(APRE).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('');
+$('auser').innerHTML=Object.entries(AUS).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join('');
+$('arights').innerHTML=Object.entries(RN).map(([k,v])=>`<label class="tg"><input type="checkbox" data-r="${k}"> <span>${v}</span></label>`).join('');
+function aLoad(){const P=APRE[$('apre').value];AC={owner:P.owner,il:P.il,dacl:P.dacl?P.dacl.map(x=>({...x,on:true})):null};$('auser').value=P.u;
+  document.querySelectorAll('#arights input').forEach(c=>c.checked=P.want.includes(c.dataset.r));ak=-1;aRender()}
+function sorted(){return AC.dacl?AC.dacl.map((x,ix)=>({...x,ix})).sort((a,b)=>(a.i-b.i)||((a.t==='d'?0:1)-(b.t==='d'?0:1))):null}
+function aEval(){const T=AUS[$('auser').value],want=[...document.querySelectorAll('#arights input')].filter(c=>c.checked).map(c=>c.dataset.r);
+  const sids=[T.user,...T.groups],steps=[];const ilv={Low:1,Medium:2,High:3,System:4};
+  if(!want.length)return {steps:['Vali vähemalt üks õigus.'],res:null};
+  if((want.includes('W')||want.includes('D')||want.includes('P'))&&ilv[T.il]<ilv[AC.il]){steps.push({t:`<b>MIC:</b> tokeni tase <b>${T.il}</b> on madalam kui objekti tase <b>${AC.il}</b>. Muutmine (kirjutamine, kustutamine, õiguste muutmine) on keelatud – ACL-i ei vaadatagi.`,c:'d'});return {steps,res:false,why:'mic'}}
+  steps.push({t:`<b>MIC:</b> tokeni tase ${T.il}, objekti tase ${AC.il}${want.every(w=>w==='R')?' – lugemiseks pole kõrgemat taset vaja':' – sobib'}. ✓`});
+  let granted=new Set();
+  if(want.includes('P')&&sids.includes(AC.owner)){granted.add('P');steps.push({t:`<b>Omanik:</b> ${AC.owner} on objekti omanik ja tokenis olemas – omanikul on alati õigus õigusi lugeda ja muuta. „Muuda õigusi“ ✓`,c:'a'})}
+  if(AC.dacl===null){steps.push({t:'<b>NULL DACL:</b> objektil puudub DACL – <b>kõigil on kõik õigused</b>. See on ohtlik viga.',c:'a'});return {steps,res:true,why:'null'}}
+  if(want.every(w=>granted.has(w))){steps.push({t:'Kõik soovitud õigused on olemas → <b>LUBATUD</b> (DACL-i ei pea edasi vaatama).',c:'a'});return {steps,res:true,why:'allow'}}
+  const S=sorted();
+  steps.push({t:`ACE-d järjekorras: otsesed keelud → otsesed load → päritud keelud → päritud load (${S.filter(x=>x.on).length} kirjet).`});
+  for(const a of S){if(!a.on)continue;const inTok=sids.includes(a.s)&&!(T.deny.includes(a.s)&&a.t==='a');
+    const rel=want.filter(w=>a.r.includes(w)&&!granted.has(w));
+    if(!sids.includes(a.s)){steps.push({t:`ACE #${a.ix+1}: ${a.t==='d'?'keela':'luba'} <b>${a.s}</b> – seda SID-i pole tokenis, jätan vahele.`,ix:a.ix});continue}
+    if(T.deny.includes(a.s)&&a.t==='a'){steps.push({t:`ACE #${a.ix+1}: luba <b>${a.s}</b> – rühm on tokenis „ainult keelamiseks“ (UAC), luba ei kehti.`,ix:a.ix});continue}
+    if(a.t==='d'){const hit=want.filter(w=>a.r.includes(w)&&!granted.has(w));if(hit.length){steps.push({t:`ACE #${a.ix+1}: <b>keela ${a.s}</b> – ${hit.map(x=>RN[x]).join(', ')}. SID on tokenis → <b>KEELATUD</b>.`,ix:a.ix,c:'d'});return {steps,res:false,why:'deny',ace:a}}
+      steps.push({t:`ACE #${a.ix+1}: keela ${a.s} – keelab õigusi, mida ei küsita või mis on juba antud. Edasi.`,ix:a.ix});continue}
+    if(rel.length){rel.forEach(x=>granted.add(x));steps.push({t:`ACE #${a.ix+1}: <b>luba ${a.s}</b> – lisan: ${rel.map(x=>RN[x]).join(', ')}. Kogutud: ${[...granted].map(x=>RN[x]).join(', ')}.`,ix:a.ix,c:'a'})}
+    else steps.push({t:`ACE #${a.ix+1}: luba ${a.s} – ei lisa midagi soovitud õigustest.`,ix:a.ix});
+    if(want.every(w=>granted.has(w))){steps.push({t:'Kõik soovitud õigused on kogutud → <b>LUBATUD</b>.',c:'a'});return {steps,res:true,why:'allow'}}}
+  steps.push({t:`ACE-d said otsa. Puudu: ${want.filter(w=>!granted.has(w)).map(x=>RN[x]).join(', ')} → <b>KEELATUD</b> (vaikimisi keeld).`,c:'d'});return {steps,res:false,why:'implicit'}}
+function aRender(){const S=sorted();
+  $('atab').innerHTML=S===null?'<tr><td colspan="6"><b>DACL puudub (NULL DACL)</b></td></tr>':S.map((a,n)=>`<tr class="${a.on?'':'off'}" data-ix="${a.ix}"><td>${n+1}</td><td>${a.s}</td><td><span class="tag ${a.t}">${a.t==='a'?'Luba':'Keela'}</span></td><td>${[...a.r].map(x=>RN[x]).join(', ')}</td><td>${a.i?'päritud':'otsene'}</td><td><button class="btn" data-op="on">${a.on?'Lülita välja':'Lülita sisse'}</button> <button class="btn" data-op="t">↔ ${a.t==='a'?'keeluks':'loaks'}</button> <button class="btn" data-op="i">${a.i?'→ otseseks':'→ päritud'}</button></td></tr>`).join('');
+  $('atab').querySelectorAll('button').forEach(b=>b.onclick=()=>{const ix=+b.closest('tr').dataset.ix,a=AC.dacl[ix];if(b.dataset.op==='on')a.on=!a.on;if(b.dataset.op==='t')a.t=a.t==='a'?'d':'a';if(b.dataset.op==='i')a.i=a.i?0:1;ak=-1;aRender()});
+  $('ameta').innerHTML=`Omanik: <b>${AC.owner}</b> · objekti terviklikkuse tase: <b>${AC.il}</b> · Tabel on SRM-i kontrolli järjekorras (otsesed keelud → otsesed load → päritud keelud → päritud load). ${APRE[$('apre').value].e}`;
+  const r=aEval();ares=r;const st=r.steps;const k=ak<0?0:Math.min(ak,st.length);
+  $('asteps').innerHTML=st.slice(0,k).map((s,i)=>`<li style="${s.c==='d'?'color:var(--bad)':s.c==='a'?'color:var(--ok)':''}">${s.t||s}</li>`).join('');
+  document.querySelectorAll('#atab tr').forEach(tr=>tr.classList.remove('cur','hitd','hita'));
+  const last=st[k-1];if(last&&last.ix!==undefined){const tr=document.querySelector(`#atab tr[data-ix="${last.ix}"]`);if(tr)tr.classList.add(last.c==='d'?'hitd':last.c==='a'?'hita':'cur')}
+  $('astep').disabled=k>=st.length;
+  const I=$('ainfo');
+  if(k<st.length){I.className='info';I.innerHTML=k?'Jätka „Kontrolli samm-sammult“…':'Vajuta „Kontrolli samm-sammult“ või „Näita tulemust“.';return}
+  const P=$('apre').value,T=AUS[$('auser').value];I.className='info '+(r.res?'ok':'bad');
+  const W={mic:'<b>Keelatud terviklikkuse tõttu.</b> Kuigi ACL lubab Marile kõike, töötab brauseri vaheleht tasemel Low ja ei tohi muuta Medium-taseme objekte („no write up“). See piirab veebist tulnud pahavara kahju.',null:'<b>Lubatud kõigile!</b> NULL DACL tähendab „pole piiranguid“. Seda ei tohi segi ajada tühja DACL-iga, kus pole kellelgi õigusi. NULL DACL on turvaviga.',deny:`<b>Keelatud</b> keelava ACE tõttu (${r.ace?r.ace.s:''}).`+(P==='every'?' Everyone sisaldab ka administraatoreid – keelav kirje kehtib kõigile. Anna peab esmalt keelu eemaldama (ta saab seda teha, sest administraatorid saavad õigusi muuta). Õppetund: ära kasuta „Everyone – keela“; kaitse failid sellega, et kustutamisõigust ei anta.':P==='hinded'?' Õpilased ei tohi hindeid muuta. Lugemist proovi ise – kas Jaan saab faili lugeda? (Jah – päritud luba Domain Users.) Kas see on õige? Vähimate õiguste põhimõtte järgi ei peaks õpilastel olema kausta üldse ligipääsu.':''),
+   implicit:'<b>Keelatud vaikimisi keelu tõttu.</b> Ükski ACE ei andnud kõiki soovitud õigusi. Seda ei pea eraldi keelama – piisab, kui luba ei anta. '+(P==='none'?'Lahendus: lisa luba rühmale Õpetajad (mitte Marile isiklikult). Pea meeles: Mari peab pärast rühma lisamist uuesti sisse logima!':''),
+   allow:'<b>Lubatud.</b> '+(P==='inh'?'<b>Otsene luba võidab päritud keelu</b>, sest otsesed kirjed kontrollitakse enne päritud kirjeid. Nii saab ülemkausta reeglist teha erandi ühe faili jaoks.':P==='sum'?'<b>Load liituvad:</b> lugemine tuli rühmast Õpetajad ja kirjutamine rühmast Klassijuhatajad.':P==='own'?'<b>Omanik saab alati õigusi muuta</b>, isegi kui ACL keelab kõik muu. Nii ei saa keegi end jäädavalt välja lukustada. Mari saab nüüd keelu eemaldada.':'Kõik soovitud õigused leiti lubavatest ACE-dest enne ühtegi sobivat keeldu.')};
+  I.innerHTML=W[r.why]||''}
+$('astep').onclick=()=>{ak=ak<0?1:ak+1;aRender()};$('aall').onclick=()=>{ak=999;aRender()};$('areset').onclick=aLoad;
+$('apre').onchange=aLoad;$('auser').onchange=()=>{ak=-1;aRender()};document.querySelectorAll('#arights input').forEach(c=>c.onchange=()=>{ak=-1;aRender()});
+aLoad();
+
+/* 5. UAC */
+const UA=[['install','📦 Paigalda PDF-redaktor'],['sys','🕐 Muuda süsteemi kellaaega'],['doc','📄 Ava oma dokument'],['mal','🦠 Pahavara proovib vaikselt administraatoriks saada'],['malf','🦠 Pahavara loeb kasutaja faile'],['prog','📁 Kirjuta faili kausta C:\\Program Files']];
+let ua='install';
+$('uacts').innerHTML=UA.map(([k,v])=>`<button class="btn" data-a="${k}">${v}</button>`).join('');
+$('uacts').querySelectorAll('button').forEach(b=>b.onclick=()=>{ua=b.dataset.a;uDraw()});
+function uDraw(){document.querySelectorAll('#uacts button').forEach(b=>b.classList.toggle('on',b.dataset.a===ua));const c=$('uacc').value;
+  const M={std:{install:'Windows küsib <b>administraatori kasutajanime ja parooli</b> (mitte lihtsalt „Jah“). Kui kasutaja seda ei tea, paigaldust ei toimu. IT-tugi saab paigaldada distantsilt või Intune’i kaudu. <b>Kõige turvalisem</b>, kuid nõuab paigalduste tsentraalset haldust.',sys:'Süsteemi kella muutmine vajab privileegi, mida tavakasutajal pole – küsitakse administraatori parooli. (Ajavööndit tohib kasutaja muuta.)',doc:'Töötab tavaliselt – kasutaja dokumendid on tema enda omad. Token: Medium.',mal:'<b>Ebaõnnestub.</b> Kasutajal pole administraatori õigusi – pahavaral pole midagi „tõsta“. Ta peaks leidma Windowsi turvaaugu (seepärast on uuendused olulised).',malf:'<b>Õnnestub.</b> Pahavara töötab kasutaja nimel ja näeb kõike, mida kasutaja näeb. Tavakasutaja konto kaitseb süsteemi, mitte kasutaja enda faile. Kaitse: kontrollitud kaustale juurdepääs, EDR, varundus.',prog:'Keelatud – Program Files on kaitstud. Vanad programmid, mis tahavad sinna kirjutada, suunatakse virtualiseerimisega kasutaja kausta (VirtualStore).'},
+   uac:{install:'Ekraan tumeneb (<b>turvaline töölaud</b> – teised programmid ei saa nuppu vajutada) ja ilmub „Kas lubate sellel rakendusel teha muudatusi?“. Kasutaja vajutab <b>„Jah“</b>. Paigaldaja saab <b>täieliku tokeni</b> (High). Probleem: kasutajad harjuvad „Jah“ vajutama.',sys:'UAC-kinnitus ja seejärel täieliku tokeniga muudetakse kella.',doc:'Töötab piiratud tokeniga (Medium) – administraatori õigusi pole vaja ja neid ei kasutata.',mal:'<b>Võib õnnestuda.</b> On teada palju UAC-st mööda hiilimise viise (UAC bypass): mõni Windowsi programm tõstab end automaatselt ilma küsimata ja pahavara saab seda ära kasutada. Microsoft ütleb ise, et <b>UAC ei ole turvapiir</b>. Kaitse: kasuta igapäevaseks tööks tavakasutajat või administraatori kaitset; UAC liugur kõige kõrgemale („Teavita alati“).',malf:'<b>Õnnestub</b> – sama nagu tavakasutajal. Pahavara töötab kasutaja nimel.',prog:'Piiratud tokeniga keelatud. „Käivita administraatorina“ korral lubatud pärast UAC-kinnitust.'},
+   ap:{install:'Windows küsib <b>Windows Hello</b> kinnitust (PIN, nägu või sõrm) – pahavara ei saa seda imiteerida. Paigaldaja käivitatakse <b>eraldi ajutise süsteemi hallatava kontoga</b>, millel on administraatori õigused. Kui paigaldus lõpeb, kaob ka see token. Kasutaja igapäevaseanss ei hoia kunagi administraatori tokenit.',sys:'Windows Hello kinnitus, toiming tehakse ajutise administraatori tokeniga.',doc:'Töötab tavalise tokeniga – administraatori kaitse ei sega igapäevatööd.',mal:'<b>Palju raskem.</b> Kasutaja kontol pole peidetud administraatori tokenit, mida pahavara saaks „üles äratada“. Iga tõstmine nõuab Windows Hello kinnitust ja toimub eraldi kontol – tavalised UAC bypass võtted ei tööta.',malf:'<b>Õnnestub</b> – administraatori kaitse kaitseb süsteemi, mitte kasutaja faile. Pahavara näeb kasutaja dokumente.',prog:'Ainult pärast Windows Hello kinnitust ajutise kontoga.'}};
+  const I=$('uinfo');I.className='info'+(ua==='malf'||(ua==='mal'&&c==='uac')?' bad':(ua==='mal'?' ok':''));I.innerHTML=M[c][ua]}
+$('uacc').onchange=uDraw;uDraw();
+
+/* 6. Autentimine */
+const AM=['Ainult parool','Parool + SMS-kood','Parool + rakendus numbriga','Windows Hello (PIN + TPM)','Pääsvõti / FIDO2-võti'];
+const AA=['Õngitsusleht','Lekkinud parool mujalt','Parooli äraarvamine','MFA-väsimus','SIM-vahetus','Varastatud sülearvuti'];
+const AX=[[['r','Kasutaja sisestab parooli võltslehele – ründajal on kõik, mida vaja.'],['r','Kui sama parooli kasutati mujal, pääseb ründaja kohe sisse.'],['y','Kaitseb ainult tugev parool ja konto lukustus pärast valesid katseid.'],['n','Ei puutu asjasse: MFA-d pole, seega pole ka MFA-väsimust. Ründaja ei vajagi seda – parool üksi piisab.'],['n','Ei puutu asjasse: telefoni ei kasutata. Ründajal pole SIM-vahetust vaja, sest parool üksi piisab.'],['y','Kui ketas on krüpteerimata, saab varas andmed ilma paroolita. Kui parool on lihtne, arvab ta selle ära.']],
+ [['r','Kaasaegne õngitsusleht küsib ka SMS-koodi ja edastab selle reaalajas päris lehele.'],['g','Lekkinud parool üksi ei piisa – vaja on ka koodi.'],['g','Parooli äraarvamisest üksi ei piisa.'],['g','Kasutaja peab koodi ise sisestama – päringuid ei saa „üle kinnitada“.'],['r','Kui ründaja saab operaatorilt ohvri numbri, saab ta ka SMS-koodid.'],['y','Kui telefon on samas kotis ja lukustamata…']],
+ [['r','Kasutaja võib õngitsuslehel ka rakenduses „Kinnita“ vajutada – rakendus ei tea, milline leht päringu tegi.'],['g','Lisaks paroolile on vaja kasutaja telefoni.'],['g','Ainult paroolist ei piisa.'],['g','Number matching: kasutaja peab sisestama ekraanil oleva numbri – pimesi kinnitada ei saa.'],['g','Rakendus on seotud seadmega, mitte telefoninumbriga.'],['y','Sõltub sellest, kas telefon ja arvuti varastati koos.']],
+ [['g','Hello for Business on seotud õige teenusega – võltsleht ei saa seda kasutada. (Kohalik Hello PIN kaitseb sisselogimist arvutisse.)'],['g','Parooli pole – pole midagi lekkida.'],['g','PIN-i saab proovida ainult selles arvutis ja TPM lukustub pärast mitut valet katset.'],['g','Kinnitus toimub arvutis endas.'],['g','Telefoni ei kasutata.'],['y','Varas peab teadma PIN-i (TPM piirab katseid). Koos BitLockeriga on andmed kaitstud.']],
+ [['g','<b>Õngitsuskindel:</b> pääsvõti on krüptograafiliselt seotud õige domeeniga. Brauser ei paku seda võltslehele – kasutaja ei saa seda kogemata anda.'],['g','Parooli pole.'],['g','Midagi ära arvata pole – privaatvõti ei lahku seadmest.'],['g','Kinnitus on füüsiline (puudutus, biomeetria) ja seotud konkreetse päringuga.'],['g','Telefoninumbrit ei kasutata.'],['y','Varas peab teadma seadme PIN-i või omama biomeetriat.']]];
+let amSel=null;
+function amDraw(){const s={g:'✅',y:'⚠',r:'❌',n:'—'};
+  $('amx').innerHTML='<tr><th></th>'+AA.map(a=>`<th>${a}</th>`).join('')+'</tr>'+AM.map((m,i)=>'<tr><td class="rh">'+m+'</td>'+AX[i].map(([c,e],j)=>`<td class="m ${c}${amSel&&amSel[0]===i&&amSel[1]===j?' sel':''}" data-i="${i}" data-j="${j}">${s[c]}</td>`).join('')+'</tr>').join('');
+  $('amx').querySelectorAll('td.m').forEach(td=>td.onclick=()=>{amSel=[+td.dataset.i,+td.dataset.j];amDraw()});
+  $('amxinfo').innerHTML=amSel?`<b>${AM[amSel[0]]} vs ${AA[amSel[1]]}:</b> ${AX[amSel[0]][amSel[1]][1]}`:'Klõpsa lahtril. <b>Järeldus:</b> ainult pääsvõtmed ja Windows Hello for Business on rohelised kõigis veergudes peale varguse – need on õngitsuskindlad. Seepärast liiguvad organisatsioonid paroolidest loobumise poole.'}
+amDraw();
+
+/* 7. Lunavara ahel */
+const DEF=[['kool','Kasutajate koolitus ja õngitsusharjutused'],['mfa','MFA (õngitsuskindel) VPN-ile ja e-postile'],['asr','ASR-reeglid (Office ei käivita lapsprotsesse)'],['appc','Rakenduste kontroll (Smart App Control / App Control)'],['upd','Uuendused paigaldatud'],['cg','Credential Guard ja LSA kaitse'],['laps','LAPS (erinevad kohalikud admini paroolid)'],['seg','Tulemüür ja võrgu segmentimine'],['priv','Vähimad õigused (adminid eraldi kontod)'],['edr','EDR koos 24/7 jälgimisega'],['cfa','Kontrollitud kaustale juurdepääs'],['bak','Võrguühenduseta / muutumatu varukoopia']];
+const ST={mail:[['Sissetung','Õpetaja avab e-kirja manuse „Palgaleht.docm“ ja lubab makrod.',['kool']],['Pahavara käivitub','Makro käivitab PowerShelli, mis laadib alla ja käivitab ründaja programmi.',['asr','appc','edr']]],
+ vpn:[['Sissetung','Ründaja logib VPN-i sisse parooliga, mis lekkis teisest teenusest.',['mfa']],['Tööriistad käivituvad','Ründaja käivitab kasutaja arvutis oma tööriistad (skännerid, Mimikatz).',['appc','edr']]]};
+const ST2=[['Õiguste tõstmine','Ründaja kasutab uuendamata Windowsi turvaauku, et saada administraatori õigused.',['upd','edr']],['Mandaatide vargus','Ründaja loeb lsass-i mälust administraatori parooliräsi (Mimikatz).',['cg','edr']],['Külgliikumine','Sama kohaliku administraatori räsiga logib ründaja sisse teistesse arvutitesse ja serveritesse (pass-the-hash).',['laps','seg','edr']],['Domeeni haldus ja varukoopiad','Ründaja leiab arvutist, kuhu domeeni admin hiljuti sisse logis, saab tema mandaadid ja kustutab varikoopiad ning võrgus olevad varukoopiad.',['priv','edr']],['Krüpteerimine','Reede öösel krüpteeritakse korraga kõik serverid ja arvutid.',['cfa','edr']]];
+const sel=new Set();
+$('rdefs').innerHTML=DEF.map(([k,v])=>`<label id="rl_${k}"><input type="checkbox" data-k="${k}"> <span>${v}</span></label>`).join('');
+$('rdefs').querySelectorAll('input').forEach(c=>c.onchange=()=>{c.checked?sel.add(c.dataset.k):sel.delete(c.dataset.k);rDraw()});
+$('rclear').onclick=()=>{sel.clear();$('rdefs').querySelectorAll('input').forEach(c=>c.checked=false);rDraw()};$('rvec').onchange=rDraw;
+const DN=Object.fromEntries(DEF);
+function rDraw(){DEF.forEach(([k])=>$('rl_'+k).classList.toggle('on',sel.has(k)));
+  const S=[...ST[$('rvec').value],...ST2];let stop=-1,by=[];
+  for(let i=0;i<S.length;i++){const h=S[i][2].filter(d=>sel.has(d));if(h.length){stop=i;by=h;break}}
+  $('rchain').innerHTML=S.map((s,i)=>{const cls=stop<0?'done':i<stop?'done':i===stop?'stop':'na';return `<div class="st ${cls}"><b class="n">${i+1}</b><div><b>${s[0]}</b><small>${s[1]}</small><small>Peatab: ${s[2].map(d=>DN[d].split(' (')[0]).join(' · ')}</small></div><span>${cls==='done'?'❌ õnnestus':cls==='stop'?'🛡 PEATATUD':''}</span></div>`}).join('')+
+   (stop<0?`<div class="st ${sel.has('bak')?'stop':'done'}"><b class="n">💾</b><div><b>Taastamine</b><small>${sel.has('bak')?'Võrguühenduseta / muutumatust varukoopiast taastatakse andmed. Kahju: mõni päev seisakut ja viimase varukoopia järel tehtud töö.':'Varukoopiaid pole või need krüpteeriti samuti. Valik: maksta lunaraha (ei garanteeri midagi ja rahastab kurjategijaid) või kaotada andmed.'}</small></div><span>${sel.has('bak')?'✅ päästetud':'💀'}</span></div>`:'');
+  const I=$('rinfo');
+  if(stop>=0){I.className='info ok';I.innerHTML=`<b>Rünnak peatati etapis ${stop+1} („${S[stop][0]}“)</b> – kaitse: ${by.map(d=>DN[d]).join(', ')}. ${by.includes('edr')?'EDR märkas kahtlast käitumist ja turvaanalüütik isoleeris arvuti võrgust. ':''}${by.includes('kool')?'Koolitatud kasutaja tundis õngitsuskirja ära ja teatas IT-le. NB! Koolitus vähendab riski, kuid ei kõrvalda seda – keegi klõpsab alati. Seepärast on vaja ka tehnilisi kaitseid. ':''}Proovi nüüd see kaitse välja lülitada – milline on järgmine kiht, mis ründaja peatab?`}
+  else{I.className='info '+(sel.has('bak')?'ok':'bad');I.innerHTML=sel.size===0?'<b>Ühtegi kaitset pole.</b> Rünnak läbis kõik etapid. Lülita sisse kaitseid ja vaata, millises etapis rünnak peatub.':sel.has('bak')?'Kõik ennetavad kaitsed ebaõnnestusid, kuid <b>varukoopia päästis andmed</b>. Kui ründaja varastas ka andmed (etapp 5 pärisrünnakus), on leke siiski toimunud – seepärast ei piisa ainult varundusest.':'Rünnak õnnestus. Valitud kaitsed ei kata ühtegi selle rünnaku etappi.'}}
+rDraw();
+
+/* 8. Tulemüür */
+const FR=[{n:'RDP haldusvõrgust',d:'in',c:'TCP 3389 · allikas 10.10.99.0/24',p:['dom'],a:'allow',m:x=>x.dir==='in'&&x.port===3389&&x.src.startsWith('10.10.99.')},
+ {n:'Failide ja printerite jagamine',d:'in',c:'TCP 445',p:['dom','prv'],a:'allow',m:x=>x.dir==='in'&&x.port===445},
+ {n:'Notepad keelatud',d:'out',c:'programm notepad.exe',p:['dom','prv','pub'],a:'block',m:x=>x.dir==='out'&&x.prog==='notepad.exe'},
+ {n:'Brauserid',d:'out',c:'msedge.exe, chrome.exe · TCP 80, 443',p:['dom','prv','pub'],a:'allow',m:x=>x.dir==='out'&&['msedge.exe','chrome.exe'].includes(x.prog)&&[80,443].includes(x.port)},
+ {n:'Kahtlased pordid',d:'out',c:'TCP 4444',p:['dom','prv','pub'],a:'block',m:x=>x.dir==='out'&&x.port===4444}];
+const PR={dom:'domeen',prv:'privaatne',pub:'avalik'};
+const PK=[{n:'🌐 Edge → www.ria.ee:443',dir:'out',port:443,prog:'msedge.exe',prof:'dom',src:'192.168.1.57'},{n:'↩ Vastus www.ria.ee-lt',dir:'in',port:52344,prog:'msedge.exe',prof:'dom',src:'185.31.240.10',est:true},{n:'🖥 Internetist RDP 3389 (kohvikus)',dir:'in',port:3389,prof:'pub',src:'45.9.12.66'},{n:'🖥 Haldusvõrgust RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.99.5'},{n:'🖥 Õpilase arvutist RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.20.44'},{n:'📁 Kolleeg SMB 445 (kodus)',dir:'in',port:445,prof:'prv',src:'192.168.1.20'},{n:'📁 Võõras SMB 445 (kohvikus)',dir:'in',port:445,prof:'pub',src:'10.0.0.66'},{n:'📝 Notepad → internet 443',dir:'out',port:443,prog:'notepad.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 4444',dir:'out',port:4444,prog:'svch0st.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 443',dir:'out',port:443,prog:'svch0st.exe',prof:'dom',src:''}];
+const fon=FR.map(()=>true);let fpi=0;
+function fwDraw(){const x=PK[fpi];let hit=-1,steps=[],res;
+  steps.push(`Ühendus: <b>${x.dir==='in'?'sissetulev':'väljaminev'}</b>, port ${x.port}${x.prog?', programm '+x.prog:''}${x.src&&x.dir==='in'?', allikas '+x.src:''}, profiil <b>${PR[x.prof]}</b>.`);
+  if(x.est){steps.push('1. Pakett kuulub <b>olemasolevasse ühendusse</b>, mille Edge ise algatas → <b>lubatud</b>. Sissetulevat reeglit pole vaja – see on olekupõhise tulemüüri eelis.');res='allow'}
+  else{steps.push('1. Pakett ei kuulu olemasolevasse ühendusse.');
+    const cand=FR.map((r,i)=>({r,i})).filter(({r,i})=>fon[i]&&r.p.includes(x.prof)&&r.m(x));
+    const bl=cand.find(c=>c.r.a==='block'),al=cand.find(c=>c.r.a==='allow');
+    if(bl){hit=bl.i;steps.push(`2. Sobib <b>keelav</b> reegel „${bl.r.n}“ → <b>keelatud</b> (keeld võidab).`);res='block'}
+    else{steps.push('2. Ükski keelav reegel ei sobi.');
+      if(al){hit=al.i;steps.push(`3. Sobib <b>lubav</b> reegel „${al.r.n}“ → <b>lubatud</b>.`);res='allow'}
+      else{const d=x.dir==='in'?'block':$('fwdef').value;steps.push(`3. Ükski lubav reegel ei sobi. 4. Kehtib <b>vaikimisi tegevus</b> (${x.dir==='in'?'sissetulev':'väljaminev'}): <b>${d==='allow'?'luba':'keela'}</b>.`);res=d}}}
+  $('fwr').innerHTML=FR.map((r,i)=>`<tr class="${fon[i]?'':'off'} ${i===hit?'hit':''}"><td><input type="checkbox" data-i="${i}" ${fon[i]?'checked':''}></td><td>${r.n}</td><td>${r.d==='in'?'sisse':'välja'}</td><td>${r.c}</td><td>${r.p.map(p=>PR[p]).join(', ')}</td><td><span class="tag ${r.a==='allow'?'a':'d'}">${r.a==='allow'?'Luba':'Keela'}</span></td></tr>`).join('');
+  $('fwr').querySelectorAll('input').forEach(c=>c.onchange=()=>{fon[+c.dataset.i]=c.checked;fwDraw()});
+  $('fwp').innerHTML=PK.map((p,i)=>`<button class="btn${i===fpi?' on':''}" data-i="${i}">${p.n}</button>`).join('');
+  $('fwp').querySelectorAll('button').forEach(b=>b.onclick=()=>{fpi=+b.dataset.i;fwDraw()});
+  $('fwsteps').innerHTML=steps.map(s=>'<li>'+s+'</li>').join('');
+  const E={0:'Tavaline veebilehitsemine.',1:'Vastused tulevad sisse, kuigi sissetulev liiklus on vaikimisi keelatud.',2:'Avalikus võrgus ei luba ükski reegel RDP-d – hea! RDP ei tohi kunagi olla internetti avatud (parooli äraarvamine, turvaaugud nagu BlueKeep).',3:'Administraatorid pääsevad haldusvõrgust ligi.',4:'Õpilaste võrgust RDP-d ei lubata, sest reegel lubab ainult haldusvõrku 10.10.99.0/24.',5:'Kodus (privaatne profiil) on failijagamine lubatud.',6:'Kohvikus (avalik profiil) failijagamise reegel ei kehti – võõrad ei näe sinu kaustu.',7:'Keelav reegel peatab Notepadi.',8:'Keelav reegel peatab tuntud kahtlase pordi.',9:($('fwdef').value==='allow'?'<b>Pahavara pääseb läbi!</b> Väljaminev liiklus on vaikimisi lubatud ja port 443 on tavaline – tulemüür ei tee vahet pahavaral ja brauseril. Seepärast on vaja ka EDR-i ja rakenduste kontrolli. Proovi vaikimisi väljaminev „Keela“.':'Kui väljaminev on vaikimisi keelatud, saavad internetti ainult lubatud programmid (brauserid). Pahavara jääb kinni! Kuid nüüd peab administraator iga vajaliku programmi jaoks reegli tegema – seda tehakse serverites, mitte tavaarvutites.')};
+  $('fwinfo').className='info '+(res==='allow'?'ok':'bad');$('fwinfo').innerHTML=`<b>${res==='allow'?'LUBATUD':'KEELATUD'}.</b> ${E[fpi]}`}
+$('fwdef').onchange=fwDraw;fwDraw();
+
+/* 9. Logi */
+const EV=[['08:02','4624','KOOL\\mari','Logon type 2 (klaviatuur), tööjaam OPET-12',''],['16:45','4634','KOOL\\mari','väljalogimine',''],['02:13','4625','Administrator','Logon type 10 (RDP), allikas 45.9.12.66 – vale parool','w'],['02:13–02:15','4625 ×38','Administrator, admin, kool…','Logon type 10, allikas 45.9.12.66','w'],['02:16','4624','Administrator','Logon type 10 (RDP), allikas 45.9.12.66','r'],['02:16','4672','Administrator','eriõigused määratud (SeDebugPrivilege, …)','r'],['02:18','4720','Administrator','loodi kasutaja „support“','r'],['02:18','4732','Administrator','„support“ lisati rühma Administrators','r'],['02:21','4688','Administrator','protsess vssadmin.exe delete shadows /all /quiet','r'],['02:22','4688','Administrator','protsess C:\\Users\\Public\\x.exe','r'],['02:25','1102','Administrator','turvalogi tühjendati','r']];
+$('evt').innerHTML=EV.map(e=>`<tr class="${e[4]}"><td>${e[0]}</td><td>${e[1]}</td><td>${e[2]}</td><td>${e[3]}</td></tr>`).join('');
+mq('evq','evs','evr',[
+ ['Mis toimus kell 02:13–02:15?',['Kasutaja unustas parooli','Parooli äraarvamine üle kaugtöölaua internetist','Windowsi uuendus','Varundus'],1,'39 ebaõnnestunud RDP-sisselogimist (tüüp 10) samalt välisaadressilt eri kontonimedega mõne minuti jooksul – automaatne parooli äraarvamine. Probleemi juur: RDP oli internetti avatud.'],
+ ['Kas rünnak õnnestus?',['Jah, kell 02:16','Ei, kõik katsed ebaõnnestusid','Ei saa öelda'],0,'Sündmus 4624 kell 02:16 samalt aadressilt – ründaja arvas parooli ära. 4672 näitab, et sisselogimine sai administraatori õigused.'],
+ ['Miks loodi kasutaja „support“ ja lisati administraatoriks?',['IT-tugi vajas uut kontot','Ründaja jättis endale tagaukse, et pääseda tagasi ka pärast parooli vahetamist','Windows teeb seda automaatselt'],1,'Uus administraatorikonto öösel samast seansist on klassikaline <b>kinnistumine</b>. Sündmused 4720 + 4732 peaks alati tekitama häire.'],
+ ['Mida tähendab vssadmin delete shadows?',['Ketta puhastamine','Varikoopiate kustutamine – lunavara valmistub krüpteerima','Varunduse käivitamine'],1,'Ründaja kustutab varikoopiad, et ohver ei saaks faile „Eelmistest versioonidest“ taastada. See on üks kindlamaid lunavara tunnuseid – EDR peaks selle peale kohe reageerima.'],
+ ['Mida tähendab sündmus 1102?',['Tavaline logi rotatsioon','Ründaja kustutas turvalogi, et jälgi peita','Uus sisselogimine'],1,'1102 = turvalogi tühjendati. Õnneks salvestas server sündmused enne seda keskserverisse (SIEM) – muidu poleks seda logi üldse. Õppetund: saada logid kohe eraldi serverisse.'],
+ ['Milline meede oleks rünnaku kõige tõenäolisemalt ära hoidnud?',['Suurem kõvaketas','RDP mitte internetti avada (VPN + MFA) ja konto lukustuspoliitika','Kiirem internet'],1,'RDP peab olema kättesaadav ainult VPN-i või RD Gateway kaudu koos MFA-ga. Konto lukustus oleks peatanud äraarvamise. LAPS ja sisseehitatud Administrator konto ümbernimetamine/keelamine raskendavad veelgi.']]);
+</script>
+</body>
+</html>

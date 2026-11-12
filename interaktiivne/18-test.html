@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 18 – test: Windowsi turvalisus</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/18-turvalisus.md">← Peatükk 18</a> · <a href="18-turvalisus.html">Interaktiivne õpileht</a></nav>
+<h1>Test: Windowsi turvalisus</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[{"q": "Õpetaja saatis hinnetega faili kogemata valele meililistile. Millist CIA eesmärki see rikub?", "o": ["Käideldavust", "Autentimist", "Konfidentsiaalsust", "Terviklust"], "c": 2, "e": "Andmed jõudsid inimesteni, kellel polnud õigust neid näha – leke rikub konfidentsiaalsust."}, {"q": "Lunavara krüpteeris failiserveri ja keegi ei saa faile avada. Milline CIA eesmärk on peamiselt rikutud?", "o": ["Mitte ükski", "Käideldavus", "Konfidentsiaalsus", "Terviklus"], "c": 1, "e": "Andmed on olemas, kuid kättesaamatud – käideldavus. Kui andmed ka varastati, rikutakse lisaks konfidentsiaalsust."}, {"q": "Mis on SID?", "o": ["Kasutaja, rühma või arvuti püsiv unikaalne turvatunnus", "Kasutaja parooli räsi", "Võrgukaardi aadress", "Faili nimi NTFS-is"], "c": 0, "e": "SID (Security Identifier) on objekti püsiv tunnus. Õigused salvestatakse SID-i, mitte nime järgi."}, {"q": "Konto „mari“ kustutati ja loodi uuesti sama nimega. Miks ei kehti vanad failiõigused?", "o": ["Windows kustutab õigused iga päev", "Nimi on tõstutundlik", "Parool muutus", "Uus konto sai uue SID-i, õigused on aga seotud vana SID-iga"], "c": 3, "e": "Õiguste loendis on vana SID, mis ei vasta enam ühelegi kontole. Uue konto SID on erinev."}, {"q": "Mida tähistab SID-i lõpus olev RID 500?", "o": ["Domain Users rühma", "SYSTEM kontot", "Sisseehitatud Administrator kontot", "Külaliskontot"], "c": 2, "e": "RID 500 on sisseehitatud Administrator. Seda ei saa lukustada, seepärast on see ründajate lemmiksiht."}, {"q": "Mis on S-1-5-18?", "o": ["Guest", "SYSTEM (LocalSystem)", "Everyone", "Administrators"], "c": 1, "e": "S-1-5-18 on SYSTEM – arvuti kõige võimsam konto, mille all töötavad paljud teenused."}, {"q": "Mida juurdepääsutoken EI sisalda?", "o": ["Kasutaja parooli", "Kasutaja SID-i", "Rühmade SID-e", "Privileege ja terviklikkuse taset"], "c": 0, "e": "Token sisaldab SID-e, privileege ja terviklikkuse taset, kuid mitte parooli."}, {"q": "Administraator lisas Jaani rühma „Õpetajad“, kuid Jaan ei pääse ikka kausta. Mis on kõige tõenäolisem põhjus?", "o": ["Rühmad ei saa õigusi omada", "Jaanil on vale parool", "Kaust on krüpteeritud", "Jaani token loodi enne rühma lisamist – ta peab uuesti sisse logima"], "c": 3, "e": "Token luuakse sisselogimisel ja see ei uuendu ise. Pärast rühma lisamist tuleb välja ja sisse logida."}, {"q": "Millist privileegi kasutab Mimikatz lsass-i mälust parooliräside lugemiseks?", "o": ["SeChangeNotifyPrivilege", "SeUndockPrivilege", "SeDebugPrivilege", "SeShutdownPrivilege"], "c": 2, "e": "SeDebugPrivilege lubab avada mis tahes protsessi mälu. See on ainult tõstetud administraatoril."}, {"q": "Administraator Anna töötab tavalises aknas (UAC). Milline on selle akna tokeni olukord?", "o": ["Token puudub", "Administrators on „ainult keelamiseks“, ohtlikud privileegid puuduvad, tase Medium", "Täielikud administraatori õigused, tase High", "Tase System"], "c": 1, "e": "UAC annab administraatorile jagatud tokeni: igapäevane piiratud (Medium) ja tõstetud (High) ainult „Käivita administraatorina“ korral."}, {"q": "Brauseri vaheleht töötab tasemel Low. Mida see tähendab?", "o": ["Ta ei saa kirjutada Medium-taseme objektidesse, isegi kui ACL lubaks", "Ta saab kirjutada kõikjale", "Ta ei saa internetti", "Ta töötab SYSTEM-ina"], "c": 0, "e": "Mandatory Integrity Control: madalama taseme protsess ei tohi muuta kõrgema taseme objekte („no write up“)."}, {"q": "Mis on DACL?", "o": ["Auditikirjete loend", "Kasutaja paroolide loend", "Tulemüüri reeglite loend", "Objekti kirjete loend, mis määrab, kes mida tohib"], "c": 3, "e": "DACL (Discretionary Access Control List) koosneb ACE-dest (luba/keela, SID, õigused). Auditikirjed on SACL-is."}, {"q": "Millises järjekorras kontrollib SRM ACE-sid?", "o": ["Päritud → otsesed", "Tähestiku järjekorras", "Otsesed keelud → otsesed load → päritud keelud → päritud load", "Load → keelud"], "c": 2, "e": "Kanooniline järjekord: otsesed kirjed enne päritud kirjeid ja nende sees keelud enne lube."}, {"q": "Ülemkaustas on õpilastele kirjutamine keelatud (päritud). Ühele failile on Jaanile otse lubatud kirjutamine. Mis juhtub?", "o": ["Fail kustutatakse", "Jaan saab kirjutada – otsene luba kontrollitakse enne päritud keeldu", "Jaan ei saa – keeld võidab alati", "Windows küsib administraatorilt"], "c": 1, "e": "„Keeld võidab“ kehtib sama taseme piires. Otsesed kirjed kontrollitakse enne päritud kirjeid."}, {"q": "Failil on ainult ACE „Administrators – täielik juurdepääs“. Mari pole administraator. Miks ta ei pääse faili lugema?", "o": ["Vaikimisi keeld – kui ükski ACE ei luba, on keelatud", "Faili on krüpteeritud", "Maril on keelav ACE", "NULL DACL"], "c": 0, "e": "Õigust pole vaja eraldi keelata: kui luba pole antud, on juurdepääs keelatud."}, {"q": "Mis vahe on NULL DACL-il ja tühjal DACL-il?", "o": ["Pole vahet", "NULL DACL – kellelgi pole õigusi; tühi – kõigil", "Mõlemad keelavad ainult kirjutamise", "NULL DACL – kõigil kõik õigused; tühi DACL – kellelgi pole õigusi"], "c": 3, "e": "DACL-i puudumine tähendab, et piiranguid pole. Tühi DACL ei luba kedagi (v.a omanik saab õigusi muuta)."}, {"q": "Miks on „Everyone – keela kustutamine“ halb mõte?", "o": ["See kustutab faili", "Keelavad ACE-d ei tööta", "Everyone sisaldab ka administraatoreid ja teenuseid – keeld kehtib kõigile", "Everyone ei sisalda kedagi"], "c": 2, "e": "Keelav kirje rühmale Everyone tabab kõiki. Parem on lihtsalt kustutamisõigust mitte anda."}, {"q": "Mida ütleb Microsoft UAC kohta?", "o": ["UAC krüpteerib kettaid", "UAC ei ole turvapiir – sellest mööda hiilimise viise on teada", "UAC on läbimatu", "UAC asendab viirusetõrjet"], "c": 1, "e": "UAC on mugavus- ja kaitsemeede, kuid mitte turvapiir. Turvalisem on töötada tavakasutajana või administraatori kaitsega."}, {"q": "Mille poolest erineb Windows 11 administraatori kaitse tavalisest UAC-st?", "o": ["Tõstmiseks luuakse eraldi ajutine süsteemi hallatav konto ja nõutakse Windows Hello kinnitust", "See lülitab UAC täiesti välja", "Kasutaja töötab alati administraatorina", "See töötab ainult serverites"], "c": 0, "e": "Kasutaja seanss ei hoia administraatori tokenit. Iga tõstmine nõuab Hello kinnitust ja toimub ajutisel kontol."}, {"q": "Milline autentimisviis on õngitsuskindel?", "o": ["Parool + SMS-kood", "Parool + e-posti kood", "Turvaküsimus", "Pääsvõti (FIDO2)"], "c": 3, "e": "Pääsvõti on krüptograafiliselt seotud õige domeeniga – brauser ei paku seda võltslehele."}, {"q": "Ründajal on kasutaja parool ja ta saadab öösel kümneid MFA-kinnituspäringuid. Mis aitab kõige paremini?", "o": ["Ekraanisäästja", "Uuem brauser", "Numbri sisestamine (number matching) või pääsvõti", "Pikem parool"], "c": 2, "e": "MFA-väsimuse vastu aitab, kui kasutaja peab sisestama ekraanil oleva numbri – pimesi kinnitada ei saa."}, {"q": "Mida teeb LAPS?", "o": ["Logib kõik sisselogimised", "Annab igale arvutile erineva, regulaarselt muudetava kohaliku administraatori parooli", "Krüpteerib ketta", "Blokeerib makrod"], "c": 1, "e": "Kui kõigil arvutitel on sama kohalik admini parool, saab ründaja ühe räsiga kõikidesse sisse (pass-the-hash). LAPS takistab seda."}, {"q": "Logis on sündmused: 38 × 4625, siis 4624 (tüüp 10), 4720, 4732 ja 1102. Mis juhtus?", "o": ["Edukas parooli äraarvamine üle RDP, tagaukse konto loomine ja logi tühjendamine", "Tavaline tööpäev", "Windowsi uuendus", "Varundus"], "c": 0, "e": "4625 = ebaõnnestunud, 4624 tüüp 10 = edukas RDP, 4720 = konto loodi, 4732 = lisati rühma, 1102 = turvalogi tühjendati."}, {"q": "Miks töötab veebilehitsemine, kuigi sissetulev liiklus on tulemüüris vaikimisi keelatud?", "o": ["Brauserid lülitavad tulemüüri välja", "Port 443 on alati lubatud", "Sissetulevat liiklust pole", "Tulemüür on olekupõhine – vastused kasutaja algatatud ühendustele lubatakse"], "c": 3, "e": "Olekupõhine tulemüür jälgib ühendusi ja laseb läbi nende vastused."}, {"q": "Lunavara ahelas kustutas ründaja varikoopiad ja võrgus olevad varukoopiad. Mis päästab andmed?", "o": ["Varikoopiad samal kettal", "Prügikast", "Võrguühenduseta või muutumatu varukoopia", "RAID 1"], "c": 2, "e": "Ründaja ei pääse ligi varukoopiale, mis pole võrgus või mida ei saa muuta. RAID ei ole varukoopia."}];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
