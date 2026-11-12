@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 16 – salvestushaldus: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.slider{display:grid;grid-template-columns:230px 1fr 100px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+@media (max-width:600px){.slider{grid-template-columns:1fr 100px}.slider label{grid-column:1/3}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.tl{display:grid;grid-template-columns:130px 1fr 110px;gap:8px;align-items:center;margin:6px 0;font-size:13.5px}
+.tl .bar{display:flex;height:26px;border-radius:6px;overflow:hidden;background:var(--bg);border:1px solid var(--border)}
+.tl .bar div{height:100%}
+.tl b{font-family:var(--mono);text-align:right;font-size:13px}
+.disk{display:flex;height:64px;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:10px}
+.disk div{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12.5px;border-right:1px solid var(--border);cursor:pointer;background:var(--bg);padding:2px;text-align:center}
+.disk div:hover{background:var(--accent-bg)}
+.disk div.on{background:var(--accent-bg);box-shadow:inset 0 0 0 2px var(--accent)}
+.disk div small{color:var(--muted);font-size:11px}
+.raidwrap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.rdisk{border:1px solid var(--border);border-radius:10px;background:var(--bg);padding:6px;width:86px;cursor:pointer;text-align:center;font-size:12px}
+.rdisk:hover{box-shadow:0 0 0 2px var(--accent)}
+.rdisk div{border-radius:5px;margin:3px 0;padding:5px 0;font-family:var(--mono);font-size:12.5px;font-weight:600;background:var(--card)}
+.rdisk div.p{background:#faeeda;color:#633806}
+.rdisk div.q{background:#f5e6f3;color:#7a2f74}
+.rdisk div.d{background:#e6f1fb;color:#0c447c}
+.rdisk.fail{border-color:var(--bad-line);background:var(--bad-bg)}
+.rdisk.fail div{opacity:.25;text-decoration:line-through}
+.rdisk .st{font-family:system-ui;font-weight:600;font-size:11.5px;margin-top:4px}
+.xor{display:grid;grid-template-columns:150px repeat(4,44px) 1fr;gap:6px;align-items:center;font-size:14px;margin-top:8px}
+.xor button.bit{font-family:var(--mono);font-size:18px;font-weight:700;padding:.3rem 0;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.xor span.bit{font-family:var(--mono);font-size:18px;font-weight:700;text-align:center;padding:.3rem 0;border-radius:6px;background:#faeeda;color:#633806}
+.xor span.bit.rec{background:var(--ok-bg);color:var(--ok)}
+.xor .lost{opacity:.3}
+.chain{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+@media (max-width:640px){.chain{grid-template-columns:1fr 1fr}}
+.chain div{border:2px solid var(--border);border-radius:10px;padding:.5rem .6rem;text-align:center;font-size:13px;background:var(--bg)}
+.chain div b{display:block;font-size:15px}
+.chain div.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.chain div.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.chain div.ask{border-color:#c26a0a;background:#faeeda}
+.scen{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.scen .btn{font-size:13px;padding:.35rem .65rem}
+.chk{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:6px;margin-top:8px}
+.chk label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--border);border-radius:8px;padding:.45rem .6rem;background:var(--bg);font-size:14px;cursor:pointer}
+.chk label.on{border-color:var(--accent);background:var(--accent-bg)}
+.rules{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
+@media (max-width:640px){.rules{grid-template-columns:1fr 1fr}}
+.rules div{border-radius:8px;padding:.45rem;text-align:center;font-size:12.5px;border:1px solid var(--border)}
+.rules div b{display:block;font-size:20px;font-family:var(--mono)}
+.rules div.ok{background:var(--ok-bg);border-color:var(--ok-line)}
+.rules div.bad{background:var(--bad-bg);border-color:var(--bad-line)}
+table.thr td.ok{color:var(--ok);font-weight:600}
+table.thr td.bad{color:var(--bad);font-weight:600}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:10px;align-items:end;height:150px}
+.week div{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;font-size:12px}
+.week div i{display:block;width:70%;border-radius:4px 4px 0 0}
+.week div.need i{outline:3px solid var(--bad-line);outline-offset:1px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/16-salvestushaldus.md">← Peatükk 16</a> · <a href="16-test.html">Test →</a></nav>
+<h1>Salvestushaldus – õpileht</h1>
+<p>See leht aitab mõista, kuidas kettad töötavad, kuidas neid jaotatakse ja kuidas andmeid kaitsta. Iga harjutuse juures on selgitus <b>„Miks see oluline on?“</b> ja juhend <b>„Mida teha“</b>.</p>
+<div class="why">
+<h4>Suur pilt: igal ohul on oma kaitse</h4>
+<p>Andmeid ähvardavad väga erinevad ohud ja <b>ükski meede ei kaitse kõige eest</b>:</p>
+<ul>
+<li><b>Ketas läheb rikki</b> → aitab <b>RAID</b> või Storage Spaces (andmed on mitmel kettal).</li>
+<li><b>Fail kustutatakse kogemata või lunavara krüpteerib selle</b> → aitab <b>varundus</b> (RAID kopeeriks vea kohe kõigile ketastele).</li>
+<li><b>Sülearvuti varastatakse</b> → aitab <b>BitLocker</b> (varas ei saa andmeid lugeda).</li>
+<li><b>Serveriruumis on tulekahju</b> → aitab ainult <b>väljaspool hoitav varukoopia</b>.</li>
+</ul>
+<p>Harjutused käivad järjekorras: ketaste kiirus (1) → kuidas ketas jaotatakse (2) → RAID (3) → BitLocker (4) → varundus (5) → kordav harjutus (6).</p>
+</div>
+<div class="toc"><a href="#ketas">1. HDD ja SSD</a><a href="#partitsioon">2. Partitsioonid</a><a href="#raid">3. RAID</a><a href="#bitlocker">4. BitLocker</a><a href="#varundus">5. Varundus</a><a href="#kaitse">6. Milline kaitse aitab?</a></div>
+
+<!-- 1 -->
+<section id="ketas">
+<h2>1. Miks on SSD nii palju kiirem?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>HDD-s on pöörlevad plaadid ja lugemispea. Iga <b>juhusliku</b> lugemise jaoks peab pea liikuma õigele rajale (<b>otsinguaeg</b>) ja ootama, kuni õige koht pea alt läbi pöörleb (<b>pöördeviide</b> – keskmiselt pool pööret). See on nagu plaadimängija, kus iga laulu jaoks tuleb nõel tõsta õigesse kohta. SSD-l liikuvaid osi pole ja ta leiab iga ploki sama kiiresti.</p>
+<p>Windowsi käivitamine, programmide avamine ja andmebaasid teevad tuhandeid väikesi juhuslikke lugemisi. Seepärast tundub vana arvuti pärast SSD paigaldamist täiesti uus.</p>
+<p><b>Mida teha:</b> vali ülesanne ja muuda HDD pöörlemiskiirust ning otsinguaega. Võrdle, kui kaua sama töö eri ketastel võtab.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Ülesanne: <select id="htask"><option value="30000">Windowsi käivitus (~30 000 väikest lugemist)</option><option value="2000">Programmi avamine (~2000 lugemist)</option><option value="100000">Andmebaasi päringud (100 000 lugemist)</option></select></span></div>
+  <div class="slider"><label for="hrpm">HDD pöörlemiskiirus</label><input type="range" id="hrpm" min="0" max="3" value="1"><b id="hrpmv" class="mono"></b></div>
+  <div class="slider"><label for="hseek">HDD keskmine otsinguaeg</label><input type="range" id="hseek" min="2" max="12" step="0.5" value="8.5"><b id="hseekv" class="mono"></b></div>
+  <div id="htl" style="margin-top:8px"></div>
+  <div class="legend"><span><i style="background:#c26a0a;border-radius:3px"></i>otsinguaeg (pea liigub)</span><span><i style="background:#a3489c;border-radius:3px"></i>pöördeviide (oodatakse plaati)</span><span><i style="background:#185fa5;border-radius:3px"></i>andmete lugemine</span></div>
+  <div class="kpis" id="hkpi"></div>
+  <div class="info" id="hinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="partitsioon">
+<h2>2. Kuidas ketas on jaotatud?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Enne kasutamist jaotatakse ketas <b>partitsioonideks</b>. Partitsioonitabel (MBR või GPT) on nagu raamatu sisukord: see ütleb, kus mingi osa algab ja lõpeb. Windows 11 vajab GPT-d ja UEFI-d. Kui administraator kustutab „tarbetu“ väikese partitsiooni, võib arvuti lakata käivitumast – seepärast tuleb teada, milleks iga partitsioon on.</p>
+<p><b>Mida teha:</b> klõpsa ketta skeemil igal partitsioonil ja loe, milleks see on. Siis proovi allpool, kas valitud ketas ja arvuti sobivad MBR-i või GPT-ga.</p>
+</div>
+<div class="card">
+  <div class="disk" id="pdisk"></div>
+  <div class="info" id="pinfo"></div>
+  <h3 style="margin-top:1.2rem">MBR või GPT?</h3>
+  <div class="slider"><label for="psize">Ketta suurus</label><input type="range" id="psize" min="0" max="5" value="2"><b id="psizev" class="mono"></b></div>
+  <div class="slider"><label for="pcount">Partitsioonide arv</label><input type="range" id="pcount" min="1" max="8" value="4"><b id="pcountv" class="mono"></b></div>
+  <div class="row"><span>Püsivara: <select id="pfw"><option value="uefi">UEFI</option><option value="bios">Vana BIOS (Legacy)</option></select></span><span>OS: <select id="pos"><option value="w11">Windows 11</option><option value="w10">Windows 10</option><option value="data">Ainult andmeketas</option></select></span></div>
+  <div class="kpis" id="pkpi"></div>
+  <div class="info" id="pres"></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="raid">
+<h2>3. RAID-simulaator</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Ketas on arvuti üks rikkealtimaid osi. <b>RAID</b> (Redundant Array of Independent Disks) paneb mitu ketast tööle koos nii, et ühe ketta rike ei too kaasa andmekadu. Selleks kasutatakse kahte võtet:</p>
+<ul>
+<li><b>Peegeldamine</b> – igast plokist on kaks koopiat eri ketastel (RAID 1, 10). Lihtne ja kiire, kuid pool mahust kulub koopiatele.</li>
+<li><b>Paarsus</b> – andmete kõrvale arvutatakse kontrollplokk (p). Kui üks ketas kaob, arvutatakse tema sisu teiste põhjal välja (RAID 5, 6). Ruumi kulub vähem, kuid kirjutamine on aeglasem.</li>
+</ul>
+<p><b>RAID 0</b> (triibutus) jagab andmed lihtsalt ketaste vahel – see on kiire, kuid <b>ei kaitse üldse</b>: ühe ketta rikkega kaob kõik.</p>
+<p><b>Mida teha:</b> vali RAID-tase ja ketaste arv. <b>Klõpsa kettal</b>, et see „lõhkuda“. Vaata, kas andmed jäävad alles. Siis lõhu teine ketas.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span id="rlev"></span></div>
+  <div class="slider"><label for="rn">Ketaste arv</label><input type="range" id="rn" min="2" max="8" value="4"><b id="rnv" class="mono"></b></div>
+  <div class="row"><span>Ketta suurus: <select id="rsz"><option value="2">2 TB</option><option value="4" selected>4 TB</option><option value="8">8 TB</option><option value="16">16 TB</option></select></span><button class="btn" id="rfix">🔧 Vaheta katkised kettad ja taasta</button></div>
+  <div class="raidwrap" id="rdisks"></div>
+  <div class="legend"><span><i style="background:#e6f1fb;border-radius:3px"></i>andmeplokk</span><span><i style="background:#faeeda;border-radius:3px"></i>paarsus p</span><span><i style="background:#f5e6f3;border-radius:3px"></i>teine paarsus q (RAID 6)</span><span>A1, A2 … = sama rea (triibu) osad</span></div>
+  <div class="kpis" id="rkpi"></div>
+  <div class="info" id="rinfo"></div>
+  <h3 style="margin-top:1.2rem">Kuidas paarsus andmed tagasi toob? (XOR)</h3>
+  <p style="font-size:14.5px">XOR võrdleb bitte: kui need on samad, on tulemus 0, kui erinevad, siis 1. Paarsus = ketas 1 XOR ketas 2. Klõpsa bittidel, et neid muuta, ja vali, milline ketas läheb rikki.</p>
+  <div class="xor" id="xgrid"></div>
+  <div class="row"><span>Rikki läheb: <select id="xlost"><option value="-1">mitte ükski</option><option value="0">ketas 1</option><option value="1">ketas 2</option><option value="2">paarsuse ketas</option></select></span></div>
+  <div class="info" id="xinfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="bitlocker">
+<h2>4. BitLocker: kes saab ketta lahti?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Ilma krüpteerimiseta saab varas sülearvutist ketta välja võtta, ühendada selle oma arvutiga ja lugeda kõiki faile – Windowsi parooli pole vaja. <b>BitLocker</b> krüpteerib kogu köite. Võti on kaitstud <b>TPM</b>-kiibiga, mis annab selle välja ainult siis, kui arvuti käivitub muutmata kujul (sama püsivara, Secure Boot sees, sama alglaadur).</p>
+<p>Kui käivitus muutub, küsib arvuti <b>48-kohalist taastevõtit</b>. Kui seda pole kuhugi salvestatud, on andmed kadunud ka omanikule. Seepärast on taastevõtme hoidmine (Entra ID, Active Directory, Microsofti konto) sama oluline kui krüpteerimine ise.</p>
+<p><b>Mida teha:</b> vali kaitse viis ja kas taastevõti on salvestatud. Siis proovi olukordi ja vaata, kes ketta lahti saab.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Kaitse: <select id="bprot"><option value="tpm">Ainult TPM (vaikimisi)</option><option value="pin">TPM + PIN</option><option value="none">BitLocker väljas</option></select></span><label class="tg"><input type="checkbox" id="bkey" checked> <span>Taastevõti salvestatud Entra ID-sse / AD-sse</span></label></div>
+  <div class="scen" id="bscen"></div>
+  <div class="chain" id="bchain"></div>
+  <div class="info" id="binfo"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="varundus">
+<h2>5. Varundusplaani koostaja</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>RAID kaitseb ketta rikke eest, kuid <b>kogemata kustutatud või lunavara poolt krüpteeritud fail muutub kohe kõigil ketastel</b>. Selle vastu aitab ainult varukoopia – eraldi koht, kus on andmete <b>varasem</b> seis.</p>
+<p>Hea varundus järgib reeglit <b>3-2-1-1-0</b>: 3 koopiat, 2 eri tüüpi kandjal, 1 väljaspool hoonet, 1 võrguühenduseta või muutumatu (lunavara ei saa seda kustutada), 0 viga taastetestis. Viimane on kõige sagedamini unustatud: varukoopia, mida pole kunagi proovitud taastada, võib osutuda kasutuks.</p>
+<p><b>Mida teha:</b> esmalt vali varunduse liik ja vaata, kui palju ruumi see võtab ning mida reedel taastamiseks vaja on. Siis koosta kooli failiserverile varundusplaan, märkides koopiad, ja vaata, milliste ohtude eest see kaitseb.</p>
+</div>
+<div class="card">
+  <h3 style="margin-top:0">a) Varunduse liigid</h3>
+  <div class="row" style="margin-top:4px"><span><select id="vtype"><option value="full">Täisvarundus iga päev</option><option value="inc" selected>Täis pühapäeval + inkrementaalne</option><option value="dif">Täis pühapäeval + diferentsiaalne</option></select></span><span class="hint">Andmeid 500 GB, iga päev muutub 20 GB</span></div>
+  <div class="week" id="vweek"></div>
+  <div class="kpis" id="vkpi"></div>
+  <div class="info" id="vinfo"></div>
+  <h3 style="margin-top:1.4rem">b) Kooli failiserveri varundusplaan (3-2-1-1-0)</h3>
+  <div class="chk" id="vchk"></div>
+  <div class="rules" id="vrules"></div>
+  <table class="t thr" style="margin-top:10px"><thead><tr><th>Oht</th><th>Kas andmed on päästetud?</th></tr></thead><tbody id="vthr"></tbody></table>
+  <div class="info" id="vplan"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="kaitse">
+<h2>6. Milline kaitse aitab?</h2>
+<div class="why">
+<h4>Kordame</h4>
+<p>Vali iga olukorra jaoks meede, mis seda probleemi <b>kõige otsesemalt</b> lahendab. Mõtle, millise ohuga on tegu: riistvara rike, inimese viga, pahavara, vargus või voolukatkestus.</p>
+</div>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="16-test.html">Peatüki 16 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/16-salvestushaldus.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+function dur(s){if(s<1)return fmt(s*1000,0)+' ms';if(s<120)return fmt(s,1)+' s';if(s<7200)return fmt(s/60,1)+' min';return fmt(s/3600,1)+' h'}
+
+/* 1. HDD vs SSD */
+const RPM=[5400,7200,10000,15000];
+function hDraw(){const n=+$('htask').value,rpm=RPM[+$('hrpm').value],seek=+$('hseek').value;$('hrpmv').textContent=rpm+' p/min';$('hseekv').textContent=fmt(seek)+' ms';
+  const rot=60000/rpm/2,xfer=0.03,hdd=seek+rot+xfer,sata=0.1,nvme=0.06;
+  const rows=[['HDD',[[seek,'#c26a0a'],[rot,'#a3489c'],[xfer,'#185fa5']],hdd],['SATA SSD',[[sata,'#185fa5']],sata],['NVMe SSD',[[nvme,'#185fa5']],nvme]];
+  $('htl').innerHTML='<div class="hint">Üks juhuslik 4 KB lugemine (riba skaala: HDD = täispikk):</div>'+rows.map(([nm,parts,t])=>`<div class="tl"><span>${nm}</span><div class="bar">${parts.map(([v,c])=>`<div style="width:${Math.max(0.6,v/hdd*100)}%;background:${c}"></div>`).join('')}</div><b>${fmt(t,2)} ms</b></div>`).join('');
+  $('hkpi').innerHTML=`<div>HDD: lugemisi sekundis<b>${fmt(1000/hdd,0)}</b></div><div>HDD: kogu ülesanne<b>${dur(n*hdd/1000)}</b></div><div>SATA SSD: kogu ülesanne<b>${dur(n*sata/1000)}</b></div><div>NVMe SSD: kogu ülesanne<b>${dur(n*nvme/1000)}</b></div>`;
+  $('hinfo').innerHTML=`Arvutus: otsinguaeg ${fmt(seek)} ms + pöördeviide ${fmt(rot,2)} ms (pool pööret: 60 000 / ${rpm} / 2) + lugemine ≈ <b>${fmt(hdd,1)} ms</b>. HDD kulutab peaaegu kogu aja <b>ootamisele</b>, mitte lugemisele. SSD on siin ~${fmt(hdd/sata,0)} korda kiirem. ${rpm>=10000?'Kiiremad serverikettad (10 000–15 000 p/min) vähendavad pöördeviidet, kuid jäävad SSD-st ikka kaugele maha – seepärast neid enam ei toodeta.':'Proovi suuremat pöörlemiskiirust – kas HDD jõuab SSD-le järele?'} Päriselt saab NVMe teha mitut päringut korraga (paralleelsed järjekorrad), nii et tema tegelik eelis on veel suurem.`}
+['hrpm','hseek'].forEach(i=>$(i).oninput=hDraw);$('htask').onchange=hDraw;hDraw();
+
+/* 2. Partitsioonid */
+const PARTS=[['GPT päis','~1 MB',1,'<b>GPT päis ja partitsioonitabel.</b> Ketta alguses on „kaitse-MBR“ (et vanad tööriistad ketast tühjaks ei peaks) ja GPT päis koos partitsioonide nimekirjaga. Päisel on kontrollsumma (CRC).'],
+ ['EFI','FAT32 · 100–260 MB',2,'<b>EFI süsteemipartitsioon (ESP).</b> UEFI püsivara oskab lugeda ainult FAT32-t – seepärast on see FAT32. Siin on Windowsi alglaadur <code>\\EFI\\Microsoft\\Boot\\bootmgfw.efi</code> ja käivitusseaded (BCD). Kui see partitsioon kustutada, ei käivitu Windows; parandamiseks käivitatakse taastekeskkond ja <code>bcdboot C:\\Windows</code>.'],
+ ['MSR','16 MB',1.4,'<b>Microsofti reserveeritud partitsioon (MSR).</b> Väike ala Windowsi sisemiseks kasutuseks, failisüsteemi pole ja Exploreris seda ei näe. Seda ei tohi kustutada.'],
+ ['Windows C:','NTFS · BitLocker',10,'<b>Windowsi partitsioon.</b> Siin on Windows, programmid ja kasutajate failid. Tavaliselt on see BitLockeriga krüpteeritud.'],
+ ['Taaste','Windows RE · ~1 GB',2,'<b>Taastepartitsioon (Windows RE).</b> Kui Windows ei käivitu, avaneb siit taastekeskkond: lähtestamine, süsteemitaaste, käsuviip, käivituse parandus. Kui see kustutada, töötab Windows edasi, kuid tõrkeotsing on raskem.'],
+ ['GPT koopia','ketta lõpus',1,'<b>GPT varukoopia.</b> Ketta lõpus on päise ja tabeli koopia. Kui ketta algus rikneb, saab partitsioonid sealt taastada. MBR-is sellist koopiat pole.']];
+let psel=3;
+function pDisk(){$('pdisk').innerHTML=PARTS.map((p,i)=>`<div class="${i===psel?'on':''}" style="flex:${p[2]}" data-i="${i}"><b>${p[0]}</b><small>${p[1]}</small></div>`).join('');
+  $('pdisk').querySelectorAll('div').forEach(d=>d.onclick=()=>{psel=+d.dataset.i;pDisk()});$('pinfo').innerHTML=PARTS[psel][3]}
+const PS=[0.5,1,2,3,8,20];
+function pDraw(){const s=PS[+$('psize').value],c=+$('pcount').value,fw=$('pfw').value,o=$('pos').value;$('psizev').textContent=s+' TB';$('pcountv').textContent=c;
+  const mbrIssues=[],gptIssues=[];
+  if(s>2)mbrIssues.push(`MBR näeb ainult 2 TB – ülejäänud ${s-2} TB jääb kasutamata`);
+  if(c>4)mbrIssues.push(`MBR-is on ainult 4 primaarset partitsiooni – ${c} partitsiooni jaoks on vaja laiendatud partitsiooni`);
+  if(o==='w11')mbrIssues.push('Windows 11 nõuab UEFI-d ja GPT-d');
+  if(fw==='bios'&&o!=='data')gptIssues.push('vana BIOS ei saa GPT-kettalt Windowsi käivitada');
+  if(fw==='bios'&&o==='w11')gptIssues.push('Windows 11 ei toeta BIOS-i üldse – vaja on UEFI-ga arvutit');
+  const rec=o==='data'?'GPT':(fw==='bios'?(o==='w11'?'—':'MBR'):'GPT');
+  $('pkpi').innerHTML=`<div>Soovitus<b>${rec}</b></div><div>MBR probleeme<b>${mbrIssues.length}</b></div><div>GPT probleeme<b>${gptIssues.length}</b></div>`;
+  $('pres').className='info'+(rec==='—'?' bad':' ok');
+  $('pres').innerHTML=(rec==='—'?'<b>Windows 11 ei saa sellele arvutile ametlikult paigaldada</b> – vajalik on UEFI ja TPM 2.0.':`<b>Vali ${rec}.</b>`)+
+   (mbrIssues.length?`<br>MBR-iga: ${mbrIssues.join('; ')}.`:'<br>MBR-iga probleeme pole, kuid GPT on töökindlam (varukoopia ja kontrollsumma).')+
+   (gptIssues.length?`<br>GPT-ga: ${gptIssues.join('; ')}.`:'')+
+   (fw==='bios'&&o==='w10'?'<br>Kui arvuti püsivara toetab UEFI-d, saab MBR-ketta teisendada andmeid kaotamata: <code>mbr2gpt /convert</code> ja seejärel püsivaras UEFI-režiim.':'')}
+['psize','pcount'].forEach(i=>$(i).oninput=pDraw);['pfw','pos'].forEach(i=>$(i).onchange=pDraw);pDisk();pDraw();
+
+/* 3. RAID */
+const LEV={0:'RAID 0',1:'RAID 1',5:'RAID 5',6:'RAID 6',10:'RAID 10'},MIN={0:2,1:2,5:3,6:4,10:4};
+let rl=5,failed=new Set();const ROWS=4,L='ABCD';
+$('rlev').innerHTML=Object.entries(LEV).map(([k,v])=>`<button class="btn" data-l="${k}">${v}</button>`).join(' ');
+$('rlev').querySelectorAll('button').forEach(b=>b.onclick=()=>{rl=+b.dataset.l;failed.clear();rDraw()});
+function layout(n){const d=[...Array(n)].map(()=>[]);
+  for(let r=0;r<ROWS;r++){const ch=L[r];
+    if(rl===0)for(let i=0;i<n;i++)d[i].push([ch+(i+1),'d']);
+    else if(rl===1)for(let i=0;i<n;i++)d[i].push([ch,'d']);
+    else if(rl===5){const p=(n-1-r%n+n)%n;let k=1;for(let i=0;i<n;i++)d[i].push(i===p?[ch+'p','p']:[ch+(k++),'d'])}
+    else if(rl===6){const p=(n-1-r%n+n)%n,q=(p+1)%n;let k=1;for(let i=0;i<n;i++)d[i].push(i===p?[ch+'p','p']:i===q?[ch+'q','q']:[ch+(k++),'d'])}
+    else{for(let i=0;i<n;i++)d[i].push([ch+(Math.floor(i/2)+1),'d'])}}
+  return d}
+function status(n){const f=[...failed].filter(i=>i<n),k=f.length;
+  if(!k)return ['ok','Kõik kettad töötavad.'];
+  if(rl===0)return ['lost','<b>Andmed on kadunud!</b> RAID 0-s on iga faili osad kõigil ketastel. Kui üks ketas kaob, puudub igast failist tükk – peegeldust ega paarsust pole. RAID 0 sobib ainult ajutistele andmetele, kus loeb kiirus (nt videotöötluse vahefailid).'];
+  if(rl===1)return k<n?['deg',`<b>Degraded – andmed on alles.</b> Teistel ketastel on täpselt samad andmed. Vaheta katkine ketas ja süsteem kopeerib andmed uuele (taastamine).`]:['lost','<b>Andmed on kadunud</b> – kõik peegli kettad on rikkis.'];
+  if(rl===5)return k===1?['deg',`<b>Degraded – andmed on alles.</b> Puuduvad plokid arvutatakse paarsusest (XOR) iga lugemise juures. Varu pole: veel üks rike ja kõik on kadunud. Taastamine loeb kõiki teisi kettaid algusest lõpuni.`]:['lost','<b>Andmed on kadunud!</b> RAID 5 talub ainult ühe ketta riket. Kahe puuduva ploki arvutamiseks ühest paarsusest pole piisavalt infot.'];
+  if(rl===6)return k<=2?['deg',`<b>Degraded – andmed on alles.</b> RAID 6-l on kaks paarsust (p ja q), nii et ${k===1?'üks ketas võib veel rikki minna.':'kaks puuduvat ketast saab välja arvutada. Varu enam pole!'}`]:['lost','<b>Andmed on kadunud!</b> RAID 6 talub kuni kahe ketta riket.'];
+  const pairs={};f.forEach(i=>{const p=Math.floor(i/2);pairs[p]=(pairs[p]||0)+1});const dead=Object.values(pairs).some(v=>v===2);
+  return dead?['lost','<b>Andmed on kadunud!</b> Ühe peeglipaari mõlemad kettad on rikkis – sellel paaril olnud triibuosad on kadunud.']:['deg',`<b>Degraded – andmed on alles.</b> Igast peeglipaarist töötab vähemalt üks ketas. RAID 10 võib üle elada mitu riket, kui need on eri paarides – proovi lõhkuda sama paari teine ketas.`]}
+function rDraw(){document.querySelectorAll('#rlev button').forEach(b=>b.classList.toggle('on',+b.dataset.l===rl));
+  let n=+$('rn').value;const mn=MIN[rl];if(n<mn){n=mn;$('rn').value=n}if(rl===10&&n%2){n++;$('rn').value=n}if(rl===1&&n>3){n=3;$("rn").value=n}
+  $('rnv').textContent=n;const sz=+$('rsz').value,d=layout(n),st=status(n);
+  $('rdisks').innerHTML=d.map((col,i)=>`<div class="rdisk${failed.has(i)?' fail':''}" data-i="${i}"><b>Ketas ${i+1}</b>${col.map(([t,c])=>`<div class="${c}">${t}</div>`).join('')}<div class="st" style="background:none">${failed.has(i)?'❌ rikkis':'✅'}</div></div>`).join('');
+  $('rdisks').querySelectorAll('.rdisk').forEach(x=>x.onclick=()=>{const i=+x.dataset.i;failed.has(i)?failed.delete(i):failed.add(i);rDraw()});
+  const cap={0:n*sz,1:sz,5:(n-1)*sz,6:(n-2)*sz,10:n/2*sz}[rl],tol={0:'0',1:(n-1)+'',5:'1',6:'2',10:'1 igast paarist'}[rl];
+  const reb=sz*1e6/150/3600;
+  $('rkpi').innerHTML=`<div>Toorruum<b>${n*sz} TB</b></div><div>Kasutatav maht<b>${cap} TB (${Math.round(cap/(n*sz)*100)}%)</b></div><div>Talub ketta rikkeid<b>${tol}</b></div><div>Ühe ketta taastamine<b>~${fmt(reb,0)} h</b></div>`;
+  $('rinfo').className='info'+(st[0]==='lost'?' bad':st[0]==='ok'?'':' bad');
+  $('rinfo').innerHTML=(st[0]==='ok'?{0:'RAID 0 jagab andmed ketaste vahel (A1, A2 …): lugemine ja kirjutamine on kiire, kuid kaitset pole. <b>Klõpsa mõnel kettal.</b>',1:'RAID 1: igal kettal on täpselt sama sisu. Kasutatav maht on ühe ketta suurune. <b>Klõpsa mõnel kettal.</b>',5:'RAID 5: igas reas on üks paarsusplokk (p) ja paarsus liigub ketaste vahel, et ükski ketas ei oleks pidevalt koormatud. Paarsusele kulub ühe ketta jagu ruumi. <b>Klõpsa mõnel kettal.</b>',6:'RAID 6: igas reas on kaks paarsusplokki (p ja q). Paarsusele kulub kahe ketta jagu ruumi, kuid massiiv talub kahe ketta riket. <b>Klõpsa kahel kettal.</b>',10:'RAID 10: kettad on paarides peeglis (1+2, 3+4 …) ja andmed jaotatakse paaride vahel triipudena. Kiire ja töökindel, kuid pool mahust kulub koopiatele. <b>Klõpsa kettal.</b>'}[rl]:st[1])+
+   (st[0]==='deg'&&(rl===5)?` ${sz}-TB ketta taastamine võtab ~${fmt(reb,0)} tundi – kogu selle aja on andmed ilma kaitseta.${sz>=8?' Nii suurte ketaste puhul soovitatakse RAID 6 või RAID 10.':''}`:'')+
+   (st[0]!=='ok'?'<br><i>NB! Ka kõige parem RAID ei aita, kui fail kustutatakse või lunavara selle krüpteerib – muudatus kirjutatakse kohe kõigile ketastele.</i>':'')}
+['rn'].forEach(i=>$(i).oninput=()=>{failed.clear();rDraw()});$('rsz').onchange=rDraw;$('rfix').onclick=()=>{failed.clear();rDraw();$('rinfo').innerHTML='Katkised kettad vahetati välja ja massiiv taastati (rebuild). Taastamise ajal loeti kõiki teisi kettaid algusest lõpuni.'};rDraw();
+let XB=[[1,0,1,1],[0,1,1,0]];
+function xDraw(){const p=XB[0].map((b,i)=>b^XB[1][i]),lost=+$('xlost').value;
+  const rows=[['Ketas 1 (A1)',XB[0],0],['Ketas 2 (A2)',XB[1],1]];
+  let h=rows.map(([n,bits,k])=>`<span class="${lost===k?'lost':''}">${n}</span>`+bits.map((b,i)=>`<button class="bit${lost===k?' lost':''}" data-k="${k}" data-i="${i}">${lost===k?'?':b}</button>`).join('')+'<span></span>').join('');
+  h+=`<span class="${lost===2?'lost':''}">Paarsus (Ap)</span>`+p.map(b=>`<span class="bit${lost===2?' lost':''}">${lost===2?'?':b}</span>`).join('')+'<span class="hint">= ketas 1 XOR ketas 2</span>';
+  if(lost>=0){const rec=lost===0?XB[1].map((b,i)=>b^p[i]):lost===1?XB[0].map((b,i)=>b^p[i]):p;
+    h+=`<span><b>Taastatud</b></span>`+rec.map(b=>`<span class="bit rec">${b}</span>`).join('')+`<span class="hint">${lost===0?'= ketas 2 XOR paarsus':lost===1?'= ketas 1 XOR paarsus':'= ketas 1 XOR ketas 2'}</span>`}
+  $('xgrid').innerHTML=h;
+  $('xgrid').querySelectorAll('button.bit').forEach(b=>b.onclick=()=>{const k=+b.dataset.k,i=+b.dataset.i;if(lost===k)return;XB[k][i]^=1;xDraw()});
+  $('xinfo').innerHTML=lost<0?'Vali, milline ketas läheb rikki. Iga paarsuse bitt on 1, kui andmebitid erinevad, ja 0, kui need on samad.':
+   `Ketta sisu on kadunud, kuid see arvutatakse ülejäänud kahest: ${lost===2?'paarsus arvutatakse lihtsalt uuesti andmetest':'XOR-i omadus on, et <b>A XOR B XOR B = A</b> – kui teame kahte kolmest, saame kolmanda'}. Sama toimub RAID 5-s iga ploki jaoks – miljardeid kordi taastamise ajal.`}
+$('xlost').onchange=xDraw;xDraw();
+
+/* 4. BitLocker */
+const SC=[['boot','💻 Tavaline käivitus'],['stolen','🕵 Ketas varastati, ühendati teise arvutisse'],['usb','🐧 Ründaja käivitab Linuxi USB-pulgalt'],['bios','⚙ BIOS-i uuendus (BitLocker peatamata)'],['biossus','⚙ BIOS-i uuendus pärast Suspend-BitLocker'],['board','🔧 Emaplaat vahetati'],['onlap','🔒 Varastati sisselülitatud, lukustatud sülearvuti'],['forgot','❓ Kasutaja unustas PIN-i']];
+let bs='boot';
+$('bscen').innerHTML=SC.map(([k,v])=>`<button class="btn" data-s="${k}">${v}</button>`).join('');
+$('bscen').querySelectorAll('button').forEach(b=>b.onclick=()=>{bs=b.dataset.s;bDraw()});
+function bDraw(){document.querySelectorAll('#bscen button').forEach(b=>b.classList.toggle('on',b.dataset.s===bs));
+  const pr=$('bprot').value,key=$('bkey').checked;$('bkey').disabled=pr==='none';
+  let tpm='ok',pin=pr==='pin'?'ask':'na',rec='na',data='ok',msg='',who='omanik';
+  if(pr==='none'){tpm='na';pin='na';
+    msg={boot:'Arvuti käivitub. Andmed pole krüpteeritud.',stolen:'<b>Varas loeb kõiki faile!</b> Ketas pole krüpteeritud – teise arvutiga ühendades on kõik kaustad avatud, Windowsi parooli pole vaja.',usb:'<b>Ründaja loeb kõiki faile</b> Linuxi alt, Windowsi õigused ei kehti.',bios:'Midagi ei muutu – krüpteerimist pole.',biossus:'Midagi ei muutu – krüpteerimist pole.',board:'Ketas töötab uues arvutis edasi – ja töötaks ka varga arvutis.',onlap:'<b>Varas saab ketta välja võtta ja kõike lugeda.</b>',forgot:'PIN-i pole, kuid andmed on ka kaitseta.'}[bs];
+    data=bs==='boot'||bs==='bios'||bs==='biossus'||bs==='board'||bs==='forgot'?'ok':'bad';who=data==='bad'?'varas':'omanik'}
+  else{
+    if(bs==='boot'){msg=pr==='pin'?'TPM kontrollib, et käivitus on muutmata, ja kasutaja sisestab PIN-i. Ketas avaneb.':'TPM mõõdab käivitusahelat (püsivara, Secure Boot, alglaadur). Kõik on sama nagu krüpteerimisel, nii et TPM annab VMK ja ketas avaneb – kasutaja ei märka midagi.'}
+    else if(bs==='stolen'){tpm='bad';pin='na';rec='bad';data='bad';who='mitte keegi (varas)';msg='Teises arvutis on teine TPM, kus seda võtit pole. Varas näeb ainult juhuslikke baite. <b>BitLocker täitis oma ülesande.</b> Ilma taastevõtmeta ei saa varas midagi teha.'}
+    else if(bs==='usb'){tpm='bad';pin='na';rec='bad';data='bad';who='mitte keegi (ründaja)';msg='Käivitusahel on muutunud (teine alglaadur). TPM keeldub VMK-d andmast ja Linux näeb krüpteeritud köidet. <b>Andmed on kaitstud.</b>'}
+    else if(bs==='bios'){tpm='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='Püsivara muutus, TPM-i mõõtmised ei klapi ja TPM keeldub võtit andmast. Arvuti küsib <b>48-kohalist taastevõtit</b>. '+(key?'Administraator leiab selle Entra ID-st või AD-st ja arvuti käivitub.':'<b>Taastevõtit pole salvestatud – andmed on kadunud ka omanikule!</b>')+' Õige viis: enne BIOS-i uuendust <code>Suspend-BitLocker -RebootCount 1</code>.'}
+    else if(bs==='biossus'){msg='<code>Suspend-BitLocker</code> pani võtme ajutiselt kettale avatult. BIOS uuendati, arvuti käivitus ilma taastevõtmeta, BitLocker mõõtis uue käivituse ja lülitas kaitse automaatselt uuesti sisse. Nii tehakse püsivara uuendusi õigesti.'}
+    else if(bs==='board'){tpm='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='Uuel emaplaadil on uus TPM, kus vana võtit pole. Arvuti küsib taastevõtit. '+(key?'Pärast taastevõtme sisestamist saab BitLockeri uue TPM-iga uuesti siduda.':'<b>Taastevõtit pole – andmed on kadunud!</b> Seepärast tuleb taastevõti alati salvestada enne riistvara hooldust.')}
+    else if(bs==='onlap'){if(pr==='pin'){tpm='ok';pin='ask';data='ok';who='omanik';msg='Kui arvuti on unerežiimis, on võti mälus. Kuid kui varas lülitab arvuti välja (et nt ketast kopeerida), küsitakse käivitamisel PIN-i, mida ta ei tea. <b>TPM + PIN</b> on seepärast tundlikele sülearvutitele soovitatav. Tugevaim kaitse: kasuta talveunerežiimi või lülita arvuti välja.'}
+      else{tpm='ok';data='ask';who='ehk ka ründaja';msg='Arvuti töötab ja võti on mälus. Lukustatud ekraan kaitseb tavavarga eest, kuid oskuslik ründaja võib proovida mälu lugeda (nt DMA-rünne, ptk 14). TPM-üksi režiimis käivitub arvuti ka pärast taaskäivitust ilma kasutaja abita. Tundlike andmete puhul kasuta <b>TPM + PIN</b> ja Kernel DMA Protectionit.'}}
+    else if(bs==='forgot'){if(pr==='pin'){pin='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='TPM on nõus, kuid PIN on vale. Kasutaja peab sisestama taastevõtme. '+(key?'IT-tugi leiab selle Entra ID-st, kasutaja sisestab selle ja seab uue PIN-i.':'<b>Taastevõtit pole – andmed on kadunud!</b>')}else{msg='TPM-üksi režiimis PIN-i ei küsita – see olukord ei teki.'}}}
+  const st=x=>({ok:'ok',bad:'bad',ask:'ask',na:''}[x]),tx={ok:'✅',bad:'❌',ask:'⌨',na:'–'};
+  $('bchain').innerHTML=`<div class="${st(tpm)}"><b>TPM</b>${tx[tpm]} ${tpm==='ok'?'annab võtme':tpm==='bad'?'keeldub':'ei kasutata'}</div><div class="${st(pin)}"><b>PIN</b>${tx[pin]} ${pin==='ask'?'küsitakse':pin==='bad'?'vale/unustatud':'ei küsita'}</div><div class="${st(rec)}"><b>Taastevõti</b>${tx[rec]} ${rec==='ask'?'küsitakse – leitakse':rec==='bad'?(bs==='stolen'||bs==='usb'?'puudub ründajal':'ei leita'):'pole vaja'}</div><div class="${st(data)}"><b>Andmed</b>${data==='ok'?'✅ avatud: '+who:data==='bad'?(pr==='none'?'⚠ loeb: varas':'🔒 kättesaamatud: '+who):'⚠ '+who}</div>`;
+  $('binfo').className='info'+((pr==='none'&&data==='bad')||(data==='bad'&&!(bs==='stolen'||bs==='usb'))?' bad':' ok');
+  $('binfo').innerHTML=msg}
+['bprot','bkey'].forEach(i=>$(i).onchange=bDraw);bDraw();
+
+/* 5. Varundus */
+const DAYS=['P','E','T','K','N','R','L'];
+function vDraw(){const t=$('vtype').value,full=500,ch=20;const sz=DAYS.map((d,i)=>t==='full'||i===0?full:t==='inc'?ch:ch*i);
+  const need=t==='full'?[5]:t==='inc'?[0,1,2,3,4,5]:[0,5];const tot=sz.reduce((a,b)=>a+b,0);
+  $('vweek').innerHTML=sz.map((s,i)=>`<div class="${need.includes(i)?'need':''}"><span>${s} GB</span><i style="height:${Math.max(3,s/full*110)}px;background:${i===0||t==='full'?'#185fa5':t==='inc'?'#c26a0a':'#3b6d11'}"></i><b>${DAYS[i]}</b></div>`).join('');
+  const rs=need.reduce((a,i)=>a+sz[i],0);
+  $('vkpi').innerHTML=`<div>Varundusruumi nädalas<b>${fmt(tot,0)} GB</b></div><div>Reedese seisu taastamiseks vaja koopiaid<b>${need.length}</b></div><div>Taastamisel loetakse<b>${rs} GB</b></div>`;
+  $('vinfo').innerHTML='Server läks rikki <b>reedel õhtul</b>. Punase raamiga on koopiad, mida taastamiseks vaja on. '+{full:'Iga päev täisvarundus: taastamiseks piisab reedese koopiast – lihtne ja kiire, kuid nädalas kulub 3500 GB ruumi ja iga varundus võtab kaua.',inc:'Inkrementaalne: igal ööl kopeeritakse ainult selle päeva muutused (20 GB) – kiire ja säästlik. Taastamiseks on aga vaja pühapäevast täisvarundust <b>ja kõiki</b> järgnevaid koopiaid. Kui üks neist (nt kolmapäevane) on rikutud, ei saa reedest seisu taastada.',dif:'Diferentsiaalne: iga koopia sisaldab kõiki muutusi alates pühapäevast, nii et see kasvab iga päevaga. Taastamiseks on vaja ainult täisvarundust ja reedest koopiat – kompromiss ruumi ja töökindluse vahel.'}[t]}
+$('vtype').onchange=vDraw;vDraw();
+const OPT=[['raid','Kettad on RAID 1 peeglis','',0,0,0,0,0],['vss','Varikoopiad (VSS) samal kettal, iga 2 h','vss',0,0,0,0,0],['nas','Öine varundus NAS-ile samas majas, võrgus','nas',1,0,0,0,0],['cloud','Pilvevarundus (Azure / Backblaze)','cloud',1,1,1,0,0],['usb','Iganädalane USB-ketas, hoitakse lahtiühendatult seifis','usb',1,1,0,1,0],['immut','Pilves muutumatu (immutable) koopia 30 päeva','immut',1,1,1,1,0],['test','Taastamist testitakse kord kuus','',0,0,0,0,1]];
+const vsel=new Set(['raid','nas']);
+$('vchk').innerHTML=OPT.map(o=>`<label id="vl_${o[0]}"><input type="checkbox" data-k="${o[0]}"> <span>${o[1]}</span></label>`).join('');
+$('vchk').querySelectorAll('input').forEach(c=>{c.checked=vsel.has(c.dataset.k);c.onchange=()=>{c.checked?vsel.add(c.dataset.k):vsel.delete(c.dataset.k);vRules()}});
+function vRules(){OPT.forEach(o=>$('vl_'+o[0]).classList.toggle('on',vsel.has(o[0])));
+  const has=k=>vsel.has(k);const copies=1+['nas','cloud','usb','immut'].filter(has).length;
+  const media=new Set(['ketas']);if(has('nas'))media.add('nas');if(has('cloud')||has('immut'))media.add('pilv');if(has('usb'))media.add('usb');
+  const off=has('cloud')||has('immut')||has('usb'),air=has('usb')||has('immut'),test=has('test');
+  const R=[['3',copies>=3,`${copies} koopiat`],['2',media.size>=2,`${media.size} kandjat`],['1',off,off?'väljaspool':'kõik majas'],['1',air,air?'lahti / muutumatu':'kõik võrgus'],['0',test,test?'testitud':'testimata']];
+  $('vrules').innerHTML=R.map(([n,ok,t])=>`<div class="${ok?'ok':'bad'}"><b>${n}</b>${t}</div>`).join('');
+  const T=[['Üks ketas läheb rikki',has('raid')||has('nas')||has('cloud')||has('usb')||has('immut'),has('raid')?'RAID 1 – töö jätkub katkestuseta':'taastatakse varukoopiast (töö seisab taastamise ajaks)'],
+   ['Õpetaja kustutas kogemata kausta',has('vss')||has('nas')||has('cloud')||has('usb')||has('immut'),has('vss')?'varikoopiast „Eelmised versioonid“ – mõne minutiga':'varukoopiast'],
+   ['Lunavara krüpteerib serveri ja kõik võrgus olevad kettad',has('usb')||has('immut'),has('usb')||has('immut')?(has('immut')?'muutumatust pilvekoopiast':'seifis olevalt USB-kettalt (kuni nädal vana)'):'RAID, varikoopiad ja NAS krüpteeritakse või kustutatakse samuti'],
+   ['Tulekahju serveriruumis',has('cloud')||has('immut')||has('usb'),has('cloud')||has('immut')?'pilvest':has('usb')?'seifist (kui seif on teises hoones)':'kõik koopiad olid samas majas'],
+   ['Varukoopia osutub taastamisel vigaseks',test,test?'vigu märgatakse igakuisel testil':'viga avastatakse alles õnnetuse korral – liiga hilja']];
+  $('vthr').innerHTML=T.map(([o,ok,w])=>`<tr><td>${o}</td><td class="${ok?'ok':'bad'}">${ok?'✅ jah':'❌ ei'} – ${w}</td></tr>`).join('');
+  const all=R.every(r=>r[1]);$('vplan').className='info '+(all?'ok':'bad');
+  $('vplan').innerHTML=all?'<b>Plaan vastab reeglile 3-2-1-1-0.</b> Iga oht on kaetud vähemalt ühe koopiaga, mis selle ohu eest kaitseb.':`<b>Plaanis on puudusi.</b> ${!R[3][1]?'Kõige ohtlikum on see, et kõik koopiad on võrgus – lunavara jõuab nendeni. Lisa võrguühenduseta või muutumatu koopia. ':''}${!R[4][1]?'Lisa regulaarne taastetest. ':''}${!R[2][1]?'Lisa koopia väljaspool hoonet. ':''}Märgi koopiaid juurde ja vaata, kuidas tabel muutub.`}
+vRules();
+
+/* 6. Quiz */
+quiz('qtasks','qscore','qreset',['RAID','Varundus','BitLocker','Varikoopia','UPS'],[
+ ['Failiserveri üks ketas lakkas töötamast, kasutajad ei tohi seda märgata.',0,'Peegel või paarsus hoiab andmed kättesaadavana ja töö jätkub katkestuseta.'],
+ ['Õpetaja kirjutas tund aega tagasi dokumendi kogemata üle ja tahab vana versiooni tagasi.',3,'„Eelmised versioonid“ tuleb varikoopiast kiiresti ja kasutaja saab seda ise teha.'],
+ ['Lunavara krüpteeris failiserveri, sh varikoopiad ja peegli.',1,'Aitab ainult varukoopia, mis oli võrguühenduseta või muutumatu.'],
+ ['Õpetaja sülearvuti, kus on õpilaste andmed, varastati rongis.',2,'Krüpteeritud kettalt ei saa varas andmeid lugeda.'],
+ ['Elekter kaob serveriruumis 10 minutiks ja RAID-kontrolleri vahemälus on kirjutamata andmed.',4,'UPS annab aega server korrektselt välja lülitada, et vahemälu jõuaks kettale ja failisüsteem ei rikneks.'],
+ ['Serveriruumis oli tulekahju, kõik seadmed hävisid.',1,'Ainult väljaspool hoonet hoitud varukoopia (pilv, teine maja) päästab andmed.'],
+ ['Vana kõvaketas visatakse ära ja keegi ei tohi sealt andmeid taastada.',2,'Kui ketas on algusest peale BitLockeriga krüpteeritud, on andmed ilma võtmeta loetamatud. Muidu tuleb ketas turvaliselt tühjendada või füüsiliselt hävitada.']],
+ 'RAID – riistvara rike; varikoopia – kiire taastamine samas kohas; varundus – kustutamine, lunavara, õnnetus; BitLocker – vargus; UPS – voolukatkestus.');
+</script>
+</body>
+</html>
