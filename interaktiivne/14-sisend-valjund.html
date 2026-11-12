@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 14 – sisend ja väljund: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.slider{display:grid;grid-template-columns:230px 1fr 90px;gap:10px;align-items:center;margin:6px 0;font-size:14.5px}
+@media (max-width:600px){.slider{grid-template-columns:1fr 90px}.slider label{grid-column:1/3}}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.scaleT{display:grid;gap:5px;margin-top:8px}
+.scaleT .r{display:grid;grid-template-columns:170px 1fr 170px;gap:8px;align-items:center;font-size:13.5px}
+.scaleT .b{height:18px;border-radius:4px;background:var(--accent)}
+.scaleT .r span:last-child{color:var(--muted);font-family:var(--mono);font-size:12.5px}
+@media (max-width:640px){.scaleT .r{grid-template-columns:110px 1fr}.scaleT .r span:last-child{grid-column:1/3}}
+.tl{display:grid;grid-template-columns:150px 1fr 80px;gap:8px;align-items:center;margin:6px 0;font-size:13.5px}
+.tl .bar{display:flex;height:30px;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.tl .bar div{flex:1}
+.tl b{font-family:var(--mono);text-align:right}
+.c-wait{background:#bdbbb2}.c-copy{background:#185fa5}.c-irq{background:#c26a0a}.c-work{background:#3b6d11}.c-idle{background:var(--bg)}
+.lane{display:grid;grid-template-columns:110px 1fr;gap:6px;align-items:center;margin-bottom:4px;font-size:12.5px}
+.lbar{display:flex;height:28px;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--bg)}
+.lbar div{flex:1;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:#fff;border-right:1px solid rgba(255,255,255,.35);overflow:hidden}
+.lbar div.idle{background:var(--bg);color:var(--muted);font-weight:400}
+.lbar div.blk{background:repeating-linear-gradient(45deg,#bdbbb2 0 4px,#d9d7cf 4px 8px);color:#5f5e5a}
+.stackL{display:grid;gap:4px;margin-top:10px}
+.stackL div{border:1px solid var(--border);border-radius:8px;background:var(--bg);padding:.45rem .8rem;font-size:13.5px;display:flex;justify-content:space-between;gap:10px;transition:all .2s}
+.stackL div span:last-child{color:var(--muted);font-family:var(--mono);font-size:12px}
+.stackL div.on{border:2px solid var(--accent);background:var(--accent-bg);font-weight:600}
+.stackL div.skip{opacity:.4}
+.stackL div.hw{background:var(--card)}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">← Peatükk 14</a> · <a href="14-test.html">Test →</a></nav>
+<h1>Sisend ja väljund – õpileht</h1>
+<p>Sisend-väljund (S/V) on kõik, mis liigutab andmeid protsessori ja mälu ning välisseadmete vahel: klaviatuur, ketas, võrk, USB-pulk. Iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
+<div class="why">
+<h4>Suur pilt: miks S/V on keeruline?</h4>
+<p>Protsessor töötab nanosekundite kaupa, kuid seadmed on temast tuhandeid kuni miljardeid kordi aeglasemad ja kõik on erinevad. OS peab lahendama kolm küsimust:</p>
+<ol>
+<li><b>Kuidas seadmega rääkida?</b> Iga seade on erinev. Lahendus on <b>draiverid</b> ja ühtne päringuvorm <b>IRP</b> – rakendus kutsub alati <code>ReadFile</code>, ükskõik kas fail on SSD-l või USB-pulgal.</li>
+<li><b>Kuidas mitte raisata protsessori aega ootamisele?</b> Lahendused on <b>katkestused</b>, <b>DMA</b> ja <b>asünkroonne S/V</b>.</li>
+<li><b>Kuidas tasandada kiiruste ja ajastuse erinevusi?</b> Lahendus on <b>puhver</b>.</li>
+</ol>
+<p>Harjutused käivad selles järjekorras: kõigepealt näed, kui suured on erinevused (1), siis kuidas protsessor seadmetega suhtleb (2), kuidas programm ootamist vältida saab (3), kuidas puhver aitab (4), kuidas päring draiverite vahel liigub (5) ja kuidas seadmeid toitega hallatakse (6).</p>
+</div>
+<div class="toc"><a href="#kiirused">1. Seadmed ja kiirused</a><a href="#kysitlus">2. Küsitlus, katkestus, DMA</a><a href="#asunkroonne">3. Sünkroonne ja asünkroonne</a><a href="#puhver">4. Puhver</a><a href="#irp">5. IRP teekond</a><a href="#toide">6. Toiteolekud</a></div>
+
+<!-- 1 -->
+<section id="kiirused">
+<h2>1. Seadmed ja nende kiirused</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Klaviatuur annab sekundis mõne baidi, NVMe-ketas miljardeid. Sama OS peab teenindama mõlemat. Aeglase seadme puhul on peamine, et protsessor ei <b>ootaks</b> teda tühja; kiire seadme puhul, et protsessor <b>jõuaks</b> andmeid töödelda. Seepärast kasutatakse eri seadmete jaoks eri võtteid.</p>
+<p><b>Mida teha:</b> vali faili suurus ja vaata, kui kaua kuluks selle edastamiseks eri seadmetega. Riba pikkus on logaritmilises skaalas – iga samm paremale tähendab 10 korda suuremat kiirust.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Faili suurus: <select id="ksize"><option value="1e6">1 MB (foto)</option><option value="1e8">100 MB (rakendus)</option><option value="1e9" selected>1 GB (film)</option><option value="5e10">50 GB (mäng)</option></select></span></div>
+  <div class="scaleT" id="kscale"></div>
+  <div class="info" id="kinfo"></div>
+</div>
+<div class="why" style="margin-top:1.2rem">
+<h4>Plokk-, märk- või võrguseade?</h4>
+<p>OS jagab seadmed kolme suurde klassi selle järgi, <b>kuidas</b> nad andmeid annavad. <b>Plokkseadmelt</b> saab küsida „anna plokk nr 1000“ – nagu raamatust kindlat lehekülge. <b>Märkseade</b> annab voo – nagu raadiosaade, mida saab kuulata ainult järjest. <b>Võrguseade</b> saadab ja võtab vastu pakette, mis võivad kaduda või tulla vales järjekorras – nagu postipakid.</p>
+</div>
+<div class="card">
+  <div class="tasks" id="ttasks"></div>
+  <div class="row"><span class="hint" id="tscore"></span><button class="btn" id="treset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="kysitlus">
+<h2>2. Küsitlus, katkestused ja DMA</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kui seade on andmed valmis saanud, peab protsessor sellest kuidagi teada saama ja andmed mällu viima. Selleks on kolm viisi:</p>
+<ul>
+<li><b>Küsitlus</b> (polling) – protsessor küsib tsüklis „kas oled valmis?“. Nagu käiksid iga minuti järel postkasti vaatamas. Lihtne, kuid protsessor ei saa vahepeal muud teha.</li>
+<li><b>Katkestus</b> (interrupt) – protsessor teeb oma tööd ja seade „helistab uksekella“, kui on valmis. Iga katkestus maksab siiski veidi aega (töö katkestamine, oleku salvestamine, ISR, DPC) ja andmed kopeerib endiselt protsessor.</li>
+<li><b>DMA</b> – protsessor ütleb seadmele: „pane andmed otse mällu aadressile X ja anna teada, kui valmis“. Seade kopeerib ise, protsessor saab ainult ühe katkestuse lõpus.</li>
+</ul>
+<p><b>Mida teha:</b> võrdle kolme ribaga, kui suure osa ajast saab protsessor teha kasulikku tööd (roheline). Siis muuda plokkide saabumise vahe väga väikeseks (väga kiire seade) ja vaata, kas katkestused on ikka parimad. Lõpuks lülita sisse katkestuste koondamine.</p>
+</div>
+<div class="card">
+  <div class="slider"><label for="piv">Plokkide saabumise vahe</label><input type="range" id="piv" min="1" max="16" value="8"><b id="pivv" class="mono"></b></div>
+  <div class="row" style="margin-top:2px"><label class="tg"><input type="checkbox" id="pmod"> <span>Katkestuste koondamine (1 katkestus 4 ploki kohta)</span></label></div>
+  <div id="ptl" style="margin-top:8px"></div>
+  <div class="legend"><span><i class="c-wait"></i>kontrollib seadet tühja</span><span><i class="c-copy"></i>kopeerib andmeid</span><span><i class="c-irq"></i>katkestuse käsitlemine / DMA seadistamine</span><span><i class="c-work"></i>kasulik töö teistele programmidele</span></div>
+  <div class="info" id="pinfo"></div>
+  <details class="more"><summary>Kuidas Windows seda päriselt kasutab?</summary>
+  <ul><li><b>Klaviatuur, hiir</b> – katkestused. Sündmusi on vähe ja need on juhuslikud; küsitlus raiskaks aega.</li>
+  <li><b>NVMe-ketas</b> – DMA ja MSI-X katkestused. Iga tuuma jaoks on eraldi päringujärjekord ja katkestus tuleb otse sellele tuumale.</li>
+  <li><b>10–100 Gbit/s võrgukaart</b> – DMA, katkestuste koondamine ja suure koormuse korral küsitlus (Windowsis nt RSS ja NDIS-i küsitlusrežiim). Kui pakette tuleb miljon sekundis, oleks iga paketi kohta katkestus liiga kallis.</li></ul>
+  <p>Järeldus: pole üht parimat viisi – valik sõltub sellest, kui tihti seadmel midagi juhtub.</p></details>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="asunkroonne">
+<h2>3. Sünkroonne ja asünkroonne S/V</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Veebiserver saab päringu, loeb andmed kettalt või andmebaasist ja saadab vastuse. Suurem osa ajast kulub <b>ootamisele</b> – protsessor oleks valmis töötama, kuid andmed pole veel kohal.</p>
+<ul>
+<li><b>Sünkroonne S/V</b> – lõim saadab päringu ja jääb ootama (blokeeritud). Lihtne programmeerida, kuid lõim ei tee ootamise ajal midagi. Rohkemate klientide teenindamiseks on vaja rohkem lõime, igaüks oma pinu ja mäluga.</li>
+<li><b>Asünkroonne S/V</b> – lõim saadab päringu teele ja võtab kohe järgmise töö. Kui andmed saabuvad, paneb Windows teate <b>S/V lõpetamisporti</b> (IOCP) ja mõni vaba lõim jätkab. Nii teenindavad IIS ja SQL Server tuhandeid kliente väheste lõimedega.</li>
+</ul>
+<p>Mudelis vajab iga päring 1 ühiku protsessoriaega (päringu töötlemine), 6 ühikut ootamist (andmebaas) ja 1 ühiku protsessoriaega (vastuse koostamine).</p>
+<p><b>Mida teha:</b> võrdle mõlemat kahe lõimega. Siis suurenda sünkroonse serveri lõimede arvu, kuni see on sama kiire, ja vaata, kui palju mälu kulub lõimede pinudele.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-a="sync">Sünkroonne</button> <button class="btn" data-a="async">Asünkroonne (IOCP)</button></span></div>
+  <div class="slider"><label for="areq">Päringuid (kliente)</label><input type="range" id="areq" min="2" max="8" value="8"><b id="areqv" class="mono"></b></div>
+  <div class="slider"><label for="ath">Lõimi</label><input type="range" id="ath" min="1" max="8" value="2"><b id="athv" class="mono"></b></div>
+  <div id="alanes" style="margin-top:10px"></div>
+  <div class="legend"><span><i style="background:#185fa5"></i>lõim töötab (täht = mille päring)</span><span><i style="background:repeating-linear-gradient(45deg,#bdbbb2 0 4px,#d9d7cf 4px 8px)"></i>lõim on blokeeritud, ootab S/V-d</span><span><i style="border:1px solid var(--border)"></i>vaba</span></div>
+  <div class="kpis" id="akpi"></div>
+  <div class="info" id="ainfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="puhver">
+<h2>4. Puhver: video voogedastus</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Võrk toob andmeid <b>ebaühtlaselt</b>: vahel palju korraga, vahel mitte midagi (Wi-Fi häired, ülekoormus). Videomängija vajab aga igal ajahetkel täpselt ühe osa videot. <b>Puhver</b> on vahemälu nende kahe vahel: mängija laeb enne esitamist mõne osa ette ja mängib sealt. Kui võrk korraks katkeb, mängib video puhvrist edasi.</p>
+<p>Puhvri suurus on kompromiss: väike puhver tähendab kiiret algust, kuid sagedast „Puhverdamine…“ ringi; suur puhver – pikemat ootamist alguses, kuid sujuvat esitust.</p>
+<p><b>Mida teha:</b> proovi puhvri suurust 1, siis 4 ja 8. Vaata, kui kaua kulub alguses ootamiseks ja mitu korda video katkeb. Hall riba graafikul näitab võrgu katkestusi.</p>
+</div>
+<div class="card">
+  <div class="slider"><label for="bsz">Puhvri suurus (videoosa)</label><input type="range" id="bsz" min="1" max="10" value="4"><b id="bszv" class="mono"></b></div>
+  <svg id="bsvg" viewBox="0 0 640 220" width="100%" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:8px"></svg>
+  <div class="legend"><span><i style="background:var(--accent)"></i>puhvri täituvus</span><span><i style="background:var(--bad-bg);border:1px solid var(--bad-line)"></i>video seisab („Puhverdamine…“)</span><span><i style="background:#bdbbb2"></i>võrk ei too midagi</span></div>
+  <div class="kpis" id="bkpi"></div>
+  <div class="info" id="binfo"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="irp">
+<h2>5. IRP teekond draiverite pinus</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kui rakendus kutsub <code>ReadFile</code>, ei räägi ta kettaga otse. Windows loob <b>IRP</b> (I/O Request Packet) – päringu „saatekirja“, mis liigub <b>draiverite pinus</b> ülevalt alla. Iga draiver teeb oma osa: viirusetõrje kontrollib faili, failisüsteem leiab, millises kettaplokis andmed on, BitLocker dekrüpteerib, kettadraiver räägib riistvaraga.</p>
+<p>Selline kihiline ülesehitus tähendab, et uue funktsiooni (nt krüpteerimise) saab lisada uue kihina, ilma et teisi draivereid muudetaks. Teisest küljest saab iga kiht ka vigu tekitada – vigane filtridraiver võib kogu süsteemi kokku jooksutada.</p>
+<p><b>Mida teha:</b> vali stsenaarium ja käi see sammhaaval läbi. Võrdle, mitu kihti läbitakse siis, kui andmed on vahemälus, ja siis, kui need tuleb kettalt tuua.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-s="hit">Lugemine – andmed on vahemälus</button> <button class="btn" data-s="miss">Lugemine – kettalt</button> <button class="btn" data-s="bl">Kirjutamine BitLockeriga USB-pulgale</button></span></div>
+  <div class="stackL" id="istack"></div>
+  <div class="row"><span><button class="btn primary" id="inext">Järgmine samm →</button> <button class="btn" id="ireset">Algusesse</button></span><span class="hint" id="istep"></span></div>
+  <div class="info" id="iinfo"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="toide">
+<h2>6. Milline toiteolek?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Toitehaldur otsustab, millised osad arvutist saavad voolu. Mida vähem on toite all, seda vähem kulub energiat, kuid seda kauem võtab ärkamine. Administraatori jaoks on oluline teada, et <b>„Lülita välja“ koos kiire käivitusega ei ole täielik taaskäivitus</b> – tuumaseanss salvestatakse faili ja loetakse järgmisel käivitamisel tagasi. Seepärast lahendab osa probleeme ainult „Taaskäivita“.</p>
+<ul><li><b>S0</b> – töötab. <b>Modern Standby</b> – ekraan väljas, kuid arvuti on nagu telefon: võrk töötab, e-kirjad tulevad.</li>
+<li><b>S3</b> – unerežiim: voolu saab ainult RAM. <b>S4</b> – talveuni: RAM-i sisu kirjutatakse faili <code>hiberfil.sys</code> ja vool lülitatakse välja.</li>
+<li><b>S5</b> – täielikult väljas.</li></ul>
+</div>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="14-test.html">Peatüki 14 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+
+/* 1. Kiirused */
+const DEV=[['Klaviatuur',10],['Hiir',300],['USB 2.0 mälupulk',30e6],['1 Gbit/s Ethernet',118e6],['Kõvaketas (HDD)',200e6],['SATA SSD',550e6],['NVMe SSD (PCIe 4)',7e9]];
+function dur(s){if(s<1)return fmt(s*1000,0)+' ms';if(s<120)return fmt(s,1)+' s';if(s<7200)return fmt(s/60,0)+' min';if(s<172800)return fmt(s/3600,0)+' h';if(s<86400*365)return fmt(s/86400,0)+' päeva';return fmt(s/86400/365,1)+' aastat'}
+function kDraw(){const sz=+$('ksize').value;
+  $('kscale').innerHTML=DEV.map(([n,b])=>`<div class="r"><span>${n}</span><div class="b" style="width:${Math.max(2,Math.log10(b)/10*100)}%"></div><span>${dur(sz/b)}</span></div>`).join('');
+  $('kinfo').innerHTML=`NVMe-ketas on klaviatuurist ligi <b>miljard korda</b> kiirem. Kui protsessor ootaks iga klahvivajutust tühja tsüklis, raiskaks ta peaaegu kogu oma aja – seepärast annab klaviatuur katkestusega märku. NVMe-ketta puhul on vastupidi probleem, kuidas andmeid piisavalt kiiresti mällu saada – seepärast kasutab see DMA-d ja mitut paralleelset päringujärjekorda.`}
+$('ksize').onchange=kDraw;kDraw();
+quiz('ttasks','tscore','treset',['Plokkseade','Märkseade','Võrguseade'],[
+ ['NVMe SSD',0,'Andmed on plokkides ja iga plokki saab lugeda tema numbri järgi suvalises järjekorras.'],
+ ['Klaviatuur',1,'Klahvivajutused tulevad voona – eelmist vajutust uuesti küsida ei saa.'],
+ ['USB-mälupulk',0,'Pulk on väike ketas: sellel on plokid ja failisüsteem.'],
+ ['Wi-Fi võrgukaart',2,'Andmed liiguvad pakettidena, mis võivad kaduda või hilineda.'],
+ ['Hiir',1,'Hiir annab liikumise ja klõpsude voo.'],
+ ['Jadaport (COM1), millega konfigureeritakse võrgukommutaatorit',1,'Jadaport edastab märke ükshaaval – klassikaline märkseade.'],
+ ['SD-mälukaart fotoaparaadist',0,'Mälukaardil on failisüsteem, seega on see plokkseade.']],
+ 'Failisüsteemi saab luua ainult plokkseadmele, sest ta peab saama lugeda suvalisest kohast.');
+
+/* 2. Küsitlus */
+const PN=6,PC=2,PI=1;
+function pSim(iv,mod){const W=PN*iv+PN*(PC+PI)+3,arr=[...Array(PN)].map((_,k)=>(k+1)*iv);
+  // küsitlus
+  const poll=Array(W).fill('work');let t=0;for(let k=0;k<PN;k++){while(t<arr[k])poll[t++]='wait';for(let c=0;c<PC;c++)poll[t++]='copy'}
+  // katkestused
+  const intr=Array(W).fill('work'),q=[];let cnt=0;
+  for(let u=0;u<W;u++){arr.forEach((a,k)=>{if(a===u){cnt++;if(!mod){q.push('irq');for(let c=0;c<PC;c++)q.push('copy')}else if(cnt%4===0||k===PN-1){const m=cnt%4===0?4:cnt%4;q.push('irq');for(let c=0;c<PC*m;c++)q.push('copy')}}});if(q.length)intr[u]=q.shift()}
+  // DMA
+  const dma=Array(W).fill('work');dma[0]='irq';const last=arr[PN-1];if(last<W)dma[last]='irq';
+  return {poll,intr,dma,W}}
+function pDraw(){const iv=+$('piv').value,mod=$('pmod').checked;$('pivv').textContent=iv+' ühikut';
+  const r=pSim(iv,mod),pct=a=>Math.round(a.filter(x=>x==='work').length/a.length*100);
+  const rows=[['Küsitlus',r.poll],['Katkestused'+(mod?' (koondatud)':''),r.intr],['DMA',r.dma]];
+  $('ptl').innerHTML=rows.map(([n,a])=>`<div class="tl"><span>${n}</span><div class="bar">${a.map(x=>`<div class="c-${x}"></div>`).join('')}</div><b>${pct(a)}%</b></div>`).join('')+'<div class="hint" style="text-align:right">% = kasulik töö</div>';
+  const pp=pct(r.poll),pi=pct(r.intr);
+  $('pinfo').innerHTML=(iv>=6?`Seade on <b>aeglane</b> (plokid tulevad harva). Küsitluse korral kulub suur osa ajast seadme tühjale kontrollimisele (hall). Katkestustega saab protsessor vahepeal teha kasulikku tööd ja kopeerib ainult siis, kui plokk on tulnud. DMA puhul ei pea protsessor ka kopeerima – seda teeb seade ise.`:
+   `Seade on <b>väga kiire</b> (plokid tulevad tihedalt). Küsitlusel pole peaaegu midagi oodata – iga kontroll leiab kohe uue ploki. Katkestuste puhul lisandub igale plokile katkestuse kulu (oranž), nii et ${pi<=pp?'katkestused pole enam küsitlusest paremad':'nende eelis on väike'}. Seepärast lülituvad kiired võrgukaardid suure koormuse all küsitlusele või koondavad katkestusi.`)+
+   (mod?' <b>Koondamisega</b> tuleb katkestus alles iga 4 ploki järel – katkestuste kulu väheneb, kuid andmed jõuavad programmini veidi hiljem.':'');}
+$('piv').oninput=pDraw;$('pmod').onchange=pDraw;pDraw();
+
+/* 3. Sünkroonne / asünkroonne */
+let am='sync';const CPU1=1,IO=6,CPU2=1,LET='ABCDEFGH';
+function aSim(mode,R,T){const lanes=[...Array(T)].map(()=>[]);let end=0;
+  if(mode==='sync'){const free=Array(T).fill(0);for(let i=0;i<R;i++){let j=free.indexOf(Math.min(...free));const s=free[j];
+      const L=lanes[j];while(L.length<s)L.push(null);L.push({c:LET[i]});for(let k=0;k<IO;k++)L.push({c:LET[i],b:1});L.push({c:LET[i]});free[j]=s+CPU1+IO+CPU2;end=Math.max(end,free[j])}}
+  else{const ready=[];for(let i=0;i<R;i++)ready.push({i,ph:1,at:0});let done=0,t=0,pend=[];
+    while(done<R&&t<100){pend.filter(p=>p.at<=t).forEach(p=>ready.push(p));pend=pend.filter(p=>p.at>t);
+      ready.sort((a,b)=>b.ph-a.ph||a.at-b.at);
+      for(let j=0;j<T;j++){const L=lanes[j];const x=ready.shift();if(!x){L.push(null);continue}L.push({c:LET[x.i]});
+        if(x.ph===1)pend.push({i:x.i,ph:2,at:t+1+IO});else{done++;end=Math.max(end,t+1)}}
+      t++}}
+  const W=Math.max(end,...lanes.map(l=>l.length));lanes.forEach(L=>{while(L.length<W)L.push(null)});return {lanes,end,W}}
+function aDraw(){document.querySelectorAll('#asunkroonne [data-a]').forEach(b=>b.classList.toggle('on',b.dataset.a===am));
+  const R=+$('areq').value,T=+$('ath').value;$('areqv').textContent=R;$('athv').textContent=T;
+  const r=aSim(am,R,T),o=aSim(am==='sync'?'async':'sync',R,T);
+  $('alanes').innerHTML=r.lanes.map((L,j)=>`<div class="lane"><span>Lõim ${j+1}</span><div class="lbar">${L.map(x=>x?`<div class="${x.b?'blk':''}" style="${x.b?'':'background:#185fa5'}">${x.c}</div>`:'<div class="idle"></div>').join('')}</div></div>`).join('')+
+   `<div class="lane"><span></span><div style="display:flex;font-size:10.5px;color:var(--muted)">${[...Array(r.W)].map((_,i)=>`<span style="flex:1;text-align:center">${i%2?'':i}</span>`).join('')}</div></div>`;
+  const busy=r.lanes.flat().filter(x=>x&&!x.b).length,blk=r.lanes.flat().filter(x=>x&&x.b).length;
+  $('akpi').innerHTML=`<div>Kõik vastused valmis ajal<b>${r.end}</b></div><div>${am==='sync'?'Asünkroonselt':'Sünkroonselt'} samade lõimedega<b>${o.end}</b></div><div>Lõimede pinud (1 MB / lõim)<b>${T} MB</b></div><div>Blokeeritud lõime-ühikuid<b>${blk}</b></div>`;
+  $('ainfo').innerHTML=am==='sync'?`Sünkroonses serveris on lõim suurema osa ajast <b>blokeeritud</b> (triibuline): ta ootab andmebaasi ega saa teisi kliente teenindada. ${T<R?`Ühel ajal teenindatakse ainult ${T} klienti, ülejäänud ootavad järjekorras.`:'Iga klient sai oma lõime, nii et keegi ei oota järjekorras – kuid päris serveris oleks 1000 kliendi jaoks vaja 1000 lõime ja 1000 MB pinude jaoks.'} Proovi suurendada lõimede arvu või vaheta asünkroonse peale.`:
+   `Asünkroonses serveris ei jää ükski lõim ootama. Lõim töötleb päringu, saadab andmebaasi päringu teele ja võtab <b>kohe järgmise kliendi</b>. Kui vastus saabub, jätkab mõni vaba lõim (täht ilmub uuesti). ${T} lõimega said kõik ${R} klienti vastuse ajaks ${r.end}, sünkroonselt kuluks ${o.end}. Nii töötavad IOCP-ga IIS ja SQL Server.`}
+document.querySelectorAll('#asunkroonne [data-a]').forEach(b=>b.onclick=()=>{am=b.dataset.a;aDraw()});
+['areq','ath'].forEach(i=>$(i).oninput=aDraw);aDraw();
+
+/* 4. Puhver */
+const NET=[2,2,1,2,1,2,1,1,2,1,2,1,0,0,0,0,0,0,0,2,3,2,1,2,1,1,2,1,1,1,2,1,0,0,0,0,0,2,2,2,1,1,2,1,2,1,1,0,0,0,1,2,2,1,1,2,1,1,2,1];
+function bSim(B){let buf=0,playing=false,started=-1,stalls=0,stallT=0,played=0;const lv=[],st=[];
+  for(let t=0;t<NET.length;t++){buf=Math.min(B,buf+NET[t]);const pre=buf;
+    if(!playing&&buf>=B){playing=true;if(started<0)started=t}
+    if(playing){if(buf>0){buf--;played++;st.push('play')}else{playing=false;stalls++;st.push('stall')}}
+    else{st.push(started<0?'start':'stall');if(started>=0)stallT++}
+    lv.push(pre)}
+  return {lv,st,started,stalls,stallT,played}}
+function bDraw(){const B=+$('bsz').value;$('bszv').textContent=B;const r=bSim(B),N=NET.length,W=640,H=220,L=30,Bm=26,T=12;
+  const X=t=>L+t/N*(W-L-10),Y=v=>H-Bm-v/10*(H-Bm-T);let s='';
+  NET.forEach((n,t)=>{if(n===0)s+=`<rect x="${X(t)}" y="${H-Bm+4}" width="${X(1)-X(0)+0.5}" height="8" fill="#bdbbb2"/>`});
+  r.st.forEach((x,t)=>{if(x==='stall'||x==='start')s+=`<rect x="${X(t)}" y="${T}" width="${X(1)-X(0)+0.5}" height="${H-Bm-T}" fill="${x==='start'?'var(--card)':'var(--bad-bg)'}"/>`});
+  for(let v=0;v<=10;v+=2)s+=`<line x1="${L}" x2="${W-10}" y1="${Y(v)}" y2="${Y(v)}" stroke="currentColor" opacity=".1"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end" font-size="10" fill="var(--muted)">${v}</text>`;
+  s+=`<line x1="${L}" x2="${W-10}" y1="${Y(B)}" y2="${Y(B)}" stroke="var(--accent)" stroke-dasharray="4 4" opacity=".6"/><text x="${W-12}" y="${Y(B)-4}" text-anchor="end" font-size="10" fill="var(--accent)">puhvri suurus</text>`;
+  s+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="${r.lv.map((v,t)=>X(t+0.5)+','+Y(v)).join(' ')}"/>`;
+  s+=`<text x="${L}" y="${H-4}" font-size="10" fill="var(--muted)">aeg →</text>`;
+  $('bsvg').innerHTML=s;$('bsvg').style.color='var(--text)';
+  $('bkpi').innerHTML=`<div>Ootamine alguses<b>${r.started+1} ${r.started===0?'ühik':'ühikut'}</b></div><div>Katkestusi („Puhverdamine…“)<b>${r.stalls}</b></div><div>Seisis kokku<b>${r.stallT} ${r.stallT===1?'ühik':'ühikut'}</b></div>`;
+  $('binfo').className='info'+(r.stalls?' bad':' ok');
+  $('binfo').innerHTML=B<=2?`Väga väikese puhvriga algab video kiiresti, kuid iga võrgu katkestus peatab ka video – puhvris pole varu. Kasutaja näeb sageli „Puhverdamine…“ ringi.`:
+   r.stalls===0?`Puhver oli piisavalt suur, et võrgu katkestused (hallid) üle elada – video mängis sujuvalt. Hinnaks oli pikem ootamine alguses. Päris voogedastusteenused muudavad lisaks pildikvaliteeti, kui võrk on aeglane.`:
+   `Puhver aitab osa katkestusi üle elada, kuid pikk võrgu katkestus tühjendab selle ikkagi. Suurenda puhvrit ja vaata, kas video katkeb vähem.`}
+$('bsz').oninput=bDraw;bDraw();
+
+/* 5. IRP */
+const LAY=[['Rakendus','ReadFile / WriteFile'],['ntdll.dll → süsteemikutse','NtReadFile'],['S/V-haldur','loob IRP'],['Defenderi failifilter','WdFilter.sys'],['Failisüsteem + vahemäluhaldur','ntfs.sys / exfat.sys'],['BitLockeri köitefilter','fvevol.sys'],['Köide ja partitsioon','volmgr.sys, partmgr.sys'],['Kettaklass','disk.sys'],['Seadme draiver','stornvme.sys / usbstor.sys'],['Riistvara','kontroller ja ketas']];
+const SC={
+ hit:[[0,'Rakendus kutsub <code>ReadFile</code>, et lugeda faili 4 KB. Rakendus ei tea ega pea teadma, kus fail füüsiliselt asub.'],
+  [1,'<code>ntdll.dll</code> teeb süsteemikutse <code>NtReadFile</code> – protsessor lülitub kasutajarežiimist tuumarežiimi.'],
+  [2,'S/V-haldur kontrollib, kas faili käepide on õige ja lugemine lubatud, ning loob <b>IRP</b> – päringu saatekirja: „loe failist X alates baidist Y 4096 baiti“.'],
+  [3,'IRP läbib Defenderi failifiltri. Faili avamisel kontrollis see juba, kas fail on pahavara; tavalise lugemise lihtsalt laseb läbi.'],
+  [4,'Failisüsteem küsib vahemäluhaldurilt: kas need andmed on juba RAM-is? <b>Jah!</b> Fail oli hiljuti avatud. Andmed kopeeritakse kohe rakenduse puhvrisse.'],
+  [0,'IRP lõpetatakse ja <code>ReadFile</code> tagastab andmed. Kettani ei mindud – kogu päring võttis mikrosekundeid. Alumised kihid jäid vahele (tuhmid).']],
+ miss:[[0,'Rakendus kutsub <code>ReadFile</code>.'],[1,'Süsteemikutse <code>NtReadFile</code>, protsessor läheb tuumarežiimi.'],[2,'S/V-haldur loob IRP ja saadab selle draiverite pinu tippu.'],
+  [3,'Defenderi filter laseb lugemise läbi.'],
+  [4,'Failisüsteem küsib vahemäluhaldurilt – andmeid <b>pole</b> RAM-is. NTFS leiab oma tabelitest (MFT), millistes kettaplokkides faili osa asub, ja saadab päringu allapoole: „loe köitelt plokid 1 523 200–1 523 207“.'],
+  [5,'BitLockeri filter jätab meelde, et kui andmed tulevad, tuleb need <b>dekrüpteerida</b>. Kettal on andmed krüpteeritud.'],
+  [6,'Köitehaldur teisendab köite ploki numbri kogu ketta ploki numbriks (partitsiooni algus + nihe).'],
+  [7,'Kettaklassi draiver koostab üldise kettakäsu „loe 8 sektorit“.'],
+  [8,'NVMe-draiver paneb käsu seadme päringujärjekorda ja ütleb, millisesse RAM-i kohta andmed panna (<b>DMA</b>). Protsessor ei oota – lõim läheb ooteolekusse, protsessor teeb muud tööd.'],
+  [9,'Ketas loeb andmed ja kirjutab need DMA abil otse RAM-i. Siis annab ta <b>katkestuse</b>.'],
+  [8,'Katkestuse käsitleja (ISR) ja hiljem DPC märgivad päringu lõppenuks. IRP hakkab liikuma <b>tagasi üles</b>.'],
+  [5,'Tagasiteel dekrüpteerib BitLocker andmed. Rakendus saab tavalise teksti.'],
+  [4,'Andmed jäävad ka vahemällu – järgmine lugemine on kiire.'],
+  [0,'IRP lõpetatakse, lõim ärkab ja <code>ReadFile</code> tagastab andmed. Kokku läbiti kõik 10 kihti kaks korda – kettalt lugemine on sadu kordi aeglasem kui vahemälust.']],
+ bl:[[0,'Õpilane salvestab Wordis faili USB-pulgale, mis on krüpteeritud <b>BitLocker To Go</b>-ga. Word kutsub <code>WriteFile</code>.'],[1,'Süsteemikutse <code>NtWriteFile</code>.'],[2,'S/V-haldur loob kirjutamise IRP.'],
+  [3,'Defenderi filter näeb, et faili muudetakse, ja võib faili hiljem skannida.'],
+  [4,'exFAT-i failisüsteem leiab pulgal vabad plokid ja uuendab failitabelit. Kuna pulgal on „Kiire eemaldamine“, kirjutatakse andmed kohe edasi (läbikirjutus), mitte ei jäeta vahemällu.'],
+  [5,'BitLocker <b>krüpteerib</b> plokid AES-iga. Edasi liigub ainult krüpteeritud andmeid – kui pulk kaob, ei saa leidja sisu lugeda.'],
+  [6,'Köitehaldur arvutab ploki asukoha pulgal.'],[7,'Kettaklassi draiver koostab kirjutuskäsu.'],
+  [8,'<code>usbstor.sys</code> pakib käsu USB-massmäluseadme protokolli ja saadab selle USB-siini kaudu.'],
+  [9,'Pulga kontroller kirjutab plokid välkmällu ja annab teada, et valmis.'],
+  [0,'IRP lõpetatakse ja Word teatab „Salvestatud“. Iga kiht tegi oma osa: Defender jälgis, exFAT haldas faile, BitLocker krüpteeris, usbstor rääkis USB-ga – keegi ei pidanud teiste tööd tundma.']]};
+let isc='hit',ik=0;
+function iDraw(){document.querySelectorAll('#irp [data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===isc));
+  const S=SC[isc],cur=ik?S[ik-1][0]:-1,used=new Set(S.slice(0,ik).map(x=>x[0]));
+  const skip=isc==='hit'&&ik===S.length;
+  $('istack').innerHTML=LAY.map(([n,d],i)=>`<div class="${i===cur?'on':''}${i===9?' hw':''}${skip&&i>4?' skip':''}"><span>${i===cur?'📨 ':''}${n}</span><span>${d}</span></div>`).join('');
+  $('istep').textContent=`Samm ${ik}/${S.length}`;$('inext').disabled=ik>=S.length;
+  $('iinfo').innerHTML=ik?S[ik-1][1]:'Vajuta „Järgmine samm“. Ümbrik 📨 näitab, kus IRP parajasti on.'}
+document.querySelectorAll('#irp [data-s]').forEach(b=>b.onclick=()=>{isc=b.dataset.s;ik=0;iDraw()});
+$('inext').onclick=()=>{ik++;iDraw()};$('ireset').onclick=()=>{ik=0;iDraw()};iDraw();
+
+/* 6. Toide */
+quiz('qtasks','qscore','qreset',['S0 töötab','Modern Standby','S3 uni','S4 talveuni','S5 väljas'],[
+ ['Sülearvuti kaas on suletud, kuid Outlook laadib uusi kirju ja Teams näitab teavitust.',1,'Modern Standby (S0 madal tarve): arvuti on nagu telefon – ekraan väljas, kuid võrk töötab.'],
+ ['RAM-i sisu kirjutatakse faili hiberfil.sys ja arvuti lülitub täiesti vooluta. Avamisel on kõik aknad alles.',3,'Talveuni (S4) säilitab oleku kettal, nii et aku võib vahepeal ka tühjaks saada.'],
+ ['Vanem lauaarvuti: ainult RAM saab voolu, ventilaatorid seisavad, ärkab paari sekundiga.',2,'Klassikaline unerežiim (S3). Kui vool katkeb, kaob RAM-i sisu ja salvestamata töö.'],
+ ['Ekraan on välja lülitunud, kuid video renderdamine töötab täie hooga.',0,'Arvuti töötab (S0) – ainult ekraan on säästurežiimis.'],
+ ['„Lülita välja“, kui kiire käivitus on sees: kasutajad logitakse välja, tuumaseanss salvestatakse hiberfil.sys-i.',3,'Kiire käivitus kasutab talveune mehhanismi. Seepärast ei ole see täielik taaskäivitus.'],
+ ['Kiire käivitus on keelatud ja kasutaja valis „Lülita välja“.',4,'Täielik väljalülitus (S5) – järgmine käivitus alustab nullist.'],
+ ['Administraator paigaldas draiveri uuenduse, mis nõuab süsteemi uuesti käivitamist. Kasutaja vajutas „Taaskäivita“.',4,'Taaskäivitus läbib alati täieliku väljalülituse ja käivituse, ka kiire käivituse korral. Seepärast soovitatakse probleemide korral valida „Taaskäivita“, mitte „Lülita välja“.']],
+ 'Pea meeles: probleemide korral vali „Taaskäivita“, mitte „Lülita välja“.');
+</script>
+</body>
+</html>

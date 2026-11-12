@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 14 – test: sisend ja väljund</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">← Peatükk 14</a> · <a href="14-sisend-valjund.html">Interaktiivne õpileht</a></nav>
+<h1>Test: sisend ja väljund</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mis on IRP?", "o": ["Draiveri digitaalallkiri", "Failisüsteemi tüüp", "S/V päringupakett, mis liigub läbi draiverite pinu", "Katkestuse prioriteet"], "c": 2, "e": "IRP (I/O Request Packet) on nagu saatekiri: iga draiver teeb oma osa ja annab selle edasi."},
+{"q": "Miks peidab OS seadmete erinevused draiverite ja ühtse S/V-mudeli taha?", "o": ["Et kasutaja ei saaks seadmeid kasutada", "Et rakendus saaks kõigi seadmetega töötada samade funktsioonidega (nt ReadFile)", "Et seadmed töötaksid kiiremini", "Et draivereid poleks vaja"], "c": 1, "e": "Rakendus ei pea teadma, kas fail on SSD-l, USB-pulgal või võrgus."},
+{"q": "Umbes mitu korda on NVMe-ketas kiirem kui klaviatuur?", "o": ["Ligi miljard korda", "Umbes 10 korda", "Umbes 1000 korda", "Sama kiire"], "c": 0, "e": "Klaviatuur annab ~10 baiti/s, NVMe ~7 GB/s. Seepärast on aeglaste ja kiirete seadmete jaoks vaja eri võtteid."},
+{"q": "Milline seade on plokkseade?", "o": ["Hiir", "Klaviatuur", "Jadaport", "SSD"], "c": 3, "e": "Plokkseadmelt saab lugeda kindla numbriga plokki suvalises järjekorras."},
+{"q": "Milline on märkseadme tunnus?", "o": ["Andmed liiguvad pakettidena", "Seadmel on failisüsteem", "Andmed tulevad voona ja kindlat kohta ei saa uuesti küsida", "Andmeid saab lugeda suvalisest plokist"], "c": 2, "e": "Klaviatuur, hiir ja jadaport on märkseadmed."},
+{"q": "Miks saab failisüsteemi luua ainult plokkseadmele?", "o": ["Seda nõuab litsents", "Failisüsteem peab saama lugeda ja kirjutada suvalisse kohta", "Märkseadmed on liiga kiired", "Plokkseadmetel on alati suurem maht"], "c": 1, "e": "Failisüsteem hüppab pidevalt kataloogide, failitabelite ja andmete vahel."},
+{"q": "Milline standardvoog on number 2?", "o": ["Standardviga (stderr)", "Standardsisend (stdin)", "Standardväljund (stdout)", "Logifail"], "c": 0, "e": "0 – sisend, 1 – väljund, 2 – vead. cmd-s suunab 2> veateated faili."},
+{"q": "Mida teeb käsk ipconfig | findstr IPv4?", "o": ["Kirjutab ipconfig väljundi faili IPv4", "Käivitab mõlemad käsud paralleelselt eraldi akendes", "Muudab arvuti IPv4-aadressi", "Suunab ipconfig väljundi findstr-i sisendiks ja näitab ainult IPv4-ridu"], "c": 3, "e": "Konveier (|) ühendab ühe programmi väljundi teise sisendiga. PowerShellis liiguvad konveieris objektid."},
+{"q": "Kus tuleks S/V vigu esimesena lahendada?", "o": ["Ainult kasutaja poolt", "Sündmuslogis", "Võimalikult seadme lähedal (kontroller, draiver)", "Alati rakenduses"], "c": 2, "e": "Kontroller kordab ja kasutab ECC-d, draiver proovib uuesti; rakendus saab vea alles siis, kui midagi muud ei aita."},
+{"q": "Sündmuslogis korduvad kettavead (Disk, sündmus 7). Mida see tähendab administraatorile?", "o": ["Võrguühendus on katkenud", "Ketas võib peagi rikki minna – tuleb andmed varundada ja ketas vahetada", "Midagi, need on tavalised teated", "Vaja on uut kasutajakontot"], "c": 1, "e": "Korduvad vead ja halvenevad SMART-näitajad annavad hoiatuse enne lõplikku riket."},
+{"q": "Mis vahe on sünkroonsel ja asünkroonsel S/V-l?", "o": ["Sünkroonsel ootab lõim tulemust, asünkroonsel jätkab ja saab hiljem teate", "Sünkroonne on alati kiirem", "Asünkroonne töötab ainult võrguga", "Vahet pole"], "c": 0, "e": "Asünkroonne S/V laseb lõimel ootamise ajal muud tööd teha."},
+{"q": "Miks kasutavad IIS ja SQL Server S/V lõpetamisporte (IOCP)?", "o": ["Et vähendada kettaruumi", "Et keelata katkestused", "Et krüpteerida võrguliiklust", "Et väheste lõimedega teenindada tuhandeid samaaegseid päringuid"], "c": 3, "e": "Sünkroonselt oleks iga kliendi jaoks vaja oma blokeeritud lõime, igaüks oma pinuga."},
+{"q": "Mis juhtub, kui UI-lõim loeb suurt faili sünkroonselt?", "o": ["Windows lõpetab programmi kohe", "Fail kopeeritakse vahemällu topelt", "Aken ei reageeri, kuni lugemine on lõppenud", "Fail loetakse kiiremini"], "c": 2, "e": "UI-lõim ei saa vahepeal sõnumeid töödelda. Lahendus on asünkroonne lugemine (await)."},
+{"q": "Mis on I/O Ring?", "o": ["Draiverite allkirjastamise meetod", "Windows 11 S/V API, kus päringud ja tulemused liiguvad jagatud mälus olevate järjekordade kaudu", "USB-jaoturi tüüp", "Katkestuste prioriteet"], "c": 1, "e": "Vähem süsteemikutseid suure arvu päringute korral; sarnane Linuxi io_uringiga."},
+{"q": "Miks laeb videomängija enne esitamist osa videot puhvrisse?", "o": ["Et võrgu ajutised katkestused ei peataks videot", "Et video pilt oleks teravam", "Et säästa kettaruumi", "Et video oleks krüpteeritud"], "c": 0, "e": "Puhver tasandab ebaühtlast andmete saabumist. Suurem puhver = vähem katkestusi, kuid pikem ootamine alguses."},
+{"q": "Mis on topeltpuhver?", "o": ["Kaks koopiat samast failist", "Puhver kahel kettal", "Puhver, mis on kaks korda suurem", "Üht puhvrit täidetakse, teist samal ajal tühjendatakse või näidatakse"], "c": 3, "e": "Näiteks graafikas näidatakse üht kaadrit ja joonistatakse samal ajal järgmist."},
+{"q": "Millal on küsitlus (polling) parem kui katkestused?", "o": ["Klaviatuuri puhul", "Mitte kunagi", "Kui seade on väga kiire ja sündmusi tuleb väga tihti", "Kui seade on väga aeglane"], "c": 2, "e": "Väga tihedate sündmuste korral leiab iga kontroll kohe uued andmed ja katkestuste kulu jääb ära. Seepärast lülituvad kiired võrgukaardid koormuse all küsitlusele."},
+{"q": "Mis on katkestuste koondamine (interrupt moderation)?", "o": ["Katkestused salvestatakse logisse", "Seade annab ühe katkestuse mitme sündmuse kohta", "Katkestused keelatakse täielikult", "Iga katkestus saadetakse kõigile tuumadele"], "c": 1, "e": "See vähendab katkestuste kulu suure koormuse korral; hinnaks on veidi suurem viivitus."},
+{"q": "Mis on DMA?", "o": ["Seade kannab andmed otse mällu ilma protsessorita", "Draiverite haldusliides", "Ketta defragmentimine", "Katkestuste prioriteet"], "c": 0, "e": "Protsessor seadistab ülekande ja saab lõpus ühe katkestuse; vahepeal teeb ta muud tööd."},
+{"q": "Millist turvariski DMA tekitab?", "o": ["DMA aeglustab protsessorit", "DMA kustutab faile", "DMA lülitab tulemüüri välja", "Pahatahtlik välisseade (nt Thunderbolt) saab lugeda või muuta mälu"], "c": 3, "e": "Kaitse: IOMMU ja Windowsi Kernel DMA Protection, mis lubab seadmele ainult talle määratud mälupiirkonnad."},
+{"q": "Mis on filtridraiver?", "o": ["Draiver, mis eemaldab tolmu", "Seadme põhidraiver", "Draiver, mis asub teiste vahel ja jälgib või muudab päringuid", "Draiver ainult võrgu jaoks"], "c": 2, "e": "Näiteks Defenderi failifilter (WdFilter.sys) ja BitLockeri köitefilter (fvevol.sys)."},
+{"q": "Mis juhtus 19. juulil 2024 CrowdStrike'i uuendusega?", "o": ["Windows Update kustutas draiverid", "Vigane tuumadraiveri uuendus jooksutas kokku umbes 8,5 miljonit Windowsi arvutit", "Pahavara krüpteeris haiglate andmed", "Microsoft keelas kõik USB-seadmed"], "c": 1, "e": "Tuumarežiimi draiveri viga võib kogu süsteemi kokku jooksutada. Seepärast soovitab Microsoft viia draivereid kasutajarežiimi."},
+{"q": "Mis on BYOVD-rünne?", "o": ["Ründaja paigaldab allkirjastatud, kuid haavatava draiveri ja saab selle kaudu tuuma õigused", "Kasutaja toob tööle oma arvuti", "Ründaja varastab USB-pulga", "Draiver uuendatakse automaatselt"], "c": 0, "e": "Kaitse: Microsofti haavatavate draiverite blokeerimisloend (Windows 11 22H2-st vaikimisi sees) ja HVCI."},
+{"q": "Mida teeb PnP-haldur, kui arvutisse ühendatakse USB-pulk?", "o": ["Vormindab pulga", "Krüpteerib pulga automaatselt", "Keelab pulga kasutamise", "Tuvastab seadme riistvara-ID järgi, laadib draiveri ja teavitab rakendusi"], "c": 3, "e": "Näiteks USB\\VID_0781&PID_5581 – VID on tootja, PID toode. Seadmete paigaldamist saab piirata rühmapoliitikaga."},
+{"q": "Miks ei ole „Lülita välja“ kiire käivituse (Fast Startup) korral täielik taaskäivitus?", "o": ["Windows ei lülitu üldse välja", "Kiire käivitus kustutab tuuma", "Tuumaseanss salvestatakse hiberfil.sys-i ja loetakse järgmisel käivitamisel tagasi", "Arvuti jääb unerežiimi S3"], "c": 2, "e": "Seepärast lahendab osa probleeme ja uuendusi ainult „Taaskäivita“, mis teeb alati täieliku käivituse."}
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>

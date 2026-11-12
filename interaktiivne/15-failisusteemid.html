@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 15 – failisüsteemid: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.ostabs{display:flex;gap:6px;flex-wrap:wrap}
+.ostabs .btn.on{font-weight:700}
+.grid3{display:grid;grid-template-columns:1fr 1.2fr;gap:12px;margin-top:10px}
+@media (max-width:700px){.grid3{grid-template-columns:1fr}}
+.panel{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px}
+.panel h4{margin:0 0 6px;font-size:14px}
+.dirent{display:flex;justify-content:space-between;gap:8px;padding:3px 6px;border-radius:6px;font-family:var(--mono);font-size:12.5px}
+.dirent:nth-child(odd){background:var(--card)}
+.meta{border:1px solid var(--border);border-left:5px solid var(--accent);border-radius:8px;padding:5px 8px;margin-bottom:6px;font-size:12.5px;background:var(--card)}
+.meta b{font-family:var(--mono)}
+.meta.free{opacity:.5;border-left-color:var(--muted)}
+.blocks{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin-top:6px}
+.blocks div{height:30px;border-radius:4px;border:1px solid var(--border);background:var(--card);font-size:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;position:relative;overflow:hidden}
+.blocks div.ghost{background:repeating-linear-gradient(45deg,#bdbbb2 0 4px,#e2e0d8 4px 8px);color:#5f5e5a}
+.blocks div.snap{outline:3px solid #a3489c;outline-offset:-3px}
+.blocks div.shared::after{content:'⇆';position:absolute;right:1px;top:-1px;font-size:9px}
+.blocks div.new{animation:fl .6s}
+@keyframes fl{from{box-shadow:0 0 0 3px #f2b705 inset}to{box-shadow:none}}
+.acts{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.acts .btn{font-size:13px;padding:.35rem .65rem}
+ol.steps{margin:6px 0 0;padding-left:1.4rem;font-size:14px;line-height:1.5}
+ol.steps li{margin:3px 0}
+.fat{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:6px}
+.fat div{border:1px solid var(--border);border-radius:6px;background:var(--bg);padding:4px;text-align:center;font-family:var(--mono);font-size:12px}
+.fat div small{display:block;color:var(--muted);font-family:system-ui;font-size:10.5px}
+.fat div.u{color:#fff;font-weight:700}
+.fat div.u small{color:rgba(255,255,255,.85)}
+.fat div.g{background:repeating-linear-gradient(45deg,#bdbbb2 0 4px,#e2e0d8 4px 8px);color:#3d3d3a}
+.perm{display:grid;grid-template-columns:110px repeat(3,80px);gap:6px;align-items:center;font-size:14px;margin-top:8px}
+.perm label{display:flex;gap:4px;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:6px;padding:4px;background:var(--bg);cursor:pointer}
+.perm label.on{border-color:var(--accent);background:var(--accent-bg);font-weight:600}
+.osres{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width:640px){.osres{grid-template-columns:1fr}}
+.osres div{border:1px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:13.5px;background:var(--bg)}
+.osres div.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.osres div.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.osres div.warn{border-color:#c26a0a;background:#faeeda}
+.osres div>b:first-child{display:block;margin-bottom:4px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/15-failisusteemid.md">← Peatükk 15</a> · <a href="15-test.html">Test →</a></nav>
+<h1>Failisüsteemid – õpileht</h1>
+<p>See leht aitab mõista, mis toimub kettal, kui fail salvestatakse, avatakse, muudetakse või kustutatakse – Windowsis, Linuxis ja macOS-is. Iga harjutuse juures on selgitus <b>„Miks see oluline on?“</b> ja juhend <b>„Mida teha“</b>.</p>
+<div class="why">
+<h4>Suur pilt: mida failisüsteem teeb?</h4>
+<p>Ketas teab ainult nummerdatud plokke. Failisüsteem on nagu <b>raamatukogu kataloog</b>: ta peab meeles, millistes plokkides fail asub, mis on tema nimi, kellele ta kuulub ja millal teda muudeti. Igas failisüsteemis on kolm osa:</p>
+<ol>
+<li><b>Kaust (kataloog)</b> – seob nime ja faili kirje: „kiri.txt → kirje 1234“.</li>
+<li><b>Metaandmete kirje</b> – Windowsis MFT kirje, Linuxis inode, macOS-is inode-kirje: suurus, ajad, omanik, õigused ja kus andmed asuvad.</li>
+<li><b>Andmeplokid</b> (klastrid) – faili sisu.</li>
+</ol>
+<p>Kui sellest aru saad, mõistad ka, miks kustutatud faile saab sageli taastada, miks Linuxis võib failil olla mitu nime ja miks Macis faili kopeerimine ei võta lisaruumi.</p>
+</div>
+<div class="toc"><a href="#fat">1. FAT-tabel</a><a href="#klaster">2. Klastri suurus</a><a href="#elutsukkel">3. Faili elutsükkel (Windows, Linux, macOS)</a><a href="#nimed">4. Failinimed</a><a href="#oigused">5. Linuxi õigused</a><a href="#valik">6. Milline failisüsteem?</a></div>
+
+<!-- 1 FAT -->
+<section id="fat">
+<h2>1. Kuidas FAT faile hoiab</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>FAT on lihtsaim failisüsteem ja seepärast hea koht, kus põhimõtet näha. Kaustas on kirje „faili nimi + esimene klaster“. <b>FAT-tabelis</b> on iga klastri kohta üks lahter, mis ütleb, <b>milline klaster tuleb järgmisena</b> – fail on nagu aardejaht, kus iga vihje näitab järgmise kohta. FAT-i kasutavad tänapäeval USB-pulgad, mälukaardid ja arvuti EFI-partitsioon.</p>
+<p><b>Mida teha:</b> vajuta „Järgmine samm“ ja jälgi kolme asja: kaustakirjeid, FAT-tabelit ja andmeklastreid. Pane tähele, mis juhtub faili kasvamisel (killustumine) ja kustutamisel (andmed jäävad alles!).</p>
+</div>
+<div class="card">
+  <div class="two" style="display:grid;grid-template-columns:1fr 1.6fr;gap:12px">
+    <div class="panel"><h4>📁 Kaust</h4><div id="fdir"></div></div>
+    <div class="panel"><h4>FAT-tabel (klaster → järgmine klaster)</h4><div class="fat" id="ftab"></div><div class="hint" style="margin-top:4px">0 = vaba · EOF = faili lõpp</div></div>
+  </div>
+  <div class="row"><span><button class="btn primary" id="fnext">Järgmine samm →</button> <button class="btn" id="freset">Algusesse</button></span><span class="hint" id="fstep"></span></div>
+  <div class="info" id="finfo"></div>
+</div>
+</section>
+
+<!-- 2 klaster -->
+<section id="klaster">
+<h2>2. Klastri suurus ja raisatud ruum</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Failisüsteem annab failile ruumi terve klastri kaupa. Kui klaster on 4 KB, võtab 1-baidine fail kettal 4 KB ja 5 KB fail 8 KB. Raisatud osa on <b>sisemine killustumine</b>. Väikese klastri korral on raiskamist vähem, kuid suurte failide jaoks tuleb hallata rohkem klastreid. Vormindamisel saab klastri suuruse ise valida (<i>Allocation unit size</i>).</p>
+<p><b>Mida teha:</b> vali failide tüüp ja klastri suurus. Võrdle „Andmete suurus“ ja „Suurus kettal“. Exploreris näed sama faili või kausta atribuutides.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Failid: <select id="kset"><option value="photo">10 000 fotot à ~3 MB</option><option value="small" selected>100 000 väikest faili à ~300 B (nt node_modules)</option><option value="video">50 videot à ~2 GB</option><option value="docs">5000 dokumenti à ~40 KB</option></select></span><span>Klaster: <select id="kcl"><option value="4096" selected>4 KB (vaikimisi)</option><option value="65536">64 KB</option><option value="1048576">1 MB</option></select></span></div>
+  <div class="kpis" id="kkpi"></div>
+  <div class="info" id="kinfo"></div>
+</div>
+</section>
+
+<!-- 3 elutsükkel -->
+<section id="elutsukkel">
+<h2>3. Faili elutsükkel: salvestamine, avamine, kustutamine</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Kasutaja jaoks on salvestamine ja kustutamine üks klõps. Kettal toimub aga mitu sammu ja need erinevad OS-iti. Sellest sõltub, <b>kas kustutatud faili saab taastada</b>, <b>miks ruum ei vabane</b> ja <b>kuidas OS teab, et fail tuli internetist</b>.</p>
+<ul>
+<li><b>Windows (NTFS)</b> – kustutatud fail läheb prügikasti. Jäädaval kustutamisel jäävad andmed kettale, kuni need üle kirjutatakse.</li>
+<li><b>Linux (ext4)</b> – nimi on kataloogis, metaandmed inode’is. <code>rm</code> eemaldab ainult nime; fail kaob, kui ühtegi nime pole ja keegi seda lahti ei hoia.</li>
+<li><b>macOS (APFS)</b> – kirjutamisel kopeerimine: muudatus läheb alati uude plokki. Koopiad on kloonid, mis jagavad plokke.</li>
+</ul>
+<p><b>Mida teha (soovitatud järjekord):</b></p>
+<ol>
+<li>Vali OS. Vajuta „Salvesta uus fail“ ja loe allpool samme.</li>
+<li>„Laadi alla arve.pdf“ – vaata, millise märke OS failile lisab.</li>
+<li>Vali fail <code>kiri.txt</code>, vajuta „Kustuta (prügikasti)“, siis „Taasta“. Seejärel kustuta jäädavalt ja vaata andmeplokke – triibulised plokid on <b>kustutatud, kuid alles</b>.</li>
+<li>Vajuta „Taastetööriist“. Siis salvesta suur video ja proovi taastetööriista uuesti.</li>
+<li>Lülita sisse „SSD (TRIM)“ ja korda kustutamist.</li>
+<li>Linuxis: ava fail, kustuta jäädavalt ja vaata, mis juhtub ruumiga. Siis sulge fail.</li>
+<li>macOS-is: kopeeri fail (kloon), tee hetktõmmis ja kustuta fail – miks ruum ei vabane?</li>
+</ol>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span class="ostabs" id="ostabs"></span><span><label class="tg"><input type="checkbox" id="ssd"> <span>SSD (TRIM)</span></label> <button class="btn" id="lreset">Algseis</button></span></div>
+  <div class="row"><span>Fail: <select id="ltarget"></select></span></div>
+  <div class="acts" id="lacts"></div>
+  <div class="grid3">
+    <div class="panel"><h4 id="hdir">Kaustad</h4><div id="ldir"></div></div>
+    <div class="panel"><h4 id="hmeta">Metaandmed</h4><div id="lmeta"></div></div>
+  </div>
+  <div class="panel" style="margin-top:10px"><h4>Andmeplokid kettal</h4><div class="blocks" id="lblocks"></div>
+  <div class="legend"><span><i style="background:#185fa5;border-radius:3px"></i>faili andmed (värv = fail)</span><span><i style="background:repeating-linear-gradient(45deg,#bdbbb2 0 3px,#e2e0d8 3px 6px);border-radius:3px"></i>kustutatud, kuid andmed alles</span><span><i style="border:3px solid #a3489c;border-radius:3px"></i>hoiab hetktõmmis</span><span>⇆ jagatud plokk (kloon / mitu nime)</span></div></div>
+  <div class="kpis" id="lkpi"></div>
+  <div class="panel" style="margin-top:10px"><h4 id="lhead">Mis just juhtus?</h4><ol class="steps" id="lsteps"></ol></div>
+</div>
+</section>
+
+<!-- 4 nimed -->
+<section id="nimed">
+<h2>4. Kas see failinimi sobib?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Iga OS lubab failinimes erinevaid märke. Windows keelab märgid <code>&lt; &gt; : " / \ | ? *</code> ja mõned nimed (<code>CON</code>, <code>NUL</code>, <code>COM1</code> …), sest need on MS-DOS-i ajast seadmete nimed. Linux keelab ainult <code>/</code>. macOS-is on <code>/</code> keelatud ja Finder ei luba ka koolonit. Lisaks eristab Linux suur- ja väiketähti, Windows ja macOS vaikimisi mitte.</p>
+<p><b>Miks see administraatorile oluline on?</b> Kui Linuxi serverist kopeerida Windowsi kaust, kus on failid <code>Logo.png</code> ja <code>logo.png</code>, kirjutab üks teise üle. Veebileht, mis Windowsis töötab lingiga <code>Pilt.JPG</code>, annab Linuxi serveris vea 404, kui fail on <code>pilt.jpg</code>.</p>
+<p><b>Mida teha:</b> kirjuta failinimi või vali näide. Proovi ka suur- ja väiketähtede kontrolli.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Failinimi: <input type="text" id="nname" value="aruanne:2026.txt" style="width:260px;font-family:var(--mono)"></span></div>
+  <div class="row"><span id="npres"></span></div>
+  <div class="osres" id="nres"></div>
+  <h3 style="margin-top:1.2rem">Kas need kaks faili saavad olla samas kaustas?</h3>
+  <div class="row" style="margin-top:4px"><span><input type="text" id="nc1" value="Kiri.txt" style="width:150px;font-family:var(--mono)"> ja <input type="text" id="nc2" value="kiri.txt" style="width:150px;font-family:var(--mono)"></span></div>
+  <div class="osres" id="ncres"></div>
+</div>
+</section>
+
+<!-- 5 õigused -->
+<section id="oigused">
+<h2>5. Linuxi õigused: rwx ja chmod</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Linuxis on igal failil <b>omanik</b>, <b>grupp</b> ja kolm õiguste komplekti: omanikule, grupile ja kõigile teistele. Igas komplektis on <b>r</b> (read – lugemine, väärtus 4), <b>w</b> (write – kirjutamine, 2) ja <b>x</b> (execute – käivitamine, 1). Arvud liidetakse: rw- = 4 + 2 = 6. Nii saadakse kolmekohaline arv, nt <code>chmod 640</code>.</p>
+<p>Kataloogi puhul tähendab <b>r</b> sisu nimekirja nägemist, <b>w</b> failide loomist ja kustutamist ning <b>x</b> kataloogi sisenemist. Windowsis on NTFS ACL-id palju detailsemad (ptk 18), kuid põhimõte – kes mida tohib – on sama.</p>
+<p><b>Mida teha:</b> märgi õigused või sisesta arv. Proovi näiteid ja loe, kes mida faili <code>aruanne.txt</code> (omanik mari, grupp opetajad) puhul teha saab.</p>
+</div>
+<div class="card">
+  <div class="perm" id="pgrid"></div>
+  <div class="row"><span>Arv: <input type="text" id="poct" value="640" style="width:70px;font-family:var(--mono)" maxlength="3"></span><span id="ppres"></span></div>
+  <div class="kpis" id="pkpi"></div>
+  <div class="info" id="pinfo"></div>
+</div>
+</section>
+
+<!-- 6 valik -->
+<section id="valik">
+<h2>6. Milline failisüsteem?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Vale failisüsteem tähendab, et fail ei mahu (FAT32 4 GB piir), teine OS ei saa kettale kirjutada (NTFS Macis) või puuduvad õigused ja logimine (exFAT). Rusikareegel: <b>süsteemiketas – OS-i oma failisüsteem</b> (NTFS, ext4, APFS), <b>vahetuskandja – exFAT</b>, <b>EFI-partitsioon – FAT32</b>, <b>suured serveriköited – ReFS</b>.</p>
+</div>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="15-test.html">Peatüki 15 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/15-failisusteemid.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+const PAL=['#185fa5','#c26a0a','#3b6d11','#a3489c','#0f7b7b','#a32d2d','#6b4fbb','#8a6d1d'];
+
+/* 1. FAT */
+const FS=[
+ ['A','LOO','kiri.txt',[2,3,4],'Luuakse <b>kiri.txt</b> (3 klastrit). Kausta lisatakse kirje „KIRI.TXT, algus 2“. FAT-tabelis: 2 → 3 → 4 → EOF. Fail on järjest – lugemine on kiire.'],
+ ['B','LOO','foto.jpg',[5,6],'Luuakse <b>foto.jpg</b> (2 klastrit): 5 → 6 → EOF.'],
+ ['C','LOO','tabel.xls',[7,8],'Luuakse <b>tabel.xls</b>: 7 → 8 → EOF.'],
+ ['A','GROW','kiri.txt',[9,10],'<b>kiri.txt kasvab</b> 2 klastri võrra. Klaster 5 on hõivatud, nii et lisatakse kauged klastrid 9 ja 10. Ahel on nüüd 2 → 3 → 4 → <b>9</b> → 10. Fail on <b>killustunud</b>: HDD lugemispea peab hüppama.'],
+ ['B','DEL','foto.jpg',[],'<b>foto.jpg kustutatakse.</b> Kaustakirje esimene märk asendatakse erimärgiga (σ / 0xE5) ja FAT-is märgitakse klastrid 5 ja 6 vabaks (0). <b>Andmed klastrites 5–6 jäävad alles</b> (triibulised) – kustutatud on ainult viited.'],
+ ['B','REC','foto.jpg',[],'<b>Taastetööriist</b> (nt PhotoRec) leiab kaustast kustutatud kirje „σOTO.JPG, algus 5, suurus 2 klastrit“ ja klastrid 5–6 on veel vabad ja puutumata. Faili saab taastada! Seepärast ei tohi pärast kogemata kustutamist kandjale midagi uut salvestada.'],
+ ['D','LOO','video.mp4',[5,6,11,12],'Luuakse <b>video.mp4</b> (4 klastrit). Failisüsteem võtab esimesed vabad klastrid – 5 ja 6 – ning 11 ja 12. <b>foto.jpg andmed kirjutati üle</b>, nüüd pole seda enam võimalik taastada.']];
+let fk=0;
+function fState(){const fat=Array(18).fill(0),own=Array(18).fill(null),ghost=Array(18).fill(null),dir=[];const files={};
+  for(let s=0;s<fk;s++){const [id,op,name,cl]=FS[s];
+    if(op==='LOO'){files[id]={name,cl:cl.slice(),del:false};cl.forEach(c=>{own[c]=id;ghost[c]=null})}
+    if(op==='GROW'){files[id].cl.push(...cl);cl.forEach(c=>own[c]=id)}
+    if(op==='DEL'){files[id].del=true;files[id].cl.forEach(c=>{own[c]=null;ghost[c]=id})}}
+  Object.entries(files).forEach(([id,f])=>{if(!f.del)f.cl.forEach((c,i)=>fat[c]=i<f.cl.length-1?f.cl[i+1]:'EOF')});
+  return {fat,own,ghost,files}}
+const FCOL={A:PAL[0],B:PAL[1],C:PAL[2],D:PAL[3]};
+function fDraw(){const S=fState();
+  $('fdir').innerHTML=Object.entries(S.files).map(([id,f])=>`<div class="dirent"><span style="color:${f.del?'var(--muted)':FCOL[id]}">${f.del?'σ'+f.name.slice(1).toUpperCase()+' (kustutatud)':f.name.toUpperCase()}</span><span>algus ${f.cl[0]}</span></div>`).join('')||'<span class="hint">tühi</span>';
+  $('ftab').innerHTML=[...Array(16).keys()].map(i=>{const c=i+2,o=S.own[c],g=S.ghost[c];return `<div class="${o?'u':g?'g':''}" style="${o?'background:'+FCOL[o]:''}"><small>klaster ${c}</small>${S.fat[c]}${g&&!o?'<small>vana: '+S.files[g].name+'</small>':''}</div>`}).join('');
+  $('fstep').textContent=`Samm ${fk}/${FS.length}`;$('fnext').disabled=fk>=FS.length;
+  $('finfo').className='info'+(fk===FS.length?' bad':'');
+  $('finfo').innerHTML=fk?FS[fk-1][4]:'Kandja on tühi. Vajuta „Järgmine samm“.'}
+$('fnext').onclick=()=>{fk++;fDraw()};$('freset').onclick=()=>{fk=0;fDraw()};fDraw();
+
+/* 2. Klaster */
+const KS={photo:[10000,3e6],small:[100000,300],video:[50,2e9],docs:[5000,40e3]};
+function sz(b){return b>=1e9?fmt(b/1e9,2)+' GB':b>=1e6?fmt(b/1e6,1)+' MB':fmt(b/1e3,0)+' KB'}
+function kDraw(){const [n,s]=KS[$('kset').value],c=+$('kcl').value,on=n*Math.ceil(s/c)*c,data=n*s,w=on-data;
+  $('kkpi').innerHTML=`<div>Andmete suurus<b>${sz(data)}</b></div><div>Suurus kettal<b>${sz(on)}</b></div><div>Raisatud<b>${fmt(w/on*100,0)}%</b></div>`;
+  $('kinfo').innerHTML=w/on>0.5?`Iga väike fail võtab terve klastri. ${n.toLocaleString('et-EE')} faili × ${sz(c)} = ${sz(on)}, kuigi andmeid on vaid ${sz(data)}. Väikeste failide jaoks sobib väike klaster; NTFS mahutab väga väikesed failid isegi otse MFT kirjesse.`:
+   w/on<0.01?'Suurte failide puhul on raiskamine tühine – viimane klaster on keskmiselt pooltäis, aga faili suurusega võrreldes on see olematu. Suurem klaster tähendab siin vähem klastreid, mida hallata.':`Raiskamine on mõõdukas. Proovi väikeste failide komplekti suure klastriga, et näha halvimat juhtu.`}
+['kset','kcl'].forEach(i=>$(i).onchange=kDraw);kDraw();
+
+/* 3. Elutsükkel */
+const OS={win:{n:'Windows (NTFS)',meta:'MFT kirje',id:i=>String(1234+i),dir:'C:\\Users\\mari\\Dokumendid',trash:'C:\\$Recycle.Bin\\S-1-5-21-…-1001',blk:'klaster',bp:'klastrit',bg:'klastri',bill:'klastritesse'},
+ lin:{n:'Linux (ext4)',meta:'inode',id:i=>String(5678+i),dir:'/home/mari/Dokumendid',trash:'~/.local/share/Trash/files',blk:'plokk',bp:'plokki',bg:'ploki',bill:'plokkidesse'},
+ mac:{n:'macOS (APFS)',meta:'inode-kirje',id:i=>'0x'+(0x4F2+i).toString(16).toUpperCase(),dir:'/Users/mari/Documents',trash:'~/.Trash',blk:'plokk',bp:'plokki',bg:'ploki',bill:'plokkidesse'}};
+const N=(n)=>n===1?'1 '+OS[os].blk:n+' '+OS[os].bp;;
+const NB=32;let os='win',E;
+function eInit(){E={blocks:[...Array(NB)].map(()=>({refs:new Set(),ghost:null,snap:false})),files:[],seq:0,snap:null,last:[],head:'Mis just juhtus?',newb:new Set()};eRender()}
+function free(n){const out=[];for(let i=0;i<NB&&out.length<n;i++){const b=E.blocks[i];if(!b.refs.size&&!b.snap)out.push(i)}return out}
+function color(f){return PAL[f.c%PAL.length]}
+function byName(n){if(n&&n.startsWith('#id:'))return E.files.find(f=>f.alive&&f.id===+n.slice(4));return E.files.find(f=>f.alive&&f.names.some(x=>x.name===n))}
+function useBlocks(f,idx){idx.forEach(i=>{const b=E.blocks[i];b.refs.add(f.id);b.ghost=null;E.newb.add(i)})}
+function releaseBlock(i,f,steps){const b=E.blocks[i];b.refs.delete(f.id);
+  if(b.refs.size)return 'shared';if(b.snap)return 'snap';
+  if($('ssd').checked){b.ghost=null;return 'trim'}b.ghost={name:f.names[0]?f.names[0].name:f.lastName,c:f.c};return 'ghost'}
+function create(name,n,mark){const ix=free(n);if(ix.length<n)return ['Kettal pole piisavalt vaba ruumi.'];
+  const f={id:E.seq,c:E.seq,meta:OS[os].id(E.seq),names:[{name,dir:'doc'}],blocks:ix,open:0,mark,alive:true,size:n};E.seq++;E.files.push(f);useBlocks(f,ix);
+  const S={win:[`Rakendus kutsub <code>CreateFile("${OS.win.dir}\\${name}")</code>. Objektihaldur annab tee NTFS-ile.`,`NTFS kontrollib kausta <b>ACL-i</b>: kas Maril on õigus siia faile luua? Jah.`,`NTFS võtab vaba <b>MFT kirje ${f.meta}</b>, kirjutab sinna nime, ajad ja õigused ning lisab nime kausta indeksisse (<code>$I30</code>). Muudatused kirjutatakse esmalt logisse <code>$LogFile</code>.`,`<code>WriteFile</code>: andmed lähevad vahemällu. Laisk kirjutaja leiab <code>$Bitmap</code>-ist vabad klastrid (${ix.join(', ')}) ja kirjutab andmed kettale umbes sekundi jooksul.`],
+   lin:[`Programm kutsub <code>open("${OS.lin.dir}/${name}", O_CREAT)</code>. VFS-kiht suunab päringu ext4-le.`,`Kontrollitakse kataloogi õigusi: Maril peab olema kataloogil <b>w</b> ja <b>x</b>.`,`ext4 võtab inode’ide bitikaardist vaba <b>inode ${f.meta}</b> (omanik mari, õigused 644, viidete arv 1) ja lisab kataloogi kirje „${name} → ${f.meta}“. Metaandmete muudatus läheb logisse (journal).`,`<code>write()</code>: andmed lähevad lehevahemällu (page cache). Taustalõim kirjutab need plokkidesse ${ix.join(', ')} umbes 30 sekundi jooksul. <code>fsync()</code> sunniks kohe kirjutama.`],
+   mac:[`Rakendus salvestab faili <code>${OS.mac.dir}/${name}</code>. Paljud Maci rakendused kirjutavad esmalt ajutise faili ja nimetavad selle aatomiliselt ümber (safe-save).`,`Kontrollitakse kataloogi õigusi (POSIX + ACL).`,`APFS lisab B-puusse <b>inode-kirje ${f.meta}</b> ja kataloogi kirje „${name} → ${f.meta}“. Logi pole vaja: uued kirjed kirjutatakse uude kohta ja puu juur vahetatakse ühe korraga (kirjutamisel kopeerimine).`,`Andmed kirjutatakse vabadesse plokkidesse ${ix.join(', ')}.`]}[os];
+  if(mark)S.push({win:'Brauser lisab failile alternatiivse andmevoo <b><code>Zone.Identifier</code></b> (ZoneId=3 – internet). See on <b>Mark of the Web</b>: Word avab faili kaitstud vaates, SmartScreen hoiatab.',lin:'Linux ei lisa vaikimisi märget, et fail tuli internetist (mõni brauser lisab laiendatud atribuudi <code>user.xdg.origin.url</code>). Turvaline käitumine sõltub kasutajast: allalaaditud failil puudub ka käivitusõigus <b>x</b>.',mac:'Brauser lisab laiendatud atribuudi <b><code>com.apple.quarantine</code></b>. Esimesel avamisel kontrollib <b>Gatekeeper</b>, kas rakendus on allkirjastatud ja notariseeritud, ja küsib kasutajalt kinnitust.'}[os]);
+  return S}
+function act(a){const f=byName($('ltarget').value);E.newb=new Set();let S=[],head='';
+  const nm=f?f.names.find(x=>x.name===$('ltarget').value):null;
+  if(a==='save'){const n='kiri'+(E.files.filter(x=>x.names.some(y=>y.name.startsWith('kiri'))).length||'')+'.txt';head=`Salvesta uus fail ${n}`;S=create(n,3,false);$('ltarget').dataset.want=n}
+  else if(a==='dl'){head='Laadi internetist alla arve.pdf';if(byName('arve.pdf')){S=['arve.pdf on juba olemas.']}else S=create('arve.pdf',2,true)}
+  else if(a==='video'){head='Salvesta suur fail video.mp4';S=create('video.mp4',10,false);if(S.length>1)S.push('Pane tähele: uus fail võttis ka kustutatud failide plokke. Seal olnud vanad andmed on nüüd <b>üle kirjutatud</b> ja neid ei saa enam taastada.')}
+  else if(!f){S=['Vali fail.']}
+  else if(!nm&&a!=='open'){S=['Sellel failil pole enam nime – teda saab ainult sulgeda.']}
+  else if(a==='open'){head=(f.open?'Sulge ':'Ava ')+(nm?nm.name:OS[os].meta+' '+f.meta);
+    if(!f.open){f.open=1;S={win:[`<code>CreateFile</code> avab olemasoleva faili. NTFS otsib teed osade kaupa: <code>\\</code> → <code>Users</code> → <code>mari</code> → <code>Dokumendid</code> → <code>${nm.name}</code>. Iga kaust on B-puu, nii et nimi leitakse kiiresti ka suures kaustas.`,`Leitud <b>MFT kirje ${f.meta}</b> põhjal võrreldakse faili ACL-i Mari pääsulubaga.`,`Programm saab <b>käepideme</b> (handle). Edasised lugemised kasutavad käepidet ja vahemälu.`],
+      lin:[`<code>open()</code>: tee lahendatakse osade kaupa <code>/</code> → <code>home</code> → <code>mari</code> → <code>Dokumendid</code> → <code>${nm.name}</code>. Iga kataloogi juures kontrollitakse <b>x</b>-õigust. Hiljuti leitud nimed on <b>dentry vahemälus</b>.`,`Kataloogi kirjest saadakse <b>inode ${f.meta}</b> ja kontrollitakse <b>r</b>-õigust.`,`Programm saab <b>failikirjeldaja</b> (nt 3).`],
+      mac:[`Tee <code>/Users/mari/Documents/${nm.name}</code> lahendatakse osade kaupa; APFS otsib kataloogi kirjed B-puust.`,`Leitakse <b>inode-kirje ${f.meta}</b> ja kontrollitakse õigusi.`+(f.mark?' Kuna failil on <code>com.apple.quarantine</code>, kontrollib Gatekeeper esimesel avamisel faili päritolu.':''),`Programm saab failikirjeldaja.`]}[os]}
+    else{f.open=0;S=['Programm sulgeb faili ja vabastab käepideme / failikirjeldaja.'];
+      if(!f.names.length){const r=f.blocks.map(i=>releaseBlock(i,f));f.alive=false;S.push(`<b>See oli viimane avatud viide</b> failile, millel polnud enam ühtegi nime. Alles nüüd vabastatakse ${OS[os].meta} ${f.meta} ja ${N(f.blocks.length)} – ruum vabaneb.`)}}}
+  else if(a==='edit'){head='Muuda '+nm.name;const nb=free(1);if(!nb.length)S=['Vaba ruumi pole.'];else{
+    if(os==='mac'){const old=f.blocks[0],nw=free(2);f.blocks[0]=nw[0];useBlocks(f,[nw[0]]);const r=releaseBlock(old,f);f.blocks.push(nw[1]);useBlocks(f,[nw[1]]);f.size++;
+      S=[`Esimest plokki muudetakse. APFS <b>ei kirjuta vana plokki üle</b> – muudetud sisu kirjutatakse uude plokki ${nw[0]}.`,`Lisandunud tekst läheb plokki ${nw[1]}.`,`Metaandmete puu uuendatakse nii, et fail viitab uutele plokkidele. Kui vool oleks vahepeal katkenud, oleks alles terve vana versioon.`,r==='shared'?`Vana plokk ${old} jääb alles, sest seda kasutab endiselt <b>kloon</b> – kloon näeb vana sisu.`:r==='snap'?`Vana plokk ${old} jääb alles, sest seda hoiab <b>hetktõmmis</b>.`:`Vana plokk ${old} vabaneb.`]}
+    else{const shared=E.blocks[f.blocks[0]].refs.size>1;f.blocks.push(nb[0]);useBlocks(f,[nb[0]]);f.size++;E.newb.add(f.blocks[0]);
+      S=[os==='win'?`NTFS kirjutab muudetud sisu <b>samasse klastrisse</b> ${f.blocks[0]} (otse üle). Metaandmete muudatus läheb logisse.`:`ext4 kirjutab muudetud sisu <b>samasse plokki</b> ${f.blocks[0]} (otse üle).`,`Lisandunud tekst saab uue ${OS[os].bg} ${nb[0]}.`];
+      if(shared)S.push('Selle faili plokke kasutab ka teine nimi (kõvaviide) – see on <b>sama fail</b>, nii et ka teine nimi näeb muudatust.');
+      if(os==='win'&&E.snap){const sb=free(1);if(sb.length){E.blocks[sb[0]].snap=true;E.blocks[sb[0]].ghost={name:'vana sisu',c:f.c};S.push(`Kuna köitel on <b>varikoopia</b>, kopeeris VSS enne ülekirjutamist klastri vana sisu varikoopia alale (klaster ${sb[0]}). Nii saab „Eelmised versioonid“ kaudu vana faili taastada.`)}}}}}
+  else if(a==='copy'){const cn='koopia_'+nm.name;head='Kopeeri '+nm.name+' → '+cn;
+    if(os==='mac'){const g={id:E.seq,c:E.seq,meta:OS.mac.id(E.seq),names:[{name:cn,dir:'doc'}],blocks:f.blocks.slice(),open:0,mark:f.mark,alive:true,size:f.size};E.seq++;E.files.push(g);useBlocks(g,g.blocks);
+      S=[`Finder kopeerib samal köitel – APFS loob <b>klooni</b>: uus inode-kirje ${g.meta}, kuid andmeplokke ei kopeerita.`,`Mõlemad failid viitavad samadele plokkidele (⇆). Koopia tekib hetkega ja <b>ei võta lisaruumi</b>.`,`Kui ühte faili hiljem muuta, kirjutatakse ainult muudetud plokk uude kohta. Proovi: vali algne fail ja vajuta „Muuda“.`]}
+    else{const ix=free(f.blocks.length);if(ix.length<f.blocks.length){S=['Vaba ruumi pole.']}else{const g={id:E.seq,c:E.seq,meta:OS[os].id(E.seq),names:[{name:cn,dir:'doc'}],blocks:ix,open:0,mark:f.mark,alive:true,size:f.size};E.seq++;E.files.push(g);useBlocks(g,ix);
+      S=[`Luuakse uus ${OS[os].meta} ${g.meta}.`,`Kõik andmed loetakse ja kirjutatakse uutesse ${OS[os].bill} (${ix.join(', ')}). Koopia võtab sama palju ruumi kui originaal.`,os==='win'?'ReFS-il (nt Dev Drive) saaks teha plokkide klooni nagu APFS-is; NTFS-il mitte.':'Btrfs-il ja XFS-il saab teha kloone (<code>cp --reflink</code>), ext4-l mitte.'];if(f.mark&&os==='win')S.push('Koopia saab kaasa ka <code>Zone.Identifier</code>-voo, sest kopeeritakse NTFS-ilt NTFS-ile. FAT32-pulgale kopeerides voog kaoks.')}}}
+  else if(a==='link'){const ln=nm.name.replace('.','_link.');head='Loo kõvaviide '+ln;f.names.push({name:ln,dir:'doc'});E.newb=new Set(f.blocks);
+    S=[{win:`<code>mklink /H ${ln} ${nm.name}</code>: kausta lisatakse teine nimi, mis viitab <b>samale MFT kirjele</b> ${f.meta}. NTFS toetab kõvaviiteid, kuid Windowsis kasutatakse neid harva (nt WinSxS-kaustas).`,lin:`<code>ln ${nm.name} ${ln}</code>: kataloogi lisatakse teine kirje „${ln} → ${f.meta}“. Inode’i viidete arv on nüüd <b>${f.names.length}</b>. Need on täiesti võrdsed nimed – kumbki pole „originaal“.`,mac:`<code>ln ${nm.name} ${ln}</code>: lisatakse teine nimi samale inode-kirjele ${f.meta}. (Finderi „alias“ on hoopis eraldi viitefail.)`}[os],`Andmeid ei kopeerita – see on <b>sama fail</b> kahe nimega. Kui ühe nime kaudu muuta, näeb muudatust ka teine.`,`Proovi kustutada üks nimi jäädavalt – fail jääb alles teise nime all.`]}
+  else if(a==='trash'){head='Kustuta '+nm.name+' (prügikasti)';if(nm.dir==='trash'){S=['Fail on juba prügikastis.']}else{
+    if(os==='win'&&f.open){S=[`<b>Toimingut ei saa lõpule viia, sest fail on avatud.</b> Windows seob avatud faili tema nimega – sulge fail enne kustutamist.`]}else{
+    nm.dir='trash';const rn='$R'+Math.random().toString(36).slice(2,8).toUpperCase()+nm.name.slice(nm.name.lastIndexOf('.'));nm.trash=rn;
+    S={win:[`Explorer <b>teisaldab</b> faili prügikasti kausta <code>${OS.win.trash}</code> ja nimetab selle ümber <code>${rn}</code>. Kõrvale luuakse fail <code>$I…</code> algse tee ja kustutamise ajaga.`,`MFT kirje ${f.meta} ja andmed jäävad täpselt samaks – muutus ainult nimi ja kaust. Seepärast on „kustutamine“ prügikasti hetkeline ka 10 GB failil.`,`USB-pulgalt ja võrgukaustast kustutades prügikasti ei kasutata.`],
+      lin:[`Töölaud (GNOME, KDE) teisaldab faili kausta <code>${OS.lin.trash}</code> ja loob faili <code>~/.local/share/Trash/info/${nm.name}.trashinfo</code> algse tee ja ajaga.`,`Inode ${f.meta} ja andmed jäävad samaks. <b>NB!</b> Terminali käsk <code>rm</code> prügikasti ei kasuta.`],
+      mac:[`Finder teisaldab faili kausta <code>${OS.mac.trash}</code> ja jätab meelde algse asukoha („Tõsta tagasi“).`,`Inode-kirje ja plokid jäävad samaks. Terminali <code>rm</code> prügikasti ei kasuta.`]}[os]}}}
+  else if(a==='restore'){head='Taasta '+nm.name;if(nm.dir!=='trash')S=['Fail ei ole prügikastis.'];else{nm.dir='doc';delete nm.trash;S=[`Fail teisaldatakse tagasi algsesse kausta. Kuna andmeid ja metaandmeid ei muudetud, on taastamine hetkeline ja täielik.`]}}
+  else if(a==='del'){head='Kustuta jäädavalt '+nm.name;
+    if(os==='win'&&f.open){S=['<b>Faili ei saa kustutada, sest see on avatud.</b> Sulge fail.']}else{
+    f.lastName=nm.name;f.names=f.names.filter(x=>x!==nm);
+    S={win:[`<b>${nm.dir==='trash'?'Prügikasti tühjendamine':'Shift + Delete'}</b>: nimi eemaldatakse kausta indeksist.`],lin:[`<code>rm ${nm.name}</code> → süsteemikutse <code>unlink()</code>: kataloogist eemaldatakse kirje „${nm.name} → ${f.meta}“. Inode’i viidete arv: ${f.names.length+1} → <b>${f.names.length}</b>.`],mac:[`${nm.dir==='trash'?'Prügikasti tühjendamine':'<code>rm</code> / „Kustuta kohe“'}: kataloogist eemaldatakse kirje „${nm.name}“.`]}[os];
+    if(f.names.length){S.push(`Failil on veel nimi <b>${f.names[0].name}</b>, nii et ${OS[os].meta} ja andmed jäävad alles. Fail kustub alles koos viimase nimega.`)}
+    else if(f.open&&os!=='win'){S.push(`Ühtegi nime pole enam, kuid <b>fail on veel avatud</b>. ${OS[os].meta} ${f.meta} ja tema ${N(f.blocks.length)} jäävad alles – ruum <b>ei vabane</b>. ls ei näe faili, kuid df näitab, et ruum on endiselt kasutusel.`,os==='lin'?'Administraator leiaks selle käsuga <code>lsof +L1</code>. Ruum vabaneb, kui programm faili sulgeb (vajuta „Sulge“).':'Ruum vabaneb, kui programm faili sulgeb.')}
+    else{const res=f.blocks.map(i=>releaseBlock(i,f));f.alive=false;
+      const g=res.filter(r=>r==='ghost').length,t=res.filter(r=>r==='trim').length,sh=res.filter(r=>r==='shared').length,sn=res.filter(r=>r==='snap').length;
+      S.push(`${OS[os].meta} ${f.meta} märgitakse vabaks${os==='win'?' ja klastrid märgitakse <code>$Bitmap</code>-is vabaks':''}.`);
+      if(g)S.push(`<b>Andmeid ei kustutatud!</b> ${g===1?'1 '+OS[os].blk+' on vaba':N(g)+' on vabad'}, kuid vana sisu on endiselt kettal (triibulised). Taastetööriist võib selle tagasi tuua, kuni uued failid neid üle ei kirjuta.`);
+      if(t)S.push(`<b>SSD:</b> OS saatis TRIM-käsu ja SSD kustutas ${N(t)} ise. Neist ei saa andmeid enam taastada.`);
+      if(sh)S.push(`${N(sh)} ${sh===1?'jäi':'jäid'} alles, sest neid kasutab ka <b>kloon</b> – ruumi ei vabanenud.`);
+      if(sn)S.push(`${N(sn)} ${sn===1?'jäi':'jäid'} alles, sest neid hoiab <b>hetktõmmis</b>. Ruum vabaneb alles siis, kui hetktõmmis kustutatakse. ${os==='mac'?'macOS näitab seda „vabastatava“ (purgeable) ruumina.':'Faili saab hetktõmmisest taastada („Eelmised versioonid“).'}`);}}}
+  else if(a==='snap'){head=E.snap?'Kustuta hetktõmmis':'Loo hetktõmmis';
+    if(os==='lin'){S=['ext4 ei toeta hetktõmmiseid. Linuxis saab neid teha LVM-i (<code>lvcreate --snapshot</code>) või Btrfs-i (<code>btrfs subvolume snapshot</code>) abil.']}
+    else if(!E.snap){E.snap=true;E.blocks.forEach(b=>{if(b.refs.size)b.snap=true});
+      S=[os==='win'?'Windows loob <b>varikoopia</b> (VSS) – nt süsteemikaitse või varundus. Kõik praegu kasutusel olevad klastrid on nüüd „külmutatud“: enne ülekirjutamist kopeeritakse vana sisu varikoopia alale.':'Time Machine loob <b>APFS-i kohaliku hetktõmmise</b> (<code>tmutil localsnapshot</code>). Hetktõmmis hoiab kõiki praegu kasutusel olevaid plokke.','Lilla raam näitab plokke, mida hetktõmmis hoiab. Kustuta nüüd mõni fail jäädavalt ja vaata, kas ruum vabaneb.']}
+    else{E.snap=false;let n=0;E.blocks.forEach(b=>{if(b.snap){b.snap=false;if(!b.refs.size){n++;b.ghost=$('ssd').checked?null:(b.ghost||{name:'vana',c:7})}}});S=[`Hetktõmmis kustutati. ${n} plokki, mida hoidis ainult hetktõmmis, on nüüd vabad.`]}}
+  else if(a==='recover'){head='Taastetööriist';const gs={};E.blocks.forEach((b,i)=>{if(b.ghost&&!b.refs.size)(gs[b.ghost.name]=gs[b.ghost.name]||[]).push(i)});
+    const dead=E.files.filter(x=>!x.alive&&x.lastName);
+    S=dead.length?dead.map(x=>{const left=(gs[x.lastName]||[]).length,tot=x.blocks.length;return `<b>${x.lastName}</b>: ${left===tot?'kõik '+N(tot)+' on alles – <span style="color:var(--ok)">taastatav</span>':left?`ainult ${left}/${tot} ${OS[os].bp} alles – <span style="color:#c26a0a">osaliselt taastatav</span>`:'<span style="color:var(--bad)">andmeid pole – üle kirjutatud või TRIM-iga kustutatud</span>'}`}):['Jäädavalt kustutatud faile pole. Kustuta enne mõni fail jäädavalt.'];
+    S.push('Taastetööriist (nt PhotoRec, Recuva) otsib vabadest plokkidest vanu andmeid. Kaitse on <b>ketta krüpteerimine</b> (BitLocker, LUKS, FileVault): ilma võtmeta on ka taastatud plokid loetamatud.')}
+  E.last=S;E.head=head;eRender()}
+function eRender(){
+  $('ostabs').innerHTML=Object.entries(OS).map(([k,v])=>`<button class="btn${k===os?' on':''}" data-os="${k}">${v.n}</button>`).join('');
+  $('ostabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{os=b.dataset.os;eInit()});
+  const names=[],orph=[];E.files.filter(f=>f.alive).forEach(f=>{f.names.forEach(n=>names.push(n.name));if(!f.names.length)orph.push(f)});
+  const want=$('ltarget').dataset.want,cur=$('ltarget').value;
+  $('ltarget').innerHTML=(names.length||orph.length)?names.map(n=>`<option>${n}</option>`).join('')+orph.map(f=>`<option value="#id:${f.id}">(nimeta, avatud) ${OS[os].meta} ${f.meta}</option>`).join(''):'<option value="">(faile pole)</option>';
+  if(want&&names.includes(want)){$('ltarget').value=want;delete $('ltarget').dataset.want}else if(names.includes(cur)||orph.some(f=>'#id:'+f.id===cur))$('ltarget').value=cur;
+  const f=byName($('ltarget').value),nm=f?f.names.find(x=>x.name===$('ltarget').value):null;
+  const A=[['save','💾 Salvesta uus fail'],['dl','🌐 Laadi alla arve.pdf'],['open',f&&f.open?'📕 Sulge fail':'📖 Ava fail'],['edit','✏️ Muuda'],['copy',os==='mac'?'⧉ Kopeeri (kloon)':'⧉ Kopeeri'],['link','🔗 Kõvaviide'],['trash','🗑 Kustuta (prügikasti)'],['restore','↩ Taasta prügikastist'],['del','❌ Kustuta jäädavalt'],['video','🎬 Salvesta video.mp4'],['snap',E.snap?'📸 Kustuta hetktõmmis':'📸 Hetktõmmis'],['recover','🔍 Taastetööriist']];
+  $('lacts').innerHTML=A.map(([k,l])=>`<button class="btn" data-a="${k}">${l}</button>`).join('');
+  $('lacts').querySelectorAll('button').forEach(b=>b.onclick=()=>act(b.dataset.a));
+  const O=OS[os];$('hdir').textContent='Kaustad';$('hmeta').textContent='Metaandmed ('+O.meta+')';
+  const doc=[],tr=[];E.files.filter(f=>f.alive).forEach(f=>f.names.forEach(n=>(n.dir==='doc'?doc:tr).push(`<div class="dirent"><span style="color:${color(f)}">${n.dir==='trash'&&os==='win'?n.trash:n.name}</span><span>→ ${f.meta}</span></div>`)));
+  $('ldir').innerHTML=`<div class="hint" style="font-family:var(--mono)">📁 ${O.dir}</div>${doc.join('')||'<div class="hint">tühi</div>'}<div class="hint" style="font-family:var(--mono);margin-top:8px">🗑 ${O.trash}</div>${tr.join('')||'<div class="hint">tühi</div>'}`;
+  $('lmeta').innerHTML=E.files.filter(f=>f.alive).map(f=>`<div class="meta" style="border-left-color:${color(f)}"><b>${O.meta} ${f.meta}</b>${os==='win'?' · nimi: '+(f.names[0]?f.names[0].name:'–'):''} · ${N(f.blocks.length)} [${f.blocks.join(', ')}]${os!=='win'||f.names.length>1?' · viiteid (nimesid): '+f.names.length:''}${f.open?' · <b style="color:var(--accent)">avatud</b>':''}${!f.names.length?' · <b style="color:var(--bad)">nimeta!</b>':''}${f.mark?' · '+{win:'ADS Zone.Identifier',lin:'(märge puudub)',mac:'xattr com.apple.quarantine'}[os]:''}</div>`).join('')||'<span class="hint">kirjeid pole</span>';
+  $('lblocks').innerHTML=E.blocks.map((b,i)=>{const ids=[...b.refs];const ff=ids.length?E.files.find(x=>x.id===ids[0]):null;
+    const cls=[ids.length?'':b.ghost?'ghost':'',b.snap?'snap':'',ids.length>1?'shared':'',E.newb.has(i)?'new':''].join(' ');
+    const so=!ids.length&&b.snap;return `<div class="${cls}" style="${ff?'background:'+color(ff):so?'background:#f0e2ef;color:#7a2f74':''}" title="${O.blk} ${i}">${ff?(ff.names[0]?ff.names[0].name:ff.lastName||'').slice(0,4):so?'tõmm.':b.ghost?String(b.ghost.name).slice(0,4):i}</div>`}).join('');
+  const used=E.blocks.filter(b=>b.refs.size||b.snap).length,gh=E.blocks.filter(b=>!b.refs.size&&!b.snap&&b.ghost).length;
+  $('lkpi').innerHTML=`<div>Kasutusel ${O.bp}<b>${used}/${NB}</b></div><div>Vaba ruum<b>${NB-used}</b></div><div>Vabu, kuid vana sisuga<b>${gh}</b></div>`;
+  $('lhead').textContent=E.head;$('lsteps').innerHTML=(E.last.length?E.last:['Vali tegevus ülal. Iga tegevuse järel näed siin, mis kettal samm-sammult toimus.']).map(s=>'<li>'+s+'</li>').join('')}
+$('lreset').onclick=eInit;$('ssd').onchange=()=>{E.head='SSD (TRIM) '+($('ssd').checked?'sees':'väljas');E.last=[$('ssd').checked?'Nüüd teavitab OS pärast jäädavat kustutamist SSD-d TRIM-käsuga ja SSD kustutab vabad plokid ise. Uued kustutamised ei jäta vana sisu alles.':'HDD-režiim: vabastatud plokkide sisu jääb kettale, kuni see üle kirjutatakse.'];eRender()};
+$('ltarget').onchange=eRender;eInit();
+
+/* 4. Nimed */
+const WRES=/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(\..*)?$/i;
+function checkName(n){const r={};
+  // Windows
+  let w=[];if(!n)w.push('tühi nimi');const bad=[...new Set(n.match(/[<>:"/\\|?*\x00-\x1f]/g)||[])];if(bad.length)w.push('keelatud märgid: '+bad.join(' '));
+  if(WRES.test(n))w.push(`<b>${n.split('.')[0].toUpperCase()}</b> on reserveeritud seadme nimi (MS-DOS-i ajast)`);
+  if(/[ .]$/.test(n))w.push('nimi ei tohi lõppeda punkti või tühikuga (Windows eemaldab need)');
+  if(n.length>255)w.push('üle 255 märgi');
+  r.win=w.length?['bad','Ei sobi: '+w.join('; ')+'.']:n.startsWith('.')?['ok','Sobib. (Punkt alguses ei peida faili – peitmiseks on atribuut <i>Hidden</i>.)']:['ok','Sobib.'];
+  // Linux
+  let l=[];if(!n)l.push('tühi nimi');if(n.includes('/'))l.push('märk / on kataloogide eraldaja');if(n==='.'||n==='..')l.push('. ja .. on erinimed');if(new TextEncoder().encode(n).length>255)l.push('üle 255 baidi');
+  r.lin=l.length?['bad','Ei sobi: '+l.join('; ')+'.']:n.startsWith('-')?['warn','Lubatud, kuid käsureal tülikas: <code>rm '+n+'</code> tõlgendatakse võtmena. Kasuta <code>rm -- '+n+'</code>.']:n.startsWith('.')?['warn','Lubatud – <b>peidetud fail</b>, sest algab punktiga (<code>ls -a</code> näitab).']:/[ ]/.test(n)?['warn','Lubatud, kuid tühikuga nimi tuleb käsureal panna jutumärkidesse.']:['ok','Sobib.'];
+  // macOS
+  let m=[];if(!n)m.push('tühi nimi');if(n.includes('/'))m.push('märk / on kataloogide eraldaja');
+  r.mac=m.length?['bad','Ei sobi: '+m.join('; ')+'.']:n.includes(':')?['warn','Terminalis lubatud, kuid <b>Finder ei luba koolonit</b> – Finder näitab seda kaldkriipsuna (ajalooline Mac OS-i eraldaja).']:n.startsWith('.')?['warn','Lubatud – peidetud fail (algab punktiga).']:['ok','Sobib.'];
+  return r}
+function nDraw(){const r=checkName($('nname').value),T={win:'Windows (NTFS)',lin:'Linux (ext4)',mac:'macOS (APFS)'};
+  $('nres').innerHTML=Object.keys(T).map(k=>`<div class="${r[k][0]}"><b>${T[k]}</b>${r[k][1]}</div>`).join('');
+  const a=$('nc1').value,b=$('nc2').value,same=a===b,ci=a.toLowerCase()===b.toLowerCase();
+  const res=k=>same?['bad','Ei – nimed on täpselt samad.']:ci?(k==='lin'?['ok','Jah – Linux eristab suur- ja väiketähti, need on <b>kaks eri faili</b>.']:['bad','Ei – '+(k==='win'?'Windows':'macOS')+' ei erista vaikimisi suur- ja väiketähti, need on <b>sama nimi</b>. Kopeerimisel kirjutaks üks teise üle.']):['ok','Jah – nimed on erinevad.'];
+  $('ncres').innerHTML=Object.keys(T).map(k=>{const x=res(k);return `<div class="${x[0]}"><b>${T[k]}</b>${x[1]}</div>`}).join('')}
+const NP=['aruanne:2026.txt','CON.txt','nul','fail.','.salajane','-rf','Õpilaste nimekiri.xlsx','a/b.txt','kiri?.docx'];
+$('npres').innerHTML='Näited: '+NP.map(x=>`<button class="btn" style="font-size:12.5px;padding:.25rem .55rem;font-family:var(--mono)">${x}</button>`).join(' ');
+$('npres').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('nname').value=b.textContent;nDraw()});
+['nname','nc1','nc2'].forEach(i=>$(i).oninput=nDraw);nDraw();
+
+/* 5. Õigused */
+const WHO=['omanik (mari)','grupp (opetajad)','teised'],BIT=[['r',4,'lugeda'],['w',2,'muuta'],['x',1,'käivitada']];
+$('pgrid').innerHTML='<span></span>'+BIT.map(b=>`<b style="text-align:center">${b[0]} (${b[1]})</b>`).join('')+WHO.map((w,i)=>`<span>${w}</span>`+BIT.map((b,j)=>`<label id="pl${i}${j}"><input type="checkbox" data-i="${i}" data-j="${j}"> ${b[0]}</label>`).join('')).join('');
+function pFrom(oct){[...oct].forEach((d,i)=>{const v=+d;BIT.forEach((b,j)=>{const c=document.querySelector(`#pgrid input[data-i="${i}"][data-j="${j}"]`);c.checked=!!(v&b[1])})})}
+function pDraw(){let oct='',sym='-';for(let i=0;i<3;i++){let v=0;BIT.forEach((b,j)=>{const c=document.querySelector(`#pgrid input[data-i="${i}"][data-j="${j}"]`);$('pl'+i+j).classList.toggle('on',c.checked);if(c.checked)v+=b[1];sym+=c.checked?b[0]:'-'});oct+=v}
+  $('poct').value=oct;
+  $('pkpi').innerHTML=`<div>chmod<b>${oct}</b></div><div>ls -l näitab<b>${sym}</b></div>`;
+  const can=i=>{const v=+oct[i];const a=BIT.filter(b=>v&b[1]).map(b=>b[2]);return a.length?a.join(', '):'mitte midagi'};
+  let warn='';if(oct[2]==='7'||oct[2]==='6'||oct[2]==='2'||oct[2]==='3')warn=' <b style="color:var(--bad)">Ohtlik: kõik süsteemi kasutajad saavad faili muuta!</b> Õpetus „tee chmod 777, siis töötab“ on levinud turvaviga.';
+  else if(+oct[2]&4&&oct!=='644'&&oct!=='755')warn=' Kõik kasutajad saavad faili lugeda – kas see on tundlik?';
+  $('pinfo').innerHTML=`Omanik mari saab ${can(0)}. Grupi <i>opetajad</i> liikmed saavad ${can(1)}. Kõik teised saavad ${can(2)}.${warn}`+
+   ({'644':' Tavaline tekstifaili õigus.','755':' Tavaline programmi või skripti ja kataloogi õigus.','600':' Privaatne fail – nt SSH privaatvõti (<code>~/.ssh/id_ed25519</code>) peab olema 600, muidu SSH keeldub seda kasutamast.','640':' Hea valik ühistele tööfailidele: grupp saab lugeda, teised mitte.','750':' Skript, mida grupp saab käivitada, teised ei näe.'}[oct]||'')}
+$('pgrid').querySelectorAll('input').forEach(c=>c.onchange=pDraw);
+$('poct').oninput=()=>{const v=$('poct').value;if(/^[0-7]{3}$/.test(v)){pFrom(v);pDraw()}};
+$('ppres').innerHTML='Näited: '+['644','600','640','755','750','777'].map(x=>`<button class="btn" style="font-size:12.5px;padding:.25rem .55rem">${x}</button>`).join(' ');
+$('ppres').querySelectorAll('button').forEach(b=>b.onclick=()=>{pFrom(b.textContent);pDraw()});
+pFrom('640');pDraw();
+
+/* 6. Valik */
+quiz('qtasks','qscore','qreset',['FAT32','exFAT','NTFS','ReFS','ext4','APFS'],[
+ ['Windows 11 sülearvuti süsteemiketas',2,'NTFS toetab õigusi, logimist, BitLockerit, varikoopiaid ja Windows käivitub ainult sellelt.'],
+ ['USB-pulk, millega tõstetakse 6 GB videofaile Windowsi, Maci ja teleri vahel',1,'exFAT töötab kõigil kolmel ja lubab üle 4 GB faile. FAT32-le 6 GB fail ei mahu, NTFS-ile Mac kirjutada ei saa.'],
+ ['UEFI süsteemipartitsioon (EFI), kust arvuti alglaadur käivitub',0,'UEFI standard nõuab FAT32-t.'],
+ ['Ubuntu serveri juurköide',4,'ext4 on enamiku Linuxi distributsioonide vaikimisi failisüsteem.'],
+ ['MacBooki sisemine SSD',5,'APFS on macOS-i failisüsteem alates High Sierrast.'],
+ ['Hyper-V virtuaalmasinate suur köide, kus on vaja terviklikkusvooge ja kiiret plokkide kloonimist',3,'ReFS on loodud suurte andmemahtude ja töökindluse jaoks.'],
+ ['Arendaja Dev Drive Windows 11-s',3,'Dev Drive on ReFS-köide, kus Defender töötab jõudlusrežiimis.'],
+ ['Vana fotoaparaadi 16 GB SD-kaart, mida peab lugema ka 2005. aasta seade',0,'Vanad seadmed ei tunne exFAT-i; FAT32 on kõige ühilduvam.']],
+ 'Süsteemiketas – OS-i oma failisüsteem; vahetuskandja – exFAT; EFI – FAT32; suured serveriköited – ReFS.');
+</script>
+</body>
+</html>
