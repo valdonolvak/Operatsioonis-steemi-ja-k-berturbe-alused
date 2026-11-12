@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 17 – võrk Windowsis: interaktiivne õpileht</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--warn:#854f0b;--warn-bg:#faeeda;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--warn:#fac775;--warn-bg:#633806}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:940px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:19px;font-weight:500;margin:2.5rem 0 .5rem}
+h3{font-size:15px;font-weight:600;margin:0 0 .3rem}
+a{color:var(--accent)} nav a{font-size:14px}
+p{margin:.5rem 0}
+code,.mono{font-family:var(--mono);font-size:.9em}
+code{background:var(--card);padding:0 4px;border-radius:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:1rem 0}
+.toc a{font-size:14px;padding:.25rem .8rem;border:1px solid var(--border);border-radius:999px;text-decoration:none}
+.hint{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+button.btn{font:inherit;font-size:14px;padding:.4rem .9rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+button.btn.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:1rem}
+.info{margin-top:12px;padding:.7rem 1rem;border-left:3px solid var(--accent);background:var(--bg);font-size:15px;min-height:2.5em}
+.info.bad{border-color:var(--bad-line)}.info.ok{border-color:var(--ok-line)}
+label.tg{display:inline-flex;gap:8px;align-items:center;font-size:14.5px;cursor:pointer;margin-right:14px}
+select,input[type=number],input[type=text]{font:inherit;font-size:14px;padding:.25rem .45rem;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text)}
+input[type=number]{width:64px}
+table.t{border-collapse:collapse;width:100%;font-size:14px;background:var(--bg);border-radius:8px;overflow:hidden}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--border);text-align:left}
+table.t th{font-weight:500;color:var(--muted)}
+table.t tr.avg td{font-weight:600;background:var(--card)}
+/* liigid */
+.pool{background:var(--card);border-radius:12px;padding:10px;min-height:52px;display:flex;flex-wrap:wrap;gap:8px}
+.buckets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:640px){.buckets{grid-template-columns:1fr}}
+.bucket{border:1px dashed var(--border);border-radius:12px;padding:10px;min-height:100px;cursor:pointer}
+.bucket .chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:.25rem .7rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+.chip.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.chip.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.chip.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.fb{margin:1rem 0 0;padding:.7rem 1rem;border-left:3px solid;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block}.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+/* omad */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:10px}
+.kpis div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;font-size:13px;color:var(--muted)}
+.kpis b{display:block;font-size:22px;color:var(--text);font-family:var(--mono);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+svg text{font-family:system-ui,sans-serif}
+.svgbox{background:var(--bg);border:1px solid var(--border);border-radius:10px;margin-top:10px}
+.log{font-family:var(--mono);font-size:12.5px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.5rem .7rem;margin-top:8px;max-height:160px;overflow:auto;white-space:pre-wrap}
+.tasks{display:grid;gap:8px;margin-top:8px}
+.task{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.5rem .8rem;font-size:14.5px}
+.task.ok{border-color:var(--ok-line);background:var(--ok-bg)}
+.task.bad{border-color:var(--bad-line);background:var(--bad-bg)}
+.task .ex{grid-column:1/3;font-size:13.5px}
+.task .btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.task .btns .btn{font-size:13px;padding:.3rem .6rem}
+@media (max-width:640px){.task{grid-template-columns:1fr}.task .btns{justify-content:flex-start}}
+table.t td.num,table.t th.num{text-align:center}
+tr.dead td{background:var(--bad-bg)}
+tr.fin td{color:var(--muted)}
+.steps{margin:8px 0 0;padding-left:1.3rem;font-size:14px}
+.steps li{margin:2px 0}
+.why{background:var(--accent-bg);border-radius:10px;padding:.8rem 1rem;margin:12px 0;font-size:15px;line-height:1.55}
+.why h4{margin:0 0 6px;font-size:15.5px;color:var(--accent)}
+.why p{margin:.35rem 0}.why ul,.why ol{margin:.35rem 0;padding-left:1.3rem}
+details.more{margin:12px 0 0;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:.55rem .9rem;font-size:14.5px;line-height:1.55}
+details.more summary{cursor:pointer;font-weight:600}
+details.more[open] summary{margin-bottom:6px}
+.big3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
+.big3 div{background:var(--card);border-radius:10px;padding:.7rem .9rem;font-size:14.5px;line-height:1.5}
+.big3 div b{display:block;margin-bottom:3px}
+.calc{font-family:var(--mono);font-size:13.5px;background:var(--card);border-radius:8px;padding:.5rem .8rem;margin-top:8px;line-height:1.7}
+.stack{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.stack div{height:46px;border-radius:5px;border:1px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:15px;font-weight:700}
+.stack div.buf{border-color:var(--accent)}
+.stack div.ret{border-color:#c26a0a;background:#faeeda;color:#633806}
+.stack div.over{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.stack div.fill{background:var(--accent-bg);color:var(--accent)}
+.slab{display:grid;grid-template-columns:8fr 4fr;gap:3px;font-size:12px;color:var(--muted);text-align:center;margin-top:3px}
+ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:8px;padding:.5rem .8rem .5rem 2rem}
+.enc{margin-top:10px}
+.enc .box{border:2px solid;border-radius:10px;padding:.45rem .7rem .7rem;margin-top:4px;transition:all .3s}
+.enc .box>b{font-size:13.5px}
+.enc .box small{display:block;font-family:var(--mono);font-size:11.5px;opacity:.85;margin-bottom:4px}
+.enc .box.hide{display:none}
+.enc .box.dim{opacity:.25}
+.enc .box.lock{background-image:repeating-linear-gradient(45deg,rgba(0,0,0,.06) 0 6px,transparent 6px 12px)}
+.L2{border-color:#6b6a65;background:#f1efe8;color:#3d3d3a}.L3{border-color:#185fa5;background:#e6f1fb;color:#0c447c}.L4{border-color:#3b6d11;background:#eaf3de;color:#27500a}.L5{border-color:#854f0b;background:#faeeda;color:#633806}.L7{border-color:#a3489c;background:#f5e6f3;color:#7a2f74}
+.seq{margin-top:10px;border:1px solid var(--border);border-radius:10px;background:var(--bg);padding:.5rem;overflow-x:auto}
+.seq .hd,.seq .rw{display:grid;gap:0;align-items:center}
+.seq .hd div{text-align:center;font-weight:600;font-size:13px;padding:4px;border-bottom:2px solid var(--border)}
+.seq .rw{min-height:34px;position:relative}
+.seq .rw .ln{position:absolute;top:0;bottom:0;width:1px;background:var(--border)}
+.seq .ar{position:relative;height:30px;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--mono);color:var(--text)}
+.seq .ar::before{content:'';position:absolute;left:4px;right:4px;top:50%;border-top:2px solid var(--muted)}
+.seq .ar span{position:relative;background:var(--bg);padding:0 6px;z-index:1;white-space:nowrap}
+.seq .ar.r::after{content:'▶';position:absolute;right:0;top:50%;transform:translateY(-52%);color:var(--muted);font-size:11px}
+.seq .ar.l::after{content:'◀';position:absolute;left:0;top:50%;transform:translateY(-52%);color:var(--muted);font-size:11px}
+.seq .rw.cur .ar::before{border-color:var(--accent)}.seq .rw.cur .ar span{color:var(--accent);font-weight:700}
+.seq .rw.bad .ar::before{border-color:var(--bad-line);border-top-style:dashed}.seq .rw.bad .ar span{color:var(--bad)}
+.seq .rw.evil .ar::before{border-color:#a32d2d}.seq .rw.evil .ar span{color:#a32d2d;font-weight:700}
+.seq .self{grid-column:span 1;text-align:center;font-size:11.5px;color:var(--muted);font-style:italic}
+.ipout{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.ipout div{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;font-size:12.5px;color:var(--muted)}
+.ipout b{display:block;font-family:var(--mono);font-size:15px;color:var(--text)}
+.bits{font-family:var(--mono);font-size:13px;margin-top:8px;line-height:1.7;overflow-x:auto;white-space:nowrap}
+.bits .n{background:var(--accent-bg);color:var(--accent);font-weight:700;border-radius:3px}
+.bits .h{background:var(--ok-bg);color:var(--ok);border-radius:3px}
+.term{background:#1e1e1e;color:#d4d4d4;font-family:var(--mono);font-size:12.5px;border-radius:8px;padding:.6rem .8rem;margin-top:8px;white-space:pre-wrap;min-height:120px;max-height:320px;overflow:auto}
+.term .c{color:#9cdcfe}.term .ok{color:#6a9955}.term .er{color:#f48771}
+.cmds{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.cmds .btn{font-family:var(--mono);font-size:12px;padding:.3rem .55rem}
+.who{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.who .btn{font-size:13px;padding:.3rem .6rem}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/17-vork.md">← Peatükk 17</a> · <a href="17-test.html">Test →</a></nav>
+<h1>Võrk Windowsis – õpileht</h1>
+<p>See leht aitab mõista, kuidas andmed liiguvad arvutist võrku ja tagasi, kuidas arvuti saab aadressi ja leiab nimed, kuidas ühendus luuakse ja kuidas end võrgus tõestatakse. Iga harjutuse juures on selgitus <b>„Miks see oluline on?“</b> ja juhend <b>„Mida teha“</b>.</p>
+<div class="why">
+<h4>Suur pilt: neli küsimust iga ühenduse juures</h4>
+<p>Kui avad brauseris <code>https://www.ria.ee</code>, vastab arvuti järjest neljale küsimusele:</p>
+<ol>
+<li><b>Kes ma olen?</b> – arvuti vajab IP-aadressi. Selle annab <b>DHCP</b>.</li>
+<li><b>Kus server on?</b> – nimi tuleb tõlkida IP-aadressiks. Seda teeb <b>DNS</b>.</li>
+<li><b>Kuidas sinna jõuda?</b> – pakett läheb <b>vaikelüüsi</b> (ruuterisse) ja sealt edasi; <b>TCP</b> loob ühenduse serveri pordiga 443.</li>
+<li><b>Kas mind usaldatakse?</b> – TLS kontrollib serverit; domeenis tõestab kasutaja end <b>Kerberosega</b>.</li>
+</ol>
+<p>Kui „internet ei tööta“, katkeb ahel ühes neist kohtadest. Harjutused käivad samas järjekorras ja viimane on tõrkeotsingu mäng, kus kõik see tuleb kokku.</p>
+</div>
+<div class="toc"><a href="#kapseldamine">1. Kapseldamine</a><a href="#ip">2. IP ja alamvõrk</a><a href="#dhcpdns">3. DHCP ja DNS</a><a href="#tcp">4. TCP ja pordid</a><a href="#kerberos">5. Kerberos ja NTLM</a><a href="#torkeotsing">6. Tõrkeotsing</a><a href="#pordid">7. Pordid</a></div>
+
+<!-- 1 -->
+<section id="kapseldamine">
+<h2>1. Kapseldamine: iga kiht lisab oma ümbriku</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Võrguside on jaotatud <b>kihtideks</b>. Iga kiht lisab andmetele oma päise – nagu kiri pannakse ümbrikusse, ümbrik postikotti ja postikott autosse. Vastuvõtja teeb sama vastupidi: iga kiht võtab oma ümbriku ära.</p>
+<p>See seletab, <b>kes mida näeb</b>: ruuter loeb ainult IP-päist (kuhu saata), tulemüür ka porti (kas lubada), veebiserver alles HTTP-päringut. Kui leht on HTTPS-iga krüpteeritud, ei näe sisu keegi teel olev.</p>
+<p><b>Mida teha:</b> vajuta „Järgmine kiht“ ja vaata, kuidas pakett saatmisel kasvab. Siis vali, kelle vaatenurgast vaadata, ja lülita HTTPS välja – mida näeb nüüd kohviku Wi-Fi naaber?</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn primary" id="enext">Järgmine kiht →</button> <button class="btn" id="ereset">Algusesse</button></span><label class="tg"><input type="checkbox" id="etls" checked> <span>HTTPS (TLS-krüpteering)</span></label></div>
+  <div class="enc" id="ebox"></div>
+  <div class="info" id="einfo"></div>
+  <div class="hint" style="margin-top:10px">Kes mida näeb?</div>
+  <div class="who" id="ewho"></div>
+  <div class="info" id="ewinfo"></div>
+</div>
+</section>
+
+<!-- 2 -->
+<section id="ip">
+<h2>2. IP-aadress ja alamvõrk</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>IP-aadress koosneb kahest osast: <b>võrgu osa</b> (milline tänav) ja <b>arvuti osa</b> (maja number). <b>Alamvõrgu mask</b> ehk prefiks (nt <code>/24</code>) ütleb, mitu bitti on võrgu osa. Kui kaks arvutit on samas võrgus, saadavad nad paketid otse; kui eri võrkudes, peab pakett minema läbi <b>vaikelüüsi</b> (ruuteri).</p>
+<p>Tõrkeotsingus on see oluline: vale mask või lüüs tähendab, et arvuti „ei näe“ teisi arvuteid, kuigi kõik muu on korras. Ja aadressi järgi saab kohe aru, mis toimub: <code>169.254.x.x</code> – DHCP ei vastanud, <code>127.0.0.1</code> – arvuti ise, <code>192.168.x.x</code> – privaatvõrk.</p>
+<p><b>Mida teha:</b> sisesta aadress ja prefiks. Vaata, millised bitid on võrgu osa (sinine) ja millised arvuti osa (roheline). Siis kontrolli, kas teine aadress on samas võrgus.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>IP-aadress: <input type="text" id="ipa" value="192.168.1.57" style="width:150px;font-family:var(--mono)"> / <select id="ipp"></select></span><span>Teine aadress: <input type="text" id="ipb" value="192.168.2.10" style="width:150px;font-family:var(--mono)"></span></div>
+  <div class="row"><span id="ippres"></span></div>
+  <div class="bits" id="ipbits"></div>
+  <div class="ipout" id="ipout"></div>
+  <div class="info" id="ipinfo"></div>
+</div>
+</section>
+
+<!-- 3 -->
+<section id="dhcpdns">
+<h2>3. DHCP ja DNS samm-sammult</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p><b>DHCP</b> annab arvutile automaatselt IP-aadressi, maski, lüüsi ja DNS-serveri. Ilma selleta peaks iga arvuti käsitsi seadistama. Protsessil on neli sammu – <b>DORA</b>: Discover, Offer, Request, Acknowledge.</p>
+<p><b>DNS</b> on interneti telefoniraamat: inimene mäletab nime <code>www.ria.ee</code>, arvuti vajab aadressi. Windows otsib vastust kõigepealt oma vahemälust, siis <code>hosts</code>-failist ja alles siis DNS-serverilt, kes vajadusel küsib edasi juurserverilt ja tippdomeeni serverilt.</p>
+<p><b>Mida teha:</b> käi mõlemad protsessid sammhaaval läbi. Siis proovi vigu: lülita DHCP-server välja ja vaata, mis aadressi arvuti saab. DNS-is proovi vahemälu ja pahavara poolt muudetud <code>hosts</code>-faili.</p>
+</div>
+<div class="card">
+  <h3 style="margin-top:0">DHCP</h3>
+  <div class="row" style="margin-top:4px"><span><button class="btn primary" id="dnext">Järgmine samm →</button> <button class="btn" id="dreset">Algusesse</button></span><label class="tg"><input type="checkbox" id="ddown"> <span>DHCP-server on maas</span></label></div>
+  <div class="seq" id="dseq"></div>
+  <div class="info" id="dinfo"></div>
+  <h3 style="margin-top:1.4rem">DNS: www.ria.ee</h3>
+  <div class="row" style="margin-top:4px"><span><button class="btn primary" id="nnext">Järgmine samm →</button> <button class="btn" id="nreset">Algusesse</button></span><span><label class="tg"><input type="checkbox" id="ncache"> <span>Vastus on juba vahemälus</span></label> <label class="tg"><input type="checkbox" id="nhosts"> <span>Pahavara muutis hosts-faili</span></label></span></div>
+  <div class="seq" id="nseq"></div>
+  <div class="info" id="ninfo"></div>
+</div>
+</section>
+
+<!-- 4 -->
+<section id="tcp">
+<h2>4. TCP ühendus ja pordi olek</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Enne kui brauser saab veebilehte küsida, loob TCP serveriga ühenduse <b>kolmesammulise käepigistusega</b>: SYN („tahan rääkida“), SYN-ACK („olen valmis“), ACK („alustame“). <b>Port</b> ütleb, millise programmiga serveris räägitakse: 443 = veebiserver, 3389 = kaugtöölaud.</p>
+<p>Käepigistuse tulemusest saab tõrkeotsingul palju teada:</p>
+<ul><li><b>SYN-ACK</b> – port on <b>avatud</b>, teenus töötab;</li><li><b>RST</b> – port on <b>suletud</b>, server on olemas, kuid teenus ei tööta;</li><li><b>vastust pole</b> – tõenäoliselt viskab <b>tulemüür</b> paketid vaikselt ära (või server on maas).</li></ul>
+<p><b>Mida teha:</b> vali olukord ja käi ühendus läbi. Vaata, mida näitaks <code>Test-NetConnection</code>.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span id="tsc"></span></div>
+  <div class="row"><span><button class="btn primary" id="tnext">Järgmine samm →</button> <button class="btn" id="treset">Algusesse</button></span></div>
+  <div class="seq" id="tseq"></div>
+  <div class="info" id="tinfo"></div>
+  <div class="term" id="tterm"></div>
+</div>
+</section>
+
+<!-- 5 -->
+<section id="kerberos">
+<h2>5. Kerberos ja NTLM: kas ründaja saab vahele tulla?</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Domeenis peab kasutaja failiserverile tõestama, kes ta on – parooli võrgus saatmata. Selleks on kaks protokolli:</p>
+<ul>
+<li><b>Kerberos</b> – nagu festivali käepael. Sisselogimisel saab kasutaja domeenikontrollerilt (KDC) <b>TGT</b>-pileti. Iga teenuse jaoks vahetab ta selle <b>teenusepileti</b> vastu, mis kehtib <b>ainult sellele serverile</b> ja piiratud aja.</li>
+<li><b>NTLM</b> – vanem meetod. Server saadab juhusliku arvu (väljakutse), klient arvutab parooli räsi abil vastuse. Vastus ei ole seotud kindla serveriga – vahel olev ründaja saab selle <b>edasi anda</b> (relee) teisele serverile ja logida sisse kasutaja nimel.</li>
+</ul>
+<p>Seepärast loobub Microsoft NTLM-ist ja soovitab domeenis lülitada välja LLMNR-i ja NetBIOS-i, mille kaudu ründaja end vahele saab.</p>
+<p><b>Mida teha:</b> käi mõlemad protokollid läbi tavaolukorras. Siis lülita sisse „Ründaja on võrgus“ (kasutaja trükkis serveri nime valesti ja ründaja vastas LLMNR-päringule) ja vaata, kumb protokoll on haavatav.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span><button class="btn" data-k="kerb">Kerberos</button> <button class="btn" data-k="ntlm">NTLM</button></span><label class="tg"><input type="checkbox" id="kevil"> <span>Ründaja on võrgus (LLMNR-i mürgitamine)</span></label></div>
+  <div class="row"><span><button class="btn primary" id="knext">Järgmine samm →</button> <button class="btn" id="kreset">Algusesse</button></span></div>
+  <div class="seq" id="kseq"></div>
+  <div class="info" id="kinfo"></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section id="torkeotsing">
+<h2>6. Tõrkeotsingu mäng: „internet ei tööta“</h2>
+<div class="why">
+<h4>Miks see oluline on?</h4>
+<p>Hea administraator ei arva, vaid <b>kontrollib kihthaaval alt üles</b>: kas võrgukaart töötab → kas on IP-aadress → kas lüüs vastab → kas internet vastab IP järgi → kas DNS töötab → kas vajalik port on avatud. Esimene samm, mis ebaõnnestub, näitab vea asukohta.</p>
+<p><b>Mida teha:</b> vali olukord (või „Juhuslik“). Käivita käske – tulemused ilmuvad terminali. Kui arvad, et tead põhjust, vali see allpool. Proovi leida viga võimalikult väheste käskudega.</p>
+</div>
+<div class="card">
+  <div class="row" style="margin-top:0"><span>Olukord: <select id="gsel"><option value="rand">Juhuslik (ära vaata!)</option><option value="0">1. Kasutaja sülearvuti kontoris</option><option value="1">2. Uus arvuti klassis</option><option value="2">3. Kooli arvuti hommikul</option><option value="3">4. Raamatupidaja arvuti</option><option value="4">5. Õpetaja kodus</option></select></span><button class="btn" id="gnew">Alusta</button></div>
+  <div class="cmds" id="gcmds"></div>
+  <div class="term" id="gterm"></div>
+  <div class="row"><span>Põhjus on: <select id="gans"><option value="">— vali —</option><option value="cable">võrgukaabel / Wi-Fi ühendus</option><option value="dhcp">DHCP-server ei vasta</option><option value="gw">vale vaikelüüs</option><option value="dns">DNS-server ei tööta</option><option value="fw">tulemüür blokeerib pordi</option></select> <button class="btn primary" id="gcheck">Kontrolli</button></span><span class="hint" id="gcount"></span></div>
+  <div class="info" id="ginfo"></div>
+</div>
+</section>
+
+<!-- 7 -->
+<section id="pordid">
+<h2>7. Milline port?</h2>
+<div class="why">
+<h4>Kordame</h4>
+<p>Tulemüüri reeglite koostamisel ja liikluse analüüsil tuleb teada, milline teenus millist porti kasutab. Pea meeles: porte <b>445</b> (SMB) ja <b>3389</b> (RDP) ei tohi kunagi otse internetti avada – just neid otsivad ründajad kõige rohkem.</p>
+</div>
+<div class="card">
+  <div class="tasks" id="qtasks"></div>
+  <div class="row"><span class="hint" id="qscore"></span><button class="btn" id="qreset">Alusta uuesti</button></div>
+</div>
+</section>
+
+<p class="hint" style="margin-top:3rem">Edasi: <a href="17-test.html">Peatüki 17 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/17-vork.md">tagasi peatüki juurde</a></p>
+
+<script>
+const $=id=>document.getElementById(id);
+function quiz(box,score,reset,opts,items,done){let ans={};
+  function draw(){$(box).innerHTML=items.map(([q,c,e],i)=>{const a=ans[i];return `<div class="task${a!==undefined?(a===c?' ok':' bad'):''}"><span>${q}</span><span class="btns">${opts.map((o,k)=>`<button class="btn${a===k?' on':''}" data-i="${i}" data-k="${k}" ${a!==undefined?'disabled':''}>${o}</button>`).join('')}</span>${a!==undefined?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on „'+opts[c]+'“.'}</b> ${e}</div>`:''}</div>`}).join('');
+    $(box).querySelectorAll('button').forEach(b=>b.onclick=()=>{ans[b.dataset.i]=+b.dataset.k;draw()});
+    const k=Object.keys(ans).length,ok=Object.entries(ans).filter(([i,v])=>items[i][1]===v).length;
+    $(score).textContent=k?`Vastatud ${k}/${items.length}, õigesti ${ok}.`+(k===items.length?' '+done:''):'';}
+  $(reset).onclick=()=>{ans={};draw()};draw();}
+
+
+/* järjestusdiagramm */
+function seq(el,actors,steps,k){const n=actors.length,cols=`repeat(${n},1fr)`;
+  let h=`<div class="hd" style="grid-template-columns:${cols}">${actors.map(a=>`<div>${a}</div>`).join('')}</div>`;
+  steps.slice(0,k).forEach((s,i)=>{const [a,b,txt,cls]=s;
+    if(a===b){h+=`<div class="rw ${i===k-1?'cur':''} ${cls||''}" style="grid-template-columns:${cols}">${actors.map((_,j)=>j===a?`<div class="self">⟲ ${txt}</div>`:'<div></div>').join('')}</div>`;return}
+    const lo=Math.min(a,b),hi=Math.max(a,b);
+    h+=`<div class="rw ${i===k-1?'cur':''} ${cls||''}" style="grid-template-columns:${cols}">${lo>0?`<div style="grid-column:1/${lo+1}"></div>`:''}<div class="ar ${b>a?'r':'l'}" style="grid-column:${lo+1}/${hi+2}"><span>${txt}</span></div></div>`});
+  $(el).innerHTML=h}
+
+/* 1. Kapseldamine */
+const EL=[['L7','HTTP-päring (kiht 7)','GET /teenused HTTP/1.1 · Host: www.ria.ee · küpsis: sessioon=8f3a…','Rakendus (brauser) koostab HTTP-päringu: millist lehte ta tahab ja tema sessiooniküpsis.'],
+ ['L5','TLS (krüpteering)','TLS 1.3 · server: www.ria.ee (SNI) · sisu krüpteeritud','TLS krüpteerib HTTP-päringu. Väljapoole jääb nähtavaks ainult serveri nimi (SNI), mitte leht ega küpsis.'],
+ ['L4','TCP-segment (kiht 4)','lähteport 52344 (juhuslik) → sihtport 443 · järjekorranumber 1001','TCP lisab pordid: sihtport 443 ütleb, et pakett on mõeldud veebiserverile. Järjekorranumbrid tagavad, et andmed pannakse õiges järjekorras kokku.'],
+ ['L3','IP-pakett (kiht 3)','192.168.1.57 → 185.31.240.10 · TTL 128','IP lisab lähte- ja sihtaadressi. Ruuterid vaatavad ainult seda päist, et otsustada, kuhu pakett edasi saata. TTL väheneb igas ruuteris (tsüklite vältimiseks).'],
+ ['L2','Ethernet-kaader (kiht 2)','arvuti MAC 3c:52:… → ruuteri MAC a4:91:…','Ethernet lisab MAC-aadressid. Sihtkoht on ruuter (vaikelüüs), sest server on teises võrgus. MAC-aadressid muutuvad iga teelõigu järel, IP-aadressid jäävad samaks (v.a NAT).']];
+let ek=0,ewho='wifi';
+const WHO={wifi:['📶 Kohviku Wi-Fi naaber',[2]],router:['🔀 Ruuter',[2,3]],isp:['🌐 Internetiteenuse pakkuja',[3,4]],fw:['🧱 Tulemüür',[3,4]],srv:['🖥 Veebiserver',[2,3,4,5,7]]};
+function eDraw(){const tls=$('etls').checked,vis=WHO[ewho][1],lay=EL.filter(x=>tls||x[0]!=='L5');
+  const shown=lay.slice(0,ek===0?0:Math.min(ek,lay.length));
+  let h='';const order=[...shown].reverse();
+  const seeL=lv=>vis.includes(lv)||(lv===7&&!tls);
+  order.forEach(x=>{const lv=+x[0].slice(1);h+=`<div class="box ${x[0]} ${ek>=lay.length&&!seeL(lv)?'dim':''} ${x[0]==='L5'?'lock':''}"><b>${x[1]}</b><small>${x[2]}</small>`});
+  h+=order.map(()=>'</div>').join('');
+  $('ebox').innerHTML=h||'<div class="hint">Vajuta „Järgmine kiht“.</div>';
+  $('enext').disabled=ek>=lay.length;
+  $('einfo').innerHTML=ek===0?'Brauser tahab avada lehe <code>www.ria.ee/teenused</code>.':ek<=lay.length?lay[ek-1][3]+(ek===lay.length?' <b>Kaader on valmis</b> ja võrgukaart saadab selle teele. Vastuvõtja eemaldab ümbrikud vastupidises järjekorras.':''):'';
+  $('ewho').innerHTML=Object.entries(WHO).map(([k,v])=>`<button class="btn${k===ewho?' on':''}" data-w="${k}">${v[0]}</button>`).join('');
+  $('ewho').querySelectorAll('button').forEach(b=>b.onclick=()=>{ewho=b.dataset.w;if(ek<lay.length)ek=lay.length;eDraw()});
+  const T={wifi:tls?'Näeb, et sinu arvuti suhtleb aadressiga 185.31.240.10 ja serveri nime <code>www.ria.ee</code> (SNI). <b>Ei näe</b>, millist lehte avad ega sinu küpsist – need on krüpteeritud.':'<b>Näeb kõike!</b> Ilma TLS-ita on HTTP-päring koos lehe aadressi ja sessiooniküpsisega lahtiselt õhus. Ründaja saab küpsise abil sinu nime all sisse logida. Seepärast peab iga sisselogimisega leht olema HTTPS.',
+   router:'Ruuter loeb Ethernet-kaadri ja IP-päise, et otsustada, kuhu pakett saata. TCP-porti ja sisu ta ei vaja.'+(tls?'':' Krüpteerimata sisu oleks talle siiski loetav.'),
+   isp:'Teenusepakkuja näeb IP-aadresse ja porte (seega ka seda, et külastad mingit serverit)'+(tls?' ning SNI-st serveri nime, kuid mitte lehe sisu.':' ja ilma TLS-ita ka kogu sisu.'),
+   fw:'Tulemüür vaatab IP-aadresse ja porti, et otsustada „luba või keela“ (nt: luba väljuv TCP 443). Sisu ta tavaliselt ei näe. (Ettevõtte proksi võib TLS-i lahti teha, kui arvutis on tema sertifikaat.)',
+   srv:'Veebiserver eemaldab kõik ümbrikud ja näeb HTTP-päringut: millist lehte tahetakse ja kes küsib (küpsis).'}[ewho];
+  $('ewinfo').innerHTML=ek>=lay.length?`<b>${WHO[ewho][0]}:</b> ${T} Tuhmid kihid on talle nähtamatud või ebaolulised.`:'Käi enne kõik kihid läbi.'}
+$('enext').onclick=()=>{ek++;eDraw()};$('ereset').onclick=()=>{ek=0;eDraw()};$('etls').onchange=()=>{ek=0;eDraw()};eDraw();
+
+/* 2. IP */
+for(let p=8;p<=30;p++)$('ipp').insertAdjacentHTML('beforeend',`<option ${p===24?'selected':''}>${p}</option>`);
+const toI=s=>{const m=s.trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);if(!m)return null;const a=m.slice(1).map(Number);if(a.some(x=>x>255))return null;return ((a[0]<<24)>>>0)+(a[1]<<16)+(a[2]<<8)+a[3]};
+const toS=n=>[n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
+function kind(n){const a=n>>>24,b=(n>>>16)&255;if(a===127)return['loopback','arvuti ise (localhost) – pakett ei lähe võrku'];if(a===169&&b===254)return['APIPA','DHCP ei vastanud – Windows andis endale ajutise aadressi; internet ei tööta'];if(a===10||(a===172&&b>=16&&b<=31)||(a===192&&b===168))return['privaatne','kodu- või asutusevõrk; internetti minnes asendab ruuter selle avalikuga (NAT)'];if(a>=224&&a<=239)return['multicast','grupisaade'];if(a===0||a>=240)return['eriotstarbeline',''];return['avalik','internetis unikaalne aadress']}
+function ipDraw(){const a=toI($('ipa').value),p=+$('ipp').value,b=toI($('ipb').value);
+  if(a===null){$('ipinfo').className='info bad';$('ipinfo').innerHTML='Sisesta IPv4-aadress kujul a.b.c.d (iga osa 0–255).';$('ipout').innerHTML='';$('ipbits').innerHTML='';return}
+  const mask=p===0?0:(0xFFFFFFFF<<(32-p))>>>0,net=(a&mask)>>>0,bc=(net|(~mask>>>0))>>>0,hosts=Math.max(0,2**(32-p)-2);
+  const bin=(a>>>0).toString(2).padStart(32,'0');
+  $('ipbits').innerHTML='Kahendkujul: '+[...bin].map((c,i)=>`<span class="${i<p?'n':'h'}">${c}</span>${i%8===7&&i<31?' . ':''}`).join('')+`<br><span class="hint">sinine = võrgu osa (${p} bitti), roheline = arvuti osa (${32-p} bitti)</span>`;
+  const k=kind(a);
+  $('ipout').innerHTML=`<div>Mask<b>${toS(mask)}</b></div><div>Võrgu aadress<b>${toS(net)}</b></div><div>Leviaadress (broadcast)<b>${toS(bc)}</b></div><div>Arvutite aadressid<b>${p<31?toS(net+1)+' – '+toS(bc-1):'–'}</b></div><div>Arvuteid võrgus<b>${hosts.toLocaleString('et-EE')}</b></div><div>Aadressi liik<b>${k[0]}</b></div>`;
+  let m=`<b>${$('ipa').value}</b> on ${k[0]} aadress – ${k[1]}. `;
+  if(b!==null){const same=((b&mask)>>>0)===net;m+=same?`<br><b>${$('ipb').value} on samas võrgus</b> (${toS(net)}/${p}). Arvutid saadavad paketid teineteisele otse – ruuterit pole vaja.`:`<br><b>${$('ipb').value} on teises võrgus</b> (${toS((b&mask)>>>0)}/${p}). Pakett saadetakse <b>vaikelüüsi</b> (ruuterisse), mis viib selle edasi. Kui lüüsi pole või see on vale, ei jõua pakett kohale.`}
+  if(p===24&&k[0]==='privaatne')m+=' <i>/24 on kodu- ja klassivõrkude tavaline suurus: 254 arvutit.</i>';
+  $('ipinfo').className='info'+(k[0]==='APIPA'?' bad':'');$('ipinfo').innerHTML=m}
+['ipa','ipb'].forEach(i=>$(i).oninput=ipDraw);$('ipp').onchange=ipDraw;
+$('ippres').innerHTML='Näited: '+[['192.168.1.57','24','192.168.1.200'],['192.168.1.57','24','192.168.2.10'],['10.20.30.40','16','10.20.99.1'],['169.254.33.7','16','192.168.1.1'],['172.16.5.130','26','172.16.5.70'],['8.8.8.8','24','8.8.4.4']].map(x=>`<button class="btn" style="font-size:12px;padding:.25rem .5rem;font-family:var(--mono)" data-v="${x.join('|')}">${x[0]}/${x[1]}</button>`).join(' ');
+$('ippres').querySelectorAll('button').forEach(b=>b.onclick=()=>{const [a,p,c]=b.dataset.v.split('|');$('ipa').value=a;$('ipp').value=p;$('ipb').value=c;ipDraw()});ipDraw();
+
+/* 3. DHCP & DNS */
+let dk=0;
+function dSteps(){if($('ddown').checked)return [[0,1,'DHCPDISCOVER (leviaadressile)','bad','Arvuti saadab kogu võrku: „Kas siin on DHCP-server?“ Tal endal pole veel aadressi, seepärast on lähteaadress 0.0.0.0 ja siht 255.255.255.255.'],[0,1,'DHCPDISCOVER (kordus)','bad','Vastust ei tule. Arvuti kordab päringut mitu korda.'],[0,0,'võtab 169.254.33.7','bad','<b>Ükski server ei vastanud.</b> Windows annab endale <b>APIPA</b>-aadressi 169.254.x.x. Sellega saab suhelda ainult teiste sama olukorraga arvutitega – lüüsi ja DNS-i pole, internet ei tööta. Kontrolli kaablit, VLAN-i ja DHCP-serveri teenust.']];
+  return [[0,1,'DHCPDISCOVER','','<b>Discover</b>: arvuti saadab kogu võrku (leviaadressile 255.255.255.255): „Kas siin on DHCP-server?“ Tal pole veel aadressi.'],[1,0,'DHCPOFFER 192.168.1.57','','<b>Offer</b>: server pakub vaba aadressi koos seadetega: mask 255.255.255.0, lüüs 192.168.1.1, DNS 192.168.1.10, rendiaeg 8 päeva.'],[0,1,'DHCPREQUEST 192.168.1.57','','<b>Request</b>: arvuti teatab (jälle kõigile), et võtab just selle serveri pakkumise. Kui võrgus oli mitu serverit, teavad teised, et nende pakkumist ei võetud.'],[1,0,'DHCPACK','','<b>Acknowledge</b>: server kinnitab. Arvuti seadistab aadressi ja saab võrgus töötada. Rendiaja poole pealt uuendab ta renti ise. Vaata: <code>ipconfig /all</code> → „Lease Obtained / Expires“.']]}
+function dDraw(){const S=dSteps();seq('dseq',['Arvuti','DHCP-server'],S,dk);$('dnext').disabled=dk>=S.length;
+  $('dinfo').className='info'+($('ddown').checked&&dk===S.length?' bad':'');$('dinfo').innerHTML=dk?S[dk-1][4]:'Arvuti ühendati võrku. Vajuta „Järgmine samm“.'}
+$('dnext').onclick=()=>{dk++;dDraw()};$('dreset').onclick=()=>{dk=0;dDraw()};$('ddown').onchange=()=>{dk=0;dDraw()};dDraw();
+let nk=0;
+function nSteps(){if($('nhosts').checked)return [[0,0,'vahemälu: pole','','Brauser küsib nime <code>www.ria.ee</code>. DNS-kliendi vahemälus vastust pole.'],[0,0,'hosts: www.ria.ee = 45.9.12.66','evil','Windows loeb faili <code>C:\\Windows\\System32\\drivers\\etc\\hosts</code>. Pahavara on sinna lisanud rea <code>45.9.12.66 www.ria.ee</code>. Hosts-fail on DNS-serverist eespool, nii et Windows <b>usub seda</b> ega küsigi DNS-serverilt.'],[0,0,'→ ühendus 45.9.12.66','evil','<b>Kasutaja suunati võltslehele!</b> Aadressiribal on õige nimi, kuid server on ründaja oma. HTTPS hoiataks sertifikaadi veaga – kui kasutaja hoiatuse eirab, sisestab ta oma andmed ründajale. Kontroll: <code>Get-Content C:\\Windows\\System32\\drivers\\etc\\hosts</code> ja <code>Resolve-DnsName www.ria.ee</code>.']];
+  if($('ncache').checked)return [[0,0,'vahemälu: www.ria.ee = 185.31.240.10 (TTL 2400 s)','','Vastus on <b>DNS-kliendi vahemälus</b> – keegi küsis seda hiljuti. Võrku ei minda üldse, vastus tuleb mikrosekunditega. Vahemälu näeb käsuga <code>ipconfig /displaydns</code>, tühjendab <code>ipconfig /flushdns</code>.']];
+  return [[0,0,'vahemälu: pole · hosts: pole','','Windows vaatab kõigepealt <b>vahemälu</b> ja <b>hosts-faili</b>. Vastust pole.'],[0,1,'www.ria.ee ?','','Arvuti küsib seadistatud <b>DNS-serverilt</b> (koolis domeenikontroller, kodus ruuter). See on <i>rekursiivne</i> päring: „leia vastus minu eest“.'],[1,2,'www.ria.ee ?','','DNS-serveril vastust pole. Ta küsib <b>juurserverilt</b> (13 juurserverite gruppi üle maailma).'],[2,1,'küsi .ee serverilt','','Juurserver ei tea vastust, kuid teab, kes haldab tippdomeeni <code>.ee</code>.'],[1,3,'www.ria.ee ?','','DNS-server küsib <code>.ee</code> serverilt (haldab Eesti Interneti SA).'],[3,1,'küsi ria.ee serverilt','','<code>.ee</code> server teab, millised serverid haldavad domeeni <code>ria.ee</code>.'],[1,4,'www.ria.ee ?','','DNS-server küsib <code>ria.ee</code> autoriteetselt serverilt.'],[4,1,'185.31.240.10 (TTL 3600)','','Autoriteetne server annab vastuse koos <b>TTL</b>-iga (kui kaua võib vastust vahemälus hoida).'],[1,0,'185.31.240.10','','DNS-server annab vastuse arvutile ja jätab selle ka endale meelde. Järgmine küsija saab vastuse kohe. Nüüd saab brauser luua ühenduse – vaata harjutust 4.']]}
+function nDraw(){const S=nSteps();seq('nseq',['Arvuti','DNS-server','Juurserver','.ee server','ria.ee server'],S,nk);$('nnext').disabled=nk>=S.length;
+  $('ninfo').className='info'+($('nhosts').checked&&nk>=2?' bad':'');$('ninfo').innerHTML=nk?S[nk-1][4]:'Kasutaja kirjutas brauserisse <code>www.ria.ee</code>. Vajuta „Järgmine samm“.'}
+$('nnext').onclick=()=>{nk++;nDraw()};$('nreset').onclick=()=>{nk=0;nDraw()};['ncache','nhosts'].forEach(i=>$(i).onchange=()=>{nk=0;nDraw()});nDraw();
+
+/* 4. TCP */
+const TS={open:['Port avatud',[[0,2,'SYN (port 443)','','Klient saadab <b>SYN</b>: „Tahan alustada ühendust, minu järjekorranumber on 1000.“'],[2,0,'SYN-ACK','','Server vastab <b>SYN-ACK</b>: „Olen valmis, sinu 1000 on kätte saadud, minu number on 5000.“ Port on <b>avatud</b> – veebiserver kuulab.'],[0,2,'ACK','','Klient kinnitab <b>ACK</b>. Ühendus on loodud (kolmesammuline käepigistus). Nüüd algab TLS ja siis HTTP.'],[0,2,'TLS ClientHello + HTTP…','','Andmed liiguvad. Iga segmendi kättesaamist kinnitatakse; kadunud segment saadetakse uuesti.'],[0,2,'FIN','','Lõpus suletakse ühendus FIN-pakettidega.']],'ComputerName     : www.ria.ee\nRemoteAddress    : 185.31.240.10\nRemotePort       : 443\nTcpTestSucceeded : <span class="ok">True</span>'],
+ closed:['Port suletud',[[0,2,'SYN (port 8080)','','Klient proovib ühendust pordiga 8080.'],[2,0,'RST','bad','Server vastab <b>RST</b> (reset): „Selles pordis ei kuula keegi.“ Server on olemas ja võrk töötab, kuid <b>teenus ei tööta</b> või kuulab teises pordis. Kontrolli serveris: <code>Get-NetTCPConnection -State Listen</code>, kas teenus on käivitatud.']],'ComputerName     : server01\nRemotePort       : 8080\n<span class="er">WARNING: TCP connect to (10.0.0.5 : 8080) failed</span>\nPingSucceeded    : True\nTcpTestSucceeded : <span class="er">False</span>'],
+ fw:['Tulemüür blokeerib',[[0,1,'SYN (port 3389)','','Klient proovib ühendust kaugtöölauaga (port 3389).'],[1,1,'reegel: keela → viska ära','bad','<b>Tulemüür</b> leiab, et port 3389 pole lubatud, ja viskab paketi <b>vaikselt</b> ära – vastust ei saadeta, et ründaja ei saaks isegi teada, kas server on olemas.'],[0,1,'SYN (kordus)','bad','Klient ootab ja kordab mitu korda…'],[0,0,'aegumine (timeout)','bad','Mõnekümne sekundi pärast annab klient alla. <b>Vahet:</b> RST tähendab „suletud“ ja tuleb kohe; vaikus tähendab „filtreeritud“ (tulemüür) või server on maas.']],'ComputerName     : server01\nRemotePort       : 3389\n<span class="er">WARNING: TCP connect to (10.0.0.5 : 3389) failed</span>\n<span class="er">WARNING: Ping to 10.0.0.5 failed with status: TimedOut</span>\nTcpTestSucceeded : <span class="er">False</span>']};
+let ts='open',tk=0;
+$('tsc').innerHTML=Object.entries(TS).map(([k,v])=>`<button class="btn" data-t="${k}">${v[0]}</button>`).join(' ');
+$('tsc').querySelectorAll('button').forEach(b=>b.onclick=()=>{ts=b.dataset.t;tk=0;tDraw()});
+function tDraw(){document.querySelectorAll('#tsc button').forEach(b=>b.classList.toggle('on',b.dataset.t===ts));const S=TS[ts][1];
+  seq('tseq',['Klient','Tulemüür','Server'],S,tk);$('tnext').disabled=tk>=S.length;
+  $('tinfo').className='info'+(S[tk-1]&&S[tk-1][3]==='bad'?' bad':'');$('tinfo').innerHTML=tk?S[tk-1][4]:'Vajuta „Järgmine samm“.';
+  $('tterm').innerHTML=`<span class="c">PS&gt; Test-NetConnection ${ts==='open'?'www.ria.ee -Port 443':ts==='closed'?'server01 -Port 8080':'server01 -Port 3389'}</span>\n`+(tk>=S.length?TS[ts][2]:'…')}
+$('tnext').onclick=()=>{tk++;tDraw()};$('treset').onclick=()=>{tk=0;tDraw()};tDraw();
+
+/* 5. Kerberos / NTLM */
+let km='kerb',kk=0;
+function kSteps(){const ev=$('kevil').checked;
+  if(km==='kerb'){const A=['Kasutaja','DC (KDC)','Ründaja','Failiserver'];
+    const S=[[0,1,'AS-REQ (tõend parooli räsist)','','<b>Sisselogimisel</b> tõestab kasutaja domeenikontrollerile, et teab parooli (krüpteerib ajatempli parooli räsiga). Parooli ennast võrgus ei saadeta.'],[1,0,'TGT (kehtib 10 h)','','KDC annab <b>TGT</b>-pileti – „festivali käepaela“. Seda ei saa kasutaja ise muuta, sest see on krüpteeritud KDC võtmega.'],[0,1,'TGS-REQ: cifs/fs01.kool.local','','Kasutaja avab <code>\\\\fs01\\jagatud</code>. Ta näitab KDC-le TGT-d ja küsib piletit <b>just sellele teenusele</b>.'],[1,0,'teenusepilet (fs01 jaoks)','','KDC annab teenusepileti, mis on krüpteeritud <b>failiserveri võtmega</b>. Ainult fs01 saab seda lugeda.']];
+    if(ev)S.push([0,2,'AP-REQ (pilet fs01 jaoks)','evil','Ründaja on end LLMNR-i mürgitamisega vahele pannud ja saab kasutaja pileti.'],[2,3,'edastab pileti teisele serverile','evil','Ründaja proovib piletit kasutada teise serveri juures.'],[3,3,'pilet pole minu jaoks – keeldub','','<b>Rünne ebaõnnestus.</b> Pilet on krüpteeritud fs01 võtmega ja sisaldab teenuse nime – teine server ei saa seda lugeda ega aktsepteerida. Pilet kehtib ka ainult piiratud aja. Kerberos on seotud kindla teenusega. (Kerberosel on oma rünnakud, nt Kerberoasting – ptk 22.)']);
+    else S.push([0,3,'AP-REQ (teenusepilet)','','Kasutaja esitab pileti failiserverile.'],[3,3,'dekrüpteerib oma võtmega ✓','','Failiserver avab pileti oma võtmega ja näeb, kes kasutaja on ja millistesse gruppidesse ta kuulub. DC-lt ei pea uuesti küsima. <b>Juurdepääs antud.</b>']);
+    return [A,S]}
+  const A=['Kasutaja','Ründaja','Failiserver'];
+  if(!ev)return [A,[[0,2,'NEGOTIATE','','Kasutaja tahab failiserveriga ühendust ja teatab, et kasutab NTLM-i (nt kui serverile pöörduti IP-aadressi järgi või Kerberos pole võimalik).'],[2,0,'CHALLENGE (juhuslik arv)','','Server saadab <b>väljakutse</b> – juhusliku arvu.'],[0,2,'AUTHENTICATE (vastus räsist)','','Klient arvutab väljakutsest ja oma parooli <b>räsist</b> vastuse ja saadab selle. Parooli ennast ei saadeta.'],[2,2,'kontrollib DC kaudu ✓','','Server kontrollib vastust domeenikontrolleri abil. <b>Juurdepääs antud.</b> Probleem: vastuses pole midagi, mis seoks selle just selle serveriga.']]];
+  return [A,[[0,0,'\\\\filesrver ? (trükiviga)','','Kasutaja trükib <code>\\\\filesrver</code> (puudu „e“). DNS seda nime ei leia, nii et Windows küsib <b>LLMNR</b>-iga kogu kohalikult võrgult: „Kes on filesrver?“'],[1,0,'„Mina olen!“ (LLMNR-vastus)','evil','Ründaja tööriist (nt Responder) vastab: „Mina olen filesrver!“ Windows usub ja alustab ründajaga NTLM-autentimist.'],[1,2,'NEGOTIATE (kasutaja nimel)','evil','Ründaja alustab samal ajal ühendust <b>päris</b> serveriga – kasutaja nimel.'],[2,1,'CHALLENGE','evil','Päris server saadab ründajale väljakutse.'],[1,0,'CHALLENGE (sama)','evil','Ründaja annab <b>sama väljakutse</b> kasutajale edasi.'],[0,1,'AUTHENTICATE (vastus)','evil','Kasutaja arvutab vastuse oma parooli räsist ja saadab selle ründajale.'],[1,2,'AUTHENTICATE (edasi)','evil','Ründaja annab vastuse edasi päris serverile (<b>relee</b>).'],[2,2,'vastus õige ✓','evil','<b>Rünne õnnestus.</b> Server arvab, et ühendus on kasutajalt, ja annab ründajale juurdepääsu kasutaja õigustega – parooli teadmata. Kaitse: SMB-allkirjastamine (ründaja ei saa ühendust allkirjastada), LLMNR-i ja NetBIOS-i keelamine, NTLM-ist loobumine.']]]}
+function kDraw(){document.querySelectorAll('#kerberos [data-k]').forEach(b=>b.classList.toggle('on',b.dataset.k===km));const [A,S]=kSteps();
+  seq('kseq',A,S,kk);$('knext').disabled=kk>=S.length;
+  const evil=S.slice(0,kk).some(s=>s[3]==='evil');
+  $('kinfo').className='info'+(kk===S.length?(km==='ntlm'&&$('kevil').checked?' bad':' ok'):'');$('kinfo').innerHTML=kk?S[kk-1][4]:'Vajuta „Järgmine samm“.'}
+document.querySelectorAll('#kerberos [data-k]').forEach(b=>b.onclick=()=>{km=b.dataset.k;kk=0;kDraw()});
+$('knext').onclick=()=>{kk++;kDraw()};$('kreset').onclick=()=>{kk=0;kDraw()};$('kevil').onchange=()=>{kk=0;kDraw()};kDraw();
+
+/* 6. Tõrkeotsing */
+const GS=[{c:'gw',txt:'Kasutaja sülearvuti kontoris: veebilehed ei avane, kuid kolleegi arvutis kaustade jagamine töötab.'},
+ {c:'dhcp',txt:'Uus arvuti ühendati klassis seina võrgupesasse: internet ei tööta.'},
+ {c:'dns',txt:'Kooli arvuti hommikul: ükski veebileht ei avane, kuid Teamsi kõne, mis oli juba pooleli, töötab edasi.'},
+ {c:'fw',txt:'Raamatupidaja arvuti: veebilehed avanevad, kuid raamatupidamisprogramm ei saa ühendust serveriga 10.0.0.20 pordil 1433.'},
+ {c:'cable',txt:'Õpetaja kodus lauaarvutiga: internet kadus pärast koristamist.'}];
+let G,gi,gn=0;
+const CMD=['Get-NetAdapter','Get-NetIPConfiguration','Test-NetConnection <lüüs>','Test-NetConnection 1.1.1.1','Resolve-DnsName www.ria.ee','Test-NetConnection www.ria.ee -Port 443','Test-NetConnection 10.0.0.20 -Port 1433'];
+function out(c,cmd){const up=c!=='cable',ip=c==='dhcp'?'169.254.88.12':'192.168.1.57',gw=c==='dhcp'?'—':c==='gw'?'192.168.10.1':'192.168.1.1';
+  const ok=s=>`<span class="ok">${s}</span>`,er=s=>`<span class="er">${s}</span>`;
+  switch(cmd){
+  case 0:return `Name     Status        LinkSpeed\nEthernet ${up?ok('Up')+'          1 Gbps':er('Disconnected')+'  0 bps'}`;
+  case 1:return up?`InterfaceAlias       : Ethernet\nIPv4Address          : ${c==='dhcp'?er(ip):ip}\nIPv4DefaultGateway   : ${c==='dhcp'?er('(puudub)'):gw}\nDNSServer            : ${c==='dhcp'?er('(puudub)'):'192.168.1.10'}`:`InterfaceAlias       : Ethernet\n${er('NetAdapter.Status   : Disconnected')}\nIPv4Address          : ${er('(puudub)')}`;
+  case 2:return !up||c==='dhcp'?er('Lüüsi pole või võrgukaart pole ühendatud – testida ei saa.'):c==='gw'?`ComputerName   : ${gw}\n${er('PingSucceeded  : False')}\n${er('WARNING: Ping to '+gw+' failed with status: DestinationHostUnreachable')}`:`ComputerName   : ${gw}\nPingSucceeded  : ${ok('True')}\nPingReplyDetails (RTT) : 1 ms`;
+  case 3:return !up||c==='dhcp'||c==='gw'?`${er('PingSucceeded  : False')}\n${er('WARNING: Ping to 1.1.1.1 failed')}`:`ComputerName   : 1.1.1.1\nPingSucceeded  : ${ok('True')}\nPingReplyDetails (RTT) : 9 ms`;
+  case 4:return !up||c==='dhcp'||c==='gw'||c==='dns'?er('Resolve-DnsName : www.ria.ee : DNS server failure / This operation returned because the timeout period expired'):`Name         Type   TTL   IPAddress\nwww.ria.ee   A      3600  ${ok('185.31.240.10')}`;
+  case 5:return c==='fw'||c==='cable'||c==='dhcp'||c==='gw'||c==='dns'?(c==='fw'?`RemoteAddress    : 185.31.240.10\nRemotePort       : 443\nTcpTestSucceeded : ${ok('True')}`:er('WARNING: Name resolution of www.ria.ee failed')):`TcpTestSucceeded : ${ok('True')}`;
+  case 6:return c==='fw'?`RemoteAddress    : 10.0.0.20\nRemotePort       : 1433\nPingSucceeded    : ${ok('True')}\n${er('TcpTestSucceeded : False')}`:c==='cable'||c==='dhcp'?er('WARNING: TCP connect to 10.0.0.20:1433 failed – võrk puudub'):c==='gw'?er('WARNING: TCP connect failed – 10.0.0.20 on teises võrgus, lüüs ei vasta'):`TcpTestSucceeded : ${ok('True')}`}}
+const EXP={cable:'Võrgukaart on <b>Disconnected</b> – kaabel tuli koristamisel lahti või on katki. Kõik järgmised kihid ebaõnnestuvad selle tõttu. Õige oleks olnud alustada esimesest käsust.',
+ dhcp:'Aadress <b>169.254.x.x</b> (APIPA) tähendab, et DHCP-server ei vastanud – lüüsi ega DNS-i pole. Põhjus: võrgupesa on vales VLAN-is, pesa pole ühendatud või DHCP-teenus ei tööta. Esimene asi, mida kontrollida, on <code>Get-NetIPConfiguration</code>.',
+ gw:'IP-aadress on olemas, kuid <b>vaikelüüs (192.168.10.1) on teises võrgus</b> kui arvuti (192.168.1.57/24) ja ei vasta. Kohalikus võrgus (kolleegi arvuti) side töötab, internetti mitte. Keegi on seadistanud aadressi käsitsi vale lüüsiga.',
+ dns:'Kõik töötab IP-aadresside järgi (lüüs ja 1.1.1.1 vastavad), kuid <b>nimed ei lahene</b>. Teams jätkas, sest ühendus oli juba loodud ja nimi vahemälus. Probleem on DNS-serveris 192.168.1.10 – nt DNS-teenus seiskus.',
+ fw:'Võrk, DNS ja internet töötavad, server vastab pingile, kuid <b>port 1433 ei vasta</b>. Server on olemas, aga pordile ei pääse – tõenäoliselt blokeerib serveri tulemüür (või SQL Server ei kuula). Lahendus: lisa serveri tulemüüri reegel pordile 1433 ainult raamatupidaja arvutile.'};
+function gStart(){const v=$('gsel').value;gi=v==='rand'?Math.floor(Math.random()*GS.length):+v;G=GS[gi];gn=0;
+  $('gterm').innerHTML=`<span class="c"># ${G.txt}</span>\n# Vali käsk ülal.`;$('gans').value='';$('ginfo').className='info';$('ginfo').innerHTML='Käivita käske ja vaata tulemusi. Alusta alumisest kihist.';$('gcount').textContent=''}
+$('gcmds').innerHTML=CMD.map((c,i)=>`<button class="btn" data-i="${i}">${c.replace('<','&lt;').replace('>','&gt;')}</button>`).join('');
+$('gcmds').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!G)gStart();gn++;const i=+b.dataset.i;$('gterm').innerHTML+=`\n\n<span class="c">PS&gt; ${CMD[i].replace('<lüüs>',G.c==='gw'?'192.168.10.1':'192.168.1.1').replace(/</g,'&lt;')}</span>\n`+out(G.c,i);$('gterm').scrollTop=1e6;$('gcount').textContent=`Käske kasutatud: ${gn}`});
+$('gnew').onclick=gStart;$('gsel').onchange=gStart;
+$('gcheck').onclick=()=>{if(!G)return;const a=$('gans').value;if(!a)return;const ok=a===G.c;$('ginfo').className='info '+(ok?'ok':'bad');$('ginfo').innerHTML=(ok?`<b>Õige!</b> (${gn} käsuga) `:'<b>Mitte päris.</b> ')+EXP[G.c]+(ok?' Proovi järgmist olukorda.':' Vaata tulemusi uuesti alt üles.')};
+gStart();
+
+/* 7. Pordid */
+quiz('qtasks','qscore','qreset',['53','88','443','445','3389','5985'],[
+ ['Brauser avab HTTPS-veebilehe.',2,'HTTPS kasutab TCP porti 443 (HTTP/3 puhul UDP 443).'],
+ ['Arvuti küsib, mis on www.ria.ee IP-aadress.',0,'DNS kasutab porti 53 (tavaliselt UDP, suurte vastuste korral TCP).'],
+ ['Õpetaja avab võrgukausta \\\\fs01\\jagatud.',3,'SMB failijagamine kasutab TCP porti 445. Seda ei tohi internetti avada (WannaCry).'],
+ ['Administraator ühendub serverisse kaugtöölauaga.',4,'RDP kasutab porti 3389. Internetist tohib sellele pääseda ainult VPN-i või RD Gateway kaudu.'],
+ ['Kasutaja küsib domeenikontrollerilt Kerberose piletit.',1,'Kerberos kasutab porti 88.'],
+ ['Administraator käivitab Enter-PSSession server01.',5,'WinRM (PowerShelli kaugjuhtimine) kasutab HTTP puhul porti 5985 ja HTTPS puhul 5986.']],
+ 'Tulemüüri reeglid tehakse portide kaupa – ja internetti avatakse ainult see, mis on hädavajalik.');
+</script>
+</body>
+</html>
