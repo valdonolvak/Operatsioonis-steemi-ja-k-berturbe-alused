@@ -56,6 +56,14 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 - [Sõnastik](peatykid/sonastik.md)
 - [Allikad ja lisalugemine](peatykid/allikad.md)
 
+## Animatsioonid
+
+Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-failid mängivad peatükkides automaatselt; juhtnuppudega lehtedel saab animatsiooni peatada, liikuda sammhaaval ja muuta kiirust.
+
+- [Arvuti alglaadimine toitenupust töölauani](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/alglaadimine.html) · peatükk 4.12
+- [Virtuaalmälu: aadressi tõlkimine ja leheviga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/maluhaldus.html) · peatükk 12.3
+- [Paketi teekond: mis juhtub, kui avad veebilehe](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paketi-teekond.html) · peatükk 17
+
 ## Litsents ja allikad
 
 Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) sisukorda; tekst on kirjutatud uuesti eesti keeles ja ajakohastatud 2026. aasta seisu järgi. Allikad on iga peatüki lõpus ja koondatult failis [allikad.md](peatykid/allikad.md).

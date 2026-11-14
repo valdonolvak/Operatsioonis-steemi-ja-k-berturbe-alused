@@ -71,6 +71,10 @@ Teine protsess võib samuti lugeda aadressilt `0x2A7F`, kuid tema lehetabelis on
 
 Joonis: virtuaalaadress jaguneb viieks osaks. Neli esimest on indeksid nelja taseme lehetabelitesse, viimane on nihe lehe sees. Kuna iga möödalask nõuab nelja lisapöördumist mällu, on TLB jõudluse jaoks hädavajalik.
 
+![Animatsioon: virtuaalmälu, aadressi tõlkimine ja leheviga](../animatsioonid/maluhaldus.svg)
+
+**Animatsioon:** [Virtuaalmälu: aadressi tõlkimine ja leheviga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/maluhaldus.html) näitab kuut sammu: TLB-möödalask, lehetabeli läbikäik, TLB-tabamus, leheviga, lehe viimine lehefaili ja käsu kordamine.
+
 **TLB** (Translation Lookaside Buffer) on protsessoris olev väike ja väga kiire vahemälu viimaste aadressitõlgete jaoks. **Näide:** mälupöördumine võtab 100 ns ja TLB kontroll 1 ns.
 
 - TLB tabamus: 1 + 100 = **101 ns**.
