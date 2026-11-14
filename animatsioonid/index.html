@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animatsioonid</title>
+<style>
+:root{--bg:#eef1f5;--surface:#fff;--ink:#1d2433;--quiet:#5b6578;--line:#cfd5de;--accent:#2563a8}
+@media (prefers-color-scheme: dark){:root{--bg:#12161d;--surface:#1b212b;--ink:#e6eaf0;--quiet:#9aa5b6;--line:#333c4a;--accent:#7fb2ea;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:30px;line-height:1.2;margin:4px 0 8px}
+p.lead{color:var(--quiet);max-width:68ch;margin:0 0 24px}
+ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+a.card{display:flex;flex-direction:column;gap:8px;height:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;color:inherit;text-decoration:none}
+a.card:hover,a.card:focus-visible{border-color:var(--accent);outline:none}
+a.card img{width:100%;height:auto;border-radius:8px;display:block}
+a.card strong{font-size:17px}
+a.card span{color:var(--quiet);font-size:14.5px}
+footer{margin-top:24px;font-size:14px;color:var(--quiet)}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused</p>
+<h1>Animatsioonid</h1>
+<p class="lead">Vali animatsioon. Igal lehel saab animatsiooni peatada, liikuda sammhaaval ja muuta kiirust.</p>
+<ul>
+<li><a class="card" href="alglaadimine.html"><img src="alglaadimine.svg" alt=""><strong>Arvuti alglaadimine</strong><span>Kaheksa sammu toitenupust töölauani · peatükk 4.12</span></a></li>
+<li><a class="card" href="maluhaldus.html"><img src="maluhaldus.svg" alt=""><strong>Virtuaalmälu ja leheviga</strong><span>Aadressi tõlkimine TLB ja lehetabeli abil · peatükk 12.3</span></a></li>
+<li><a class="card" href="paketi-teekond.html"><img src="paketi-teekond.svg" alt=""><strong>Paketi teekond</strong><span>ARP, DNS, TCP, TLS ja tracert veebilehe avamisel · peatükk 17</span></a></li>
+</ul>
+<footer><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused">Tagasi õppematerjali juurde</a></footer>
+</main>
+</body>
+</html>
