@@ -126,6 +126,37 @@ Vastus salvestatakse vahemällu TTL-i ajaks. **DNS on ka sagedane ründe sihtmä
 
 Joonis: rakenduse andmed liiguvad API kaudu tuuma TCP/IP pinusse; WFP kontrollib iga ühendust enne, kui NDIS-draiverid selle võrgukaardile annavad.
 
+### UUS: Paketi teekond ja selle jälgimine
+
+Mis juhtub võrgus, kui avad brauseris aadressi `https://www.kool.ee`? Enne lehe sisu liigub võrgus hulk pakette, mida saab oma arvutis näha.
+
+![Animatsioon: paketi teekond veebilehe avamisel](../animatsioonid/paketi-teekond.svg)
+
+**Animatsioon:** [Paketi teekond: mis juhtub, kui avad veebilehe](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paketi-teekond.html) näitab pakettide liikumist arvuti, kommutaatori, ruuteri ja serverite vahel ning seda, mida samal ajal näeb Wireshark.
+
+1. **ARP.** Server on teises võrgus, seega tuleb paketid saata vaikelüüsile. Arvuti küsib kohtvõrgus leviedastusega, milline MAC-aadress on lüüsil 192.168.1.1. Vastab ainult ruuter.
+2. **DNS.** Arvuti küsib DNS-serverilt nime `www.kool.ee` IP-aadressi (UDP port 53). Ruuter teeb NAT-i: asendab privaatse lähteaadressi oma avaliku aadressiga.
+3. **TCP käepigistus.** Arvuti avab ühenduse serveri pordiga 443: SYN, SYN-ACK, ACK.
+4. **TLS.** Client Hello sisaldab serveri nime (SNI). Pärast Server Hellot on liiklus krüpteeritud (ptk 29).
+5. **HTTP.** Päring ja vastus liiguvad krüpteeritult. Püüdja näeb ainult ridu „Application Data“.
+
+Pakette püütakse **oma arvuti võrgukaardil**. Kommutaator saadab sinu porti ainult sinu arvutile mõeldud kaadrid ja leviedastuse, seega teiste arvutite liiklust sa tavaliselt ei näe. Võõra liikluse pealtkuulamine ilma loata on keelatud (ptk 31.7).
+
+| Tööriist | Mida näitab | Näide |
+| --- | --- | --- |
+| `arp -a` | ARP-vahemälu: IP-aadressile vastav MAC-aadress | lüüsi MAC-aadress |
+| `Resolve-DnsName`, `ipconfig /displaydns` | DNS-päring ja DNS-vahemälu | `Resolve-DnsName www.ria.ee` |
+| `Test-NetConnection` | kas TCP-ühendus porti õnnestub | `Test-NetConnection www.ria.ee -Port 443` |
+| `tracert`, `pathping` | teekond hüpete kaupa ja viivitus igas hüppes | `tracert -d www.ria.ee` |
+| `Get-NetTCPConnection` | avatud TCP-ühendused ja nende protsessid | `Get-NetTCPConnection -State Established` |
+| `pktmon` | Windowsi sisseehitatud pakettide püüdja; näitab ka, millises võrgupinu kihis pakett ära visati | `pktmon start --capture` |
+| Wireshark | graafiline pakettide analüsaator: iga paketi kõik kihid | filter `dns` või `tcp.flags.syn == 1` |
+| `tcpdump`, `traceroute`, `mtr` | samad tööriistad Linuxis ja WSL-is | `sudo tcpdump -n port 53` |
+
+**Kuidas töötab tracert?** Igal IP-paketil on eluea loendur **TTL**, mida iga ruuter vähendab ühe võrra. Kui TTL jõuab nulli, viskab ruuter paketi ära ja saadab saatjale ICMP-teate „Time Exceeded“. `tracert` saadab paketid TTL-iga 1, 2, 3 jne ning saab nii iga hüppe ruuterilt vastuse. Tärnid (`* * *`) tähendavad, et ruuter ei vasta ICMP-ga, mitte tingimata seda, et ühendus on katki.
+
+Kasulikud Wiresharki kuvafiltrid: `arp`, `dns`, `tcp.flags.syn == 1`, `tls.handshake.type == 1` (Client Hello), `ip.addr == 203.0.113.10`, `tcp.analysis.retransmission` (kordussaatmised ehk märk pakettide kaost).
+
 ### 17.4 Autentimine võrgus: NTLM-ist Kerberoseni
 
 **Kerberos** on domeeni vaikimisi autentimisprotokoll: kasutaja saab domeenikontrollerilt (KDC) piletid ja parool võrgus ei liigu. **NTLM** on vanem väljakutse-vastuse protokoll, mis on haavatav releerünnetele ja räside murdmisele.
