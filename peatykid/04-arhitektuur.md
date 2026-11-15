@@ -151,6 +151,44 @@ Pahavara, mis käivitub enne operatsioonisüsteemi (bootkit), on viirusetõrjele
 - **ELAM** (Early Launch Anti-Malware) – viirusetõrje draiver laaditakse esimesena ja hindab teisi alglaadimisdraivereid;
 - **Measured Boot** – TPM salvestab iga laaditud komponendi räsi PCR-registritesse. Kui mõõtmised erinevad tavalisest, ei anna TPM välja BitLockeri võtit ja Windows küsib taasteparooli (ptk 26.6).
 
+#### TPM, PCR-registrid ja BitLockeri võti
+
+**TPM** (Trusted Platform Module) on turvakiip emaplaadil või protsessori sees (fTPM). See hoiab krüptovõtmeid nii, et neid ei saa kiibist välja lugeda, ja peab arvet selle üle, mis tarkvara arvutis käivitus. Windows 11 nõuab TPM 2.0 olemasolu.
+
+**PCR** (Platform Configuration Register) on TPM-i sees olev register, kuhu kogutakse käivitunud tarkvara räsid. TPM 2.0-s on neid 24 (PCR 0–23). Arvuti sisselülitamisel on kõik registrid nullis. Registrit ei saa üle kirjutada, seda saab ainult **laiendada**.
+
+Kuidas TPM otsustab, kas anda BitLockeri võti välja:
+
+1. **Mõõtmine.** TPM ise faile ei loe. Räsi arvutab alati eelmine lüli: UEFI püsivara arvutab Boot Manageri faili SHA-256 räsi ja saadab selle TPM-ile, alles siis käivitab Boot Manageri. Boot Manager teeb sama winloadiga. Nii ei saa ükski programm oma mõõtmist ise võltsida, sest see mõõdeti enne, kui ta tööle hakkas.
+2. **Laiendamine.** TPM arvutab registri uue väärtuse vana väärtuse ja uue räsi põhjal: PCR uus = SHA-256(PCR vana ‖ komponendi räsi). Lõppväärtus sõltub kõigist mõõdetud komponentidest ja nende järjekorrast. Kui ahelas muutub kas või üks bait, on lõppväärtus täiesti teine.
+3. **Pitseerimine** (sealing). Kui BitLocker sisse lülitatakse, annab Windows köite põhivõtme (VMK, ptk 26.6) TPM-ile tingimusega: anna see tagasi ainult siis, kui valitud PCR-registrites on täpselt samad väärtused nagu praegu.
+4. **Avamine.** Igal käivitusel küsib Boot Manager TPM-ilt võtit. Kui registrite väärtused klapivad pitseerimise ajal kehtinutega, annab TPM võtme välja ja ketas avaneb märkamatult. Kui ei klapi, keeldub TPM ja Windows küsib 48-kohalist taasteparooli.
+
+| Register | Mida mõõdetakse |
+| --- | --- |
+| PCR 0 | UEFI püsivara kood |
+| PCR 1 | püsivara seaded, alglaadimisjärjekord |
+| PCR 2 | lisaseadmete (nt graafikakaardi) püsivara |
+| PCR 4 | alglaadur (Boot Manager) |
+| PCR 7 | Secure Booti olek: kas see on sees ja millised sertifikaadid kehtivad |
+| PCR 11 | BitLockeri enda juurdepääsukontroll |
+
+Kui Secure Boot on sees, seob Windows võtme vaikimisi registritega **PCR 7 ja 11**. Kui Secure Booti ei ole, siis registritega 0, 2, 4 ja 11. Oma arvuti profiili näitab `manage-bde -protectors -get C:`.
+
+**Miks BitLocker pärast püsivara uuendust taasteparooli küsib?** TPM ei saa aru, miks mõõtmised muutusid. Tema jaoks näevad püsivara uuendus ja ründaja muudetud püsivara välja ühtemoodi: registrite väärtused on teised kui pitseerimise ajal, seega võtit välja ei anta. See on kavandatud käitumine, mitte viga.
+
+| Muudatus | Mis muutub | Kas küsib taasteparooli |
+| --- | --- | --- |
+| UEFI püsivara uuendus | PCR 0, vahel ka PCR 7 (kui uuendus muudab Secure Booti sertifikaate) | jah, kui võti on seotud PCR 0-ga või kui muutus PCR 7 |
+| Secure Booti väljalülitamine | PCR 7 | jah |
+| Alglaadimine USB-pulgalt, muudetud alglaadimisjärjekord | PCR 1 ja 4 | sõltub seadistusest, sageli jah |
+| Ketta tõstmine teise arvutisse, emaplaadi vahetus, TPM-i tühjendamine | teine või tühi TPM, võtit ei ole | alati |
+| Windowsi tavaline uuendus | Windows peatab kaitse ise ja pitseerib võtme uuesti | ei |
+
+Enne püsivara käsitsi uuendamist peata BitLockeri kaitse üheks taaskäivituseks: `Suspend-BitLocker -MountPoint C: -RebootCount 1`. Ketas jääb krüpteerituks, kuid TPM-i ajutiselt ei küsita. Pärast taaskäivitust lülitub kaitse ise tagasi ja võti pitseeritakse uute mõõtmistega. Windows Update’i kaudu tulevate püsivara uuenduste puhul teeb Windows selle tavaliselt ise.
+
+Taasteparooli saab organisatsiooni arvutil Entra ID-st või Active Directoryst, koduarvutil Microsofti kontolt. Kui taasteparooli ei ole kuhugi salvestatud ja TPM võtit ei anna, on andmed jäädavalt kadunud.
+
 #### BCD
 
 **BCD** (Boot Configuration Data) on ESP-l asuv andmebaas, mis asendas vana `boot.ini` faili. Seal on kirje Boot Manageri enda kohta ja üks kirje iga paigaldatud operatsioonisüsteemi kohta: millisel kettal see asub, milline on laaduri tee ja millised on käivitusvalikud (turvarežiim, silumine, hüperviisori käivitamine). BCD-d vaadatakse ja muudetakse käsuga `bcdedit`.
