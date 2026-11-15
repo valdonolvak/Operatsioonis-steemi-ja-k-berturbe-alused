@@ -210,11 +210,63 @@ a{color:var(--accent)}
 </ol>
 </section>
 <section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>UEFI</strong></td><td>Emaplaadi püsivara ehk väike programm, mis käivitub enne operatsioonisüsteemi. Vanemates arvutites täitis sama rolli BIOS.</td></tr>
+<tr><td><strong>ESP</strong><br>EFI süsteemisektsioon</td><td>Väike (tavaliselt 100–260 MB) kettasektsioon, millel on alglaadurite failid. See on FAT32-vormingus, sest UEFI püsivara oskab lugeda ainult seda lihtsat failisüsteemi, mitte NTFS-i. Windowsis ei ole ESP-l draivitähte, seepärast seda File Exploreris ei näe.</td></tr>
+<tr><td><strong>Alglaadur</strong></td><td>Väike programm, mille ainus ülesanne on laadida mällu järgmine, suurem programm. Windowsis on neid kaks: Boot Manager (<code>bootmgfw.efi</code>) ja OS-i laadur (<code>winload.efi</code>).</td></tr>
+<tr><td><strong>BCD</strong></td><td>Alglaadimise seadistuste andmebaas ESP-l: millised operatsioonisüsteemid on paigaldatud ja kuidas neid käivitada.</td></tr>
+<tr><td><strong>Secure Boot</strong></td><td>UEFI funktsioon, mis käivitab ainult sellise alglaaduri, mille digiallkiri vastab püsivaras hoitavatele sertifikaatidele.</td></tr>
+<tr><td><strong>TPM</strong><br>Trusted Platform Module</td><td>Turvakiip emaplaadil või protsessori sees (fTPM). TPM hoiab krüptovõtmeid nii, et neid ei saa kiibist välja lugeda, ja peab arvet selle üle, mis tarkvara arvutis käivitus. Windows 11 nõuab TPM 2.0 olemasolu.</td></tr>
+<tr><td><strong>PCR</strong><br>Platform Configuration Register</td><td>TPM-i sees olev register, kuhu kogutakse käivitunud tarkvara räsid. TPM 2.0-s on neid 24 (PCR 0–23). Registrit ei saa üle kirjutada, seda saab ainult <em>laiendada</em> (vt allpool). Arvuti sisselülitamisel on kõik registrid nullis.</td></tr>
+<tr><td><strong>Measured Boot</strong><br>mõõdetud alglaadimine</td><td>Iga alglaadimise lüli arvutab järgmise lüli räsi ja saadab selle TPM-ile enne, kui järgmise lüli käivitab.</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Kuidas TPM otsustab, kas anda BitLockeri võti välja</h2>
+<p><strong>1. Mõõtmine.</strong> TPM ise faile ei loe. Räsi arvutab alati <em>eelmine lüli</em>: UEFI püsivara arvutab Boot Manageri faili SHA-256 räsi ja saadab selle TPM-ile, alles siis käivitab Boot Manageri. Boot Manager teeb sama winloadiga ja nii edasi. Nii ei saa ükski programm oma mõõtmist ise võltsida, sest see mõõdeti enne, kui ta tööle hakkas.</p>
+<p><strong>2. Laiendamine.</strong> TPM ei salvesta räsi otse, vaid arvutab registri uue väärtuse vana väärtuse ja uue räsi põhjal:</p>
+<pre>PCR uus = SHA-256( PCR vana  ||  komponendi räsi )</pre>
+<p>Registri lõppväärtus sõltub seega <em>kõigist</em> mõõdetud komponentidest ja nende järjekorrast. Kui ahelas muutub kas või üks bait, on lõppväärtus täiesti teine. Tagasi „õigeks“ ei saa registrit keegi kirjutada, sest selleks tuleks räsifunktsioon ümber pöörata.</p>
+<p><strong>3. Mida millisesse registrisse mõõdetakse.</strong></p>
+<div class="tablewrap"><table>
+<tr><th>Register</th><th>Mida mõõdetakse</th></tr>
+<tr><td>PCR 0</td><td>UEFI püsivara kood</td></tr>
+<tr><td>PCR 1</td><td>püsivara seaded, alglaadimisjärjekord</td></tr>
+<tr><td>PCR 2</td><td>lisaseadmete (nt graafikakaardi) püsivara</td></tr>
+<tr><td>PCR 4</td><td>alglaadur (Boot Manager)</td></tr>
+<tr><td>PCR 7</td><td>Secure Booti olek: kas see on sees ja millised sertifikaadid kehtivad</td></tr>
+<tr><td>PCR 11</td><td>BitLockeri enda juurdepääsukontroll</td></tr>
+</table></div>
+<p><strong>4. Pitseerimine.</strong> Kui BitLocker sisse lülitatakse, annab Windows köite põhivõtme (VMK) TPM-ile ja ütleb: „krüpteeri see ja anna tagasi ainult siis, kui valitud PCR-registrites on täpselt samad väärtused nagu praegu“. Seda nimetatakse võtme pitseerimiseks (sealing). Kui Secure Boot on sees, seob Windows võtme vaikimisi registritega <strong>PCR 7 ja 11</strong>. Kui Secure Booti ei ole, siis registritega 0, 2, 4 ja 11.</p>
+<p><strong>5. Avamine.</strong> Igal käivitusel küsib Boot Manager TPM-ilt võtit. TPM võrdleb registrite praeguseid väärtusi pitseerimise ajal kehtinutega. Kui need klapivad, annab TPM võtme välja ja ketas avaneb ilma, et kasutaja midagi märkaks. Kui ei klapi, keeldub TPM ja Windows küsib 48-kohalist taasteparooli.</p>
+</section>
+<section class="extra">
+<h2>Miks BitLocker pärast püsivara uuendust taasteparooli küsib</h2>
+<p>TPM ei saa aru, <em>miks</em> mõõtmised muutusid. Tema jaoks näevad püsivara uuendus ja ründaja muudetud püsivara välja ühtemoodi: registrite väärtused on teised kui pitseerimise ajal, seega võtit välja ei anta. See on kavandatud käitumine, mitte viga.</p>
+<div class="tablewrap"><table>
+<tr><th>Muudatus</th><th>Mis muutub</th><th>Kas küsib taasteparooli</th></tr>
+<tr><td>UEFI püsivara uuendus</td><td>PCR 0 (ja vahel PCR 7, kui uuendus muudab Secure Booti sertifikaate)</td><td>jah, kui võti on seotud PCR 0-ga või kui muutus PCR 7</td></tr>
+<tr><td>Secure Booti väljalülitamine</td><td>PCR 7</td><td>jah</td></tr>
+<tr><td>Alglaadimine USB-pulgalt või muudetud alglaadimisjärjekord</td><td>PCR 1, 4</td><td>sõltub seadistusest, sageli jah</td></tr>
+<tr><td>Ketta tõstmine teise arvutisse, emaplaadi vahetus, TPM-i tühjendamine</td><td>teine või tühi TPM, võtit ei ole</td><td>alati</td></tr>
+<tr><td>Windowsi tavaline uuendus</td><td>Windows peatab kaitse ise ja pitseerib võtme uuesti</td><td>ei</td></tr>
+</table></div>
+<p><strong>Kuidas seda vältida.</strong> Enne püsivara käsitsi uuendamist peata BitLockeri kaitse üheks taaskäivituseks. Ketas jääb krüpteerituks, kuid võti on ajutiselt kettal avalikult ja TPM-i ei küsita. Pärast taaskäivitust lülitub kaitse ise tagasi ja võti pitseeritakse uute mõõtmistega.</p>
+<pre>Suspend-BitLocker -MountPoint C: -RebootCount 1     # enne püsivara uuendust
+manage-bde -protectors -get C:                      # näitab kaitsjaid ja PCR-profiili
+(Get-BitLockerVolume C:).KeyProtector               # taasteparooli ID</pre>
+<p>Windows Update'i kaudu tulevate püsivara uuenduste puhul teeb Windows selle peatamise tavaliselt ise.</p>
+<p><strong>Kust taasteparooli saab.</strong> Organisatsiooni arvutil Entra ID-st või Active Directoryst (IT-tugi), koduarvutil Microsofti kontolt. Seepärast tuleb enne BitLockeri kasutuselevõttu kontrollida, et taasteparool on kuhugi salvestatud. Kui seda ei ole ja TPM võtit ei anna, on andmed jäädavalt kadunud. Kui Windows on pärast taasteparooli sisestamist käivitunud, pitseeritakse võti tavaliselt uute mõõtmistega ja järgmisel korral parooli enam ei küsita.</p>
+</section>
+<section class="extra">
 <h2>Proovi ise</h2>
 <p>Ava PowerShell administraatorina ja uuri oma arvuti alglaadimist.</p>
 <pre>bcdedit /enum                       # Boot Manager ja OS-i laaduri kirjed BCD-s
 Confirm-SecureBootUEFI              # kas Secure Boot on sees
 Get-Tpm | Select-Object TpmPresent, TpmReady
+manage-bde -protectors -get C:      # BitLockeri kaitsjad ja PCR-profiil
 mountvol S: /S ; dir S:\EFI\Microsoft\Boot ; mountvol S: /D   # ESP sisu
 Get-WinEvent -LogName 'Microsoft-Windows-Diagnostics-Performance/Operational' -MaxEvents 5 |
   Where-Object Id -eq 100 | Select-Object TimeCreated, Message   # alglaadimise kestus</pre>
