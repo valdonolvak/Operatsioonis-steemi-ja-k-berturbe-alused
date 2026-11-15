@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC</h1>
+<p class="lead">Animatsioon näitab, mis juhtub ühe ReadFile-kutse ajal: kuidas päring liigub draiverite pinus kettani ja tagasi, mida teeb samal ajal lõim ja mida protsessor.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 528" role="img" aria-label="Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="528" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC</text>
+<rect x="24" y="48" width="270" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="71" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Lõim A · notepad.exe</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0;1;1;0;0;1;1" keyTimes="0;0.2852;0.2889;0.75;0.7537;0.8593;0.863;0.8963;0.9;1"/><text x="38" y="94" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">töötab</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2889;0.2926;0.7111;0.7148;1"/><text x="38" y="94" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">ootel: ootab ketast</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7148;0.7185;0.7463;0.75;1"/><text x="38" y="94" font-size="12" font-weight="600" fill="#b26a00" text-anchor="start">valmis: ootab protsessorit</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.863;0.8667;0.8926;0.8963;1"/><text x="38" y="94" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">töötab (ei jää ootele)</text></g>
+<rect x="24" y="120" width="270" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="143" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Lõim B · muu programm</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.2963;0.3;0.75;0.7537;1"/><text x="38" y="166" font-size="12" font-weight="600" fill="#b26a00" text-anchor="start">valmis: ootab protsessorit</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3;0.3037;0.4333;0.437;0.6778;0.6815;0.7463;0.75;1"/><text x="38" y="166" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">töötab</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.437;0.4407;0.6741;0.6778;1"/><text x="38" y="166" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">katkestatud</text></g>
+<rect x="24" y="192" width="270" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="215" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Protsessor täidab</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0;1;1" keyTimes="0;0.2963;0.3;0.75;0.7537;1"/><text x="38" y="238" font-size="12" font-weight="600" fill="#2563a8" text-anchor="start">lõim A</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3;0.3037;0.4333;0.437;0.6778;0.6815;0.7463;0.75;1"/><text x="38" y="238" font-size="12" font-weight="600" fill="#2563a8" text-anchor="start">lõim B (kontekstivahetus)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.437;0.4407;0.5519;0.5556;1"/><text x="38" y="238" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">ISR</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5556;0.5593;0.6741;0.6778;1"/><text x="38" y="238" font-size="12" font-weight="600" fill="#b26a00" text-anchor="start">DPC</text></g>
+<text x="24" y="280" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">Lõime olekud: töötab → ootel → valmis → töötab.</text>
+<text x="24" y="297" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">Ootel lõim ei kuluta protsessoriaega.</text>
+<rect x="318" y="48" width="270" height="40" rx="8" fill="#e7eff9" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="73" font-size="12" font-weight="600" fill="#1d2433" text-anchor="start">Notepad: ReadFile → NtReadFile</text>
+<rect x="318" y="96" width="270" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="121" font-size="12" font-weight="500" fill="#1d2433" text-anchor="start">S/V-haldur: koostab IRP</text>
+<rect x="318" y="144" width="270" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="169" font-size="12" font-weight="500" fill="#1d2433" text-anchor="start">Vahemäluhaldur: kas on mälus?</text>
+<rect x="318" y="192" width="270" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="217" font-size="12" font-weight="500" fill="#1d2433" text-anchor="start">ntfs.sys: milline plokk kettal?</text>
+<rect x="318" y="240" width="270" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="265" font-size="12" font-weight="500" fill="#1d2433" text-anchor="start">fvevol.sys: BitLocker</text>
+<rect x="318" y="288" width="270" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="313" font-size="12" font-weight="500" fill="#1d2433" text-anchor="start">disk.sys + stornvme.sys</text>
+<rect x="318" y="336" width="270" height="40" rx="8" fill="#eef0f3" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="332" y="361" font-size="12" font-weight="600" fill="#1d2433" text-anchor="start">NVMe-kontroller ja SSD</text>
+<text x="24" y="322" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">Sinine kast töötab kasutajarežiimis,</text>
+<text x="24" y="339" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">ülejäänud pinu tuumarežiimis.</text>
+<rect x="642" y="48" width="294" height="110" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="656" y="70" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">MÄLU</text>
+<text x="656" y="96" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">Süsteemi vahemälu:</text>
+<text x="656" y="130" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">Notepadi puhver:</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.6667;0.6704;1"/><text x="922" y="96" font-size="12" font-weight="400" fill="#5b6578" text-anchor="end">tühi</text></g><g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6704;0.6741;1"/><text x="922" y="96" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="end">faili koopia</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.7778;0.7815;1"/><text x="922" y="130" font-size="12" font-weight="400" fill="#5b6578" text-anchor="end">tühi</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7815;0.7852;1"/><text x="922" y="130" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="end">andmed käes</text></g>
+<rect x="642" y="192" width="294" height="52" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="656" y="213" font-size="13" font-weight="600" fill="#1d2433" text-anchor="start">ISR</text>
+<text x="656" y="232" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">katkestuse käsitleja: lühike ja kiire</text>
+<rect x="642" y="256" width="294" height="52" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="656" y="277" font-size="13" font-weight="600" fill="#1d2433" text-anchor="start">DPC</text>
+<text x="656" y="296" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">edasilükatud järeltöö: lõpetab IRP</text>
+<text x="642" y="330" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">DMA: kontroller kirjutab andmed</text>
+<text x="642" y="346" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">otse mällu (vt küsitluse ja DMA animatsiooni).</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.0111;0.0167;0.05;0.0556;0.7815;0.787;0.8278;0.8333;0.8407;0.8463;0.8574;0.863;0.8963;0.9019;0.9574;0.963;1"/><rect x="318" y="48" width="270" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.0556;0.0611;0.1352;0.1407;0.863;0.8685;0.8722;0.8778;1"/><rect x="318" y="96" width="270" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1407;0.1463;0.1685;0.1741;1"/><rect x="318" y="144" width="270" height="40" rx="8" fill="#b26a00" fill-opacity="0.13" stroke="#b26a00" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1741;0.1796;0.1981;0.2037;1"/><rect x="318" y="192" width="270" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2037;0.2093;0.2278;0.2333;1"/><rect x="318" y="240" width="270" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.2333;0.2389;0.2722;0.2778;0.563;0.5685;0.587;0.5926;1"/><rect x="318" y="288" width="270" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2778;0.2833;0.4315;0.437;1"/><rect x="318" y="336" width="270" height="40" rx="8" fill="#b26a00" fill-opacity="0.13" stroke="#b26a00" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6037;0.6093;0.6315;0.637;1"/><rect x="318" y="240" width="270" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.637;0.6426;0.6537;0.6593;1"/><rect x="318" y="192" width="270" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.6593;0.6648;0.687;0.6926;0.8778;0.8833;0.9574;0.963;1"/><rect x="318" y="144" width="270" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1481;0.1537;0.1685;0.1741;1"/><text x="576" y="169" font-size="11" font-weight="600" fill="#b26a00" text-anchor="end">ei ole</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8815;0.887;0.9574;0.963;1"/><text x="576" y="169" font-size="11" font-weight="600" fill="#2e7d4f" text-anchor="end">on olemas!</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6074;0.613;0.6315;0.637;1"/><text x="576" y="265" font-size="11" font-weight="600" fill="#2e7d4f" text-anchor="end">dekrüpteerib</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2852;0.2907;0.4278;0.4333;1"/><text x="576" y="361" font-size="11" font-weight="600" fill="#b26a00" text-anchor="end">loeb plokke…</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4519;0.4574;0.55;0.5556;1"/><rect x="642" y="192" width="294" height="52" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5296;0.5352;0.6722;0.6778;1"/><rect x="642" y="256" width="294" height="52" rx="8" fill="#b26a00" fill-opacity="0.13" stroke="#b26a00" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2889;0.2944;0.7093;0.7148;1"/><rect x="24" y="48" width="270" height="62" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3;0.3056;0.3389;0.3444;0.437;0.4426;0.4685;0.4741;0.75;0.7556;0.7796;0.7852;1"/><rect x="24" y="192" width="270" height="62" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.6704;0.6759;0.6981;0.7037;0.7815;0.787;0.8278;0.8333;0.9185;0.9241;0.9574;0.963;1"/><rect x="642" y="48" width="294" height="110" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0593;0.0615;0.2889;0.2935;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="615,116;615,116;615,116;615,164;615,164;615,212;615,212;615,260;615,260;615,308;615,308;615,356;615,356;615,356" keyTimes="0;0.0593;0.1407;0.1519;0.1741;0.1852;0.2037;0.2148;0.2333;0.2444;0.2704;0.2815;0.2889;1"/><rect x="-22.0" y="-10.0" width="44" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">IRP</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3426;0.3448;0.3981;0.4074;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="640,356;640,356;760,160;760,160" keyTimes="0;0.3426;0.3981;1"/><rect x="-48.0" y="-10.0" width="96" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">DMA: andmed</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.437;0.4393;0.4556;0.463;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="640,356;640,356;700,244;700,244" keyTimes="0;0.437;0.4556;1"/><rect x="-37.0" y="-10.0" width="74" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">katkestus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5074;0.5096;0.5296;0.537;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="789,244;789,244;789,258;789,258" keyTimes="0;0.5074;0.5296;1"/><rect x="-55.0" y="-10.0" width="110" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">DPC järjekorda</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.563;0.5652;0.8074;0.812;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="660,300;660,300;615,308;615,260;615,212;615,164;615,116;615,116;615,68;615,68;615,68" keyTimes="0;0.563;0.5815;0.6037;0.637;0.6593;0.6926;0.7593;0.7815;0.8074;1"/><rect x="-25.0" y="-10.0" width="50" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">IRP ✓</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.863;0.8652;0.8889;0.8935;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="615,116;615,116;615,164;615,164;615,164" keyTimes="0;0.863;0.8778;0.8889;1"/><rect x="-22.0" y="-10.0" width="44" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">IRP</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8889;0.8911;0.9185;0.9231;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="615,164;615,164;615,68;615,68;615,68" keyTimes="0;0.8889;0.8963;0.9185;1"/><rect x="-27.0" y="-10.0" width="54" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">andmed</text></g></g>
+<rect x="24" y="404" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.125;0.1296;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">ReadFile ja süsteemikutse</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Notepadi lõim A kutsub ReadFile. Teek ntdll.dll teeb süsteemikutse NtReadFile ja protsessor lülitub tuumarežiimi.</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">S/V-haldur koostab päringupaketi IRP: mida lugeda, millisest failist, kuhu tulemus panna.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1296;0.1343;0.2731;0.2778;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">IRP liigub draiverite pinus alla</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Vahemäluhaldur kontrollib, kas andmed on juba mälus. Ei ole. IRP liigub edasi: ntfs.sys leiab, millistes plokkides</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">fail kettal asub, BitLockeri draiver jätab meelde, et andmed tuleb dekrüpteerida, kettadraiver koostab käsu.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2778;0.2824;0.4213;0.4259;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Seade töötab, lõim ootab, protsessor teeb muud</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kontroller loeb plokid ja kirjutab need DMA-ga otse mällu. See võtab protsessori jaoks terve igaviku.</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim A pannakse ootele ja planeerija annab protsessori lõimele B: see on kontekstivahetus.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4259;0.4306;0.5509;0.5556;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Katkestus ja ISR</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kontroller saadab katkestuse: „valmis“. Protsessor jätab lõime B pooleli ja käivitab draiveri katkestuse käsitleja (ISR).</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ISR teeb ainult hädavajaliku: kinnitab seadmele, et katkestus saadi kätte, ja paneb järeltöö (DPC) järjekorda.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5556;0.5602;0.6991;0.7037;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">DPC lõpetab IRP ja see liigub üles tagasi</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">DPC (edasilükatud protseduurikutse) teeb pikema töö: märgib IRP lõpetatuks. IRP liigub pinus üles tagasi:</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">BitLocker dekrüpteerib andmed, NTFS kontrollib tulemust, vahemäluhaldur jätab koopia mällu.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7037;0.7083;0.8287;0.8333;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Lõim A ärkab ja saab andmed</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">S/V-haldur märgib lõime A valmisolevaks. Planeerija annab talle protsessori, andmed kopeeritakse Notepadi puhvrisse</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ja ReadFile tagastab. Notepadi jaoks oli see üks tavaline funktsioonikutse, mis lihtsalt võttis aega.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8333;0.838;1"/><text x="40" y="428" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 7/7</text><text x="112" y="428" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Teine lugemine: vahemälu otsetee</text><text x="40" y="450" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kui sama faili loetakse uuesti, leiab vahemäluhaldur andmed mälust. IRP ei lähe kettani: draiverid, DMA, katkestus</text><text x="40" y="468" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ja ootamine jäävad ära. Lugemine võtab mikrosekundeid ja lõim A ei jää ootele.</text></g>
+<rect x="24" y="510" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="510" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="54s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="141.2" y="508" width="2" height="9" fill="#f4f6f9"/>
+<rect x="276.3" y="508" width="2" height="9" fill="#f4f6f9"/>
+<rect x="411.4" y="508" width="2" height="9" fill="#f4f6f9"/>
+<rect x="529.7" y="508" width="2" height="9" fill="#f4f6f9"/>
+<rect x="664.8" y="508" width="2" height="9" fill="#f4f6f9"/>
+<rect x="783.0" y="508" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="54" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>ReadFile ja süsteemikutse</strong><span>Lõim A kutsub <code>ReadFile</code>, <code>ntdll.dll</code> teeb süsteemikutse <code>NtReadFile</code>. <strong>S/V-haldur</strong> (I/O Manager) koostab <strong>IRP</strong> ehk päringupaketi. IRP on nagu saatekiri: selles on kirjas, mida teha, ja see liigub draiverilt draiverile.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>IRP liigub draiverite pinus alla</strong><span>Iga kiht teeb oma osa ja annab IRP edasi. <strong>Vahemäluhaldur</strong> vaatab, kas faili see osa on mälus (ei ole). <code>ntfs.sys</code> tõlgib „faili bait 0–4095“ ketta plokinumbriks. Filtridraiver <code>fvevol.sys</code> (BitLocker) märgib, et tulemus tuleb dekrüpteerida. <code>disk.sys</code> ja <code>stornvme.sys</code> koostavad NVMe-käsu.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Seade töötab, lõim ootab, protsessor teeb muud</strong><span>Draiver annab käsu kontrollerile ja naaseb kohe. Kuna lugemine on sünkroonne, pannakse lõim A <strong>ootele</strong>. Planeerija teeb <strong>kontekstivahetuse</strong> ja protsessor hakkab täitma lõime B. Kontroller kannab andmed samal ajal DMA-ga mällu.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Katkestus ja ISR</strong><span>Katkestus peatab lõime B poole käsu pealt. Käivitub draiveri <strong>ISR</strong> (interrupt service routine). ISR töötab kõrgel prioriteedil, mille ajal teised katkestused ootavad, seega peab see olema väga lühike: kinnitab katkestuse ja paneb järjekorda <strong>DPC</strong>.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>DPC lõpetab IRP ja see liigub üles tagasi</strong><span><strong>DPC</strong> käivitub kohe, kui kõrgema prioriteediga töö on tehtud. See lõpetab IRP. Lõpetamine liigub pinus alt üles: iga draiver, kes soovis, saab tulemust töödelda. <code>fvevol.sys</code> dekrüpteerib plokid, vahemäluhaldur jätab andmete koopia süsteemi vahemällu.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Lõim A ärkab ja saab andmed</strong><span>Lõim A läheb olekust <em>ootel</em> olekusse <em>valmis</em> ja saab varsti protsessori. Tuum kopeerib andmed vahemälust Notepadi puhvrisse, protsessor lülitub tagasi kasutajarežiimi ja <code>ReadFile</code> tagastab loetud baitide arvu.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Teine lugemine: vahemälu otsetee</strong><span>Teisel korral on andmed süsteemi vahemälus. Päring lõpeb vahemäluhalduri juures (<em>fast I/O</em>): kettani ei minda, katkestust ei tule ja lõim ei jää ootele. Seepärast avaneb sama fail teisel korral palju kiiremini (ptk 13).</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>S/V</strong></td><td>Sisend ja väljund (I/O): kõik, mis liigub arvuti ja seadmete vahel.</td></tr>
+<tr><td><strong>S/V-haldur</strong> (I/O Manager)</td><td>Tuuma osa, mis võtab vastu S/V-süsteemikutsed, koostab IRP-d ja suunab need õigele draiverile.</td></tr>
+<tr><td><strong>IRP</strong> (I/O Request Packet)</td><td>Päringupakett: andmestruktuur, mis kirjeldab üht S/V-operatsiooni ja liigub draiverite pinus kihist kihti.</td></tr>
+<tr><td><strong>Draiverite pinu</strong></td><td>Üksteise peale laotud draiverid, millest igaüks teeb ühe osa tööst: failisüsteem, köide, ketas, kontroller.</td></tr>
+<tr><td><strong>Filtridraiver</strong></td><td>Draiver, mis asub teiste vahel ja jälgib või muudab päringuid. Näiteks BitLocker (<code>fvevol.sys</code>) krüpteerib plokke ja Defender (<code>WdFilter.sys</code>) kontrollib avatavaid faile.</td></tr>
+<tr><td><strong>Vahemäluhaldur</strong> (Cache Manager)</td><td>Hoiab hiljuti loetud failiandmeid mälus, et järgmine lugemine ei peaks kettani minema.</td></tr>
+<tr><td><strong>ISR</strong> (Interrupt Service Routine)</td><td>Draiveri funktsioon, mille protsessor käivitab katkestuse saabudes. Peab olema väga lühike.</td></tr>
+<tr><td><strong>DPC</strong> (Deferred Procedure Call)</td><td>Edasilükatud protseduurikutse: katkestuse järeltöö, mis tehakse veidi hiljem ja madalamal prioriteedil, et uued katkestused ei peaks ootama.</td></tr>
+<tr><td><strong>Sünkroonne S/V</strong></td><td>Lõim ootab, kuni operatsioon on lõppenud. Asünkroonse S/V korral jätkab lõim tööd ja saab lõpetamisest hiljem teate.</td></tr>
+<tr><td><strong>Lõime olekud</strong></td><td><em>Töötab</em> (protsessor täidab teda), <em>valmis</em> (võiks töötada, ootab protsessorit), <em>ootel</em> (ootab sündmust, nt ketast, ega vaja protsessorit).</td></tr>
+<tr><td><strong>Kontekstivahetus</strong></td><td>Protsessor lõpetab ühe lõime täitmise ja hakkab täitma teist. Ühe lõime olek salvestatakse, teise oma taastatakse.</td></tr>
+</table></div>
+<h2>Miks on ISR ja DPC eraldi</h2>
+<p>Katkestuse käsitlemise ajal on madalama prioriteediga katkestused blokeeritud. Kui ISR teeks kogu töö ise, võiks näiteks ketta katkestuse töötlemine panna hiire või heli hakkima. Seepärast teeb ISR ainult selle, mida kohe vaja (ütleb seadmele „sain kätte“), ja lükkab ülejäänu DPC-sse, mille ajal saavad uued katkestused juba läbi.</p>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>1. Millised filtridraiverid on sinu failisüsteemi peal</h3>
+<pre>fltmc filters</pre>
+<p>Käivita administraatorina. Iga rida on filtridraiver, mis näeb kõiki failipäringuid. Veerg <em>Altitude</em> näitab kõrgust pinus: suurem number on rakendusele lähemal. <code>WdFilter</code> on Defender, <code>bindflt</code> ja <code>wcifs</code> on seotud konteinerite ja rakenduste isoleerimisega. Mida rohkem filtreid, seda rohkem kihte iga IRP läbib.</p>
+<h3>2. Vahemälu mõju: loe sama faili kaks korda</h3>
+<pre>$fail = 'C:\tee\suur-fail.iso'      # vali fail (sadu MB), mida sa pole täna avanud
+Measure-Command { [System.IO.File]::ReadAllBytes($fail) | Out-Null } | Select-Object TotalMilliseconds
+Measure-Command { [System.IO.File]::ReadAllBytes($fail) | Out-Null } | Select-Object TotalMilliseconds</pre>
+<ul>
+<li><strong>1. rida:</strong> salvesta faili tee muutujasse <code>$fail</code>. Asenda tee oma failiga.</li>
+<li><strong>2. rida:</strong> <code>Measure-Command { … }</code> mõõdab, kui kaua looksulgudes olev käsk kestab. <code>ReadAllBytes</code> loeb kogu faili mällu, <code>Out-Null</code> viskab tulemuse ära, <code>TotalMilliseconds</code> näitab aega millisekundites.</li>
+<li><strong>3. rida:</strong> sama käsk teist korda.</li>
+</ul>
+<p>Esimene lugemine läheb kettani (animatsiooni sammud 1–6). Teine tuleb vahemälust (samm 7) ja on mitu korda kiirem.</p>
+<h3>3. Vahemälu ja ketta loendurid</h3>
+<pre>Get-Counter '\Cache\Copy Read Hits %',
+            '\PhysicalDisk(_Total)\Disk Reads/sec',
+            '\PhysicalDisk(_Total)\Avg. Disk sec/Read' -SampleInterval 2 -MaxSamples 5</pre>
+<ul>
+<li><strong>1. rida:</strong> mitu protsenti lugemistest sai vastuse vahemälust.</li>
+<li><strong>2. rida:</strong> mitu lugemist sekundis jõudis päriselt kettani.</li>
+<li><strong>3. rida:</strong> kui kaua üks ketta lugemine keskmiselt kestab (sekundites). SSD-l on see alla millisekundi, kõvakettal 5–15 ms.</li>
+</ul>
+<h3>4. Millised lõimed on ootel</h3>
+<pre>(Get-Process notepad).Threads | Select-Object Id, ThreadState, WaitReason</pre>
+<p>Ava enne Notepad. Enamik lõimi on olekus <code>Wait</code>: nad ootavad sündmust (klahvivajutust, S/V lõppu) ega kuluta protsessoriaega. <code>WaitReason</code> näitab, mida lõim ootab.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">peatükk 14, Sisend ja väljund</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=54,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 15}, {"t0": 15, "t1": 23}, {"t0": 23, "t1": 30}, {"t0": 30, "t1": 38}, {"t0": 38, "t1": 45}, {"t0": 45, "t1": 54}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
