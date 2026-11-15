@@ -75,6 +75,10 @@ HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koos
 
 Joonis: RAID 1 hoiab igast plokist kahte koopiat; RAID 5 jaotab andmed ja paarsuse (p) kolmele kettale, nii et ükskõik millise ketta sisu saab ülejäänutest taastada.
 
+![Animatsioon: RAID 0, 1 ja 5](../animatsioonid/raid.svg)
+
+**Animatsioon:** [RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/raid.html) näitab, kuidas iga tase plokid ketastele jaotab, kuidas RAID 5 arvutab puuduva ploki paarsusest, kuidas käib taastamine varukettale ja miks teine rike taastamise ajal on saatuslik. Lehel on lahti seletatud mõisted ja praktilised käsud.
+
 **Kuidas paarsus töötab?** Paarsus arvutatakse tehtega **XOR** (välistav või): kui bitid on samad, on tulemus 0, kui erinevad, siis 1. XOR-il on kasulik omadus – kui teada kõiki osi peale ühe, saab puuduva välja arvutada.
 
 ```
@@ -177,6 +181,10 @@ Joonis: TPM, PIN, taastevõti või käivitusvõti avavad sama VMK, VMK avab FVEK
 ![varunduse liigid · täis, inkrementaalne ja diferentsiaalne nädala jooksul](../pildid/16-c.png)
 
 Joonis: täisvarundus kopeerib iga kord kõik; inkrementaalne ainult eelmise päeva muutused; diferentsiaalne kõik muutused alates täisvarundusest.
+
+![Animatsioon: varunduse liigid](../animatsioonid/varundus.svg)
+
+**Animatsioon:** [Varundus: täis, inkrementaalne ja diferentsiaalne](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/varundus.html) võrdleb kolme varundusviisi ühe nädala jooksul: kui palju iga päev kopeeritakse, mitu koopiat on vaja taastamiseks reede hommikul ning millised koopiad jäävad lunavararünnaku järel alles.
 
 **RPO ja RTO** – kaks numbrit, millega varundusplaani hinnatakse:
 

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb</h1>
+<p class="lead">Animatsioon näitab, kuidas kolm levinumat RAID-taset andmed ketastele jaotavad, kuidas RAID 5 arvutab puuduva ploki paarsusest ja miks taastamine on ohtlik hetk.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 538" role="img" aria-label="RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="538" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb</text>
+<rect x="24" y="46" width="156" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="102" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">RAID 0</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1426;0.1481;1"/><rect x="24" y="46" width="156" height="28" rx="14" fill="#2563a8"/><text x="102" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">RAID 0</text></g>
+<rect x="190" y="46" width="156" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="268" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">RAID 1</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1481;0.1537;0.2907;0.2963;1"/><rect x="190" y="46" width="156" height="28" rx="14" fill="#2563a8"/><text x="268" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">RAID 1</text></g>
+<rect x="356" y="46" width="156" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="434" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">RAID 5</text>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.2963;0.3019;1"/><rect x="356" y="46" width="156" height="28" rx="14" fill="#2563a8"/><text x="434" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">RAID 5</text></g>
+<rect x="40" y="86" width="180" height="206" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="54" y="108" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Ketas 1</text>
+<rect x="54" y="120" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="54" y="164" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="54" y="208" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="250" y="86" width="180" height="206" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="264" y="108" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Ketas 2</text>
+<rect x="264" y="120" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="264" y="164" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="264" y="208" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="460" y="86" width="180" height="206" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="474" y="108" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Ketas 3</text>
+<rect x="474" y="120" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="474" y="164" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="474" y="208" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="716" y="86" width="180" height="206" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="730" y="108" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Varuketas (hot spare)</text>
+<rect x="730" y="120" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="730" y="164" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="730" y="208" width="152" height="34" rx="6" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0111;0.0148;0.1444;0.1481;1"/><rect x="54" y="120" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="130" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0167;0.0204;0.1444;0.1481;1"/><rect x="264" y="120" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="340" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0204;0.0241;0.1444;0.1481;1"/><rect x="54" y="164" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="130" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0259;0.0296;0.1444;0.1481;1"/><rect x="264" y="164" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="340" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A4</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0296;0.0333;0.1444;0.1481;1"/><rect x="54" y="208" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="130" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A5</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0352;0.0389;0.1444;0.1481;1"/><rect x="264" y="208" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="340" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A6</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0852;0.0907;0.1426;0.1481;1"/><rect x="250" y="86" width="180" height="206" rx="8" fill="#fbeceb" fill-opacity="0.82" stroke="#c2362b" stroke-width="2.5"/><path d="M305 150L375 220M375 150L305 220" stroke="#c2362b" stroke-width="6" stroke-linecap="round"/><text x="340" y="276" font-size="12" font-weight="600" fill="#c2362b" text-anchor="middle">RIKKIS</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0889;0.0926;0.1444;0.1481;1"/><text x="130" y="276" font-size="11.5" font-weight="600" fill="#c2362b" text-anchor="middle">ainult pooled plokid</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0111;0.0148;0.0815;0.0852;1"/><text x="130" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1593;0.163;0.2926;0.2963;1"/><rect x="54" y="120" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="130" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1648;0.1685;0.2926;0.2963;1"/><rect x="264" y="120" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="340" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1685;0.1722;0.2926;0.2963;1"/><rect x="54" y="164" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="130" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1741;0.1778;0.2926;0.2963;1"/><rect x="264" y="164" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="340" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1778;0.1815;0.2926;0.2963;1"/><rect x="54" y="208" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="130" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1833;0.187;0.2926;0.2963;1"/><rect x="264" y="208" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="340" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2296;0.2352;0.2907;0.2963;1"/><rect x="40" y="86" width="180" height="206" rx="8" fill="#fbeceb" fill-opacity="0.82" stroke="#c2362b" stroke-width="2.5"/><path d="M95 150L165 220M165 150L95 220" stroke="#c2362b" stroke-width="6" stroke-linecap="round"/><text x="130" y="276" font-size="12" font-weight="600" fill="#c2362b" text-anchor="middle">RIKKIS</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2333;0.237;0.2926;0.2963;1"/><text x="340" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">täielik koopia: töö jätkub</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1593;0.163;0.2259;0.2296;1"/><text x="340" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0111;0.0167;0.2907;0.2963;1"/><text x="550" y="190" font-size="11.5" font-weight="400" fill="#5b6578" text-anchor="middle">ei kasutata</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3185;0.3222;1"/><rect x="54" y="120" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="130" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3241;0.3278;1"/><rect x="264" y="120" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="340" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3296;0.3333;1"/><rect x="474" y="120" width="152" height="34" rx="6" fill="#b26a00" fill-opacity="0.16" stroke="#b26a00" stroke-width="1.5"/><text x="550" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Ap</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.363;0.3667;1"/><rect x="54" y="164" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="130" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">B1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3685;0.3722;1"/><rect x="264" y="164" width="152" height="34" rx="6" fill="#b26a00" fill-opacity="0.16" stroke="#b26a00" stroke-width="1.5"/><text x="340" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Bp</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3741;0.3778;1"/><rect x="474" y="164" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="550" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">B2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4074;0.4111;1"/><rect x="54" y="208" width="152" height="34" rx="6" fill="#b26a00" fill-opacity="0.16" stroke="#b26a00" stroke-width="1.5"/><text x="130" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Cp</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.413;0.4167;1"/><rect x="264" y="208" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="340" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">C1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4185;0.4222;1"/><rect x="474" y="208" width="152" height="34" rx="6" fill="#2563a8" fill-opacity="0.16" stroke="#2563a8" stroke-width="1.5"/><text x="550" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">C2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3185;0.3222;1"/><text x="130" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3185;0.3222;0.4852;0.4889;1"/><text x="340" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3185;0.3222;0.8556;0.8593;1"/><text x="550" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4889;0.4944;1"/><rect x="250" y="86" width="180" height="206" rx="8" fill="#fbeceb" fill-opacity="0.82" stroke="#c2362b" stroke-width="2.5"/><path d="M305 150L375 220M375 150L305 220" stroke="#c2362b" stroke-width="6" stroke-linecap="round"/><text x="340" y="276" font-size="12" font-weight="600" fill="#c2362b" text-anchor="middle">RIKKIS</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5278;0.5333;0.6426;0.6481;1"/><rect x="54" y="120" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5278;0.5333;0.6426;0.6481;1"/><rect x="474" y="120" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.6556;0.6593;1"/><text x="806" y="276" font-size="11.5" font-weight="600" fill="#5b6578" text-anchor="middle">ootel</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6593;0.663;0.8037;0.8074;1"/><text x="806" y="276" font-size="11.5" font-weight="600" fill="#b26a00" text-anchor="middle">taastamine…</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8074;0.8111;1"/><text x="806" y="276" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töökorras</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6852;0.6874;0.7037;0.7056;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="130,137;130,137;776,137;776,137" keyTimes="0;0.6852;0.7037;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6852;0.6874;0.7037;0.7056;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="550,137;550,137;836,137;836,137" keyTimes="0;0.6852;0.7037;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Ap</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7037;0.7074;1"/><rect x="730" y="120" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="806" y="142" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7296;0.7319;0.7481;0.75;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="130,181;130,181;776,181;776,181" keyTimes="0;0.7296;0.7481;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">B1</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7296;0.7319;0.7481;0.75;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="550,181;550,181;836,181;836,181" keyTimes="0;0.7296;0.7481;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">B2</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7481;0.7519;1"/><rect x="730" y="164" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="806" y="186" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Bp</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7741;0.7763;0.7926;0.7944;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="130,225;130,225;776,225;776,225" keyTimes="0;0.7741;0.7926;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">Cp</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7741;0.7763;0.7926;0.7944;1"/><g><animateTransform attributeName="transform" type="translate" dur="54s" repeatCount="indefinite" values="550,225;550,225;836,225;836,225" keyTimes="0;0.7741;0.7926;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">C2</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7926;0.7963;1"/><rect x="730" y="208" width="152" height="34" rx="6" fill="#2e7d4f" fill-opacity="0.16" stroke="#2e7d4f" stroke-width="1.5"/><text x="806" y="230" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">C1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8593;0.8648;1"/><rect x="460" y="86" width="180" height="206" rx="8" fill="none" stroke="#c2362b" stroke-width="2.5" stroke-dasharray="7 5"/><text x="550" y="276" font-size="11.5" font-weight="600" fill="#c2362b" text-anchor="middle">kui ka see rikneb?</text></g>
+<rect x="24" y="304" width="912" height="96" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0111;0.0167;0.1426;0.1481;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#2563a8" text-anchor="start">RAID 0: kiire, kuid varu ei ole</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">Fail = A1 A2 A3 A4 A5 A6; ühe ketta kadumisel jääb alles ainult A1 A3 A5.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1593;0.1648;0.2907;0.2963;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#2e7d4f" text-anchor="start">RAID 1: iga plokk on kahes kohas</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">Kasutatav maht 50%. Talub ühe ketta riket.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3185;0.3241;0.4833;0.4889;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#b26a00" text-anchor="start">RAID 5: paarsus = andmeplokkide XOR</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A1 = 1011    A2 = 0110    Ap = A1 XOR A2 = 1101</text><text x="40" y="372" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">XOR: samad bitid annavad 0, erinevad 1.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4889;0.4944;0.6537;0.6593;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#c2362b" text-anchor="start">Puuduv plokk arvutatakse ülejäänutest</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2 = A1 XOR Ap = 1011 XOR 1101 = 0110</text><text x="40" y="372" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">Massiiv töötab, kuid ilma varuta (degraded).</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6593;0.6648;0.8463;0.8519;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#b26a00" text-anchor="start">Taastamine: iga plokk arvutatakse kahe terve ketta põhjal</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">A2 = A1 XOR Ap     Bp = B1 XOR B2     C1 = Cp XOR C2</text><text x="40" y="372" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">Kõik terved kettad loetakse algusest lõpuni läbi.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8519;0.8574;1"/><text x="40" y="328" font-size="12.5" font-weight="600" fill="#c2362b" text-anchor="start">RAID 5 talub ainult ühte riket</text><text x="40" y="350" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">Teine rike taastamise ajal = andmed kadunud. Suurte ketastega kasuta RAID 6 või RAID 10.</text><text x="40" y="372" font-size="12.5" font-weight="400" fill="#1d2433" text-anchor="start">RAID ei ole varukoopia: kustutatud või krüpteeritud fail on kadunud kõigil ketastel korraga.</text></g>
+<rect x="24" y="414" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1435;0.1481;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">RAID 0: triibutus ilma varuta</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Faili plokid jaotatakse vaheldumisi kahe ketta vahel. Lugemine ja kirjutamine on kiired ning kogu maht on kasutatav.</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kui üks ketas rikneb, on igast failist alles ainult pooled plokid: kõik andmed on kadunud.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1481;0.1528;0.2917;0.2963;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">RAID 1: peegeldamine</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Iga plokk kirjutatakse kahele kettale. Kasutatav on pool mahust, kuid kui üks ketas rikneb,</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">on teisel täielik koopia ja töö jätkub katkestuseta.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2963;0.3009;0.4769;0.4815;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">RAID 5: triibutus ja paarsus</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Andmed jaotatakse kahele kettale ja kolmandale kirjutatakse paarsus: plokkide XOR. Paarsuse asukoht vahetub ridade kaupa.</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kolmest kettast on kasutatav kahe maht. Näide: A1 = 1011, A2 = 0110, paarsus Ap = 1101.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4815;0.4861;0.6435;0.6481;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Üks ketas rikneb: andmed arvutatakse</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Ketas 2 rikneb. Plokki A2 ei saa enam lugeda, kuid selle saab arvutada: A2 = A1 XOR Ap = 1011 XOR 1101 = 0110.</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Massiiv töötab edasi, kuid aeglasemalt ja ilma varuta (olek „degraded“). Järgmine rike oleks saatuslik.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6481;0.6528;0.8287;0.8333;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Taastamine varukettale</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Varuketas võetakse kasutusele ja selle sisu arvutatakse plokk-ploki haaval teiste ketaste põhjal.</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Selleks tuleb kõik ülejäänud kettad algusest lõpuni läbi lugeda. Suurte ketaste puhul võtab see tunde või päevi.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="54s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8333;0.838;1"/><text x="40" y="438" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/6</text><text x="112" y="438" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Miks RAID 5 on suurte ketastega riskantne</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kui taastamise ajal tekib veel ühel kettal rike või lugemisviga, ei saa puuduvaid plokke enam arvutada: andmed on kadunud.</text><text x="40" y="478" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Seepärast kasutatakse suurte ketaste puhul RAID 6 või RAID 10. Ja RAID ei asenda varukoopiat.</text></g>
+<rect x="24" y="520" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="520" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="54s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="158.1" y="518" width="2" height="9" fill="#f4f6f9"/>
+<rect x="293.2" y="518" width="2" height="9" fill="#f4f6f9"/>
+<rect x="462.1" y="518" width="2" height="9" fill="#f4f6f9"/>
+<rect x="614.1" y="518" width="2" height="9" fill="#f4f6f9"/>
+<rect x="783.0" y="518" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="54" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>RAID 0: triibutus ilma varuta</strong><span><strong>RAID 0</strong> (triibutus) jagab andmed plokkidena mitme ketta vahel. Kiirus kasvab, sest kettad töötavad korraga, ja kogu maht on kasutatav. Varu ei ole: ühe ketta rike hävitab kõik andmed, sest igast failist jääb alles ainult osa plokke.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>RAID 1: peegeldamine</strong><span><strong>RAID 1</strong> (peegeldamine) kirjutab iga ploki kahele kettale. Kasutatav maht on 50%. Ühe ketta rikke korral loetakse andmed teiselt kettalt ja kasutaja ei märka midagi. Rikkis ketas vahetatakse ja sisu kopeeritakse uuele.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>RAID 5: triibutus ja paarsus</strong><span><strong>RAID 5</strong> jagab andmed triipudena ja lisab igale triibule <strong>paarsusploki</strong>, mis on andmeplokkide XOR. Paarsus ei asu ühel kettal, vaid liigub triibult triibule, et koormus jaguneks. Kasutatav maht on (n−1)/n: kolme ketta korral kaks kolmandikku.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Üks ketas rikneb: andmed arvutatakse</strong><span>Kui üks ketas rikneb, arvutab RAID-kontroller puuduva ploki ülejäänud plokkide XOR-ina. Massiiv on olekus <em>degraded</em>: andmed on kättesaadavad, kuid iga lugemine nõuab arvutamist ja varu enam ei ole.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Taastamine varukettale</strong><span><strong>Taastamine</strong> (rebuild): varuketas (<em>hot spare</em>) asendab rikkis ketta. Kontroller loeb kõik teised kettad algusest lõpuni läbi ja arvutab iga puuduva ploki. Kogu selle aja töötavad allesjäänud kettad suure koormuse all.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Miks RAID 5 on suurte ketastega riskantne</strong><span>RAID 5 talub täpselt ühte riket. Mitme terabaidise ketta taastamine kestab kaua ja sama vanusega ketastel on rikke tõenäosus sarnane. Seepärast eelistatakse suurte ketaste puhul <strong>RAID 6</strong> (kaks paarsust, talub kahte riket) või <strong>RAID 10</strong>. RAID kaitseb ainult ketta rikke eest, mitte kustutamise, lunavara ega tulekahju eest.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>RAID</strong></td><td>Redundant Array of Independent Disks: mitu ketast ühendatakse üheks loogiliseks kettaks, et saada kiirust, rikkekindlust või mõlemat.</td></tr>
+<tr><td><strong>Triibutus</strong> (striping)</td><td>Andmed jagatakse plokkideks ja kirjutatakse vaheldumisi eri ketastele. Üks rida plokke üle kõigi ketaste on triip.</td></tr>
+<tr><td><strong>Peegeldamine</strong> (mirroring)</td><td>Sama plokk kirjutatakse kahele (või kolmele) kettale.</td></tr>
+<tr><td><strong>Paarsus</strong> (parity)</td><td>Lisaplokk, mis on arvutatud triibu andmeplokkidest nii, et ühe ploki kadumisel saab selle teistest tagasi arvutada.</td></tr>
+<tr><td><strong>XOR</strong> (välistav või)</td><td>Bititehe: 0 XOR 0 = 0, 1 XOR 1 = 0, 0 XOR 1 = 1. Omadus: kui A XOR B = P, siis A XOR P = B ja B XOR P = A.</td></tr>
+<tr><td><strong>Degraded</strong></td><td>Massiivi olek pärast ketta riket: andmed on kättesaadavad, kuid varu enam ei ole.</td></tr>
+<tr><td><strong>Taastamine</strong> (rebuild)</td><td>Rikkis ketta sisu arvutamine uuele kettale ülejäänud ketaste põhjal.</td></tr>
+<tr><td><strong>Varuketas</strong> (hot spare)</td><td>Tühi ketas, mis on massiiviga ühendatud ja võetakse rikke korral automaatselt kasutusele.</td></tr>
+<tr><td><strong>RAID 6</strong></td><td>Nagu RAID 5, kuid kahe eri paarsusega. Talub kahe ketta riket, kasutatav maht (n−2)/n.</td></tr>
+<tr><td><strong>RAID 10</strong></td><td>Peegelpaarid, mis on omavahel triibutatud. Kiire taastamine (ainult ühe ketta kopeerimine), kasutatav maht 50%.</td></tr>
+<tr><td><strong>Storage Spaces</strong></td><td>Windowsi tarkvaraline lahendus: kettad koondatakse kogumisse ja sellest luuakse peegel- või paarsusega virtuaalkettaid.</td></tr>
+</table></div>
+<h2>Kui palju mahtu jääb</h2>
+<p>Neli 4 TB ketast: RAID 0 annab 16 TB (ei talu ühtegi riket), RAID 10 annab 8 TB (üks ketas igast paarist), RAID 5 annab 12 TB (üks ketas), RAID 6 annab 8 TB (kaks ketast).</p>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>1. Arvuta paarsus ja taasta kadunud plokk</h3>
+<pre>$a1 = [Convert]::ToInt32('1011', 2)
+$a2 = [Convert]::ToInt32('0110', 2)
+$ap = $a1 -bxor $a2
+[Convert]::ToString($ap, 2).PadLeft(4, '0')
+[Convert]::ToString($a1 -bxor $ap, 2).PadLeft(4, '0')</pre>
+<ul>
+<li><strong>1. ja 2. rida:</strong> <code>[Convert]::ToInt32('1011', 2)</code> muudab kahendarvu 1011 tavaliseks arvuks (11). Teine argument 2 tähendab kahendsüsteemi.</li>
+<li><strong>3. rida:</strong> <code>-bxor</code> on bitikaupa XOR. Tulemus on paarsus.</li>
+<li><strong>4. rida:</strong> näita paarsust kahendkujul. <code>PadLeft(4, '0')</code> lisab ette nullid, et oleks neli kohta. Vastus: <code>1101</code>.</li>
+<li><strong>5. rida:</strong> „ketas 2 on rikkis“: arvuta A2 plokist A1 ja paarsusest. Vastus: <code>0110</code>, sama mis algne A2.</li>
+</ul>
+<p>Proovi sama kolme andmeplokiga: paarsus on <code>$a1 -bxor $a2 -bxor $a3</code> ja iga puuduva saab arvutada ülejäänud kolmest.</p>
+<h3>2. Millised kettad arvutis on ja mis seisus need on</h3>
+<pre>Get-PhysicalDisk |
+  Select-Object FriendlyName, MediaType, BusType, HealthStatus,
+    @{n='Suurus GB'; e={[int]($_.Size / 1GB)}}</pre>
+<ul>
+<li><strong>1. rida:</strong> loetle füüsilised kettad.</li>
+<li><strong>2. rida:</strong> näita nime, tüüpi (SSD või HDD), ühendust (NVMe, SATA, USB) ja tervislikku seisundit.</li>
+<li><strong>3. rida:</strong> arvutatud veerg: suurus baitides jagatud gigabaidiga ja ümardatud täisarvuks.</li>
+</ul>
+<h3>3. Ketta kulumine ja vead</h3>
+<pre>Get-PhysicalDisk | Get-StorageReliabilityCounter |
+  Select-Object DeviceId, Wear, Temperature, ReadErrorsTotal, PowerOnHours</pre>
+<p>Käivita administraatorina. <code>Wear</code> on SSD kulumine protsentides, <code>ReadErrorsTotal</code> lugemisvigade arv, <code>PowerOnHours</code> töötunnid. Kasvav vigade arv on märk, et ketas tuleb varsti vahetada. Kõik kettad ei teata kõiki väärtusi.</p>
+<h3>4. Storage Spaces (kui on kasutusel)</h3>
+<pre>Get-StoragePool -IsPrimordial $false | Select-Object FriendlyName, HealthStatus, Size, AllocatedSize
+Get-VirtualDisk | Select-Object FriendlyName, ResiliencySettingName, HealthStatus, OperationalStatus</pre>
+<p>Esimene rida näitab kettakogumeid, teine virtuaalkettaid. <code>ResiliencySettingName</code> on Simple, Mirror või Parity. <code>OperationalStatus</code> väärtus <code>Degraded</code> tähendab sama olukorda nagu animatsiooni neljandas sammus.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/16-salvestushaldus.md">peatükk 16, Salvestushaldus</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=54,steps=[{"t0": 0, "t1": 8}, {"t0": 8, "t1": 16}, {"t0": 16, "t1": 26}, {"t0": 26, "t1": 35}, {"t0": 35, "t1": 45}, {"t0": 45, "t1": 54}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
