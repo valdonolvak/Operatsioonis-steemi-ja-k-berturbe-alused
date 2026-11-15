@@ -23,6 +23,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-siz
 main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
 .eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
 h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
 h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
 .lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
 figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
@@ -173,7 +175,7 @@ a{color:var(--accent)}
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>02:10 Paroolide äraarvamine</strong><span>Ründaja proovib ühelt IP-aadressilt 21 minuti jooksul 1400 parooli. Iga ebaõnnestunud katse on sündmus <strong>4625</strong>. Kontolukustus või häirereegel „4625 üle 20 korra 5 minutiga“ oleks ründe siin peatanud või avastanud.</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>02:32 Sisselogimine õnnestub</strong><span>Üks parool sobib. Sündmus <strong>4624</strong> logimistüübiga 10 (RemoteInteractive) näitab edukat RDP-sisselogimist. Edukas sisselogimine kohe pärast sadu ebaõnnestunuid samalt aadressilt on kindel ründe tunnus.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>02:35 PowerShell: „living off the land“</strong><span>Ründaja kasutab Windowsi enda tööriistu, et viirusetõrje ei reageeriks. Sündmus <strong>4688</strong> näitab uut protsessi <code>powershell.exe -enc …</code>. Skriptiplokkide logimine (<strong>4104</strong>) näitab dekodeeritud skripti sisu. Ilma selle logimiseta oleks näha ainult loetamatu Base64.</span></span></button></li>
-<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>02:40 Õiguste tõstmine ja püsivus</strong><span>Ründaja loob uue konto (<strong>4720</strong>) ja lisab selle rühma Administrators (<strong>4732</strong>). Seejärel paigaldab ta teenuse (<strong>7045</strong>), mis käivitab tagaukse igal taaskäivitusel. See on püsivus: algse parooli vahetamine teda enam välja ei viska.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>02:40 Õiguste tõstmine ja püsivus</strong><span>Ründaja loob uue konto (<strong>4720</strong>) ja lisab selle rühma Administrators (<strong>4732</strong>). Seejärel paigaldab ta teenuse (<strong>7045</strong>), mis käivitab tagaukse igal taaskäivitusel. Seda nimetatakse püsivuse loomiseks (ingl <em>persistence</em>): ründaja ligipääs säilib ka pärast taaskäivitust ja konto <code>opetaja1</code> parooli vahetamist.</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>02:47 Ründaja kustutab turvalogi</strong><span>Ründaja tühjendab turvalogi. Tühjendamine jätab maha sündmuse <strong>1102</strong>, mis on alati punane lipp. Kohalik logi on tühi, kuid koopiad on SIEM-is alles, sest need saadeti ära kohe tekkimise hetkel.</span></span></button></li>
 <li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Häire jõuab administraatorini</strong><span>SIEM-i häirereegel „1102 alati“ käivitub. Administraator koostab keskse logi põhjal ajajoone ja näeb kogu ründe käiku: allikas, konto, käivitatud käsud, lisatud konto ja teenus. See on etapp <em>tuvastamine ja analüüs</em>.</span></span></button></li>
 <li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Reageerimine: ohjelda, likvideeri, taasta, õpi</strong><span><strong>Ohjeldamine:</strong> server isoleeritakse võrgust, konto <code>opetaja1</code> ja uus konto blokeeritakse. <strong>Likvideerimine ja taastamine:</strong> teenus ja konto eemaldatakse, server taastatakse puhtast varukoopiast, paroolid vahetatakse. <strong>Järeltegevus:</strong> RDP ainult VPN-i ja MFA kaudu, uus häirereegel, teavitus CERT-EE-le.</span></span></button></li>
@@ -192,17 +194,88 @@ a{color:var(--accent)}
 </table></div>
 </section>
 <section class="extra">
-<h2>Proovi ise</h2>
-<p>Ava PowerShell administraatorina ja otsi samu sündmusi oma arvuti logidest.</p>
+<h2>Proovi ise: otsi samu sündmusi oma arvuti logidest</h2>
+<p>Ava PowerShell <strong>administraatorina</strong> (turvalogi lugemiseks on vaja administraatori õigusi). Kõik käsud ainult loevad logi ega muuda midagi.</p>
+
+<h3>Kuidas need käsud on üles ehitatud</h3>
+<div class="tablewrap"><table>
+<tr><th>Osa</th><th>Mida teeb</th></tr>
+<tr><td><code>Get-WinEvent</code></td><td>loeb sündmusi Windowsi sündmuslogidest (sama, mida näitab Event Viewer)</td></tr>
+<tr><td><code>-FilterHashtable @{…}</code></td><td>filter, mille logi ise rakendab: <code>LogName</code> on logi nimi, <code>Id</code> on sündmuse ID. See on palju kiirem kui lugeda kõik sündmused ja alles siis sõeluda</td></tr>
+<tr><td><code>-MaxEvents 10</code></td><td>tagasta ainult 10 kõige uuemat sobivat sündmust</td></tr>
+<tr><td><code>|</code></td><td>toru: annab vasakpoolse käsu tulemuse edasi parempoolsele käsule</td></tr>
+<tr><td><code>Select-Object</code></td><td>valib, milliseid veerge näidata</td></tr>
+<tr><td><code>@{n='Konto'; e={…}}</code></td><td>arvutatud veerg: <code>n</code> on veeru nimi, <code>e</code> on avaldis, mis arvutab väärtuse. <code>$_</code> tähistab parajasti töödeldavat sündmust</td></tr>
+<tr><td><code>$_.Properties[5].Value</code></td><td>sündmuse andmeväli number 5 (loendamine algab nullist). Igal sündmuse ID-l on oma kindel väljade järjekord</td></tr>
+<tr><td><code>Where-Object { … }</code></td><td>jätab alles ainult need read, mille puhul tingimus on tõene</td></tr>
+</table></div>
+
+<h3>1. Ebaõnnestunud sisselogimised (4625)</h3>
 <pre>Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625} -MaxEvents 10 |
-  Select-Object TimeCreated, @{n='Konto';e={$_.Properties[5].Value}}, @{n='Allikas';e={$_.Properties[19].Value}}
-Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624} -MaxEvents 200 |
-  Where-Object { $_.Properties[8].Value -eq 10 } | Select-Object TimeCreated      # RDP-sisselogimised
-Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4720,4732,1102} -MaxEvents 20 -ErrorAction SilentlyContinue
-Get-WinEvent -FilterHashtable @{LogName='System'; Id=7045} -MaxEvents 10 |
-  Select-Object TimeCreated, @{n='Teenus';e={$_.Properties[0].Value}}, @{n='Fail';e={$_.Properties[1].Value}}
-Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 5 | Where-Object Id -eq 4104 | Format-List TimeCreated, Message</pre>
-<p>Tekita ise üks sündmus 4625: lukusta ekraan (Win+L) ja sisesta üks kord vale parool. Seejärel otsi see logist üles.</p>
+  Select-Object TimeCreated,
+    @{n='Konto';   e={$_.Properties[5].Value}},
+    @{n='Allikas'; e={$_.Properties[19].Value}}</pre>
+<ul>
+<li><strong>1. rida:</strong> võta turvalogist (Security) 10 viimast sündmust ID-ga 4625.</li>
+<li><strong>2. rida:</strong> näita iga sündmuse toimumise aega.</li>
+<li><strong>3. rida:</strong> lisa veerg „Konto“. Sündmuse 4625 väli 5 on konto nimi, millega üritati sisse logida.</li>
+<li><strong>4. rida:</strong> lisa veerg „Allikas“. Väli 19 on IP-aadress, kust katse tuli. Kohaliku katse korral on see tühi või <code>127.0.0.1</code>.</li>
+</ul>
+<p>Mida otsida: palju ridu lühikese aja jooksul samalt aadressilt tähendab paroolide äraarvamist. Kui käsk annab vea „No events were found“, siis selliseid sündmusi lihtsalt ei ole.</p>
+
+<h3>2. Kaugtöölaua sisselogimised (4624, logimistüüp 10)</h3>
+<pre>Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624} -MaxEvents 200 |
+  Where-Object { $_.Properties[8].Value -eq 10 } |
+  Select-Object TimeCreated,
+    @{n='Konto';   e={$_.Properties[5].Value}},
+    @{n='Allikas'; e={$_.Properties[18].Value}}</pre>
+<ul>
+<li><strong>1. rida:</strong> võta 200 viimast edukat sisselogimist (4624). Neid on palju, sest ka teenused logivad sisse.</li>
+<li><strong>2. rida:</strong> jäta alles ainult need, mille väli 8 (logimistüüp) võrdub 10-ga. <code>-eq</code> tähendab „võrdub“. Tüüp 10 on kaugtöölaud (RDP), tüüp 2 on kohalik sisselogimine klaviatuurilt, tüüp 3 on võrgu kaudu (nt jagatud kaust), tüüp 5 on teenus.</li>
+<li><strong>3.–5. rida:</strong> näita aega, kontot ja allika IP-aadressi (sündmuses 4624 on see väli 18).</li>
+</ul>
+<p>Mida otsida: RDP-sisselogimine öösel või tundmatult aadressilt, eriti kohe pärast hulka 4625 sündmusi.</p>
+
+<h3>3. Uus konto, lisamine administraatoriks, logi kustutamine (4720, 4732, 1102)</h3>
+<pre>Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4720,4732,1102} -MaxEvents 20 -ErrorAction SilentlyContinue |
+  Select-Object TimeCreated, Id, @{n='Kirjeldus'; e={($_.Message -split "`n")[0]}}</pre>
+<ul>
+<li><strong>1. rida:</strong> <code>Id=4720,4732,1102</code> otsib korraga kolme ID-d: konto loodi, liige lisati kohalikku turvarühma, turvalogi tühjendati. <code>-ErrorAction SilentlyContinue</code> ütleb, et kui ühtegi sellist sündmust ei ole, ära näita punast veateadet.</li>
+<li><strong>2. rida:</strong> näita aega, ID-d ja sündmuse teksti esimest rida. <code>$_.Message</code> on sündmuse täistekst, <code>-split "`n"</code> jagab selle ridadeks ja <code>[0]</code> võtab esimese.</li>
+</ul>
+<p>Mida otsida: iga 1102 vajab selgitust. Iga 4732, mida sa ise ei teinud, samuti.</p>
+
+<h3>4. Uued teenused (7045)</h3>
+<pre>Get-WinEvent -FilterHashtable @{LogName='System'; Id=7045} -MaxEvents 10 |
+  Select-Object TimeCreated,
+    @{n='Teenus'; e={$_.Properties[0].Value}},
+    @{n='Fail';   e={$_.Properties[1].Value}}</pre>
+<ul>
+<li><strong>1. rida:</strong> see sündmus on süsteemilogis (System), mitte turvalogis.</li>
+<li><strong>3. rida:</strong> väli 0 on teenuse nimi.</li>
+<li><strong>4. rida:</strong> väli 1 on käivitatava faili tee.</li>
+</ul>
+<p>Mida otsida: teenus, mille fail asub kasutaja kaustas, kaustas <code>Temp</code> või <code>ProgramData</code>, või mille käsureal on <code>powershell</code> või <code>cmd /c</code>. Tavalised teenused asuvad kaustades <code>C:\Windows</code> ja <code>C:\Program Files</code>.</p>
+
+<h3>5. PowerShelli skriptiplokid (4104)</h3>
+<pre>Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 50 |
+  Where-Object Id -eq 4104 |
+  Select-Object -First 5 |
+  Format-List TimeCreated, Message</pre>
+<ul>
+<li><strong>1. rida:</strong> loe PowerShelli enda töölogist 50 viimast sündmust. Siin on logi nimi antud otse parameetriga <code>-LogName</code>.</li>
+<li><strong>2. rida:</strong> jäta alles sündmused ID-ga 4104 (skriptiploki logimine).</li>
+<li><strong>3. rida:</strong> võta neist viis esimest.</li>
+<li><strong>4. rida:</strong> <code>Format-List</code> näitab iga sündmust loendina, mitte tabelina, et pikk skriptitekst ära mahuks.</li>
+</ul>
+<p>Mida otsida: <code>DownloadString</code>, <code>Invoke-WebRequest</code>, <code>IEX</code>, <code>FromBase64String</code>. Vaikimisi logib Windows ainult kahtlaseks peetud plokke; kõigi plokkide logimiseks tuleb rühmapoliitikas lubada „Turn on PowerShell Script Block Logging“.</p>
+
+<h3>6. Tekita ise üks sündmus ja leia see üles</h3>
+<ol>
+<li>Lukusta ekraan klahvidega Win+L ja sisesta üks kord vale parool või PIN. Seejärel logi õigesti sisse.</li>
+<li>Käivita uuesti esimene käsk. Kõige ülemine rida peaks olema sinu äsjane katse.</li>
+<li>Kui sündmust ei teki, ei ole sisselogimise auditeerimine lubatud. Kontrolli: <code>auditpol /get /subcategory:"Logon"</code>. Lubamiseks: <code>auditpol /set /subcategory:"Logon" /failure:enable /success:enable</code>.</li>
+</ol>
 </section>
 <footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/22-kuberturve.md">peatükk 22, Küberturve tänapäeva Windowsis</a>.</footer>
 </main>
