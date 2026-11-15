@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faili salvestamine: NTFS, ext4 ja APFS kõrvuti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Faili salvestamine: NTFS, ext4 ja APFS kõrvuti</h1>
+<p class="lead">Animatsioon võrdleb samm-sammult, mis juhtub uue faili salvestamisel Windowsis, Linuxis ja macOS-is.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" role="img" aria-label="Faili salvestamine: NTFS, ext4 ja APFS kõrvuti" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="520" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Faili salvestamine: NTFS, ext4 ja APFS kõrvuti</text>
+<rect x="24" y="48" width="288" height="338" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="71" font-size="13.5" font-weight="600" fill="#2563a8" text-anchor="start">Windows · NTFS</text>
+<text x="38" y="91" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">C:\Users\mari\kiri.txt</text>
+<rect x="36" y="104" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="46" y="121" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">$LogFile (logi)</text>
+<rect x="36" y="160" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="46" y="177" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Kausta indeks $I30</text>
+<rect x="36" y="216" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="46" y="233" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">MFT kirje 5321</text>
+<rect x="36" y="272" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="46" y="289" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Andmeklastrid · laisk kirjutaja, ~1 s</text>
+<rect x="36" y="328" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="46" y="345" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Päritolu märge</text>
+<rect x="336" y="48" width="288" height="338" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="350" y="71" font-size="13.5" font-weight="600" fill="#2e7d4f" text-anchor="start">Linux · ext4</text>
+<text x="350" y="91" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">/home/mari/kiri.txt</text>
+<rect x="348" y="104" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="358" y="121" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Journal (logi)</text>
+<rect x="348" y="160" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="358" y="177" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Kataloog /home/mari</text>
+<rect x="348" y="216" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="358" y="233" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Inode 131074</text>
+<rect x="348" y="272" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="358" y="289" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Andmeplokid · writeback, kuni ~30 s</text>
+<rect x="348" y="328" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="358" y="345" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Päritolu märge</text>
+<rect x="648" y="48" width="288" height="338" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="662" y="71" font-size="13.5" font-weight="600" fill="#6b4bb5" text-anchor="start">macOS · APFS</text>
+<text x="662" y="91" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">/Users/mari/kiri.txt</text>
+<rect x="660" y="104" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="670" y="121" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Kontrollpunkt (logi ei ole)</text>
+<rect x="660" y="160" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="670" y="177" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Kataloogi kirjed (B-puu)</text>
+<rect x="660" y="216" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="670" y="233" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Inode-kirje 88412</text>
+<rect x="660" y="272" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="670" y="289" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Andmeplokid · alati uude kohta</text>
+<rect x="660" y="328" width="264" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="670" y="345" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Päritolu märge</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0179;0.0232;0.0429;0.0482;1"/><rect x="24" y="48" width="288" height="338" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0518;0.0571;0.0768;0.0821;1"/><rect x="336" y="48" width="288" height="338" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0857;0.0911;0.1107;0.1161;1"/><rect x="648" y="48" width="288" height="338" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1518;0.1562;0.692;0.6964;1"/><text x="46" y="143" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">kavatsus: loo kiri.txt</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1696;0.1741;0.7098;0.7143;1"/><text x="358" y="143" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">tehing: loo kiri.txt</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1875;0.192;0.7277;0.7321;1"/><text x="670" y="143" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">uued plokid, vana puu puutumata</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6964;0.7009;1"/><text x="46" y="143" font-size="10.5" font-weight="600" fill="#2e7d4f" text-anchor="start">tehing kinnitatud ✓</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7143;0.7188;1"/><text x="358" y="143" font-size="10.5" font-weight="600" fill="#2e7d4f" text-anchor="start">tehing kinnitatud ✓</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7321;0.7366;1"/><text x="670" y="143" font-size="10.5" font-weight="600" fill="#2e7d4f" text-anchor="start">viit lülitus uuele puule ✓</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1429;0.1482;0.2375;0.2429;1"/><rect x="36" y="104" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1429;0.1482;0.2375;0.2429;1"/><rect x="348" y="104" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1429;0.1482;0.2375;0.2429;1"/><rect x="660" y="104" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6893;0.6946;0.8089;0.8143;1"/><rect x="36" y="104" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6893;0.6946;0.8089;0.8143;1"/><rect x="348" y="104" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6893;0.6946;0.8089;0.8143;1"/><rect x="660" y="104" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.2768;0.2812;1"/><text x="46" y="255" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">nimi, ajad, ACL, klastrid</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.2946;0.2991;1"/><text x="358" y="255" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">omanik, õigused, plokid · nime ei ole</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3125;0.317;1"/><text x="670" y="255" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start">omanik, õigused, ajad, ulatused</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2679;0.2732;0.3804;0.3857;1"/><rect x="36" y="216" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2679;0.2732;0.3804;0.3857;1"/><rect x="348" y="216" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2679;0.2732;0.3804;0.3857;1"/><rect x="660" y="216" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4196;0.4241;1"/><text x="46" y="199" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kiri.txt → MFT 5321</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4375;0.442;1"/><text x="358" y="199" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kiri.txt → inode 131074</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4554;0.4598;1"/><text x="670" y="199" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kiri.txt → inode 88412</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4107;0.4161;0.5054;0.5107;1"/><rect x="36" y="160" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4107;0.4161;0.5054;0.5107;1"/><rect x="348" y="160" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4107;0.4161;0.5054;0.5107;1"/><rect x="660" y="160" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5286;0.533;0.558;0.5625;1"/><text x="46" y="311" font-size="10.5" font-weight="600" fill="#b26a00" text-anchor="start">sisu on esialgu vahemälus</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.5625;0.567;1"/><rect x="46" y="295" width="36" height="21" rx="4" fill="#2563a8" fill-opacity="0.85"/><rect x="87" y="295" width="36" height="21" rx="4" fill="#2563a8" fill-opacity="0.85"/><rect x="128" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="169" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="210" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="251" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5286;0.533;0.6384;0.6429;1"/><text x="358" y="311" font-size="10.5" font-weight="600" fill="#b26a00" text-anchor="start">sisu on esialgu vahemälus</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6429;0.6473;1"/><rect x="358" y="295" width="36" height="21" rx="4" fill="#2e7d4f" fill-opacity="0.85"/><rect x="399" y="295" width="36" height="21" rx="4" fill="#2e7d4f" fill-opacity="0.85"/><rect x="440" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="481" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="522" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="563" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5286;0.533;0.5759;0.5804;1"/><text x="670" y="311" font-size="10.5" font-weight="600" fill="#b26a00" text-anchor="start">sisu on esialgu vahemälus</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.5804;0.5848;1"/><rect x="670" y="295" width="36" height="21" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><rect x="711" y="295" width="36" height="21" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><rect x="752" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="793" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="834" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><rect x="875" y="295" width="36" height="21" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.525;0.5304;0.6661;0.6714;1"/><rect x="36" y="272" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.525;0.5304;0.6661;0.6714;1"/><rect x="348" y="272" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.525;0.5304;0.6661;0.6714;1"/><rect x="660" y="272" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8482;0.8527;1"/><text x="46" y="367" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">ADS Zone.Identifier: ZoneId=3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8661;0.8705;1"/><text x="358" y="367" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">vaikimisi ei ole</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8839;0.8884;1"/><text x="670" y="367" font-size="10.5" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">xattr com.apple.quarantine</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8393;0.8446;0.9839;0.9893;1"/><rect x="36" y="328" width="264" height="50" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8393;0.8446;0.9839;0.9893;1"/><rect x="348" y="328" width="264" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8393;0.8446;0.9839;0.9893;1"/><rect x="660" y="328" width="264" height="50" rx="8" fill="#6b4bb5" fill-opacity="0.13" stroke="#6b4bb5" stroke-width="2.5"/></g>
+<rect x="24" y="396" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1205;0.125;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Sama töö, kolm failisüsteemi</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Mari salvestab uue faili kiri.txt. Windowsis teeb selle töö NTFS, Linuxis ext4 ja macOS-is APFS.</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kõik kolm peavad tegema sama: kaitsma muudatust, looma faili kirje, lisama nime kausta ja kirjutama sisu.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.125;0.1295;0.2455;0.25;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Kaitse: logi või uued plokid</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">NTFS ja ext4 kirjutavad kavatsuse kõigepealt logisse. APFS-il logi ei ole: ta ei kirjuta olemasolevaid</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">plokke kunagi üle, vaid paneb kõik muudatused uutesse plokkidesse ja jätab vana oleku puutumata.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.25;0.2545;0.3884;0.3929;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Metaandmete kirje</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">NTFS võtab vaba MFT kirje, ext4 vaba inode’i, APFS lisab inode-kirje oma B-puusse. Kirjes on omanik,</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">õigused, ajad ja andmete asukoht. Erinevus: NTFS-i kirjes on ka faili nimi, ext4 inode’is nime ei ole.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3929;0.3973;0.5134;0.5179;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Nimi lisatakse kausta</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kaust on tabel, mis seob nime kirje numbriga. NTFS lisab nime kausta indeksisse $I30, ext4 ja APFS</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kataloogi kirjete hulka. Nüüd leiab failisüsteem faili nime järgi üles.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5179;0.5223;0.6741;0.6786;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Sisu: enne vahemällu, siis kettale</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Faili sisu läheb kõigepealt põhimälus olevasse vahemällu ja rakendus saab kohe edasi töötada. Kettale kirjutab</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Windows selle umbes sekundi jooksul, Linux vaikimisi kuni 30 sekundi jooksul. APFS kirjutab alati uude kohta.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6786;0.683;0.817;0.8214;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Muudatus kinnitatakse</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">NTFS ja ext4 märgivad tehingu logis kinnitatuks: kui toide nüüd katkeb, saab muudatuse logi põhjal lõpule viia.</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">APFS lülitab ühe kirjutusega viida vanalt metaandmete puult uuele. Kuni selle hetkeni kehtis vana olek.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8214;0.8259;1"/><text x="40" y="420" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 7/7</text><text x="112" y="420" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Internetist pärit faili märge</text><text x="40" y="442" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kui fail laaditi alla brauseriga, lisab Windows sellele alternatiivse andmevoo Zone.Identifier ja macOS</text><text x="40" y="460" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">laiendatud atribuudi com.apple.quarantine. Linuxis sellist märget vaikimisi ei ole.</text></g>
+<rect x="24" y="502" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="502" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="56s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="137.0" y="500" width="2" height="9" fill="#f4f6f9"/>
+<rect x="251.0" y="500" width="2" height="9" fill="#f4f6f9"/>
+<rect x="381.3" y="500" width="2" height="9" fill="#f4f6f9"/>
+<rect x="495.3" y="500" width="2" height="9" fill="#f4f6f9"/>
+<rect x="641.9" y="500" width="2" height="9" fill="#f4f6f9"/>
+<rect x="772.1" y="500" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="56" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Sama töö, kolm failisüsteemi</strong><span>Iga failisüsteem peab uue faili jaoks tegema neli asja: kaitsma pooleli jääva muudatuse eest, looma <strong>metaandmete kirje</strong>, lisama <strong>nime kausta</strong> ja kirjutama <strong>sisu</strong> andmeplokkidesse. Erinevus on selles, kuidas ja mis järjekorras.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Kaitse: logi või uued plokid</strong><span><strong>NTFS</strong> kirjutab metaandmete muudatuse kavatsuse faili <code>$LogFile</code>, <strong>ext4</strong> oma logisse (journal). <strong>APFS</strong> kasutab <strong>kirjutamisel kopeerimist</strong>: muudatused lähevad vabadesse plokkidesse ja vana metaandmete puu jääb terveks, kuni uus on valmis.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Metaandmete kirje</strong><span>Kirjes on kõik faili kohta peale sisu: omanik, õigused, ajad, suurus ja andmeplokkide asukoht. <strong>MFT kirjes</strong> on ka faili nimi. <strong>Inode’is</strong> nime ei ole, seepärast võib ühel failil Linuxis olla mitu nime (kõvaviited).</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Nimi lisatakse kausta</strong><span>Kaust ei sisalda faile, vaid paare <em>nimi → kirje number</em>. NTFS ja APFS hoiavad neid B-puus, ext4 räsipuus, nii et nimi leitakse kiiresti ka tuhandete failidega kaustast.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Sisu: enne vahemällu, siis kettale</strong><span>Kõik kolm kirjutavad sisu esmalt <strong>vahemällu</strong>. Windowsi laisk kirjutaja viib selle kettale umbes sekundiga, Linuxi <em>writeback</em> vaikimisi kuni 30 sekundiga. Seepärast tuleb USB-ketas enne eemaldamist turvaliselt eemaldada (Linuxis <code>sync</code> või lahtiühendamine).</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Muudatus kinnitatakse</strong><span>Logiga failisüsteemis loeb pärast krahhi <strong>kinnitatud tehing</strong>: see viiakse lõpule, kinnitamata tehing tühistatakse. APFS-is on kinnitamine üksainus kirjutus: <strong>kontrollpunkt</strong> hakkab viitama uuele puule.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Internetist pärit faili märge</strong><span>Windowsi <strong>Mark of the Web</strong> (voog <code>Zone.Identifier</code>) on SmartScreeni ja Office’i hoiatuste alus. macOS-i <code>com.apple.quarantine</code> käivitab <strong>Gatekeeperi</strong> kontrolli. Linuxis vaikimisi vastet ei ole.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>Failisüsteem</strong></td><td>Reeglid ja andmestruktuurid, mille abil operatsioonisüsteem hoiab kettal faile: kus on nimed, kus metaandmed, kus sisu.</td></tr>
+<tr><td><strong>Metaandmed</strong></td><td>Andmed faili kohta: omanik, õigused, ajad, suurus, sisu asukoht kettal.</td></tr>
+<tr><td><strong>MFT kirje</strong></td><td>NTFS-i metaandmete kirje (Master File Table). Igal failil ja kaustal on üks. Väikese faili sisu mahub kirje sisse.</td></tr>
+<tr><td><strong>Inode</strong></td><td>ext4 metaandmete kirje. Faili nime selles ei ole: nimi on kataloogis ja viitab inode’i numbrile.</td></tr>
+<tr><td><strong>Kataloogi kirje</strong></td><td>Paar <em>nimi → kirje number</em>. Kaust (kataloog) on selliste paaride kogu.</td></tr>
+<tr><td><strong>Klaster, plokk</strong></td><td>Väikseim ruumiühik, mille failisüsteem failile annab, tavaliselt 4 KB. Windowsis klaster, Linuxis ja macOS-is plokk.</td></tr>
+<tr><td><strong>Ulatus</strong> (extent)</td><td>Järjestikuste plokkide vahemik kujul „alates plokist X, N plokki“. Nii kirjeldavad faili asukohta NTFS (jooksud), ext4 ja APFS.</td></tr>
+<tr><td><strong>Logi</strong> (journal)</td><td>Koht kettal, kuhu failisüsteem kirjutab muudatuse kavatsuse enne muudatust ennast. NTFS-is fail <code>$LogFile</code>.</td></tr>
+<tr><td><strong>Kirjutamisel kopeerimine</strong> (copy-on-write)</td><td>Muudatus kirjutatakse alati vabasse kohta, vana plokki üle ei kirjutata. Nii töötavad APFS, Btrfs ja ReFS.</td></tr>
+<tr><td><strong>Kontrollpunkt</strong></td><td>APFS-i kirje, mis ütleb, milline metaandmete puu parajasti kehtib.</td></tr>
+<tr><td><strong>Vahemälu, laisk kirjutaja, writeback</strong></td><td>Sisu hoitakse esialgu põhimälus ja kirjutatakse kettale taustal. Windowsis teeb seda laisk kirjutaja, Linuxis writeback.</td></tr>
+<tr><td><strong>ADS</strong> (alternatiivne andmevoog)</td><td>NTFS-i faili lisavoog põhisisu kõrval, näiteks <code>Zone.Identifier</code>.</td></tr>
+<tr><td><strong>Laiendatud atribuut</strong> (xattr)</td><td>Nimega lisaandmed faili juures Linuxis ja macOS-is, näiteks <code>com.apple.quarantine</code>.</td></tr>
+</table></div>
+<h2>Kolm failisüsteemi kõrvuti</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>NTFS (Windows)</th><th>ext4 (Linux)</th><th>APFS (macOS)</th></tr>
+<tr><td>Aasta</td><td>1993</td><td>2008</td><td>2017</td></tr>
+<tr><td>Metaandmete kirje</td><td>MFT kirje</td><td>inode</td><td>inode-kirje B-puus</td></tr>
+<tr><td>Kus on nimi</td><td>kausta indeksis ja MFT kirjes</td><td>ainult kataloogis</td><td>kataloogi kirjes</td></tr>
+<tr><td>Kaitse krahhi eest</td><td>metaandmete logi</td><td>logi</td><td>kirjutamisel kopeerimine</td></tr>
+<tr><td>Kloonid ja hetktõmmised</td><td>ei (varikoopiad eraldi teenusena)</td><td>ei (Btrfs-is ja XFS-is on)</td><td>jah</td></tr>
+<tr><td>Suur- ja väiketähed</td><td>ei erista</td><td>eristab</td><td>vaikimisi ei erista</td></tr>
+<tr><td>Köited</td><td>ketta tähed <code>C:</code>, <code>D:</code></td><td>üks puu juurega <code>/</code></td><td>üks puu, välised kettad <code>/Volumes</code></td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>Windows (PowerShell)</h3>
+<pre>Set-Content $env:TEMP\kiri.txt 'Tere'
+Get-Item $env:TEMP\kiri.txt | Select-Object Name, Length, CreationTime, LastWriteTime
+fsutil file queryFileID $env:TEMP\kiri.txt
+Set-Content $env:TEMP\kiri.txt -Stream Zone.Identifier -Value "[ZoneTransfer]`nZoneId=3"
+Get-Item $env:TEMP\kiri.txt -Stream *</pre>
+<ul>
+<li><strong>1. rida:</strong> loo ajutiste failide kausta fail <code>kiri.txt</code> sisuga „Tere“.</li>
+<li><strong>2. rida:</strong> näita metaandmeid: nimi, suurus baitides, loomise ja muutmise aeg.</li>
+<li><strong>3. rida:</strong> näita faili ID-d. See on MFT kirje number koos järjenumbriga, Linuxi inode’i numbri vaste.</li>
+<li><strong>4. rida:</strong> lisa failile ise voog <code>Zone.Identifier</code>, nagu brauser teeks allalaadimisel. <code>`n</code> on reavahetus, <code>ZoneId=3</code> tähendab internetti.</li>
+<li><strong>5. rida:</strong> näita faili kõiki vooge. Põhisisu on <code>:$DATA</code>, selle kõrval on nüüd <code>Zone.Identifier</code>.</li>
+</ul>
+<p>Mida otsida: faili suurus on endiselt paar baiti, kuigi failil on kaks voogu. Explorer näitab ainult põhivoo suurust.</p>
+<h3>Linux (terminal)</h3>
+<pre>echo Tere &gt; kiri.txt
+ls -i kiri.txt
+stat kiri.txt
+ln kiri.txt teine.txt
+ls -li kiri.txt teine.txt
+df -T .</pre>
+<ul>
+<li><strong>1. rida:</strong> loo fail.</li>
+<li><strong>2. rida:</strong> näita inode’i numbrit nime ees.</li>
+<li><strong>3. rida:</strong> näita kõiki inode’i metaandmeid: suurus, plokkide arv, õigused, omanik, ajad, viidete arv (Links).</li>
+<li><strong>4. rida:</strong> loo kõvaviide ehk teine nimi samale failile.</li>
+<li><strong>5. rida:</strong> näita mõlemat nime koos inode’i numbriga.</li>
+<li><strong>6. rida:</strong> näita, mis failisüsteemil praegune kaust asub (veerg Type).</li>
+</ul>
+<p>Mida otsida: mõlemal nimel on sama inode’i number ja viidete arv on 2. See tõestab, et nimi ei ole inode’i osa.</p>
+<h3>macOS (Terminal)</h3>
+<pre>echo Tere &gt; kiri.txt
+ls -i kiri.txt
+stat -x kiri.txt
+cp -c kiri.txt kloon.txt
+xattr -l ~/Downloads/*
+diskutil apfs list</pre>
+<ul>
+<li><strong>1.–2. rida:</strong> loo fail ja näita selle inode’i numbrit.</li>
+<li><strong>3. rida:</strong> näita metaandmeid loetaval kujul (<code>-x</code>).</li>
+<li><strong>4. rida:</strong> tee APFS-i kloon (<code>-c</code>): uus fail viitab samadele plokkidele ja lisaruumi ei võta.</li>
+<li><strong>5. rida:</strong> näita allalaaditud failide laiendatud atribuute. Otsi rida <code>com.apple.quarantine</code>.</li>
+<li><strong>6. rida:</strong> näita APFS-i konteinerit ja selles olevaid köiteid (System, Data, Preboot, Recovery, VM).</li>
+</ul>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/15-failisusteemid.md">peatükk 15, Failisüsteemid</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=56,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 14}, {"t0": 14, "t1": 22}, {"t0": 22, "t1": 29}, {"t0": 29, "t1": 38}, {"t0": 38, "t1": 46}, {"t0": 46, "t1": 56}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
