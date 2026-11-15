@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb</h1>
+<p class="lead">Animatsioon näitab MESI-protokolli abil, miks kaks lõime, mis ei jaga ühtegi muutujat, võivad üksteist siiski takistada, ja kuidas joondamine selle lahendab.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 516" role="img" aria-label="Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="516" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb</text>
+<rect x="40" y="56" width="400" height="196" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="56" y="80" font-size="13.5" font-weight="600" fill="#1d2433" text-anchor="start">Tuum 0</text>
+<text x="56" y="100" font-size="11.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim A: suurendab loendurit L0</text>
+<text x="56" y="136" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">L1-vahemälu rida (64 baiti = 8 loendurit)</text>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.6173;0.6231;1"/><rect x="56" y="146" width="42" height="40" rx="5" fill="#2563a8" fill-opacity="0.22" stroke="#2563a8"/><text x="77" y="171" font-size="11" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L0</text><rect x="102" y="146" width="42" height="40" rx="5" fill="#6b4bb5" fill-opacity="0.22" stroke="#6b4bb5"/><text x="123" y="171" font-size="11" font-weight="400" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L1</text><rect x="148" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="169" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L2</text><rect x="194" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="215" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L3</text><rect x="240" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="261" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L4</text><rect x="286" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="307" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L5</text><rect x="332" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="353" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L6</text><rect x="378" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="399" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L7</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6346;0.6404;1"/><rect x="56" y="146" width="42" height="40" rx="5" fill="#2563a8" fill-opacity="0.22" stroke="#2563a8"/><text x="77" y="171" font-size="11" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L0</text><rect x="102" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="123" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="148" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="169" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="194" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="215" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="240" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="261" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="286" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="307" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="332" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="353" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="378" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="399" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><text x="56" y="206" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start">ülejäänud 56 baiti on täide</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3365;0.3404;0.4481;0.4519;0.4904;0.4942;0.525;0.5288;0.5673;0.5712;0.6192;0.6231;1"/><rect x="54" y="142" width="372" height="48" rx="6" fill="#f4f6f9" fill-opacity="0.93"/><text x="240" y="171" font-size="11.5" font-weight="600" fill="#5b6578" text-anchor="middle">kehtetu: tuleb uuesti tuua</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1538;0.1577;1"/><rect x="304" y="66" width="120" height="30" rx="15" fill="#2563a8"/><text x="364" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">S · jagatud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1" keyTimes="0;0.1577;0.1615;0.3327;0.3365;0.4519;0.4558;0.4865;0.4904;0.5288;0.5327;0.5635;0.5673;0.6346;0.6385;1"/><rect x="304" y="66" width="120" height="30" rx="15" fill="#2e7d4f"/><text x="364" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">M · muudetud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3365;0.3404;0.4481;0.4519;0.4904;0.4942;0.525;0.5288;0.5673;0.5712;0.6192;0.6231;1"/><rect x="304" y="66" width="120" height="30" rx="15" fill="#c2362b"/><text x="364" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">I · kehtetu</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1577;0.1606;0.1683;0.1712;0.1923;0.1952;0.2029;0.2058;0.2308;0.2337;0.2413;0.2442;0.2692;0.2721;0.2798;0.2827;0.3077;0.3106;0.3183;0.3212;0.4538;0.4567;0.4644;0.4673;0.4731;0.476;0.4837;0.4865;0.5308;0.5337;0.5413;0.5442;0.55;0.5529;0.5606;0.5635;1"/><rect x="56" y="146" width="42" height="40" rx="5" fill="none" stroke="#2563a8" stroke-width="3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.6423;0.6446;0.6496;0.6519;0.6615;0.6638;0.6688;0.6712;0.6808;0.6831;0.6881;0.6904;0.7;0.7023;0.7073;0.7096;0.7192;0.7215;0.7265;0.7288;0.7385;0.7408;0.7458;0.7481;0.7577;0.76;0.765;0.7673;0.7769;0.7792;0.7842;0.7865;0.7962;0.7985;0.8035;0.8058;0.8154;0.8177;0.8227;0.825;0.8346;0.8369;0.8419;0.8442;0.8538;0.8562;0.8612;0.8635;0.8731;0.8754;0.8804;0.8827;0.8923;0.8946;0.8996;0.9019;0.9115;0.9138;0.9188;0.9212;0.9308;0.9331;0.9381;0.9404;0.95;0.9523;0.9573;0.9596;0.9692;0.9715;0.9765;0.9788;1"/><rect x="56" y="146" width="42" height="40" rx="5" fill="none" stroke="#2563a8" stroke-width="3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6423;0.6481;1"/><text x="56" y="232" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="start">kirjutab täiskiirusel</text></g>
+<rect x="520" y="56" width="400" height="196" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="536" y="80" font-size="13.5" font-weight="600" fill="#1d2433" text-anchor="start">Tuum 1</text>
+<text x="536" y="100" font-size="11.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim B: suurendab loendurit L1</text>
+<text x="536" y="136" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">L1-vahemälu rida (64 baiti = 8 loendurit)</text>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.6173;0.6231;1"/><rect x="536" y="146" width="42" height="40" rx="5" fill="#2563a8" fill-opacity="0.22" stroke="#2563a8"/><text x="557" y="171" font-size="11" font-weight="400" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L0</text><rect x="582" y="146" width="42" height="40" rx="5" fill="#6b4bb5" fill-opacity="0.22" stroke="#6b4bb5"/><text x="603" y="171" font-size="11" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L1</text><rect x="628" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="649" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L2</text><rect x="674" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="695" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L3</text><rect x="720" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="741" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L4</text><rect x="766" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="787" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L5</text><rect x="812" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="833" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L6</text><rect x="858" y="146" width="42" height="40" rx="5" fill="#ffffff" fill-opacity="1" stroke="#b9c0cc"/><text x="879" y="171" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L7</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6346;0.6404;1"/><rect x="536" y="146" width="42" height="40" rx="5" fill="#6b4bb5" fill-opacity="0.22" stroke="#6b4bb5"/><text x="557" y="171" font-size="11" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">L1</text><rect x="582" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="603" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="628" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="649" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="674" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="695" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="720" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="741" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="766" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="787" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="812" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="833" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><rect x="858" y="146" width="42" height="40" rx="5" fill="#f4f6f9" stroke="#b9c0cc" stroke-dasharray="3 3"/><text x="879" y="170" font-size="12" font-weight="400" fill="#5b6578" text-anchor="middle">·</text><text x="536" y="206" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start">ülejäänud 56 baiti on täide</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1577;0.1615;0.3327;0.3365;0.4519;0.4558;0.4865;0.4904;0.5288;0.5327;0.5635;0.5673;1"/><rect x="534" y="142" width="372" height="48" rx="6" fill="#f4f6f9" fill-opacity="0.93"/><text x="720" y="171" font-size="11.5" font-weight="600" fill="#5b6578" text-anchor="middle">kehtetu: tuleb uuesti tuua</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1538;0.1577;1"/><rect x="784" y="66" width="120" height="30" rx="15" fill="#2563a8"/><text x="844" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">S · jagatud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1" keyTimes="0;0.3365;0.3404;0.4481;0.4519;0.4904;0.4942;0.525;0.5288;0.5673;0.5712;0.6192;0.6231;0.6346;0.6385;1"/><rect x="784" y="66" width="120" height="30" rx="15" fill="#2e7d4f"/><text x="844" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">M · muudetud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1577;0.1615;0.3327;0.3365;0.4519;0.4558;0.4865;0.4904;0.5288;0.5327;0.5635;0.5673;1"/><rect x="784" y="66" width="120" height="30" rx="15" fill="#c2362b"/><text x="844" y="86" font-size="11.5" font-weight="600" fill="#fff" text-anchor="middle">I · kehtetu</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3385;0.3413;0.349;0.3519;0.3654;0.3683;0.376;0.3788;0.3942;0.3971;0.4048;0.4077;0.4231;0.426;0.4337;0.4365;0.4923;0.4952;0.5029;0.5058;0.5115;0.5144;0.5221;0.525;0.5692;0.5721;0.5798;0.5827;0.5885;0.5913;0.599;0.6019;1"/><rect x="582" y="146" width="42" height="40" rx="5" fill="none" stroke="#6b4bb5" stroke-width="3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.6423;0.6446;0.6496;0.6519;0.6615;0.6638;0.6688;0.6712;0.6808;0.6831;0.6881;0.6904;0.7;0.7023;0.7073;0.7096;0.7192;0.7215;0.7265;0.7288;0.7385;0.7408;0.7458;0.7481;0.7577;0.76;0.765;0.7673;0.7769;0.7792;0.7842;0.7865;0.7962;0.7985;0.8035;0.8058;0.8154;0.8177;0.8227;0.825;0.8346;0.8369;0.8419;0.8442;0.8538;0.8562;0.8612;0.8635;0.8731;0.8754;0.8804;0.8827;0.8923;0.8946;0.8996;0.9019;0.9115;0.9138;0.9188;0.9212;0.9308;0.9331;0.9381;0.9404;0.95;0.9523;0.9573;0.9596;0.9692;0.9715;0.9765;0.9788;1"/><rect x="536" y="146" width="42" height="40" rx="5" fill="none" stroke="#6b4bb5" stroke-width="3"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6423;0.6481;1"/><text x="536" y="232" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="start">kirjutab täiskiirusel</text></g>
+<line x1="440" y1="214" x2="520" y2="214" stroke="#b9c0cc" stroke-width="2"/>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1615;0.1638;0.1846;0.1904;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="400,214;400,214;560,214;560,214" keyTimes="0;0.1615;0.1846;1"/><rect x="-38.0" y="-10.0" width="76" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kehtetuks!</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2885;0.2908;0.3077;0.3115;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="560,214;560,214;400,214;400,214" keyTimes="0;0.2885;0.3077;1"/><rect x="-36.0" y="-10.0" width="72" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">anna rida</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3154;0.3177;0.3365;0.3394;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="400,214;400,214;560,214;560,214" keyTimes="0;0.3154;0.3365;1"/><rect x="-21.0" y="-10.0" width="42" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">rida</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4308;0.4331;0.4519;0.4548;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="560,214;560,214;400,214;400,214" keyTimes="0;0.4308;0.4519;1"/><rect x="-21.0" y="-10.0" width="42" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">rida</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4692;0.4715;0.4904;0.4933;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="400,214;400,214;560,214;560,214" keyTimes="0;0.4692;0.4904;1"/><rect x="-21.0" y="-10.0" width="42" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">rida</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5077;0.51;0.5288;0.5317;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="560,214;560,214;400,214;400,214" keyTimes="0;0.5077;0.5288;1"/><rect x="-21.0" y="-10.0" width="42" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">rida</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5462;0.5485;0.5673;0.5702;1"/><g><animateTransform attributeName="transform" type="translate" dur="52s" repeatCount="indefinite" values="400,214;400,214;560,214;560,214" keyTimes="0;0.5462;0.5673;1"/><rect x="-21.0" y="-10.0" width="42" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">rida</text></g></g>
+<rect x="24" y="264" width="912" height="114" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="40" y="288" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Rea ülekandeid tuumade vahel:</text>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.3342;0.3365;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#5b6578" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">0</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3365;0.3388;0.4496;0.4519;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#c2362b" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4519;0.4542;0.4881;0.4904;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#c2362b" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4904;0.4927;0.5265;0.5288;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#c2362b" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5288;0.5312;0.565;0.5673;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#c2362b" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">4</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5673;0.5696;0.6208;0.6231;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#c2362b" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">5</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6346;0.6404;1"/><text x="262" y="288" font-size="14" font-weight="600" fill="#2e7d4f" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">0</text><text x="282" y="288" font-size="12" font-weight="400" fill="#5b6578" text-anchor="start">pärast joondamist</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.4096;0.4154;1"/><text x="40" y="312" font-size="12" font-weight="400" fill="#5b6578" text-anchor="start">MESI olekud: S = jagatud (mitu tuuma loevad), M = muudetud (üks tuum kirjutab), I = kehtetu (koopia on aegunud).</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4231;0.4288;0.6173;0.6231;1"/><text x="40" y="312" font-size="12" font-weight="400" fill="#5b6578" text-anchor="start">Lõimed ei jaga ühtegi muutujat, kuid jagavad vahemälurida.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8154;0.8212;1"/><text x="40" y="316" font-size="11.5" font-weight="600" fill="#5b6578" text-anchor="start">Kiirus kahe tuumaga võrreldes ühega (näitlik):</text><text x="40" y="340" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">samal real</text><rect x="150" y="328" width="150" height="16" rx="4" fill="#c2362b"/><text x="310" y="341" font-size="11.5" font-weight="600" fill="#c2362b" text-anchor="start">vaevu kiirem</text><text x="40" y="364" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">eraldi ridadel</text><rect x="150" y="352" width="270" height="16" rx="4" fill="#2e7d4f"/><text x="430" y="365" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="start">peaaegu kaks korda kiirem</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6423;0.6481;0.8058;0.8115;1"/><text x="40" y="330" font-size="12" font-weight="400" fill="#5b6578" text-anchor="start">Iga loendur on oma vahemälureal: tuumad ei pea üksteist ootama.</text></g>
+<rect x="24" y="392" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1298;0.1346;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Kaks lõime, kaks eri loendurit, üks vahemälurida</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim A suurendab loendurit L0 tuumal 0, lõim B loendurit L1 tuumal 1. Nad ei jaga ühtegi muutujat.</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kuid vahemälu töötab 64-baidiste ridadega ja mõlemad loendurid asuvad samal real. Mõlemal tuumal on reast koopia.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1346;0.1394;0.2644;0.2692;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Tuum 0 kirjutab: teise tuuma koopia muutub kehtetuks</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim A suurendab L0. Tuuma 0 rida läheb olekusse M (muudetud). Et tuum 1 ei loeks vana väärtust,</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">saadab riistvara teate ja tuuma 1 koopia märgitakse kehtetuks (I), kuigi L1 ei muutunud.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2692;0.274;0.4183;0.4231;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Tuum 1 tahab kirjutada: rida tuleb uuesti tuua</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Lõim B tahab suurendada L1, kuid tema rida on kehtetu. Tuum 1 küsib rea tuumalt 0. Rida kantakse üle,</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">tuum 1 saab oleku M ja tuuma 0 koopia muutub kehtetuks. Üks ülekanne võtab sama kaua kui kümned tavalised tehted.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4231;0.4279;0.6106;0.6154;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Rida põrkab tuumade vahel edasi-tagasi</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Iga kord, kui üks lõim kirjutab, kaotab teine oma koopia. Rida liigub pidevalt tuumade vahel ja mõlemad lõimed</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ootavad suurema osa ajast rea saabumist. See on vale jagamine: andmeid ei jagata, vahemälurida aga küll.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6154;0.6202;0.8029;0.8077;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Lahendus: iga loendur oma reale</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Loendurite vahele pannakse täitebaidid, nii et L0 ja L1 satuvad eri vahemäluridadele (joondamine 64 baidile).</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Nüüd on kummalgi tuumal oma rida olekus M. Ülekandeid ei ole ja mõlemad lõimed töötavad täiskiirusel.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="52s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8077;0.8125;1"/><text x="40" y="416" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/6</text><text x="112" y="416" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Tulemus</text><text x="40" y="438" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Samal real: lõimed takistavad üksteist ja lisatuumadest on vähe kasu. Eraldi ridadel: kiirus kasvab tuumade arvuga</text><text x="40" y="456" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">peaaegu lineaarselt. Sama nähtuse tõttu kasutab Windowsi tuum järjekorraga spinlukke.</text></g>
+<rect x="24" y="498" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="498" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="52s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="145.8" y="496" width="2" height="9" fill="#f4f6f9"/>
+<rect x="268.5" y="496" width="2" height="9" fill="#f4f6f9"/>
+<rect x="408.8" y="496" width="2" height="9" fill="#f4f6f9"/>
+<rect x="584.2" y="496" width="2" height="9" fill="#f4f6f9"/>
+<rect x="759.6" y="496" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="52" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Kaks lõime, kaks eri loendurit, üks vahemälurida</strong><span>Vahemälu ei liiguta üksikuid baite, vaid 64-baidiseid <strong>vahemäluridu</strong>. Kaheksa 8-baidist loendurit mahuvad täpselt ühele reale. Mõlemal tuumal on sellest reast koopia olekus <strong>S</strong> (Shared): mitu tuuma loevad sama rida.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Tuum 0 kirjutab: teise tuuma koopia muutub kehtetuks</strong><span>Kirjutamiseks peab tuumal olema rea ainuõigus. <strong>MESI</strong>-protokoll märgib kõik teised koopiad kehtetuks (<strong>I</strong>, Invalid) ja kirjutaja rida läheb olekusse <strong>M</strong> (Modified). Protokoll ei tea, et tuum 1 kasutab samalt realt teist muutujat: kehtetuks läheb kogu rida.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Tuum 1 tahab kirjutada: rida tuleb uuesti tuua</strong><span>Kehtetu rida tuleb uuesti tuua teiselt tuumalt. See võtab kümneid nanosekundeid, samal ajal kui L1-vahemälus olevat loendurit saaks suurendada umbes ühe nanosekundiga. Pärast ülekannet on olukord vastupidine: tuum 1 on omanik ja tuuma 0 koopia on kehtetu.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Rida põrkab tuumade vahel edasi-tagasi</strong><span><strong>Vale jagamine</strong> (false sharing): lõimed ei jaga ühtegi muutujat, kuid nende muutujad jagavad vahemälurida. Rida „põrkab“ tuumade vahel ja programm võib mitme tuumaga töötada vaevu kiiremini kui ühega. Programm on õige, ainult aeglane, seega on viga raske märgata.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Lahendus: iga loendur oma reale</strong><span><strong>Joondamine</strong>: iga lõime andmed pannakse eraldi vahemälureale, näiteks C++-s <code>alignas(64)</code> või täitebaitidega. Mälu kulub veidi rohkem (kaks rida ühe asemel), kuid tuumad ei sega enam üksteist.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Tulemus</strong><span>Sama mehhanism selgitab, miks tavaline spinlukk mitmekümne tuumaga halvasti töötab: kõik ootajad loevad sama rida. <strong>Järjekorraga spinlukus</strong> ootab iga tuum oma muutujal, seega rida ei põrka.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>Vahemälurida</strong> (cache line)</td><td>Väikseim ühik, mida vahemälu liigutab. Tänapäeva x86- ja ARM-protsessorites tavaliselt 64 baiti.</td></tr>
+<tr><td><strong>Vahemälu koherentsus</strong></td><td>Nõue, et kõik tuumad näeksid sama muutuja kohta sama väärtust, kuigi igal tuumal on oma vahemälu.</td></tr>
+<tr><td><strong>MESI</strong></td><td>Riistvaraprotokoll, mis peab iga vahemälurea kohta arvet nelja oleku abil.</td></tr>
+<tr><td><strong>M</strong> (Modified)</td><td>Rida on muudetud ja ainult selle tuuma vahemälus. Põhimälus on vana väärtus.</td></tr>
+<tr><td><strong>E</strong> (Exclusive)</td><td>Rida on ainult selle tuuma vahemälus ja muutmata. Kirjutada saab kohe.</td></tr>
+<tr><td><strong>S</strong> (Shared)</td><td>Rida on mitme tuuma vahemälus. Lugeda võivad kõik, kirjutamiseks tuleb teised koopiad kehtetuks tunnistada.</td></tr>
+<tr><td><strong>I</strong> (Invalid)</td><td>Koopia on aegunud. Enne kasutamist tuleb rida uuesti tuua.</td></tr>
+<tr><td><strong>Vale jagamine</strong> (false sharing)</td><td>Eri lõimede eri muutujad asuvad samal vahemälureal ja rida liigub kirjutamisel pidevalt tuumade vahel.</td></tr>
+<tr><td><strong>Tõeline jagamine</strong></td><td>Mitu lõime kirjutavad päriselt sama muutujat. See vajab lukku või aatomtehet (ptk 8).</td></tr>
+<tr><td><strong>Joondamine</strong> (alignment)</td><td>Andmete paigutamine nii, et need algaksid vahemälurea piirilt ja täidaksid terve rea.</td></tr>
+<tr><td><strong>Spinlukk, järjekorraga spinlukk</strong></td><td>Lukk, mida oodatakse tsüklis. Järjekorraga variandis ootab iga tuum oma muutujal, et luku rida ei põrkaks.</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Proovi ise: mõõda vale jagamist</h2>
+<p>Kleebi PowerShelli. Programm käivitab kaks lõime, millest kumbki suurendab oma loendurit 200 miljonit korda. Esimesel korral on loendurid massiivis kõrvuti, teisel korral 128 baiti lahus.</p>
+<pre>Add-Type -TypeDefinition @'
+using System; using System.Diagnostics; using System.Threading;
+public static class ValeJagamine {
+    static long[] a;
+    static void Too(int i) { for (long n = 0; n &lt; 200000000; n++) a[i]++; }
+    public static long Moota(int vahe) {
+        a = new long[64];
+        var sw = Stopwatch.StartNew();
+        var t1 = new Thread(() =&gt; Too(0));
+        var t2 = new Thread(() =&gt; Too(vahe));
+        t1.Start(); t2.Start(); t1.Join(); t2.Join();
+        return sw.ElapsedMilliseconds;
+    }
+}
+'@
+"Samal real  (indeksid 0 ja 1):  $([ValeJagamine]::Moota(1)) ms"
+"Eri ridadel (indeksid 0 ja 16): $([ValeJagamine]::Moota(16)) ms"</pre>
+<ul>
+<li><code>Add-Type -TypeDefinition @'…'@</code> kompileerib tekstina antud C#-koodi ja teeb klassi PowerShellis kasutatavaks.</li>
+<li><code>static long[] a</code> on loendurite massiiv. Iga <code>long</code> on 8 baiti, seega kaheksa kõrvuti elementi mahuvad ühele vahemälureale.</li>
+<li><code>Too(int i)</code> suurendab elementi <code>a[i]</code> 200 miljonit korda.</li>
+<li><code>Moota(int vahe)</code> käivitab kaks lõime: üks töötab elemendiga 0, teine elemendiga <code>vahe</code>. <code>Stopwatch</code> mõõdab aega, <code>Join</code> ootab, kuni lõim lõpetab.</li>
+<li>Eelviimane rida: <code>vahe = 1</code>, loendurid on kõrvuti samal real.</li>
+<li>Viimane rida: <code>vahe = 16</code>, loendurite vahel on 16 × 8 = 128 baiti ehk need on kindlasti eri ridadel.</li>
+</ul>
+<p>Teine tulemus peaks olema mitu korda väiksem, kuigi mõlemal juhul tehakse täpselt sama palju tööd. Täpne vahe sõltub protsessorist. Kui esimesel käivitusel ilmub viga „type already exists“, ava uus PowerShelli aken.</p>
+<h3>Vahemälu suurused sinu protsessoris</h3>
+<pre>Get-CimInstance Win32_CacheMemory |
+  Select-Object Purpose, @{n='Suurus KB'; e={$_.MaxCacheSize}}, Associativity</pre>
+<p>Näitab L1-, L2- ja L3-vahemälu suurust. Rea pikkust see käsk ei näita; selle näitab Sysinternalsi tööriist <code>Coreinfo</code> (<code>coreinfo -l</code>).</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/10-planeerimine-mitmel-protsessoril.md">peatükk 10, Planeerimine mitmel protsessoril</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=52,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 14}, {"t0": 14, "t1": 22}, {"t0": 22, "t1": 32}, {"t0": 32, "t1": 42}, {"t0": 42, "t1": 52}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

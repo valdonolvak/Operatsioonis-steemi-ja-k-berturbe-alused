@@ -59,6 +59,10 @@ Lisaks võib kiibis olla GPU ja NPU, mida OS haldab eraldi planeerijatega (GPU-p
 
 Joonis: sülearvutis valib planeerija tuuma tüübi (P või E), serveris NUMA-sõlme – lõim ja tema mälu peaksid asuma samas sõlmes.
 
+![Animatsioon: kuhu planeerija lõime paneb](../animatsioonid/planeerimine-mitmel-tuumal.svg)
+
+**Animatsioon:** [Kuhu planeerija lõime paneb: P-tuumad, E-tuumad ja afiinsus](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/planeerimine-mitmel-tuumal.html) näitab samm-sammult, kuidas Windows valib lõimele tuuma, miks ärganud lõim läheb tagasi samale tuumale ja millal tuumad pargitakse. Lehel on mõistete tabel ja PowerShelli harjutused rida-realt selgitustega. Kui link ei avane, ava fail [`animatsioonid/planeerimine-mitmel-tuumal.html`](../animatsioonid/planeerimine-mitmel-tuumal.html).
+
 ### 10.3 Sümmeetriline multitöötlus
 
 Windows on SMP-süsteem: tuum, draiverid ja rakendused võivad töötada igal protsessoril. Sellel on kaks tagajärge.
@@ -93,6 +97,10 @@ Seetõttu kasutab tuum **spinlukke** (ptk 8.4): protsessor ootab aktiivselt tsü
 **Näide.** Programm loeb kaheksas lõimes sõnu ja iga lõim suurendab oma loendurit massiivis `loendur[0..7]`. Kaheksa 8-baidist loendurit mahuvad täpselt ühte 64-baidisesse ritta. Kuigi lõimed ei jaga andmeid, töötab programm 8 tuumaga vaid veidi kiiremini kui ühega. Lahendus on **joondamine**: iga loendur pannakse eraldi vahemäluritta (C++-s `alignas(64)`, C#-s `[StructLayout]` või lihtsalt täitebaidid vahele). Pärast seda kasvab kiirus peaaegu lineaarselt.
 
 > 🖱️ **Proovi ise:** [vale jagamise demo](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/10-mitu-protsessorit.html#vale)
+
+![Animatsioon: vale jagamine ja MESI](../animatsioonid/vale-jagamine.svg)
+
+**Animatsioon:** [Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/vale-jagamine.html) näitab MESI olekute abil, kuidas vahemälurida tuumade vahel põrkab ja kuidas joondamine selle lahendab. Lehel on mõistete tabel ja mõõtmisharjutus, mille kood on rida-realt selgitatud. Kui link ei avane, ava fail [`animatsioonid/vale-jagamine.html`](../animatsioonid/vale-jagamine.html).
 
 ### 10.5 Planeerimine mitmel protsessoril
 
