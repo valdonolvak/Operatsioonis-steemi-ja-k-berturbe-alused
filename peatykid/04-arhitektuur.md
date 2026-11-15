@@ -55,6 +55,12 @@ Kasutajarežiimi koodil on oma virtuaalne aadressiruum ja töötab see protsessi
 
 Tuumarežiimis jagavad kõik komponendid ühte aadressiruumi. Eelis on kiirus (pole režiimivahetust komponentide vahel), puudus on see, et vigane või pahatahtlik draiver pääseb ligi kogu tuumamälule. Seetõttu nõuab 64-bitine Windows, et tuumadraiverid oleksid Microsofti poolt allkirjastatud, ja **kernel patch protection** (PatchGuard) takistab tuuma muutmist jooksvalt.
 
+![Animatsioon: kasutajarežiim ja tuumarežiim, süsteemikutse teekond](../animatsioonid/kasutaja-ja-tuumareziim.svg)
+
+**Animatsioon:** [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) näitab kaheksa sammuga, kuidas Notepadi palve „ava fail“ liigub Windows API ja teegi ntdll.dll kaudu süsteemikutsena tuuma, läbib draiverid ja tuleb pidemena tagasi. Kaks viimast sammu näitavad, miks viga rakenduses lõpetab ainult ühe protsessi, aga viga draiveris seiskab kogu süsteemi. Lehel on lahti seletatud ka mõisted ja praktilised käsud.
+
+**Režiimivahetus ei ole kontekstivahetus.** Süsteemikutse ajal jätkab sama lõim: muutub ainult protsessori õiguste tase ja kasutatav pinu. Kontekstivahetuse korral hakkab protsessor täitma teist lõime (ptk 9). Protsessor läheb tuumarežiimi kolmel põhjusel: **süsteemikutse** (rakendus palub teenust), **katkestus** (seade annab märku, nt klahvivajutus või taimer) ja **erind** (käsk ei õnnestunud, nt leheviga).
+
 ### 4.5 Käivitava süsteemi teenused
 
 Käivitav süsteem (Windows Executive) sisaldab haldureid:
