@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib</h1>
+<p class="lead">Animatsioon näitab, kuidas Notepadi palve „ava fail“ liigub kasutajarežiimist tuumarežiimi ja tagasi ning miks viga rakenduses on väike mure, aga viga draiveris seiskab kogu arvuti.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 584" role="img" aria-label="Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="584" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib</text>
+<rect x="24" y="48" width="912" height="186" rx="8" fill="#e7eff9" stroke="#2563a8" stroke-width="1.25"/>
+<text x="40" y="68" font-size="10.5" font-weight="600" fill="#2563a8" text-anchor="start">KASUTAJAREŽIIM (ring 3): piiratud õigused</text>
+<rect x="24" y="262" width="912" height="126" rx="8" fill="#fbeceb" stroke="#c2362b" stroke-width="1.25"/>
+<text x="40" y="282" font-size="10.5" font-weight="600" fill="#c2362b" text-anchor="start">TUUMAREŽIIM (ring 0): täielik ligipääs mälule ja riistvarale</text>
+<line x1="24" y1="248" x2="936" y2="248" stroke="#5b6578" stroke-width="2" stroke-dasharray="7 5"/>
+<rect x="556" y="239" width="364" height="18" fill="#f4f6f9"/>
+<text x="738" y="252.5" font-size="11" font-weight="600" fill="#5b6578" text-anchor="middle">režiimide piir: üle saab ainult süsteemikutsega</text>
+<rect x="24" y="400" width="912" height="44" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="40" y="427" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">RIISTVARA</text>
+<text x="834" y="427" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle">ketas</text>
+<text x="300" y="427" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="middle">protsessor</text>
+<text x="478" y="427" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="middle">mälu</text>
+<text x="656" y="427" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="middle">võrgukaart</text>
+<rect x="40" y="78" width="430" height="144" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="54" y="97" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Protsess notepad.exe</text>
+<rect x="54" y="106" width="402" height="30" rx="6" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="66" y="126" font-size="11.5" font-weight="500" fill="#1d2433" text-anchor="start">Notepadi kood: „ava fail markmed.txt“</text>
+<rect x="54" y="142" width="402" height="30" rx="6" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="66" y="162" font-size="11.5" font-weight="500" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kernelbase.dll: CreateFileW()  Windows API</text>
+<rect x="54" y="178" width="402" height="30" rx="6" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="66" y="198" font-size="11.5" font-weight="500" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">ntdll.dll: NtCreateFile()  →  syscall</text>
+<rect x="500" y="106" width="128" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="564" y="132" font-size="12" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">chrome.exe</text>
+<text x="564" y="151" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="middle">oma mäluruum</text>
+<rect x="646" y="106" width="128" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="710" y="132" font-size="12" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">explorer.exe</text>
+<text x="710" y="151" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="middle">oma mäluruum</text>
+<rect x="792" y="106" width="128" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="856" y="132" font-size="12" font-weight="600" fill="#1d2433" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">svchost.exe</text>
+<text x="856" y="151" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="middle">oma mäluruum</text>
+<text x="500" y="196" font-size="11.5" font-weight="400" fill="#5b6578" text-anchor="start">Iga protsess on teistest eraldatud ja näeb ainult oma mälu.</text>
+<rect x="40" y="292" width="164" height="84" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="52" y="314" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Süsteemikutsete jaotur</text>
+<text x="52" y="336" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">leiab tabelist õige</text>
+<text x="52" y="352" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">tuumafunktsiooni</text>
+<rect x="218" y="292" width="164" height="84" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="230" y="314" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">I/O-haldur</text>
+<text x="230" y="336" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">kontrollib õigusi,</text>
+<text x="230" y="352" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">koostab päringu (IRP)</text>
+<rect x="396" y="292" width="164" height="84" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="408" y="314" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">ntfs.sys</text>
+<text x="408" y="336" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">failisüsteemi draiver:</text>
+<text x="408" y="352" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">leiab faili asukoha</text>
+<rect x="574" y="292" width="164" height="84" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="586" y="314" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Kettadraiver</text>
+<text x="586" y="336" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">saadab lugemiskäsu</text>
+<text x="586" y="352" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">kontrollerile</text>
+<rect x="752" y="292" width="164" height="84" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="764" y="314" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">HAL</text>
+<text x="764" y="336" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">peidab riistvara</text>
+<text x="764" y="352" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">erinevused</text>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="1;1;0;0;1;1;0;0" keyTimes="0;0.3448;0.3493;0.6657;0.6701;0.8463;0.8507;1"/><rect x="688" y="14" width="248" height="26" rx="13" fill="#2563a8"/><text x="812" y="31.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">Protsessor: kasutajarežiim (ring 3)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1" keyTimes="0;0.3493;0.3537;0.6612;0.6657;0.8507;0.8552;1"/><rect x="688" y="14" width="248" height="26" rx="13" fill="#c2362b"/><text x="812" y="31.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">Protsessor: tuumarežiim (ring 0)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0149;0.0194;0.0493;0.0537;1"/><rect x="24" y="48" width="912" height="186" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0567;0.0612;0.094;0.0985;1"/><rect x="24" y="262" width="912" height="126" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1045;0.109;0.1373;0.1418;0.7015;0.706;0.7269;0.7313;1"/><rect x="54" y="106" width="402" height="30" rx="6" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1418;0.1463;0.2194;0.2239;1"/><rect x="54" y="142" width="402" height="30" rx="6" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2328;0.2373;0.3388;0.3433;1"/><rect x="54" y="178" width="402" height="30" rx="6" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2612;0.2657;0.3388;0.3433;1"/><text x="444" y="198" font-size="10.5" font-weight="600" fill="#2563a8" text-anchor="end">kutse nr → register</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3522;0.3567;0.4433;0.4478;0.6358;0.6403;0.6582;0.6627;1"/><rect x="40" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4552;0.4597;0.4836;0.4881;1"/><rect x="218" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4851;0.4896;0.5134;0.5179;1"/><rect x="396" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5149;0.5194;0.5433;0.5478;1"/><rect x="574" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5448;0.5493;0.5657;0.5701;1"/><rect x="752" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5672;0.5716;0.6075;0.6119;1"/><rect x="752" y="400" width="184" height="44" rx="8" fill="#b26a00" fill-opacity="0.13" stroke="#b26a00" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.3373;0.3418;0.3627;0.3672;0.6567;0.6612;0.6761;0.6806;1"/><line x1="24" y1="248" x2="936" y2="248" stroke="#b26a00" stroke-width="4"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1104;0.1122;0.3493;0.353;1"/><g><animateTransform attributeName="transform" type="translate" dur="67s" repeatCount="indefinite" values="430,121;430,121;430,157;430,157;430,193;430,193;122,286;122,286" keyTimes="0;0.1104;0.1403;0.2179;0.2328;0.3284;0.3493;1"/><circle r="8" fill="#2563a8" stroke="#fff" stroke-width="2"/></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3493;0.351;0.591;0.5948;1"/><g><animateTransform attributeName="transform" type="translate" dur="67s" repeatCount="indefinite" values="122,286;122,286;122,364;122,364;300,364;478,364;656,364;834,364;834,404;834,404;834,404" keyTimes="0;0.3493;0.3642;0.4418;0.4552;0.4851;0.5149;0.5448;0.5672;0.591;1"/><circle r="8" fill="#c2362b" stroke="#fff" stroke-width="2"/></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.606;0.6078;0.7254;0.7291;1"/><g><animateTransform attributeName="transform" type="translate" dur="67s" repeatCount="indefinite" values="834,404;834,404;834,364;122,364;122,364;390,193;390,157;390,121;390,121;390,121" keyTimes="0;0.606;0.6179;0.6358;0.6478;0.6657;0.6806;0.6985;0.7254;1"/><rect x="-43.0" y="-10.0" width="86" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">pide 0x1A4</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7537;0.7582;0.8463;0.8507;1"/><rect x="40" y="78" width="430" height="144" rx="8" fill="#fbeceb" fill-opacity="0.9" stroke="#c2362b" stroke-width="2.5"/><text x="255" y="144" font-size="14" font-weight="600" fill="#c2362b" text-anchor="middle">notepad.exe lakkas töötamast</text><text x="255" y="166" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="middle">tuum lõpetas ainult selle protsessi</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7687;0.7731;0.8463;0.8507;1"/><rect x="500" y="106" width="128" height="62" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7687;0.7731;0.8463;0.8507;1"/><rect x="646" y="106" width="128" height="62" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7687;0.7731;0.8463;0.8507;1"/><rect x="792" y="106" width="128" height="62" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7687;0.7731;0.8463;0.8507;1"/><text x="920" y="68" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="end">teised protsessid töötavad edasi</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8582;0.8627;1"/><rect x="574" y="292" width="164" height="84" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8657;0.8701;1"/><text x="920" y="282" font-size="11" font-weight="600" fill="#c2362b" text-anchor="end">vigane draiver kirjutab valesse mällu</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8731;0.8749;0.8896;0.8985;1"/><g><animateTransform attributeName="transform" type="translate" dur="67s" repeatCount="indefinite" values="656,300;656,300;162,300;162,300" keyTimes="0;0.8731;0.8896;1"/><circle r="6" fill="#c2362b"/></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.9015;0.906;1"/><rect x="24" y="48" width="912" height="186" rx="8" fill="#1f5fae" fill-opacity="0.96"/><text x="480" y="128" font-size="20" font-weight="600" fill="#fff" text-anchor="middle">Sinine ekraan: kogu süsteem seiskub</text><text x="480" y="156" font-size="12.5" font-weight="400" fill="#fff" text-anchor="middle">kõik protsessid peatuvad, salvestamata töö läheb kaotsi</text><text x="480" y="180" font-size="12" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">DRIVER_IRQL_NOT_LESS_OR_EQUAL</text></g>
+<rect x="24" y="460" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1007;0.1045;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Kaks režiimi: piiratud ja täielike õigustega</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Protsessor töötab igal hetkel ühes kahest režiimist. Kasutajarežiimis (ring 3) töötavad rakendused: nad näevad ainult</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">oma mälu ega pääse riistvarale ligi. Tuumarežiimis (ring 0) töötavad tuum ja draiverid: neile on kõik lubatud.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1045;0.1082;0.2052;0.209;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Rakendus kutsub Windows API funktsiooni</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Notepad tahab avada faili, kuid kettale ta ise ligi ei pääse. Ta kutsub Windows API funktsiooni CreateFileW,</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">mis asub teegis kernelbase.dll. See on tavaline funktsioonikutse samas protsessis, endiselt kasutajarežiimis.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.209;0.2127;0.3097;0.3134;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">ntdll.dll valmistab ette süsteemikutse</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kernelbase.dll kutsub teegi ntdll.dll funktsiooni NtCreateFile. See on viimane peatus kasutajarežiimis: funktsioon</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">paneb protsessori registrisse süsteemikutse numbri ja täidab protsessori käsu syscall.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3134;0.3172;0.4291;0.4328;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Režiimivahetus: ring 3 → ring 0</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Käsk syscall lülitab protsessori tuumarežiimi ja hüppab kindlasse kohta tuumas. Rakendus ei saa valida, kuhu hüpata.</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Süsteemikutsete jaotur leiab numbri järgi tabelist õige tuumafunktsiooni. Lõim on sama, vahetus ainult režiim ja pinu.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4328;0.4366;0.5933;0.597;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Tuum teeb töö ära</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">I/O-haldur kontrollib, kas kasutajal on õigus faili avada, ja koostab päringu (IRP). Päring liigub läbi draiverite virna:</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ntfs.sys leiab faili asukoha kettal, kettadraiver saadab käsu kontrollerile, HAL peidab riistvara erinevused.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.597;0.6007;0.7276;0.7313;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Tagasi kasutajarežiimi</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Tuum loob failiobjekti ja kirjutab protsessi pidemetabelisse uue pideme. Protsessor lülitub tagasi ring 3-le</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ja Notepad saab vastuseks pideme numbri (nt 0x1A4). Edaspidi kasutab ta faili lugemiseks seda pidet.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7313;0.7351;0.847;0.8507;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 7/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Viga kasutajarežiimis: sureb ainult üks protsess</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kui Notepad teeb vea (nt loeb mälu, mis ei ole tema oma), peatab protsessor käsu ja tuum lõpetab selle protsessi.</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Teised protsessid ja tuum töötavad edasi, sest igal protsessil on oma eraldatud mäluruum.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="67s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8507;0.8545;1"/><text x="40" y="484" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 8/8</text><text x="112" y="484" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Viga tuumarežiimis: seiskub kogu süsteem</text><text x="40" y="506" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Tuumarežiimis jagavad tuum ja kõik draiverid ühte mäluruumi. Kui vigane draiver kirjutab valesse kohta, ei saa tuum</text><text x="40" y="524" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">enam oma andmeid usaldada ja peatab süsteemi: sinine ekraan. Seepärast peavad draiverid olema allkirjastatud.</text></g>
+<rect x="24" y="566" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="566" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="67s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="118.3" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="213.6" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="308.9" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="417.7" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="567.5" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="690.0" y="564" width="2" height="9" fill="#f4f6f9"/>
+<rect x="798.9" y="564" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="67" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Kaks režiimi: piiratud ja täielike õigustega</strong><span>Protsessoril on riistvaraline lüliti, mis määrab, kui palju töötav kood teha tohib. <strong>Kasutajarežiimis</strong> (ring 3) töötavad kõik rakendused ja enamik teenuseid: nad näevad ainult oma protsessi mälu ega saa riistvaraga otse suhelda. <strong>Tuumarežiimis</strong> (ring 0) töötavad Windowsi tuum ja draiverid: neil on ligipääs kogu mälule ja riistvarale.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Rakendus kutsub Windows API funktsiooni</strong><span>Notepad tahab avada faili <code>markmed.txt</code>. Kettalt lugeda ta ise ei saa, seega palub ta seda operatsioonisüsteemilt. Ta kutsub Windows API funktsiooni <code>CreateFileW</code> teegist <code>kernelbase.dll</code>. Teek on laaditud Notepadi enda mäluruumi ja töötab endiselt kasutajarežiimis.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>ntdll.dll valmistab ette süsteemikutse</strong><span><code>kernelbase.dll</code> kutsub edasi teegi <code>ntdll.dll</code> funktsiooni <code>NtCreateFile</code>. See väike funktsioon teeb ainult kaks asja: paneb protsessori registrisse <strong>süsteemikutse numbri</strong> (mis ütleb, millist tuuma teenust soovitakse) ja täidab protsessori käsu <code>syscall</code>.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Režiimivahetus: ring 3 → ring 0</strong><span>Käsk <code>syscall</code> lülitab protsessori tuumarežiimi ja hüppab <em>ühte kindlasse kohta</em> tuumas, mille Windows on käivitumisel protsessorile ette andnud. Rakendus ei saa hüppe sihtkohta valida. <strong>Süsteemikutsete jaotur</strong> salvestab lõime oleku, võtab kasutusele lõime tuumapinu ja leiab kutse numbri järgi tabelist õige funktsiooni. Lõim jääb samaks: see on režiimivahetus, mitte kontekstivahetus.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Tuum teeb töö ära</strong><span><strong>I/O-haldur</strong> laseb turbemonitoril kontrollida, kas lõime pääsuluba (token) lubab seda faili avada. Seejärel koostab ta päringupaketi (IRP) ja saadab selle draiverite virna: failisüsteemi draiver <code>ntfs.sys</code> leiab, kus fail kettal asub, kettadraiver saadab lugemiskäsu kontrollerile ja HAL peidab emaplaatide erinevused.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Tagasi kasutajarežiimi</strong><span>Tuum loob failiobjekti ja lisab protsessi pidemetabelisse kirje. Protsessor lülitub käsuga <code>sysret</code> tagasi kasutajarežiimi ja <code>CreateFileW</code> tagastab Notepadile <strong>pideme</strong> (handle), näiteks 0x1A4. Pide on ainult number: tuumaobjekt ise jääb tuuma mällu, kuhu Notepad ligi ei pääse.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Viga kasutajarežiimis: sureb ainult üks protsess</strong><span>Kui rakendus üritab lugeda mälu, mis ei kuulu talle, tekitab protsessor erindi. Tuum lõpetab selle protsessi ja Windows näitab teadet, et programm lakkas töötamast. Teised protsessid ei märka midagi, sest igal protsessil on oma virtuaalne aadressiruum (ptk 12).</span></span></button></li>
+<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Viga tuumarežiimis: seiskub kogu süsteem</strong><span>Tuumarežiimis ei ole koodi vahel kaitset: tuum ja kõik draiverid jagavad ühte mäluruumi. Kui vigane draiver kirjutab valele aadressile, võib ta rikkuda tuuma andmeid. Windows peatab siis teadlikult kogu süsteemi (<em>bug check</em>, sinine ekraan), et kahju ei leviks kettale. Seepärast nõuab 64-bitine Windows allkirjastatud draivereid ja pakub lisakaitset (mälu terviklus, VBS).</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>Protsess</strong></td><td>Käivitatud programm koos oma mäluruumi, avatud failide ja õigustega. Protsess on „konteiner“, mis ise koodi ei täida.</td></tr>
+<tr><td><strong>Lõim</strong> (thread)</td><td>Protsessi sees olev täitmisjärg: see, mida protsessor tegelikult käivitab. Igal lõimel on kaks pinu: üks kasutajarežiimi ja teine tuumarežiimi jaoks.</td></tr>
+<tr><td><strong>Kasutajarežiim</strong> (user mode, ring 3)</td><td>Protsessori piiratud õigustega olek. Kood näeb ainult oma protsessi mälu ega saa täita riistvara juhtivaid käske. Siin töötavad rakendused, teenused ja süsteemiteegid (DLL-id).</td></tr>
+<tr><td><strong>Tuumarežiim</strong> (kernel mode, ring 0)</td><td>Protsessori täielike õigustega olek. Kood pääseb ligi kogu mälule ja riistvarale. Siin töötavad tuum (<code>ntoskrnl.exe</code>), HAL ja draiverid.</td></tr>
+<tr><td><strong>Ringid</strong></td><td>x86-protsessori neli õiguste taset (0–3). Windows ja Linux kasutavad ainult kahte: ring 0 ja ring 3. Protsessor ise kontrollib iga käsu juures, kas praegune ring seda lubab.</td></tr>
+<tr><td><strong>Windows API</strong></td><td>Dokumenteeritud funktsioonid, mida rakendused kasutavad (nt <code>CreateFileW</code>, <code>ReadFile</code>). Need asuvad teekides <code>kernel32.dll</code>, <code>kernelbase.dll</code>, <code>user32.dll</code> jt. Nimele vaatamata töötab <code>kernel32.dll</code> kasutajarežiimis.</td></tr>
+<tr><td><strong>ntdll.dll</strong></td><td>Teek, mis on laaditud igasse protsessi ja sisaldab süsteemikutsete „uksi“: lühikesi funktsioone, mis täidavad käsu <code>syscall</code>.</td></tr>
+<tr><td><strong>Süsteemikutse</strong> (system call)</td><td>Ainus viis, kuidas kasutajarežiimi kood saab tuumalt teenust paluda. Rakendus annab kutse numbri ja argumendid, tuum otsustab, kas ja kuidas palve täita.</td></tr>
+<tr><td><strong>Süsteemikutsete jaotur</strong></td><td>Tuuma sissepääs, kuhu <code>syscall</code> alati hüppab. Leiab kutse numbri järgi tabelist (SSDT) õige tuumafunktsiooni ja kontrollib argumente.</td></tr>
+<tr><td><strong>Käivitav süsteem</strong> (executive)</td><td>Tuuma ülemine kiht, mis pakub teenuseid: I/O-haldur, mäluhaldur, protsessihaldur, objektihaldur, turbemonitor.</td></tr>
+<tr><td><strong>Draiver</strong></td><td>Tuumarežiimis töötav moodul (<code>.sys</code>), mis oskab suhelda kindla seadme või failisüsteemiga.</td></tr>
+<tr><td><strong>IRP</strong></td><td>I/O-päringu pakett: andmestruktuur, millega I/O-haldur annab palve draiverilt draiverile edasi.</td></tr>
+<tr><td><strong>HAL</strong></td><td>Riistvara abstraktsioonikiht: peidab emaplaatide ja kiibistike erinevused, et tuum ja draiverid ei peaks iga riistvara jaoks eraldi koodi sisaldama.</td></tr>
+<tr><td><strong>Pide</strong> (handle)</td><td>Number, mille tuum annab protsessile avatud objekti (faili, protsessi, registrivõtme) kasutamiseks. Objekt ise jääb tuuma mällu.</td></tr>
+<tr><td><strong>Sinine ekraan</strong> (bug check)</td><td>Tuuma teadlik otsus süsteem peatada, kui tuumarežiimis on tekkinud viga, mille järel ei saa enam andmete õigsust usaldada.</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Režiimivahetus ei ole kontekstivahetus</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>Režiimivahetus</th><th>Kontekstivahetus</th></tr>
+<tr><td>Mis muutub</td><td>sama lõim jätkab, muutub ainult protsessori õiguste tase ja kasutatav pinu</td><td>protsessor hakkab täitma teist lõime (võib-olla teisest protsessist)</td></tr>
+<tr><td>Millal toimub</td><td>iga süsteemikutse, katkestuse ja erindi korral</td><td>kui ajakvant saab otsa, lõim jääb ootele või kõrgema prioriteediga lõim saab valmis</td></tr>
+<tr><td>Kui kallis</td><td>odav: suurusjärgus sada nanosekundit</td><td>kallim: tuleb salvestada ja taastada kõik registrid, sageli vahetada mäluruum ja tühjendada TLB</td></tr>
+</table></div>
+<p>Animatsioonis teeb Notepadi lõim kaks režiimivahetust (tuuma ja tagasi), kuid mitte ühtegi kontekstivahetust: sama lõim töötab algusest lõpuni. Kui ketas vastaks aeglaselt, paneks tuum lõime ootele ja annaks protsessori teisele lõimele. See oleks juba kontekstivahetus (ptk 9).</p>
+<h2>Kolm põhjust, miks protsessor tuumarežiimi läheb</h2>
+<ul>
+<li><strong>Süsteemikutse:</strong> rakendus palub ise teenust (fail, võrk, mälu, uus protsess).</li>
+<li><strong>Katkestus</strong> (interrupt): seade annab märku, et tal on midagi öelda (klahvivajutus, võrgupakett saabus, taimer tiksus). Protsessor jätab pooleli selle, mida ta parajasti tegi.</li>
+<li><strong>Erind</strong> (exception): käsk ei õnnestunud, näiteks leheviga või nulliga jagamine. Tuum otsustab, kas olukorda saab parandada (leht loetakse kettalt) või tuleb protsess lõpetada.</li>
+</ul>
+<h2>Miks selline jaotus üldse olemas on</h2>
+<ul>
+<li><strong>Töökindlus:</strong> vigane rakendus ei saa rikkuda teisi rakendusi ega operatsioonisüsteemi.</li>
+<li><strong>Turvalisus:</strong> rakendus ei saa lugeda teiste protsesside mälu (nt paroole) ega mööda minna failiõigustest, sest kettale pääseb ainult tuuma kaudu ja tuum kontrollib õigusi.</li>
+<li><strong>Õiglane jagamine:</strong> ükski rakendus ei saa protsessorit ega mälu endale haarata, sest taimerit ja mälu jagab tuum.</li>
+</ul>
+<p>Hind on jõudlus: iga süsteemikutse nõuab kahte režiimivahetust. Seepärast loevad programmid faile suurte plokkidena, mitte baithaaval.</p>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<p>Ava Notepad ja seejärel PowerShell.</p>
+<h3>1. Kui palju aega on protsess kummaski režiimis veetnud</h3>
+<pre>Get-Process notepad |
+  Select-Object Name, Id, UserProcessorTime, PrivilegedProcessorTime, HandleCount</pre>
+<ul>
+<li><strong>1. rida:</strong> leia töötav protsess nimega notepad.</li>
+<li><strong>2. rida:</strong> näita nime, protsessi ID-d, kasutajarežiimis kulutatud protsessoriaega (<code>UserProcessorTime</code>), tuumarežiimis kulutatud aega (<code>PrivilegedProcessorTime</code>) ja avatud pidemete arvu.</li>
+</ul>
+<p>Ava Notepadis suur fail või salvesta midagi ja käivita käsk uuesti. Tuumarežiimi aeg ja pidemete arv kasvavad, sest faili avamine ja lugemine on süsteemikutsed.</p>
+<h3>2. Kogu arvuti jaotus reaalajas</h3>
+<pre>Get-Counter '\Processor(_Total)\% User Time', '\Processor(_Total)\% Privileged Time' -SampleInterval 2 -MaxSamples 5</pre>
+<ul>
+<li><code>Get-Counter</code> loeb jõudlusloendureid (samu, mida näitab Performance Monitor).</li>
+<li><code>% User Time</code> on protsessoriaja osa kasutajarežiimis, <code>% Privileged Time</code> tuumarežiimis.</li>
+<li><code>-SampleInterval 2 -MaxSamples 5</code> võtab viis mõõtmist kahesekundilise vahega.</li>
+</ul>
+<p>Kopeeri samal ajal suurt faili: tuumarežiimi osa kasvab, sest töö teevad failisüsteemi ja ketta draiverid. Arvutusmahuka programmi (nt video kodeerimine) ajal kasvab kasutajarežiimi osa.</p>
+<h3>3. Tegumihalduris</h3>
+<p>Ava Tegumihaldur → Jõudlus → Protsessor, tee graafikul paremklõps ja vali „Kuva tuuma ajad“ (Show kernel times). Tumedam joon näitab tuumarežiimis kulutatud aega.</p>
+<h3>4. Millised draiverid töötavad tuumarežiimis</h3>
+<pre>driverquery /v /fo csv | ConvertFrom-Csv |
+  Where-Object State -eq 'Running' |
+  Select-Object 'Module Name', 'Display Name', 'Path' -First 15</pre>
+<ul>
+<li><strong>1. rida:</strong> <code>driverquery</code> loetleb draiverid; <code>/fo csv</code> annab väljundi CSV-na, mille <code>ConvertFrom-Csv</code> muudab PowerShelli objektideks.</li>
+<li><strong>2. rida:</strong> jäta alles töötavad draiverid.</li>
+<li><strong>3. rida:</strong> näita 15 esimese nime, kirjeldust ja faili asukohta.</li>
+</ul>
+<p>Iga rida on kood, mis töötab täielike õigustega. Viga ükskõik millises neist võib lõppeda sinise ekraaniga.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/04-arhitektuur.md">peatükk 4, Windowsi arhitektuur</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=67,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 14}, {"t0": 14, "t1": 21}, {"t0": 21, "t1": 29}, {"t0": 29, "t1": 40}, {"t0": 40, "t1": 49}, {"t0": 49, "t1": 57}, {"t0": 57, "t1": 67}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -61,6 +61,7 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-failid mängivad peatükkides automaatselt; juhtnuppudega lehtedel saab animatsiooni peatada, liikuda sammhaaval ja muuta kiirust.
 
 - [Arvuti alglaadimine toitenupust töölauani](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/alglaadimine.html) · peatükk 4.12
+- [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) · peatükk 4.4
 - [Virtuaalmälu: aadressi tõlkimine ja leheviga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/maluhaldus.html) · peatükk 12.3
 - [Paketi teekond: mis juhtub, kui avad veebilehe](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paketi-teekond.html) · peatükk 17
 - [Null-usaldus: sama kasutaja, neli erinevat otsust](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/null-usaldus.html) · peatükk 22.2
