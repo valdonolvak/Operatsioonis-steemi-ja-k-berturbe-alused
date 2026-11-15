@@ -34,6 +34,10 @@ Windowsi null-usalduse ehituskivid: TPM ja Pluton (seadme identiteet), Secure Bo
 
 Joonis: sama kasutaja võib saada eri tulemuse: kooli hallatud sülearvutist täieliku ligipääsu, kodusest tahvelarvutist ainult veebiversiooni ja tundmatust riigist vana seadmega keelu.
 
+![Animatsioon: null-usaldus, sama kasutaja ja neli otsust](../animatsioonid/null-usaldus.svg)
+
+**Animatsioon:** [Null-usaldus: sama kasutaja, neli erinevat otsust](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/null-usaldus.html) näitab, kuidas poliitika hindab iga päringu juures identiteeti, seadet, asukohta ja riski. Neljas stsenaarium näitab varastatud seansiküpsist: seanss tühistatakse, sest signaale hinnatakse pidevalt, mitte ainult sisselogimisel.
+
 ### 22.3 Windowsi karmistamine
 
 Karmistamise (hardening) baasnimekiri tööjaamale:
@@ -132,6 +136,10 @@ SIEM saadab laupäeva hommikul häire. Administraator koostab sündmustest ajajo
 **Reageerimine etappide kaupa:** server isoleeritakse võrgust (ohjeldamine); konto `opetaja1` blokeeritakse ja paroolid vahetatakse; uus konto ja teenus eemaldatakse, server taastatakse puhtast varukoopiast (likvideerimine ja taastamine); RDP suletakse internetist ning lubatakse ainult VPN-i ja MFA-ga, lisatakse häire „4625 üle 20 korra 5 minutiga“ (järeltegevus). Intsidendist teavitatakse CERT-EE-d.
 
 **Õppetund:** kesksesse kohta saadetud logid päästsid uurimise – kohalik logi oli kustutatud.
+
+![Animatsioon: RDP-rünnak sündmuste ID-de kaupa](../animatsioonid/logidest-ryndeni.svg)
+
+**Animatsioon:** [Logidest ründe jutt: RDP-rünnak sündmuste ID-de kaupa](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/logidest-ryndeni.html) näitab sama juhtumit samm-sammult: millise sündmuse iga ründaja tegevus logisse jätab, kuidas koopia jõuab kesksesse logiserverisse ja kuidas kulgeb reageerimine.
 
 ### Kokkuvõte
 

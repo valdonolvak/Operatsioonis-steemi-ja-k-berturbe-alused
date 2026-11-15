@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Null-usaldus: sama kasutaja, neli erinevat otsust</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Null-usaldus: sama kasutaja, neli erinevat otsust</h1>
+<p class="lead">Animatsioon näitab, kuidas tingimusliku juurdepääsu poliitika hindab iga päringu juures identiteeti, seadet, asukohta ja riski ning miks õige parool üksi ei piisa.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 548" role="img" aria-label="Null-usaldus: sama kasutaja, neli erinevat otsust" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="548" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Null-usaldus: sama kasutaja, neli erinevat otsust</text>
+<rect x="24" y="48" width="280" height="300" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="68" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">PÄRING</text>
+<rect x="40" y="80" width="248" height="252" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="54" y="104" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">Kasutaja</text>
+<text x="54" y="122" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Mari, õpetaja</text>
+<text x="54" y="152" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">Seade</text>
+<text x="54" y="206" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">Asukoht</text>
+<text x="54" y="260" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">Sisselogimine</text>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1458;0.1521;0.3479;0.3542;1"/><text x="54" y="170" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">kooli hallatud sülearvuti</text><text x="54" y="224" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Eesti, kooli võrk</text><text x="54" y="278" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Windows Hello (PIN + TPM)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3542;0.3604;0.5563;0.5625;1"/><text x="54" y="170" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">isiklik tahvelarvuti</text><text x="54" y="224" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Eesti, koduvõrk</text><text x="54" y="278" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">parool + MFA rakendus</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5625;0.5687;0.7646;0.7708;1"/><text x="54" y="170" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">tundmatu, uuendamata arvuti</text><text x="54" y="224" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">tundmatu riik</text><text x="54" y="278" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">ainult parool (õige!)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7708;0.7771;1"/><text x="54" y="170" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">teine seade, sama küpsis</text><text x="54" y="224" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">teine riik, 10 min hiljem</text><text x="54" y="278" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">varastatud seansiküpsis</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1396;0.1458;1"/><text x="54" y="170" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">vali stsenaarium A–D</text><text x="54" y="224" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">asukoht ei anna usaldust</text><text x="54" y="278" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">parool üksi ei piisa</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1458;0.1521;0.3479;0.3542;1"/><text x="274" y="104" font-size="11.5" font-weight="600" fill="#2563a8" text-anchor="end">Stsenaarium A</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3542;0.3604;0.5563;0.5625;1"/><text x="274" y="104" font-size="11.5" font-weight="600" fill="#2563a8" text-anchor="end">Stsenaarium B</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5625;0.5687;0.7646;0.7708;1"/><text x="274" y="104" font-size="11.5" font-weight="600" fill="#2563a8" text-anchor="end">Stsenaarium C</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7708;0.7771;1"/><text x="274" y="104" font-size="11.5" font-weight="600" fill="#2563a8" text-anchor="end">Stsenaarium D</text></g>
+<rect x="324" y="48" width="330" height="300" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="338" y="68" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">POLIITIKA: KONTROLLI IGA PÄRINGUT</text>
+<rect x="340" y="80" width="298" height="54" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="354" y="103" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Identiteet</text>
+<rect x="340" y="144" width="298" height="54" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="354" y="167" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Seade</text>
+<rect x="340" y="208" width="298" height="54" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="354" y="231" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Asukoht</text>
+<rect x="340" y="272" width="298" height="54" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="354" y="295" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="start">Risk</text>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1875;0.1938;0.3479;0.3542;1"/><rect x="340" y="80" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="99" r="11" fill="#2e7d4f"/><text x="616" y="103.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="122" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">tugev, õngitsuskindel</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2063;0.2125;0.3479;0.3542;1"/><rect x="340" y="144" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="163" r="11" fill="#2e7d4f"/><text x="616" y="167.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="186" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">hallatud, krüpteeritud, uuendatud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.225;0.2313;0.3479;0.3542;1"/><rect x="340" y="208" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="227" r="11" fill="#2e7d4f"/><text x="616" y="231.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="250" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">tavapärane</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2437;0.25;0.3479;0.3542;1"/><rect x="340" y="272" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="291" r="11" fill="#2e7d4f"/><text x="616" y="295.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="314" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">madal</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3958;0.4021;0.5563;0.5625;1"/><rect x="340" y="80" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="99" r="11" fill="#2e7d4f"/><text x="616" y="103.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="122" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">parool ja MFA</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4146;0.4208;0.5563;0.5625;1"/><rect x="340" y="144" width="298" height="54" rx="8" fill="#b26a00" fill-opacity="0.12" stroke="#b26a00" stroke-width="2"/><circle cx="616" cy="163" r="11" fill="#b26a00"/><text x="616" y="167.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">!</text><text x="354" y="186" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">haldamata, seisund teadmata</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4333;0.4396;0.5563;0.5625;1"/><rect x="340" y="208" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="227" r="11" fill="#2e7d4f"/><text x="616" y="231.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="250" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">tavapärane</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4521;0.4583;0.5563;0.5625;1"/><rect x="340" y="272" width="298" height="54" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2"/><circle cx="616" cy="291" r="11" fill="#2e7d4f"/><text x="616" y="295.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✓</text><text x="354" y="314" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">madal</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6042;0.6104;0.7646;0.7708;1"/><rect x="340" y="80" width="298" height="54" rx="8" fill="#b26a00" fill-opacity="0.12" stroke="#b26a00" stroke-width="2"/><circle cx="616" cy="99" r="11" fill="#b26a00"/><text x="616" y="103.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">!</text><text x="354" y="122" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">ainult parool, MFA puudub</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6229;0.6292;0.7646;0.7708;1"/><rect x="340" y="144" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="163" r="11" fill="#c2362b"/><text x="616" y="167.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="186" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">tundmatu, uuendamata</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6417;0.6479;0.7646;0.7708;1"/><rect x="340" y="208" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="227" r="11" fill="#c2362b"/><text x="616" y="231.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="250" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">ebatavaline riik</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6604;0.6667;0.7646;0.7708;1"/><rect x="340" y="272" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="291" r="11" fill="#c2362b"/><text x="616" y="295.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="314" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">kõrge</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8125;0.8187;1"/><rect x="340" y="80" width="298" height="54" rx="8" fill="#b26a00" fill-opacity="0.12" stroke="#b26a00" stroke-width="2"/><circle cx="616" cy="99" r="11" fill="#b26a00"/><text x="616" y="103.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">!</text><text x="354" y="122" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">küpsis, uut autentimist pole</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8312;0.8375;1"/><rect x="340" y="144" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="163" r="11" fill="#c2362b"/><text x="616" y="167.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="186" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">ei ole see seade, kust logiti</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.85;0.8562;1"/><rect x="340" y="208" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="227" r="11" fill="#c2362b"/><text x="616" y="231.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="250" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">võimatu reis</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8688;0.875;1"/><rect x="340" y="272" width="298" height="54" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2"/><circle cx="616" cy="291" r="11" fill="#c2362b"/><text x="616" y="295.5" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">✗</text><text x="354" y="314" font-size="11.5" font-weight="400" fill="#1d2433" text-anchor="start">kõrge</text></g>
+<rect x="674" y="48" width="262" height="300" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="688" y="68" font-size="10.5" font-weight="600" fill="#5b6578" text-anchor="start">OTSUS</text>
+<rect x="690" y="80" width="230" height="54" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="805" y="103" font-size="12.5" font-weight="600" fill="#1d2433" text-anchor="middle">Õppeinfosüsteem ja failid</text>
+<text x="805" y="122" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="middle">kaitstav ressurss</text>
+<rect x="690" y="150" width="230" height="182" rx="8" fill="none" stroke="#b9c0cc" stroke-dasharray="4 4"/>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2792;0.2854;0.3479;0.3542;1"/><rect x="690" y="150" width="230" height="182" rx="8" fill="#2e7d4f" fill-opacity="0.12" stroke="#2e7d4f" stroke-width="2.5"/><text x="805" y="196" font-size="17" font-weight="600" fill="#2e7d4f" text-anchor="middle">Täielik ligipääs</text><text x="805" y="226" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">kõik rakendused ja failid,</text><text x="805" y="245" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">mida Mari töö nõuab</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1625;0.165;0.1833;0.1885;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="288,206;288,206;340,206;340,206" keyTimes="0;0.1625;0.1833;1"/><rect x="-29.0" y="-10.0" width="58" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">päring</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2625;0.265;0.2792;0.2844;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="638,206;638,206;690,240;690,240" keyTimes="0;0.2625;0.2792;1"/><rect x="-27.0" y="-10.0" width="54" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">otsus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4875;0.4937;0.5563;0.5625;1"/><rect x="690" y="150" width="230" height="182" rx="8" fill="#b26a00" fill-opacity="0.12" stroke="#b26a00" stroke-width="2.5"/><text x="805" y="196" font-size="17" font-weight="600" fill="#b26a00" text-anchor="middle">Piiratud ligipääs</text><text x="805" y="226" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">ainult veebiversioon,</text><text x="805" y="245" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">allalaadimine keelatud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3708;0.3733;0.3917;0.3969;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="288,206;288,206;340,206;340,206" keyTimes="0;0.3708;0.3917;1"/><rect x="-29.0" y="-10.0" width="58" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">päring</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4708;0.4733;0.4875;0.4927;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="638,206;638,206;690,240;690,240" keyTimes="0;0.4708;0.4875;1"/><rect x="-27.0" y="-10.0" width="54" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">otsus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6958;0.7021;0.7646;0.7708;1"/><rect x="690" y="150" width="230" height="182" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2.5"/><text x="805" y="196" font-size="17" font-weight="600" fill="#c2362b" text-anchor="middle">Keelatud</text><text x="805" y="226" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">õigest paroolist ei piisa;</text><text x="805" y="245" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">Mari saab teate ja</text><text x="805" y="264" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">vahetab parooli</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5792;0.5817;0.6;0.6052;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="288,206;288,206;340,206;340,206" keyTimes="0;0.5792;0.6;1"/><rect x="-29.0" y="-10.0" width="58" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">päring</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6792;0.6817;0.6958;0.701;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="638,206;638,206;690,240;690,240" keyTimes="0;0.6792;0.6958;1"/><rect x="-27.0" y="-10.0" width="54" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">otsus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.9042;0.9104;1"/><rect x="690" y="150" width="230" height="182" rx="8" fill="#c2362b" fill-opacity="0.12" stroke="#c2362b" stroke-width="2.5"/><text x="805" y="196" font-size="17" font-weight="600" fill="#c2362b" text-anchor="middle">Seanss tühistatud</text><text x="805" y="226" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">küpsis ei kehti enam;</text><text x="805" y="245" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">nõutakse uut sisselogimist</text><text x="805" y="264" font-size="12" font-weight="400" fill="#1d2433" text-anchor="middle">ja seadet kontrollitakse</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7875;0.79;0.8083;0.8135;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="288,206;288,206;340,206;340,206" keyTimes="0;0.7875;0.8083;1"/><rect x="-29.0" y="-10.0" width="58" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">päring</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8875;0.89;0.9042;0.9094;1"/><g><animateTransform attributeName="transform" type="translate" dur="48s" repeatCount="indefinite" values="638,206;638,206;690,240;690,240" keyTimes="0;0.8875;0.9042;1"/><rect x="-27.0" y="-10.0" width="54" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">otsus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1396;0.1458;1"/><text x="805" y="232" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="middle">otsus tehakse</text><text x="805" y="251" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="middle">iga päringu juures uuesti</text></g>
+<rect x="24" y="360" width="296" height="30" rx="15" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="172" y="380" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">1  Kontrolli selgesõnaliselt</text>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1396;0.1458;0.1458;0.1521;0.3479;0.3542;0.3542;0.3604;0.5563;0.5625;0.5625;0.5687;0.7646;0.7708;1"/><rect x="24" y="360" width="296" height="30" rx="15" fill="#2563a8"/><text x="172" y="380" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">1  Kontrolli selgesõnaliselt</text></g>
+<rect x="332" y="360" width="296" height="30" rx="15" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="480" y="380" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">2  Vähimad õigused</text>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1458;0.1521;0.3479;0.3542;0.3542;0.3604;0.5563;0.5625;1"/><rect x="332" y="360" width="296" height="30" rx="15" fill="#2563a8"/><text x="480" y="380" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">2  Vähimad õigused</text></g>
+<rect x="640" y="360" width="296" height="30" rx="15" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="788" y="380" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">3  Eelda rünnet</text>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1" keyTimes="0;0.5625;0.5687;0.7646;0.7708;0.7708;0.7771;1"/><rect x="640" y="360" width="296" height="30" rx="15" fill="#2563a8"/><text x="788" y="380" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">3  Eelda rünnet</text></g>
+<text x="24" y="410" font-size="11" font-weight="400" fill="#5b6578" text-anchor="start">Esile tõstetud põhimõte on see, mida samm kõige paremini näitab.</text>
+<rect x="24" y="424" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1406;0.1458;1"/><text x="40" y="448" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/5</text><text x="112" y="448" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Null-usaldus: iga päring kontrollitakse</text><text x="40" y="470" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Vana mudel usaldas kõiki, kes olid sisevõrgus. Null-usalduses ei loe asukoht: iga päringu juures hinnatakse</text><text x="40" y="488" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">nelja signaali (identiteet, seade, asukoht, risk) ja otsus tehakse iga kord uuesti.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1458;0.151;0.349;0.3542;1"/><text x="40" y="448" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/5</text><text x="112" y="448" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">A: kooli hallatud sülearvuti</text><text x="40" y="470" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Mari logib sisse Windows Helloga kooli hallatud sülearvutist. Kõik neli signaali on korras:</text><text x="40" y="488" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">tugev autentimine, seade vastab nõuetele, tavapärane asukoht, madal risk. Tulemus: täielik ligipääs.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3542;0.3594;0.5573;0.5625;1"/><text x="40" y="448" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/5</text><text x="112" y="448" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">B: isiklik tahvelarvuti kodus</text><text x="40" y="470" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Sama kasutaja, õige parool ja MFA, kuid seade ei ole kooli hallatud: selle seisundit ei saa kontrollida.</text><text x="40" y="488" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Tulemus: piiratud ligipääs. Mari saab kasutada veebiversiooni, kuid faile alla laadida ei saa.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5625;0.5677;0.7656;0.7708;1"/><text x="40" y="448" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/5</text><text x="112" y="448" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">C: õige parool, aga kõik muu on vale</text><text x="40" y="470" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Keegi logib sisse Mari õige parooliga tundmatust riigist vana, uuendamata seadmega.</text><text x="40" y="488" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Parool üksi ei piisa: kolm signaali neljast on punased. Tulemus: ligipääs keelatud, Mari saab teate.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="48s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7708;0.776;1"/><text x="40" y="448" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/5</text><text x="112" y="448" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">D: seanss varastatakse keset tööd</text><text x="40" y="470" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Mari töötab hallatud arvutis. Kümme minutit hiljem kasutatakse sama seansiküpsist teisest riigist.</text><text x="40" y="488" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Poliitika hindab seanssi pidevalt: võimatu reis ja teine seade. Seanss tühistatakse. See on „eelda rünnet“.</text></g>
+<rect x="24" y="530" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="530" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="48s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="156.0" y="528" width="2" height="9" fill="#f4f6f9"/>
+<rect x="346.0" y="528" width="2" height="9" fill="#f4f6f9"/>
+<rect x="536.0" y="528" width="2" height="9" fill="#f4f6f9"/>
+<rect x="726.0" y="528" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="48" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Null-usaldus: iga päring kontrollitakse</strong><span>Vanas mudelis oli sisevõrk „turvaline“ ja kes oli sees, sai kõigele ligi. Null-usalduses ei usaldata ühtegi kasutajat, seadet ega võrku ainult asukoha tõttu. Iga päringu juures hindab poliitika nelja signaali ja otsustab uuesti.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>A: kooli hallatud sülearvuti</strong><span>Õpetaja Mari logib sisse Windows Helloga (PIN ja TPM-is hoitav võti) kooli hallatud sülearvutist, mis on krüpteeritud ja uuendatud. Kõik signaalid on korras ja ta saab täieliku ligipääsu. Õigused on siiski ainult need, mida tema töö nõuab.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>B: isiklik tahvelarvuti kodus</strong><span>Sama kasutaja ja õige MFA, kuid seade on isiklik. Kool ei tea, kas see on krüpteeritud, uuendatud või nakatunud. Poliitika lubab ainult veebiversiooni ja keelab allalaadimise, et andmed ei jääks haldamata seadmesse.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>C: õige parool, aga kõik muu on vale</strong><span>Keegi kasutab Mari <em>õiget</em> parooli (lekkinud õngitsuslehel), kuid tundmatust riigist ja uuendamata seadmest. Kolm signaali neljast on punased. Ligipääs keelatakse ja Marit palutakse parool vahetada. Vanas mudelis oleks õigest paroolist piisanud.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>D: seanss varastatakse keset tööd</strong><span>Mari seanss stsenaariumist A kehtib. Pahavara varastab seansiküpsise ja ründaja kasutab seda teisest riigist. Kuna poliitika hindab signaale <em>pidevalt</em>, mitte ainult sisselogimisel, märkab see võimatut reisi ja teist seadet ning tühistab seansi.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Kolm põhimõtet</h2>
+<div class="tablewrap"><table>
+<tr><th>Põhimõte</th><th>Mida see tähendab</th><th>Windowsi ja Microsofti vahendid</th></tr>
+<tr><td><strong>Kontrolli selgesõnaliselt</strong></td><td>iga päring autenditakse ja autoriseeritakse kõigi signaalide põhjal</td><td>Windows Hello, pääsuvõtmed, Entra tingimuslik juurdepääs</td></tr>
+<tr><td><strong>Vähimad õigused</strong></td><td>õigused ainult vajalikus ulatuses ja vajalikuks ajaks</td><td>tavakasutaja konto, administraatori kaitse, JIT-ligipääs, LAPS</td></tr>
+<tr><td><strong>Eelda rünnet</strong></td><td>käitu nii, nagu ründaja oleks juba sees: segmenteeri, krüpteeri, logi, hinda seansse pidevalt</td><td>BitLocker, VBS, Defender, logide edastus, seansi pidev hindamine</td></tr>
+</table></div>
+<h2>Kust signaalid tulevad</h2>
+<div class="tablewrap"><table>
+<tr><th>Signaal</th><th>Allikas</th></tr>
+<tr><td>Identiteet</td><td>autentimisviis: parool, MFA, Windows Hello, FIDO2-võti</td></tr>
+<tr><td>Seade</td><td>TPM tõendab seadme identiteeti; Secure Boot ja kaugkinnitus tõendavad, et alglaadimine oli puhas; Intune kontrollib krüpteerimist, uuendusi ja viirusetõrjet</td></tr>
+<tr><td>Asukoht</td><td>IP-aadress, riik, tuntud võrgud</td></tr>
+<tr><td>Risk</td><td>ebatavaline käitumine: võimatu reis, lekkinud parool, anonüümne võrk</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<pre>dsregcmd /status | Select-String 'AzureAdJoined|DomainJoined|DeviceId|TpmProtected'   # seadme identiteet
+Get-Tpm | Select-Object TpmPresent, TpmReady
+Confirm-SecureBootUEFI
+Get-BitLockerVolume C: | Select-Object ProtectionStatus, EncryptionMethod
+Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, AntivirusSignatureAge, IsTamperProtected</pre>
+<p>Need on samad andmed, mille põhjal haldussüsteem otsustab, kas seade „vastab nõuetele“. Mõtle: millise stsenaariumi (A–D) alla sinu arvuti praegu kuuluks?</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/22-kuberturve.md">peatükk 22, Küberturve tänapäeva Windowsis</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=48,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 17}, {"t0": 17, "t1": 27}, {"t0": 27, "t1": 37}, {"t0": 37, "t1": 48}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
