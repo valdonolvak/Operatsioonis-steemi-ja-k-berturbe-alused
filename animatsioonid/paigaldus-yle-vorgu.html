@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti</h1>
+<p class="lead">Animatsioon võrdleb seitsme sammu kaupa, kuidas võrgust käivitatud arvutisse paigaldatakse automaatselt Windows (WDS) ja Linux (Debiani võrgupaigaldus).</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 524" role="img" aria-label="Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="524" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti</text>
+<rect x="24" y="48" width="444" height="344" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="38" y="71" font-size="13.5" font-weight="600" fill="#2563a8" text-anchor="start">Windows: WDS</text>
+<rect x="34" y="82" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="97" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">1. Võrgu-alglaadur</text>
+<text x="448" y="97" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">TFTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.125;0.1304;1"/><text x="44" y="114" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">wdsmgfw.efi → bootmgfw.efi</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1143;0.1196;0.2196;0.225;1"/><rect x="34" y="82" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="126" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="141" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">2. Seadistus ja menüü</text>
+<text x="448" y="141" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">TFTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.25;0.2554;1"/><text x="44" y="158" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">BCD: milline alglaadimistõmmis laadida</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2393;0.2446;0.3446;0.35;1"/><rect x="34" y="126" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="170" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="185" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">3. Paigalduskeskkond põhimälus</text>
+<text x="448" y="185" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">TFTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.375;0.3804;1"/><text x="44" y="202" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">boot.wim → WinPE ja Windowsi paigaldusprogramm</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3643;0.3696;0.4696;0.475;1"/><rect x="34" y="170" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="214" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="229" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">4. Vastusfail</text>
+<text x="448" y="229" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">WDS-ist</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.5;0.5054;1"/><text x="44" y="246" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">unattend.xml: keel, ketas, tõmmise valik, konto</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4893;0.4946;0.5946;0.6;1"/><rect x="34" y="214" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="258" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="273" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">5. Ketta ettevalmistus</text>
+<text x="448" y="273" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">kohalik</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.625;0.6304;1"/><text x="44" y="290" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">ESP (FAT32) + MSR + Windowsi partitsioon (NTFS)</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6143;0.6196;0.7196;0.725;1"/><rect x="34" y="258" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="302" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="317" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">6. Süsteem kettale</text>
+<text x="448" y="317" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">SMB</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.75;0.7554;1"/><text x="44" y="334" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">paigaldustõmmis install.wim laotatakse kettale</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7393;0.7446;0.8446;0.85;1"/><rect x="34" y="302" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="34" y="346" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="44" y="361" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">7. Esimene käivitus kettalt</text>
+<text x="448" y="361" font-size="9.5" font-weight="600" fill="#2563a8" text-anchor="end">kohalik</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.875;0.8804;1"/><text x="44" y="378" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">specialize ja OOBE: arvuti nimi, domeen, draiverid</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8643;0.8696;1"/><rect x="34" y="346" width="424" height="40" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0357;0.0411;0.0661;0.0714;1"/><rect x="24" y="48" width="444" height="344" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<rect x="492" y="48" width="444" height="344" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="506" y="71" font-size="13.5" font-weight="600" fill="#2e7d4f" text-anchor="start">Linux: Debiani võrgupaigaldus</text>
+<rect x="502" y="82" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="97" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">1. Võrgu-alglaadur</text>
+<text x="916" y="97" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">TFTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.1464;0.1518;1"/><text x="512" y="114" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">shimx64.efi → grubx64.efi</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1143;0.1196;0.2196;0.225;1"/><rect x="502" y="82" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="126" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="141" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">2. Seadistus ja menüü</text>
+<text x="916" y="141" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">TFTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.2714;0.2768;1"/><text x="512" y="158" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">grub.cfg: menüükirjed ja tuuma parameetrid</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2393;0.2446;0.3446;0.35;1"/><rect x="502" y="126" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="170" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="185" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">3. Paigalduskeskkond põhimälus</text>
+<text x="916" y="185" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">TFTP või HTTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.3964;0.4018;1"/><text x="512" y="202" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">vmlinuz + initrd → Debiani paigaldaja</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3643;0.3696;0.4696;0.475;1"/><rect x="502" y="170" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="214" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="229" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">4. Vastusfail</text>
+<text x="916" y="229" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">HTTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.5214;0.5268;1"/><text x="512" y="246" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">preseed.cfg: keel, ketas, paketid, konto</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4893;0.4946;0.5946;0.6;1"/><rect x="502" y="214" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="258" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="273" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">5. Ketta ettevalmistus</text>
+<text x="916" y="273" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">kohalik</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6464;0.6518;1"/><text x="512" y="290" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">ESP (FAT32) + juurpartitsioon (ext4) + saaleala</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6143;0.6196;0.7196;0.725;1"/><rect x="502" y="258" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="302" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="317" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">6. Süsteem kettale</text>
+<text x="916" y="317" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">HTTP</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.7714;0.7768;1"/><text x="512" y="334" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">paketid laaditakse peeglist ja paigaldatakse ükshaaval</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7393;0.7446;0.8446;0.85;1"/><rect x="502" y="302" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="502" y="346" width="424" height="40" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="512" y="361" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">7. Esimene käivitus kettalt</text>
+<text x="916" y="361" font-size="9.5" font-weight="600" fill="#2e7d4f" text-anchor="end">kohalik</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8964;0.9018;1"/><text x="512" y="378" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">GRUB käivitab Debiani kettalt; edasi seadistab Ansible</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8643;0.8696;1"/><rect x="502" y="346" width="424" height="40" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.0571;0.0625;0.0875;0.0929;1"/><rect x="492" y="48" width="444" height="344" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="24" y="400" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1027;0.1071;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Sama eesmärk, kaks teed</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Arvuti on PXE abil võrgust käivitunud (eelmine animatsioon). Nüüd tuleb operatsioonisüsteem kettale paigaldada</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ilma, et keegi peaks klaviatuuri puudutama. Vasakul teeb seda Windowsi WDS, paremal Debiani võrgupaigaldus.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1071;0.1116;0.2277;0.2321;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">1. Võrgu-alglaadur</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">WDS annab kliendile faili wdsmgfw.efi, mis küsib kinnitust (Enter või F12) ja käivitab Windowsi alglaaduri.</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Linuxi server annab shimi, mis kontrollib GRUB-i allkirja ja käivitab selle.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2321;0.2366;0.3527;0.3571;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">2. Seadistus ja menüü</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Windowsi alglaadur loeb serverist BCD, kus on kirjas alglaadimistõmmised. GRUB loeb faili grub.cfg, kus</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">iga menüükirje ütleb, milline tuum laadida ja millised parameetrid talle kaasa anda.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3571;0.3616;0.4777;0.4821;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">3. Paigalduskeskkond laaditakse põhimällu</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">WDS saadab alglaadimistõmmise boot.wim: selles on WinPE ja Windowsi paigaldusprogramm. Linuxi server saadab</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">tuuma ja initrd, milles on Debiani paigaldaja. Mõlemad töötavad põhimälus, ketast veel ei puudutata.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4821;0.4866;0.6027;0.6071;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">4. Vastusfail asendab inimese</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Paigaldaja küsiks nüüd keelt, ketast ja kasutajanime. Automaatpaigaldusel loeb ta vastused failist:</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Windows vastusfailist unattend.xml, Debian failist preseed.cfg, mille aadress tuli tuuma parameetrina.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6071;0.6116;0.7277;0.7321;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">5. Ketas jaotatakse ja vormindatakse</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Mõlemad loovad UEFI jaoks EFI-süsteemipartitsiooni (ESP, FAT32). Windows lisab MSR-i ja NTFS-partitsiooni,</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Debian juurpartitsiooni (tavaliselt ext4) ja saaleala. Kõik kettal olnud andmed kustutatakse.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.7321;0.7366;0.8527;0.8571;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 7/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">6. Süsteem kettale: tõmmis või paketid</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Siin on suurim erinevus. Windows laotab kettale valmis paigaldustõmmise install.wim: üks suur fail, kiire.</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Debian laadib peeglist sajad paketid ja paigaldab need ükshaaval: aeglasem, kuid alati värske ja paindlik.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8571;0.8616;1"/><text x="40" y="424" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 8/8</text><text x="112" y="424" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">7. Esimene käivitus kettalt</text><text x="40" y="446" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Arvuti taaskäivitub ja seekord kettalt. Windows läbib etapid specialize ja OOBE: arvuti nimi, domeeniga</text><text x="40" y="464" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">liitumine, draiverid. Debian käivitub GRUB-ist; järeltööd tegi late_command juba paigalduse lõpus.</text></g>
+<rect x="24" y="506" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="506" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="56s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="120.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="234.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="348.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="462.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="576.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="690.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+<rect x="804.7" y="504" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="56" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Sama eesmärk, kaks teed</strong><span>Mõlemal juhul on sammud samad: alglaadur, seadistus, mälus töötav paigalduskeskkond, vastusfail, ketta jaotamine, süsteemi kopeerimine ja esimene käivitus. Erinevad on failid, protokollid ja see, <em>kuidas</em> süsteem kettale jõuab.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>1. Võrgu-alglaadur</strong><span><code>wdsmgfw.efi</code> on WDS-i enda alglaadur, mis oskab serveriga rääkida ja oodata kasutaja kinnitust. Linuxi <strong>shim</strong> on vajalik turvalise alglaadimise jaoks: püsivara usaldab shimi, shim usaldab distributsiooni GRUB-i.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>2. Seadistus ja menüü</strong><span>GRUB-i menüükirje parameetritega antakse paigaldajale kaasa kogu juhis, näiteks <code>auto=true url=http://192.168.10.1/preseed.cfg</code>. WDS-is valib tõmmise administraator serveri seadetes või kasutaja menüüst.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>3. Paigalduskeskkond laaditakse põhimällu</strong><span>Paigaldaja peab töötama mälus, sest ketas on kohe jaotamisel ja vormindamisel. WinPE vajab selleks umbes 2 GB mälu, Debiani võrgupaigaldaja vähem.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>4. Vastusfail asendab inimese</strong><span><strong>Vastusfail</strong> sisaldab kõike, mida paigaldaja muidu küsiks. Windowsis on neid kaks: WDS-kliendi vastusfail (keel, sisselogimine serverisse, ketas, tõmmise valik) ja tõmmise vastusfail (specialize ja OOBE). Teistes Linuxites on sama asja nimi teine: Ubuntus <em>autoinstall</em>, Red Hatis <em>kickstart</em>.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>5. Ketas jaotatakse ja vormindatakse</strong><span>See on pöördumatu samm. Seepärast on oluline, et arvuti ei käivituks kogemata võrgust automaatpaigaldusse: tootmisvõrgus piiratakse PXE vastamist tuntud klientidele või nõutakse kinnitust.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>6. Süsteem kettale: tõmmis või paketid</strong><span><strong>Tõmmisepõhine paigaldus</strong>: süsteem on ette valmis tehtud ja kopeeritakse kettale. <strong>Paketipõhine paigaldus</strong>: süsteem pannakse kokku kohapeal. Paigaldustõmmise saab WDS-ist SMB kaudu või multisaatega mitmele arvutile korraga. Ubuntu Server kasutab segavarianti: laotab baastõmmise ja lisab paketid.</span></span></button></li>
+<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>7. Esimene käivitus kettalt</strong><span>Alglaadimisjärjekorras peab nüüd ketas olema võrgust eespool või peab PXE-server sellele kliendile enam mitte vastama, muidu algab paigaldus uuesti. Edasi võtab seadistamise üle haldustööriist: rühmapoliitika või Intune Windowsis, Ansible Linuxis.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>WDS</strong> (Windows Deployment Services)</td><td>Windows Serveri roll, mis pakub PXE-serverit, TFTP-d ja Windowsi tõmmiste jagamist.</td></tr>
+<tr><td><strong>Alglaadimistõmmis</strong> (boot.wim)</td><td>Tõmmisfail WinPE ja paigaldusprogrammiga. Sellega arvuti käivitub.</td></tr>
+<tr><td><strong>Paigaldustõmmis</strong> (install.wim)</td><td>Tõmmisfail valmis Windowsiga, mis laotatakse kettale. Ühes failis võib olla mitu väljaannet.</td></tr>
+<tr><td><strong>WIM</strong></td><td>Windowsi failipõhine tõmmisevorming: failide kogum, mitte ketta sektorite koopia.</td></tr>
+<tr><td><strong>Vastusfail</strong> (unattend.xml)</td><td>XML-fail paigaldaja küsimuste vastustega. Koostatakse tööriistaga Windows System Image Manager (WSIM).</td></tr>
+<tr><td><strong>Seadistusetapid</strong></td><td>Windowsi paigalduse osad: <em>windowsPE</em> (ketas, tõmmis), <em>specialize</em> (arvuti nimi, domeen), <em>oobeSystem</em> (kasutaja, keel).</td></tr>
+<tr><td><strong>OOBE</strong></td><td>Esmakäivituse seadistus (Out-of-Box Experience), mille vastusfail saab vahele jätta.</td></tr>
+<tr><td><strong>Sysprep</strong></td><td>Tööriist, mis eemaldab Windowsist arvutipõhised andmed, et sellest saaks teha paigaldustõmmise.</td></tr>
+<tr><td><strong>Võrgupaigaldaja</strong> (netboot)</td><td>Linuxi tuum ja initrd, mis käivitavad paigaldaja ja laadivad kõik muu võrgust.</td></tr>
+<tr><td><strong>preseed</strong></td><td>Debiani paigaldaja vastusfail: tekstifail ridadega kujul <code>d-i küsimus tüüp vastus</code>.</td></tr>
+<tr><td><strong>autoinstall</strong></td><td>Ubuntu vastusfail YAML-vormingus, mille paigaldaja saab cloud-initi kaudu.</td></tr>
+<tr><td><strong>kickstart</strong></td><td>Red Hati, Fedora ja nende sugulaste vastusfail.</td></tr>
+<tr><td><strong>Peegel</strong> (mirror)</td><td>Server, kust paigaldaja laadib paketid. Võib olla internetis või kohtvõrgus.</td></tr>
+<tr><td><strong>late_command</strong></td><td>preseed-faili käsk, mis käivitatakse paigalduse lõpus: näiteks SSH-võtme lisamine.</td></tr>
+<tr><td><strong>Multisaade</strong> (multicast)</td><td>Ühe tõmmise saatmine korraga mitmele arvutile, näiteks terve arvutiklassi paigaldamisel.</td></tr>
+</table></div>
+<h2>Kaks lähenemist kõrvuti</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>Windows (WDS)</th><th>Linux (Debian)</th></tr>
+<tr><td>PXE- ja TFTP-server</td><td>WDS-i roll</td><td>dnsmasq või ISC DHCP + tftpd-hpa</td></tr>
+<tr><td>Võrgu-alglaadur</td><td><code>wdsmgfw.efi</code></td><td><code>shimx64.efi</code> → <code>grubx64.efi</code></td></tr>
+<tr><td>Seadistus</td><td>BCD</td><td><code>grub.cfg</code></td></tr>
+<tr><td>Paigalduskeskkond</td><td><code>boot.wim</code> (WinPE)</td><td><code>vmlinuz</code> + <code>initrd.gz</code></td></tr>
+<tr><td>Vastusfail</td><td><code>unattend.xml</code></td><td><code>preseed.cfg</code> (Ubuntus autoinstall, Red Hatis kickstart)</td></tr>
+<tr><td>Kust süsteem tuleb</td><td>paigaldustõmmis <code>install.wim</code></td><td>paketid peeglist</td></tr>
+<tr><td>Protokoll süsteemi jaoks</td><td>SMB või multisaade</td><td>HTTP</td></tr>
+<tr><td>Uuendatud süsteem pärast paigaldust</td><td>ainult siis, kui tõmmist on uuendatud</td><td>jah, peeglis on värsked paketid</td></tr>
+<tr><td>Järelseadistus</td><td>rühmapoliitika, Intune</td><td>late_command, Ansible, cloud-init</td></tr>
+</table></div>
+<h2>WDS-i seis 2026. aastal</h2>
+<p>Microsoft on WDS-i järk-järgult kõrvale jätmas ja see mõjutab otseselt siin näidatud töövoogu:</p>
+<ul>
+<li>Windows 11 paigalduskandjalt võetud <code>boot.wim</code>-iga WDS-i paigaldust ei toetata; ainult WDS-iga ei saa Windows 11 algusest lõpuni paigaldada. Kohandatud alglaadimistõmmised (näiteks Configuration Manageri omad) töötavad edasi.</li>
+<li>Alates 2026. aasta aprilli uuendustest on käed-vabad paigaldus (vastusfaili saatmine WDS-ist) vaikimisi välja lülitatud turvanõrkuse CVE-2026-0386 tõttu.</li>
+<li>2026. aasta septembris teatas Microsoft, et WDS-i roll tervikuna jääb alates järgmisest Windows Serveri väljaandest aegunute hulka. Praegu toetatud serveriversioonides töötab WDS edasi.</li>
+</ul>
+<p>Õppelaboris sobib WDS endiselt PXE ja tõmmisepõhise paigalduse põhimõtete näitamiseks. Uue lahenduse kavandamisel loe enne Microsofti juhiseid: <a href="https://learn.microsoft.com/en-us/windows/deployment/wds-boot-support">WDS boot.wim support</a> ja <a href="https://support.microsoft.com/en-us/help/5129631">KB5129631</a>.</p>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>WDS-serveris (PowerShell administraatorina)</h3>
+<pre>Get-WindowsFeature WDS*
+wdsutil /Get-Server /Show:Config
+Get-WdsBootImage | Select-Object ImageName, Architecture, FileName
+Get-WdsInstallImage | Select-Object ImageName, ImageGroup, Version
+Get-WdsClient</pre>
+<ul>
+<li><strong>1. rida:</strong> näita, kas WDS-i roll ja selle osad (Deployment Server, Transport Server) on paigaldatud.</li>
+<li><strong>2. rida:</strong> näita serveri seadistust: kellele PXE vastab (kõigile, ainult tuntud klientidele või mitte kellelegi), kus on kaust RemoteInstall ja millised alglaadurid on määratud.</li>
+<li><strong>3. rida:</strong> loetle alglaadimistõmmised koos arhitektuuri ja failinimega.</li>
+<li><strong>4. rida:</strong> loetle paigaldustõmmised, nende rühm ja Windowsi versioon.</li>
+<li><strong>5. rida:</strong> loetle eelregistreeritud klientarvutid.</li>
+</ul>
+<p>Mida otsida: teise käsu väljundis jaotis „PXE Bind Policy“ ja „Answer clients“. Kui seal on „Answer clients: No“, ei vasta server ühelegi kliendile, kuigi teenus töötab.</p>
+<h3>Linuxi PXE-server: dnsmasq</h3>
+<p>Fail <code>/etc/dnsmasq.d/pxe.conf</code>:</p>
+<pre>interface=ens19
+dhcp-range=192.168.10.100,192.168.10.200,12h
+enable-tftp
+tftp-root=/srv/tftp
+dhcp-match=set:efi64,option:client-arch,7
+dhcp-boot=tag:efi64,shimx64.efi
+dhcp-boot=tag:!efi64,pxelinux.0</pre>
+<ul>
+<li><strong>1. rida:</strong> teeninda ainult seda võrguliidest (labori sisevõrk).</li>
+<li><strong>2. rida:</strong> jaga aadresse vahemikust .100 kuni .200, rendiaeg 12 tundi.</li>
+<li><strong>3.–4. rida:</strong> lülita sisse dnsmasqi enda TFTP-server ja määra kaust, kust faile jagatakse.</li>
+<li><strong>5. rida:</strong> kui klient saadab valikus 93 väärtuse 7 (x64 UEFI), anna talle silt <code>efi64</code>.</li>
+<li><strong>6. rida:</strong> sildiga <code>efi64</code> klient saab alglaaduriks <code>shimx64.efi</code>.</li>
+<li><strong>7. rida:</strong> kõik teised (vana BIOS) saavad <code>pxelinux.0</code>.</li>
+</ul>
+<p>Selles näites jagab dnsmasq ka IP-aadresse. Ära käivita seda võrgus, kus on juba teine DHCP-server.</p>
+<p>Menüükirje failis <code>/srv/tftp/grub/grub.cfg</code>:</p>
+<pre>menuentry 'Debian: automaatne paigaldus' {
+    linux  /debian-installer/amd64/linux auto=true priority=critical url=http://192.168.10.1/preseed.cfg
+    initrd /debian-installer/amd64/initrd.gz
+}</pre>
+<ul>
+<li><strong>1. rida:</strong> menüüs näidatav nimi.</li>
+<li><strong>2. rida:</strong> laadi tuum ja anna talle parameetrid: <code>auto=true</code> lükkab küsimused edasi, kuni võrk töötab; <code>priority=critical</code> jätab vahele kõik vähem tähtsad küsimused; <code>url=</code> on vastusfaili aadress.</li>
+<li><strong>3. rida:</strong> laadi algne failisüsteem, milles on paigaldaja.</li>
+</ul>
+<pre>sudo systemctl restart dnsmasq
+sudo journalctl -u dnsmasq -f</pre>
+<p>Esimene käsk rakendab seadistuse, teine näitab dnsmasqi logi jooksvalt. Käivita klient võrgust. Mida otsida: read <code>DHCPDISCOVER</code>, <code>DHCPOFFER</code>, <code>DHCPACK</code> ja seejärel <code>sent /srv/tftp/shimx64.efi to 192.168.10.x</code>. Kui pärast <code>DHCPACK</code>-i rida <code>sent</code> ei tule, ei leidnud klient faili või blokeerib tulemüür TFTP.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/04-arhitektuur.md">peatükk 4.12, Arvuti alglaadimine</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=56,steps=[{"t0": 0, "t1": 6}, {"t0": 6, "t1": 13}, {"t0": 13, "t1": 20}, {"t0": 20, "t1": 27}, {"t0": 27, "t1": 34}, {"t0": 34, "t1": 41}, {"t0": 41, "t1": 48}, {"t0": 48, "t1": 56}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
