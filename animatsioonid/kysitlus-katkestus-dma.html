@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?</h1>
+<p class="lead">Animatsioon võrdleb kolme viisi, kuidas andmed seadmest mällu jõuavad, ja näitab, kui palju protsessor igaühe juures muud tööd teha saab.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 568" role="img" aria-label="Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="568" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?</text>
+<line x1="250" y1="215" x2="700" y2="290" stroke="#b9c0cc" stroke-width="2"/>
+<line x1="250" y1="185" x2="700" y2="110" stroke="#b9c0cc" stroke-width="2"/>
+<line x1="800" y1="145" x2="800" y2="255" stroke="#b9c0cc" stroke-width="2"/>
+<rect x="24" y="46" width="200" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="124" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">Küsitlus</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1071;0.1125;0.2982;0.3036;1"/><rect x="24" y="46" width="200" height="28" rx="14" fill="#2563a8"/><text x="124" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">Küsitlus</text></g>
+<rect x="236" y="46" width="200" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="336" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">Katkestused</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3036;0.3089;0.4946;0.5;1"/><rect x="236" y="46" width="200" height="28" rx="14" fill="#2563a8"/><text x="336" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">Katkestused</text></g>
+<rect x="448" y="46" width="200" height="28" rx="14" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="548" y="64.5" font-size="12" font-weight="600" fill="#5b6578" text-anchor="middle">DMA</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5;0.5054;0.6732;0.6786;1"/><rect x="448" y="46" width="200" height="28" rx="14" fill="#2563a8"/><text x="548" y="64.5" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">DMA</text></g>
+<rect x="70" y="155" width="180" height="90" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="160" y="180" font-size="13.5" font-weight="600" fill="#1d2433" text-anchor="middle">Protsessor</text>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1018;0.1071;1"/><text x="160" y="204" font-size="11.5" font-weight="600" fill="#5b6578" text-anchor="middle">ootab ülesannet</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1071;0.1125;0.2982;0.3036;1"/><text x="160" y="204" font-size="11.5" font-weight="600" fill="#c2362b" text-anchor="middle">küsib ja kopeerib ise</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3036;0.3089;0.4946;0.5;1"/><text x="160" y="204" font-size="11.5" font-weight="600" fill="#b26a00" text-anchor="middle">töötab; katkestusel kopeerib</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5;0.5054;0.6732;0.6786;1"/><text x="160" y="204" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">töötab segamatult</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6786;0.6839;1"/><text x="160" y="204" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">teeb muud tööd</text></g>
+<rect x="70" y="255" width="180" height="30" rx="6" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.1107;0.1134;0.2938;0.2964;0.3214;0.3241;0.3455;0.3482;0.375;0.3777;0.3991;0.4018;0.4286;0.4312;0.4527;0.4554;1"/><text x="160" y="275" font-size="11.5" font-weight="600" fill="#c2362b" text-anchor="middle">muu töö: seisab</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1" keyTimes="0;0.108;0.1107;0.2964;0.2991;0.3188;0.3214;0.3482;0.3509;0.3723;0.375;0.4018;0.4045;0.4259;0.4286;0.4554;0.458;1"/><text x="160" y="275" font-size="11.5" font-weight="600" fill="#2e7d4f" text-anchor="middle">muu töö: käib</text></g>
+<rect x="700" y="75" width="200" height="70" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="716" y="97" font-size="13" font-weight="600" fill="#1d2433" text-anchor="start">Mälu (RAM)</text>
+<rect x="700" y="255" width="200" height="70" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="800" y="283" font-size="13" font-weight="600" fill="#1d2433" text-anchor="middle">Kettakontroller</text>
+<text x="800" y="303" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle">kolm plokki lugeda</text>
+<rect x="716" y="108" width="52" height="24" rx="4" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="776" y="108" width="52" height="24" rx="4" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<rect x="836" y="108" width="52" height="24" rx="4" fill="none" stroke="#b9c0cc" stroke-dasharray="3 3"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1143;0.1164;0.1232;0.1241;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.1143;0.1232;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1241;0.1263;0.133;0.1339;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.1241;0.133;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">ei</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1339;0.1361;0.1429;0.1438;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.1339;0.1429;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1438;0.1459;0.1527;0.1536;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.1438;0.1527;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">jah</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1536;0.1557;0.1732;0.1741;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.1536;0.1625;0.1643;0.1732;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 1</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1732;0.1759;0.3009;0.3036;1"/><rect x="716" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="742" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.175;0.1771;0.1839;0.1848;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.175;0.1839;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1848;0.187;0.1938;0.1946;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.1848;0.1938;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">ei</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1946;0.1968;0.2036;0.2045;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.1946;0.2036;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2045;0.2066;0.2134;0.2143;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.2045;0.2134;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">jah</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2143;0.2164;0.2339;0.2348;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.2143;0.2232;0.225;0.2339;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 2</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2339;0.2366;0.3009;0.3036;1"/><rect x="776" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="802" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2357;0.2379;0.2446;0.2455;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.2357;0.2446;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2455;0.2477;0.2545;0.2554;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.2455;0.2545;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">ei</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2554;0.2575;0.2643;0.2652;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;700,290;700,290" keyTimes="0;0.2554;0.2643;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">valmis?</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2652;0.2673;0.2741;0.275;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.2652;0.2741;1"/><rect x="-20.0" y="-10.0" width="40" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">jah</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.275;0.2771;0.2946;0.2955;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.275;0.2839;0.2857;0.2946;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 3</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.2946;0.2973;0.3009;0.3036;1"/><rect x="836" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="862" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3214;0.3236;0.3304;0.3312;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.3214;0.3304;1"/><rect x="-37.0" y="-10.0" width="74" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">katkestus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3304;0.3325;0.3473;0.3482;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.3304;0.3384;0.3393;0.3473;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 1</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3473;0.35;0.4973;0.5;1"/><rect x="716" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="742" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.375;0.3771;0.3839;0.3848;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.375;0.3839;1"/><rect x="-37.0" y="-10.0" width="74" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">katkestus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3839;0.3861;0.4009;0.4018;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.3839;0.392;0.3929;0.4009;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 2</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4009;0.4036;0.4973;0.5;1"/><rect x="776" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="802" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4286;0.4307;0.4375;0.4384;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,215" keyTimes="0;0.4286;0.4375;1"/><rect x="-37.0" y="-10.0" width="74" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">katkestus</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4375;0.4396;0.4545;0.4554;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="700,290;700,290;250,215;250,185;700,110;700,110" keyTimes="0;0.4375;0.4455;0.4464;0.4545;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 3</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.4545;0.4571;0.4973;0.5;1"/><rect x="836" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="862" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5107;0.5129;0.5321;0.5375;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="250,215;250,215;612,275;612,275" keyTimes="0;0.5107;0.5321;1"/><rect x="-88.0" y="-10.0" width="176" height="20" rx="10.0" fill="#2563a8"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">loe 3 plokki → aadress X</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5429;0.545;0.5571;0.558;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="800,255;800,255;800,150;800,150" keyTimes="0;0.5429;0.5571;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 1</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5571;0.5598;0.8187;0.8214;1"/><rect x="716" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="742" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 1</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5625;0.5646;0.5768;0.5777;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="800,255;800,255;800,150;800,150" keyTimes="0;0.5625;0.5768;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 2</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5768;0.5795;0.8187;0.8214;1"/><rect x="776" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="802" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 2</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5821;0.5843;0.5964;0.5973;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="800,255;800,255;800,150;800,150" keyTimes="0;0.5821;0.5964;1"/><rect x="-31.0" y="-10.0" width="62" height="20" rx="10.0" fill="#2e7d4f"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokk 3</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5964;0.5991;0.8187;0.8214;1"/><rect x="836" y="108" width="52" height="24" rx="4" fill="#2e7d4f"/><text x="862" y="124.5" font-size="10" font-weight="600" fill="#fff" text-anchor="middle">plokk 3</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6107;0.6129;0.6321;0.6393;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="630,278;630,278;250,215;250,215" keyTimes="0;0.6107;0.6321;1"/><rect x="-63.0" y="-10.0" width="126" height="20" rx="10.0" fill="#b26a00"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">katkestus: valmis</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5393;0.5446;0.6732;0.6786;1"/><text x="762" y="208" font-size="11" font-weight="600" fill="#2e7d4f" text-anchor="end">otse, protsessorita</text></g>
+<rect x="24" y="344" width="912" height="86" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.2964;0.3018;1"/><text x="40" y="366" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">Küsitlus</text><text x="150" y="366" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">protsessor küsib pidevalt ja kopeerib ise</text><text x="920" y="366" font-size="12" font-weight="600" fill="#c2362b" text-anchor="end">muu töö seisab kogu aja</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.4893;0.4946;1"/><text x="40" y="390" font-size="12" font-weight="600" fill="#b26a00" text-anchor="start">Katkestused</text><text x="150" y="390" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">seade annab märku, protsessor kopeerib ise</text><text x="920" y="390" font-size="12" font-weight="600" fill="#b26a00" text-anchor="end">muu töö katkeb iga ploki juures</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.6679;0.6732;1"/><text x="40" y="414" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">DMA</text><text x="150" y="414" font-size="12" font-weight="400" fill="#1d2433" text-anchor="start">kontroller kopeerib otse mällu, lõpus üks katkestus</text><text x="920" y="414" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="end">muu töö käib segamatult</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6857;0.6911;0.8161;0.8214;1"/><rect x="24" y="344" width="912" height="86" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8321;0.8375;1"/><rect x="520" y="178" width="170" height="44" rx="8" fill="#ffffff" stroke="#c2362b" stroke-width="2"/><text x="605" y="197" font-size="12" font-weight="600" fill="#c2362b" text-anchor="middle">Tundmatu seade</text><text x="605" y="213" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="middle">Thunderbolt-pordis</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8857;0.8911;1"/><rect x="696" y="146" width="208" height="7" rx="3.5" fill="#b26a00"/><text x="690" y="168" font-size="11.5" font-weight="600" fill="#b26a00" text-anchor="end">IOMMU</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.8464;0.8486;0.8821;0.8875;1"/><g><animateTransform attributeName="transform" type="translate" dur="56s" repeatCount="indefinite" values="640,190;640,190;760,166;760,166;760,166" keyTimes="0;0.8464;0.875;0.8821;1"/><rect x="-70.0" y="-10.0" width="140" height="20" rx="10.0" fill="#c2362b"/><text x="0" y="3.78" font-size="10.5" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">kirjuta tuuma mällu</text></g></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8893;0.8946;1"/><text x="812" y="205" font-size="11" font-weight="600" fill="#c2362b" text-anchor="start">blokeeritud: väljaspool</text><text x="812" y="220" font-size="11" font-weight="600" fill="#c2362b" text-anchor="start">lubatud mälupiirkonda</text></g>
+<rect x="24" y="444" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.1027;0.1071;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Ülesanne: kolm andmeplokki seadmest mällu</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kettakontroller peab toimetama kolm andmeplokki mällu. Küsimus on, kui palju peab protsessor selle juures ise tegema.</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Vaatame kolme viisi: küsitlus, katkestused ja otsemälupöördus (DMA).</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.1071;0.1116;0.2991;0.3036;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Küsitlus: protsessor küsib ise ja pidevalt</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Protsessor loeb tsüklis seadme olekuregistrit: „kas valmis?“. Enamasti on vastus „ei“. Kui vastus on „jah“,</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kopeerib protsessor ploki ise mällu. Kogu selle aja ei tee ta midagi muud.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3036;0.308;0.4955;0.5;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Katkestused: seade annab ise märku</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Protsessor teeb muud tööd. Kui plokk on valmis, saadab seade katkestuse. Protsessor jätab töö pooleli,</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kopeerib ploki mällu ja jätkab sealt, kus pooleli jäi. Asjatut küsimist ei ole, kuid kopeerib ikka protsessor.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5;0.5045;0.6741;0.6786;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">DMA: kontroller kirjutab otse mällu</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Protsessor annab kontrollerile ühe käsu: „loe kolm plokki ja kirjuta need mäluaadressile X“. Kontroller kannab andmed</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">ise otse mällu. Protsessor töötab segamatult ja saab lõpus ühe katkestuse: „valmis“.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.6786;0.683;0.817;0.8214;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Võrdlus</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Küsitlus: protsessor on hõivatud kogu aeg. Katkestused: hõivatud iga ploki juures. DMA: ainult alguses ja lõpus.</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Väga kiire seadme puhul võib küsitlus siiski võita, sest miljon katkestust sekundis on kallim kui tsüklis küsimine.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="56s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.8214;0.8259;1"/><text x="40" y="468" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/6</text><text x="112" y="468" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">DMA turvarisk ja IOMMU</text><text x="40" y="490" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">DMA-seade saab kirjutada otse mällu. Kui lukustatud sülearvuti Thunderbolt-porti ühendada pahatahtlik seade,</text><text x="40" y="508" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">võiks see lugeda või muuta tuuma mälu. IOMMU lubab igale seadmele ainult talle määratud mälupiirkonna.</text></g>
+<rect x="24" y="550" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="550" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="56s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="120.7" y="548" width="2" height="9" fill="#f4f6f9"/>
+<rect x="299.9" y="548" width="2" height="9" fill="#f4f6f9"/>
+<rect x="479.0" y="548" width="2" height="9" fill="#f4f6f9"/>
+<rect x="641.9" y="548" width="2" height="9" fill="#f4f6f9"/>
+<rect x="772.1" y="548" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="56" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Ülesanne: kolm andmeplokki seadmest mällu</strong><span>Seade on protsessorist tuhandeid kordi aeglasem. Operatsioonisüsteem peab otsustama, kuidas protsessor teada saab, et seade on valmis, ja kes andmed mällu kopeerib. Selleks on kolm viisi.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Küsitlus: protsessor küsib ise ja pidevalt</strong><span><strong>Küsitlus</strong> (polling): protsessor loeb tsüklis seadme olekuregistrit. Enamik küsimisi on asjatud. Kui seade on valmis, loeb protsessor andmed seadmelt ja kirjutab mällu ise. Muu töö seisab. Lihtne teha, kuid aeglase seadme puhul raiskab see peaaegu kogu protsessoriaja.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Katkestused: seade annab ise märku</strong><span><strong>Katkestus</strong> (interrupt): seade saadab protsessorile signaali, kui tal on midagi öelda. Protsessor salvestab poolelioleva töö oleku, käivitab katkestuse käsitleja, kopeerib andmed ja jätkab. Ootamise ajal saab ta teha muud tööd, kuid iga ploki juures tuleb töö katkestada.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>DMA: kontroller kirjutab otse mällu</strong><span><strong>Otsemälupöördus</strong> (DMA, Direct Memory Access): draiver ütleb kontrollerile, mida lugeda ja kuhu mällu kirjutada. Kontroller teeb ülekande ise, protsessorit vahele võtmata. Protsessor saab ühe katkestuse alles lõpus. Nii töötavad kõik kiired seadmed: kettad, võrgukaardid, graafikakaardid.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Võrdlus</strong><span>Aeglase seadme (klaviatuur) jaoks sobivad katkestused. Suurte andmemahtude jaoks on vaja DMA-d. Väga kiire võrgukaart lülitub suure koormuse all tagasi küsitlusele või koondab katkestusi (üks katkestus mitmekümne paketi kohta), sest iga katkestus maksab: protsessor peab oleku salvestama ja taastama.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>DMA turvarisk ja IOMMU</strong><span>Kuna DMA-seade kirjutab mällu protsessorist mööda, ei kehti talle tuuma tavalised mälukaitsed. Füüsilise ligipääsuga ründaja võib ühendada Thunderbolt- või PCIe-seadme ja lugeda mälust krüptovõtmeid. Kaitse on <strong>IOMMU</strong>: riistvara, mis tõlgib ja piirab seadmete mäluaadresse samamoodi, nagu MMU piirab protsesse. Windowsis kasutab seda Kernel DMA Protection.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>Kontroller</strong></td><td>Seadme elektroonika, mis võtab arvutilt vastu käske ja juhib seadet (nt NVMe-kontroller SSD-s, USB-kontroller emaplaadil).</td></tr>
+<tr><td><strong>Olekuregister</strong></td><td>Kontrolleri mälupesa, millest protsessor saab lugeda, kas seade on hõivatud, valmis või veas.</td></tr>
+<tr><td><strong>Küsitlus</strong> (polling)</td><td>Protsessor loeb olekuregistrit tsüklis, kuni seade on valmis.</td></tr>
+<tr><td><strong>Katkestus</strong> (interrupt)</td><td>Seadme signaal protsessorile. Protsessor peatab jooksva töö, käivitab katkestuse käsitleja ja jätkab seejärel sealt, kus pooleli jäi.</td></tr>
+<tr><td><strong>MSI-X</strong></td><td>Tänapäevane katkestuste viis: seade saadab katkestuse sõnumina ja võib kasutada mitut eraldi katkestust, igaüks eri protsessorituumale.</td></tr>
+<tr><td><strong>Katkestuste koondamine</strong></td><td>Seade ei saada katkestust iga paketi kohta, vaid kogub neid ja saadab ühe katkestuse mitme kohta (interrupt moderation).</td></tr>
+<tr><td><strong>DMA</strong></td><td>Otsemälupöördus: kontroller loeb ja kirjutab arvuti mälu ise, protsessorit vahele võtmata.</td></tr>
+<tr><td><strong>IOMMU</strong></td><td>Riistvara (Intel VT-d, AMD-Vi), mis piirab, millist mälu iga seade DMA-ga puudutada tohib.</td></tr>
+<tr><td><strong>Kernel DMA Protection</strong></td><td>Windowsi funktsioon, mis kasutab IOMMU-d, et töötamise ajal ühendatud välisseadmed (Thunderbolt, USB4) ei pääseks ligi kogu mälule.</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>1. Kui palju aega kulub katkestustele</h3>
+<pre>Get-Counter '\Processor(_Total)\Interrupts/sec',
+            '\Processor(_Total)\% Interrupt Time',
+            '\Processor(_Total)\% DPC Time' -SampleInterval 2 -MaxSamples 5</pre>
+<ul>
+<li><strong>1. rida:</strong> <code>Interrupts/sec</code> näitab, mitu katkestust protsessor sekundis saab. Ka jõude seisvas arvutis on neid tuhandeid (taimer, hiir, võrk).</li>
+<li><strong>2. rida:</strong> <code>% Interrupt Time</code> on protsessoriaja osa, mis kulub katkestuste käsitlejatele.</li>
+<li><strong>3. rida:</strong> <code>% DPC Time</code> on aeg, mis kulub katkestuste järeltööle (DPC). <code>-SampleInterval 2 -MaxSamples 5</code> võtab viis mõõtmist kahesekundilise vahega.</li>
+</ul>
+<p>Liiguta hiirt kiiresti või laadi alla suurt faili ja käivita käsk uuesti: katkestuste arv kasvab. Kui <code>% Interrupt Time</code> või <code>% DPC Time</code> on püsivalt üle mõne protsendi, on tavaliselt süüdi vigane draiver või seade.</p>
+<h3>2. Võrgukaardi katkestuste koondamine</h3>
+<pre>Get-NetAdapterAdvancedProperty -Name * -DisplayName '*Interrupt Moderation*' |
+  Select-Object Name, DisplayName, DisplayValue</pre>
+<ul>
+<li><strong>1. rida:</strong> küsi kõigilt võrgukaartidelt (<code>-Name *</code>) seaded, mille nimes on „Interrupt Moderation“.</li>
+<li><strong>2. rida:</strong> näita kaardi nime, seade nime ja väärtust (Enabled või Disabled). Virtuaalsetel kaartidel seda seadet sageli ei ole.</li>
+</ul>
+<h3>3. Kas DMA-kaitse on sees</h3>
+<p>Käivita <code>msinfo32</code> ja otsi süsteemi kokkuvõttest rida „Kernel DMA Protection“ (Tuuma DMA-kaitse). Väärtus „On“ tähendab, et IOMMU piirab välisseadmete ligipääsu mälule.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">peatükk 14, Sisend ja väljund</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=56,steps=[{"t0": 0, "t1": 6}, {"t0": 6, "t1": 17}, {"t0": 17, "t1": 28}, {"t0": 28, "t1": 38}, {"t0": 38, "t1": 46}, {"t0": 46, "t1": 56}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

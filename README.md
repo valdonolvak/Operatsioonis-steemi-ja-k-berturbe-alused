@@ -63,6 +63,8 @@ Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-fail
 - [Arvuti alglaadimine toitenupust töölauani](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/alglaadimine.html) · peatükk 4.12
 - [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) · peatükk 4.4
 - [Virtuaalmälu: aadressi tõlkimine ja leheviga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/maluhaldus.html) · peatükk 12.3
+- [Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kysitlus-katkestus-dma.html) · peatükk 14.7–14.9
+- [Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-lugemine-irp.html) · peatükk 14.11
 - [Paketi teekond: mis juhtub, kui avad veebilehe](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paketi-teekond.html) · peatükk 17
 - [Null-usaldus: sama kasutaja, neli erinevat otsust](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/null-usaldus.html) · peatükk 22.2
 - [Logidest ründe jutt: RDP-rünnak sündmuste ID-de kaupa](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/logidest-ryndeni.html) · peatükk 22

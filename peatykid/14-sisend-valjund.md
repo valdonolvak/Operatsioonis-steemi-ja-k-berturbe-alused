@@ -139,6 +139,10 @@ Seade annab katkestusega teada, et operatsioon on lõppenud või andmed on saabu
 
 Joonis: küsitluse korral kontrollib protsessor seadet tühja ja kopeerib andmeid ise; katkestustega teeb ta vahepeal muud tööd, kuid kopeerib endiselt ise; DMA puhul seadistab ta ülekande ja saab lõpus ühe katkestuse.
 
+![Animatsioon: küsitlus, katkestused ja DMA](../animatsioonid/kysitlus-katkestus-dma.svg)
+
+**Animatsioon:** [Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kysitlus-katkestus-dma.html) võrdleb kolme viisi samade kolme andmeploki näitel ja näitab, millal protsessor saab muud tööd teha. Viimane samm näitab, kuidas IOMMU peatab tundmatu seadme katse kirjutada tuuma mällu. Lehel on lahti seletatud mõisted ja praktilised käsud.
+
 > 🖱️ **Proovi ise:** [küsitluse, katkestuste ja DMA simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/14-sisend-valjund.html#kysitlus). Muuda seadme kiirust ja vaata, millal on küsitlus katkestustest parem.
 
 **Turvarisk.** Kuna DMA-seade saab kirjutada mis tahes mäluaadressile, on see turvarisk. Ründaja, kellel on lühiajaline füüsiline juurdepääs lukustatud sülearvutile, võib ühendada Thunderbolt- või PCIe-pordiga pahatahtliku seadme ja lugeda mälust krüptovõtmeid või muuta tuuma koodi (nt *Thunderspy*, 2020). Kaitse: **IOMMU** ja Windowsi **Kernel DMA Protection**, mis lubab välisseadmele ainult talle määratud mälupiirkonnad. Kas kaitse on sees, näeb `msinfo32` alt.
@@ -179,13 +183,17 @@ Tavaline faili lugemine:
 1. Rakendus kutsub `ReadFile`.
 2. `ntdll.dll` teeb süsteemikutse `NtReadFile`.
 3. S/V-haldur loob IRP ja saadab selle failisüsteemi draiverile (NTFS).
-4. Kui andmed on vahemälus, kopeeritakse need sealt; muidu saadab NTFS päringu edasi helitugevushaldurile ja kettadraiverile.
+4. Kui andmed on vahemälus, kopeeritakse need sealt; muidu saadab NTFS päringu edasi köitehaldurile ja kettadraiverile.
 5. Kettadraiver programmeerib kontrolleri, kontroller teeb DMA ja annab katkestuse.
 6. ISR → DPC → IRP lõpetatakse ja tulemus jõuab rakenduseni.
 
 ![faili lugemine · IRP draiverite pinus, vahemälu otsetee ja lõpetamine](../pildid/14-a.png)
 
 Joonis: kui andmed on vahemälus, lõpeb päring kohe; muidu liigub IRP draiverite pinus alla seadmeni ning lõpetatakse katkestuse ja DPC kaudu.
+
+![Animatsioon: faili lugemine, IRP, ISR ja DPC](../animatsioonid/faili-lugemine-irp.svg)
+
+**Animatsioon:** [Faili lugemine Windowsis: IRP, katkestus, ISR ja DPC](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-lugemine-irp.html) näitab sama teekonda seitsme sammuga ja selle kõrval lõime olekut: lõim jääb ootele, protsessor täidab vahepeal teist lõime, katkestus käivitab ISR-i ja DPC ning lõim ärkab. Viimane samm näitab teist lugemist, mis saab vastuse vahemälust.
 
 **IRP** on nagu saatekiri, mis liigub osakonnast osakonda: igaüks loeb, mida temalt oodatakse, teeb oma osa ja saadab kirja edasi. Kui töö on tehtud, liigub kiri sama teed tagasi ja igaüks saab vajadusel tulemust kontrollida (nt BitLocker dekrüpteerib loetud andmed).
 
