@@ -61,6 +61,8 @@ See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi nä
 Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-failid mängivad peatükkides automaatselt; juhtnuppudega lehtedel saab animatsiooni peatada, liikuda sammhaaval ja muuta kiirust.
 
 - [Arvuti alglaadimine toitenupust töölauani](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/alglaadimine.html) · peatükk 4.12
+- [PXE: kuidas arvuti võrgust käivitub](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/pxe-alglaadimine.html) · peatükk 4.12
+- [Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paigaldus-yle-vorgu.html) · peatükk 4.12
 - [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) · peatükk 4.4
 - [Virtuaalmälu: aadressi tõlkimine ja leheviga](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/maluhaldus.html) · peatükk 12.3
 - [Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kysitlus-katkestus-dma.html) · peatükk 14.7–14.9

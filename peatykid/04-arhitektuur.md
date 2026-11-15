@@ -230,6 +230,18 @@ Kui Windows ei käivitu kaks korda järjest, avaneb automaatselt **taastekeskkon
 
 Linuxis on ahel sama kujuga: UEFI → alglaadur **GRUB** (või systemd-boot) → tuum `vmlinuz` koos ajutise juurfailisüsteemiga **initramfs**, milles on kettadraiverid → esimene protsess **systemd** (PID 1), mis käivitab teenused → sisselogimine. Secure Booti jaoks kasutab enamik distributsioone Microsofti allkirjastatud vahelaadurit *shim*.
 
+#### Alglaadimine võrgust (PXE)
+
+Arvuti ei pea käivituma kettalt. **PXE** (Preboot Execution Environment) abil küsib UEFI püsivara võrgust IP-aadressi (DHCP), laadib alglaaduri ja alglaadimistõmmise alla (TFTP) ning käivitab need põhimälust. Nii paigaldatakse operatsioonisüsteem tühja kettaga arvutitesse: Windowsis pakub seda teenust WDS, Linuxis näiteks dnsmasq. Turvaline alglaadimine kehtib ka võrgust käivitamisel.
+
+![Animatsioon: PXE-alglaadimine võrgust](../animatsioonid/pxe-alglaadimine.svg)
+
+**Animatsioon:** [PXE: kuidas arvuti võrgust käivitub](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/pxe-alglaadimine.html) näitab sõnumite kaupa, kuidas tühja kettaga arvuti saab võrgust IP-aadressi, alglaaduri ja alglaadimistõmmise. Lehel on mõistete tabel, portide ja veaotsingu tabel ning harjutused. Kui link ei avane, ava fail [`animatsioonid/pxe-alglaadimine.html`](../animatsioonid/pxe-alglaadimine.html).
+
+![Animatsioon: paigaldus üle võrgu WDS-i ja Linuxiga](../animatsioonid/paigaldus-yle-vorgu.svg)
+
+**Animatsioon:** [Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paigaldus-yle-vorgu.html) võrdleb seitsme sammu kaupa Windowsi automaatpaigaldust WDS-iga ja Debiani võrgupaigaldust. Lehel on mõistete tabel, WDS-i praegune seis ja seadistusnäited rida-realt selgitustega. Kui link ei avane, ava fail [`animatsioonid/paigaldus-yle-vorgu.html`](../animatsioonid/paigaldus-yle-vorgu.html).
+
 #### Proovi ise
 
 Ava PowerShell administraatorina:
