@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Paigutus: üks veerg; joonis täislaiuses, selle all juhtnupud, sammude loend ja lisamaterjal. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2433; --quiet:#5b6578; --line:#cfd5de; --accent:#2563a8; --accent-soft:#e3edf8;
+  --font-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+}
+:root[data-theme="dark"]{ --bg:#12161d; --surface:#1b212b; --ink:#e6eaf0; --quiet:#9aa5b6; --line:#333c4a; --accent:#7fb2ea; --accent-soft:#22324a; color-scheme:dark; }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55}
+main{max-width:1000px;margin:0 auto;padding:28px 16px 56px;display:flex;flex-direction:column;gap:20px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);margin:0}
+h1{font-size:clamp(24px,4vw,32px);line-height:1.2;margin:4px 0 0;text-wrap:balance;font-weight:600}
+h3{font-size:16.5px;margin:20px 0 6px;font-weight:600}
+section.extra ol{padding-left:22px;margin:8px 0}
+h2{font-size:20px;margin:0 0 8px;font-weight:600;text-wrap:balance}
+.lead{max-width:68ch;color:var(--quiet);margin:8px 0 0}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;min-width:640px;height:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.controls button,.controls select{font:inherit;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.controls button.primary{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600;min-width:92px}
+.controls button:focus-visible,.controls select:focus-visible,.step:focus-visible,input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{font-size:14px;color:var(--quiet);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{flex:1 1 180px;min-width:140px;accent-color:var(--accent)}
+ol.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start;width:100%;height:100%;text-align:left;font:inherit;color:inherit;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.step .num{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:14px;background:var(--bg);color:var(--quiet);font-variant-numeric:tabular-nums}
+.step .body{display:flex;flex-direction:column;gap:2px;font-size:14.5px;color:var(--quiet)}
+.step .body strong{color:var(--ink);font-size:15.5px;font-weight:600}
+.step.on{border-color:var(--accent);background:var(--accent-soft)}
+.step.on .num{background:var(--accent);color:var(--surface)}
+section.extra{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+section.extra p,section.extra li{max-width:72ch}
+section.extra ul{padding-left:20px;margin:8px 0}
+pre{font-family:var(--font-mono);font-size:13.5px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--font-mono);font-size:.92em}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:8px 0}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--quiet);font-weight:600}
+footer{font-size:14px;color:var(--quiet)}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
+<h1>Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine</h1>
+<p class="lead">Animatsioon võrdleb, kuidas NTFS ja ext4 (logi) ning APFS, Btrfs ja ReFS (kirjutamisel kopeerimine) jäävad terveks, kui toide katkeb poole muudatuse pealt.</p>
+</header>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 518" role="img" aria-label="Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
+<rect width="960" height="518" rx="14" fill="#f4f6f9"/>
+<text x="24" y="32" font-size="17" font-weight="600" fill="#1d2433" text-anchor="start">Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine</text>
+<rect x="24" y="48" width="444" height="336" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="40" y="72" font-size="13.5" font-weight="600" fill="#2563a8" text-anchor="start">Logiga failisüsteem: NTFS, ext4</text>
+<rect x="492" y="48" width="444" height="336" rx="8" fill="none" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="508" y="72" font-size="13.5" font-weight="600" fill="#6b4bb5" text-anchor="start">Kirjutamisel kopeerimine: APFS, Btrfs, ReFS</text>
+<rect x="40" y="84" width="412" height="50" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="52" y="101" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Faili kirje (MFT kirje või inode)</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.556;0.56;1"/><text x="52" y="123" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">aruanne.docx · plokid 1 2 3</text></g><g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.56;0.564;1"/><text x="52" y="123" font-size="11" font-weight="600" fill="#2e7d4f" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">aruanne.docx · plokid 1 2 3 4</text></g>
+<rect x="40" y="142" width="412" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="52" y="159" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Vabade plokkide kaart ($Bitmap, block bitmap)</text>
+<rect x="48" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="70" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">1</text><rect x="48" y="168" width="44" height="24" rx="4" fill="#2563a8" fill-opacity="0.85"/><text x="70" y="185" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">1</text><rect x="98" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="120" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">2</text><rect x="98" y="168" width="44" height="24" rx="4" fill="#2563a8" fill-opacity="0.85"/><text x="120" y="185" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">2</text><rect x="148" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="170" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">3</text><rect x="148" y="168" width="44" height="24" rx="4" fill="#2563a8" fill-opacity="0.85"/><text x="170" y="185" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">3</text><rect x="198" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="220" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">4</text><rect x="248" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="270" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">5</text><rect x="298" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="320" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">6</text><rect x="348" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="370" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">7</text><rect x="398" y="168" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="420" y="185" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">8</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.33;0.335;1"/><rect x="198" y="168" width="44" height="24" rx="4" fill="#2563a8" fill-opacity="0.85"/><text x="220" y="185" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">4</text></g>
+<rect x="40" y="212" width="412" height="92" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="52" y="229" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Logi</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.17;0.176;1"/><text x="52" y="250" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">1. märgi plokk 4 hõivatuks</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.196;0.202;1"/><text x="52" y="269" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start">2. lisa plokk 4 faili kirjesse</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.224;0.23;1"/><text x="52" y="288" font-size="11" font-weight="600" fill="#2e7d4f" text-anchor="start">tehing kinnitatud ✓</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.33;0.336;1"/><text x="440" y="250" font-size="10.5" font-weight="600" fill="#2e7d4f" text-anchor="end">tehtud ✓</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.56;0.566;1"/><text x="440" y="269" font-size="10.5" font-weight="600" fill="#2e7d4f" text-anchor="end">tehtud logi põhjal ✓</text></g>
+<rect x="40" y="312" width="412" height="60" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.326;0.33;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Kirje ja kaart ütlevad sama: fail kasutab plokke 1–3.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.33;0.334;0.356;0.36;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#b26a00" text-anchor="start">Tehing pooleli</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Kaart on uuendatud, faili kirje veel mitte.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.36;0.364;0.456;0.46;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">TOIDE KATKES</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Faili kirje jäi uuendamata.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.46;0.464;0.556;0.56;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">VASTUOLU pärast taaskäivitust</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Plokk 4 on hõivatud, kuid ei kuulu ühelegi failile.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.56;0.564;0.826;0.83;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Logi põhjal viidi kinnitatud tehing lõpule.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.83;0.834;1"/><text x="52" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="52" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Hind: metaandmed kirjutati kaks korda (logi ja õige koht).</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1;0;0" keyTimes="0;0.164;0.17;0.286;0.292;0.52;0.526;0.622;0.628;1"/><rect x="40" y="212" width="412" height="92" rx="8" fill="#2563a8" fill-opacity="0.13" stroke="#2563a8" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.56;0.566;0.622;0.628;1"/><rect x="40" y="84" width="412" height="50" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<rect x="622" y="84" width="184" height="36" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="714" y="107" font-size="11" font-weight="600" fill="#1d2433" text-anchor="middle">Juurviit (kontrollpunkt)</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.746;0.75;1"/><line x1="688" y1="120" x2="606" y2="142" stroke="#1d2433" stroke-width="2.5"/><circle cx="606" cy="142" r="4" fill="#1d2433"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.75;0.754;1"/><line x1="740" y1="120" x2="822" y2="142" stroke="#2e7d4f" stroke-width="2.5"/><circle cx="822" cy="142" r="4" fill="#2e7d4f"/></g>
+<rect x="508" y="142" width="196" height="62" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.836;0.84;1"/><text x="520" y="160" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Vana kirje</text></g><g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.84;0.844;1"/><text x="520" y="160" font-size="9.5" font-weight="600" fill="#b26a00" text-anchor="start">Vana kirje = hetktõmmis</text></g>
+<text x="520" y="186" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokid 1 2 3</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1" keyTimes="0;0.21;0.216;0.484;0.49;0.68;0.686;1"/><rect x="724" y="142" width="196" height="62" rx="8" fill="#ffffff" stroke="#6b4bb5" stroke-width="1.25"  stroke-dasharray="5 4"/><text x="736" y="160" font-size="9.5" font-weight="600" fill="#6b4bb5" text-anchor="start">Uus kirje (vabas kohas)</text><text x="736" y="186" font-size="11" font-weight="600" fill="#1d2433" text-anchor="start" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">plokid 1 2 3 4</text></g>
+<rect x="508" y="212" width="412" height="92" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<text x="520" y="229" font-size="9.5" font-weight="600" fill="#5b6578" text-anchor="start">Plokid kettal</text>
+<rect x="516" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="538" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">1</text><rect x="516" y="240" width="44" height="24" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><text x="538" y="257" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">1</text><rect x="566" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="588" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">2</text><rect x="566" y="240" width="44" height="24" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><text x="588" y="257" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">2</text><rect x="616" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="638" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">3</text><rect x="616" y="240" width="44" height="24" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><text x="638" y="257" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">3</text><rect x="666" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="688" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">4</text><rect x="716" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="738" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">5</text><rect x="766" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="788" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">6</text><rect x="816" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="838" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">7</text><rect x="866" y="240" width="44" height="24" rx="4" fill="#f4f6f9" stroke="#b9c0cc"/><text x="888" y="257" font-size="11" font-weight="400" fill="#5b6578" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">8</text>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1" keyTimes="0;0.18;0.185;0.485;0.49;0.66;0.665;1"/><rect x="666" y="240" width="44" height="24" rx="4" fill="#6b4bb5" fill-opacity="0.85"/><text x="688" y="257" font-size="11" font-weight="600" fill="#fff" text-anchor="middle" font-family="'IBM Plex Mono',ui-monospace,Consolas,'Liberation Mono',monospace">4</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0;1;1" keyTimes="0;0.18;0.186;0.484;0.49;0.66;0.666;1"/><text x="520" y="290" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start">plokk 4 kirjutati vabasse kohta, plokke 1–3 ei puudutatud</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.49;0.496;0.654;0.66;1"/><text x="520" y="290" font-size="10.5" font-weight="400" fill="#5b6578" text-anchor="start">plokk 4 on jälle vaba</text></g>
+<rect x="508" y="312" width="412" height="60" rx="8" fill="#ffffff" stroke="#b9c0cc" stroke-width="1.25"/>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.176;0.18;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Juurviit näitab kirjele, mis kasutab plokke 1–3.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.18;0.184;0.356;0.36;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Uus kirje on valmis, juurviit näitab endiselt vanale.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.36;0.364;0.456;0.46;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#c2362b" text-anchor="start">TOIDE KATKES</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Juurviit jäi lülitamata.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.46;0.464;0.656;0.66;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Kehtib vana olek, parandada ei ole midagi.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.66;0.664;0.746;0.75;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Uuesti salvestamine: uus kirje kirjutatakse vabasse kohta.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.75;0.754;0.826;0.83;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Juurviit lülitus ühe kirjutusega uuele kirjele.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.83;0.834;1"/><text x="520" y="334" font-size="12" font-weight="600" fill="#2e7d4f" text-anchor="start">Kooskõlas ✓</text><text x="520" y="356" font-size="11" font-weight="400" fill="#1d2433" text-anchor="start">Boonus: vana kirje on alles ja toimib hetktõmmisena.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.75;0.756;0.806;0.812;1"/><rect x="622" y="84" width="184" height="36" rx="8" fill="#2e7d4f" fill-opacity="0.13" stroke="#2e7d4f" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.84;0.846;0.982;0.988;1"/><rect x="508" y="142" width="196" height="62" rx="8" fill="#b26a00" fill-opacity="0.13" stroke="#b26a00" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.36;0.366;0.446;0.452;1"/><rect x="24" y="48" width="444" height="336" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.36;0.366;0.446;0.452;1"/><rect x="492" y="48" width="444" height="336" rx="8" fill="#c2362b" fill-opacity="0.13" stroke="#c2362b" stroke-width="2.5"/></g>
+<rect x="24" y="394" width="912" height="94" rx="8" fill="#ffffff" stroke="#b9c0cc"/>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.135;0.14;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 1/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Fail kasvab ühe ploki võrra</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Fail aruanne.docx kasutab plokke 1–3 ja vajab neljandat. Selleks tuleb muuta mitut kohta kettal. Kui toide</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">katkeb nende vahel, jääb failisüsteem vastuollu. Vasakul lahendab selle logi, paremal kirjutamisel kopeerimine.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.14;0.145;0.295;0.3;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 2/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Ettevalmistus</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Logiga failisüsteem kirjutab kõigepealt logisse, mida ta kavatseb teha, ja kinnitab tehingu.</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kopeeriv failisüsteem kirjutab uue ploki ja faili uue kirje vabasse kohta. Vana kirje jääb puutumata.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.3;0.305;0.455;0.46;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 3/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Toide katkeb poole pealt</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Vasakul jõuti plokk 4 kaardil hõivatuks märkida, kuid faili kirje jäi uuendamata. Paremal on uus kirje valmis,</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kuid juurviit näitab endiselt vanale kirjele. Mõlemas on muudatus pooleli.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.46;0.465;0.635;0.64;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 4/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Taaskäivitus</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Logiga failisüsteem märkab vastuolu, loeb logi ja viib kinnitatud tehingu lõpule: fail saab ploki 4.</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kopeeriv failisüsteem ei pea midagi parandama: kehtib vana kirje ja pooleli jäänud plokid on lihtsalt vabad.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.64;0.645;0.815;0.82;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 5/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Kopeerimisel on kinnitamine üks kirjutus</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Mari salvestab uuesti. Uus kirje kirjutatakse jälle vabasse kohta ja seejärel lülitatakse juurviit ühe</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">kirjutusega uuele kirjele. See üks kirjutus kas õnnestub või ei õnnestu, vahepealset olekut ei ole.</text></g>
+<g opacity="0"><animate attributeName="opacity" dur="50s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.82;0.825;1"/><text x="40" y="418" font-size="11" font-weight="600" fill="#2563a8" text-anchor="start">Samm 6/6</text><text x="112" y="418" font-size="14" font-weight="600" fill="#1d2433" text-anchor="start">Mis kumbki maksab ja mida annab</text><text x="40" y="440" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Logi hind: metaandmed kirjutatakse kaks korda. Kopeerimise hind: fail killustub, seepärast sobib see SSD-le.</text><text x="40" y="458" font-size="12.5" font-weight="400" fill="#5b6578" text-anchor="start">Kopeerimise boonus: kui vana kirjet ei kustutata, on see valmis hetktõmmis faili varasemast olekust.</text></g>
+<rect x="24" y="500" width="912" height="5" rx="2.5" fill="#b9c0cc"/>
+<rect x="24" y="500" width="0" height="5" rx="2.5" fill="#2563a8"><animate attributeName="width" dur="50s" repeatCount="indefinite" values="0;912" keyTimes="0;1"/></rect>
+<rect x="150.7" y="498" width="2" height="9" fill="#f4f6f9"/>
+<rect x="296.6" y="498" width="2" height="9" fill="#f4f6f9"/>
+<rect x="442.5" y="498" width="2" height="9" fill="#f4f6f9"/>
+<rect x="606.7" y="498" width="2" height="9" fill="#f4f6f9"/>
+<rect x="770.8" y="498" width="2" height="9" fill="#f4f6f9"/>
+</svg>
+</figure>
+<div class="controls">
+<button type="button" class="primary" id="play">Paus</button>
+<button type="button" id="prev">◀ Eelmine samm</button>
+<button type="button" id="next">Järgmine samm ▶</button>
+<label for="speed">Kiirus <select id="speed"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+<input type="range" id="scrub" min="0" max="50" step="0.05" value="0" aria-label="Animatsiooni ajajoon">
+</div>
+<section aria-label="Sammud">
+<h2>Sammud</h2>
+<ol class="steps">
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Fail kasvab ühe ploki võrra</strong><span>Faili kasvamisel tuleb teha mitu eraldi kirjutust: märkida plokk hõivatuks ja lisada see faili kirjesse. Ketas ei oska kahte kohta korraga muuta, nii et nende vahele võib jääda toitekatkestus. Failisüsteem peab tagama, et pärast seda ei oleks struktuur vigane.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Ettevalmistus</strong><span><strong>Logi:</strong> kogu tehing kirjutatakse enne logisse ja märgitakse kinnitatuks. Alles siis hakatakse muutma päris struktuure. <strong>Kirjutamisel kopeerimine:</strong> olemasolevat kirjet ei muudeta, selle kõrvale kirjutatakse uus versioon.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Toide katkeb poole pealt</strong><span>See on halvim hetk: osa kirjutusi on tehtud, osa mitte. Ilma kaitseta failisüsteemis (FAT) jääks plokk „kadunuks“ ja selle leidmiseks tuleks kogu ketas läbi kontrollida (<code>chkdsk</code>, <code>fsck</code>).</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Taaskäivitus</strong><span><strong>Logi taasesitus</strong> võtab sekundeid, sest läbi tuleb vaadata ainult logi, mitte kogu ketas. Kinnitatud tehing viiakse lõpule, kinnitamata tehing visatakse ära. <strong>Kopeerivas failisüsteemis</strong> on pärast katkestust alles kas vana või uus olek, mitte kunagi pool kummastki.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Kopeerimisel on kinnitamine üks kirjutus</strong><span>Juurviida lülitamine on <strong>aatomiline</strong>: üks kirjutus ühte kohta. Enne seda kehtib vana olek, pärast seda uus. Seepärast ei ole APFS-il, Btrfs-il ega ReFS-il logi vaja.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Mis kumbki maksab ja mida annab</strong><span>Logi kaitseb failisüsteemi <strong>struktuuri</strong>, mitte tingimata faili sisu: pooleli jäänud salvestuse eest kaitseb rakendus ise, kirjutades uue versiooni ajutisse faili ja nimetades selle ümber. Kopeeriv failisüsteem saab <strong>hetktõmmised ja kloonid</strong> peaaegu tasuta, sest vanad plokid on niikuinii alles.</span></span></button></li>
+</ol>
+</section>
+<section class="extra">
+<h2>Mõisted</h2>
+<div class="tablewrap"><table>
+<tr><th>Mõiste</th><th>Selgitus</th></tr>
+<tr><td><strong>Kooskõla</strong> (consistency)</td><td>Failisüsteemi struktuurid ei räägi üksteisele vastu: iga hõivatud plokk kuulub mõnele failile ja iga faili plokid on hõivatuks märgitud.</td></tr>
+<tr><td><strong>Tehing</strong> (transaction)</td><td>Rühm muudatusi, mis peavad toimuma kas kõik või mitte ükski.</td></tr>
+<tr><td><strong>Logi</strong> (journal)</td><td>Kettaala, kuhu tehing kirjutatakse enne päris muudatusi. NTFS-is <code>$LogFile</code>, ext4-s journal.</td></tr>
+<tr><td><strong>Kinnitamine</strong> (commit)</td><td>Märge logis, et tehing on täielikult kirja pandud ja selle võib pärast krahhi lõpule viia.</td></tr>
+<tr><td><strong>Logi taasesitus</strong> (replay)</td><td>Taaskäivitusel loetakse logi: kinnitatud tehingud viiakse lõpule, kinnitamata visatakse ära.</td></tr>
+<tr><td><strong>Vabade plokkide kaart</strong></td><td>Bitikaart, kus iga bitt ütleb, kas plokk on vaba või hõivatud. NTFS-is <code>$Bitmap</code>.</td></tr>
+<tr><td><strong>Kirjutamisel kopeerimine</strong> (copy-on-write, CoW)</td><td>Olemasolevat plokki ei kirjutata üle. Muudetud versioon läheb vabasse kohta ja seejärel lülitatakse viit.</td></tr>
+<tr><td><strong>Aatomiline</strong></td><td>Toiming, millel ei ole vahepealset olekut: see kas toimus täielikult või ei toimunud üldse.</td></tr>
+<tr><td><strong>Hetktõmmis</strong> (snapshot)</td><td>Failisüsteemi seis ühel ajahetkel. Kopeerivas failisüsteemis piisab selleks vana viida allesjätmisest.</td></tr>
+<tr><td><strong>Kloon</strong></td><td>Faili koopia, mis viitab esialgu samadele plokkidele kui originaal (APFS, ReFS, Btrfs-i ja XFS-i reflink).</td></tr>
+<tr><td><strong>chkdsk, fsck</strong></td><td>Tööriistad, mis kontrollivad kogu failisüsteemi kooskõla. Logita failisüsteemis tuli neid käivitada pärast iga krahhi.</td></tr>
+</table></div>
+<h2>Kes mida kasutab</h2>
+<div class="tablewrap"><table>
+<tr><th>Failisüsteem</th><th>Kaitse</th><th>Hetktõmmised</th></tr>
+<tr><td>FAT32, exFAT</td><td>puudub</td><td>ei</td></tr>
+<tr><td>NTFS</td><td>metaandmete logi</td><td>eraldi teenus (varikoopiad, VSS)</td></tr>
+<tr><td>ext4</td><td>logi (vaikimisi metaandmed; sisu kirjutatakse enne tehingu kinnitamist)</td><td>ainult LVM-i abil</td></tr>
+<tr><td>XFS</td><td>metaandmete logi</td><td>ei, kuid kloonid on (reflink)</td></tr>
+<tr><td>APFS, Btrfs, ReFS</td><td>kirjutamisel kopeerimine</td><td>jah, sisseehitatud</td></tr>
+</table></div>
+</section>
+<section class="extra">
+<h2>Proovi ise</h2>
+<h3>Windows (PowerShell administraatorina)</h3>
+<pre>fsutil dirty query C:
+fsutil fsinfo ntfsinfo C:
+fsutil usn queryjournal C:
+chkdsk C: /scan</pre>
+<ul>
+<li><strong>1. rida:</strong> küsi, kas köide on märgitud „mustaks“ (dirty). Must köide tähendab, et Windows kahtlustab vastuolu ja kontrollib köidet järgmisel käivitusel.</li>
+<li><strong>2. rida:</strong> näita NTFS-i üldandmeid: klastri suurus, MFT asukoht ja suurus.</li>
+<li><strong>3. rida:</strong> näita muudatuste päeviku (USN Journal) olekut. See ei ole sama mis <code>$LogFile</code>: USN-päevik ütleb programmidele, millised failid muutusid.</li>
+<li><strong>4. rida:</strong> kontrolli köite kooskõla töö ajal, midagi parandamata.</li>
+</ul>
+<p>Mida otsida: tavaolukorras vastab esimene käsk „Volume – C: is NOT Dirty“ ja <code>chkdsk</code> ei leia vigu, sest logi hoiab struktuuri korras ka pärast ootamatut väljalülitamist.</p>
+<h3>Linux (terminal)</h3>
+<pre>findmnt -no FSTYPE,OPTIONS /
+sudo dumpe2fs -h $(findmnt -no SOURCE /) | grep -i journal
+sudo journalctl -k | grep -i 'EXT4-fs'</pre>
+<ul>
+<li><strong>1. rida:</strong> näita juurfailisüsteemi tüüpi ja ühendamise valikuid.</li>
+<li><strong>2. rida:</strong> loe ext4 ülemploki päis ja näita logi puudutavaid ridu. <code>findmnt -no SOURCE /</code> annab seadme nime, näiteks <code>/dev/sda2</code>.</li>
+<li><strong>3. rida:</strong> otsi tuuma logist ext4 teateid.</li>
+</ul>
+<p>Mida otsida: teises väljundis rida <code>has_journal</code> ja logi suurus. Kui arvuti lülitati eelmisel korral välja toitenupust, on kolmandas väljundis rida „recovery complete“: see ongi logi taasesitus. Kui juurfailisüsteem ei ole ext4, annab teine käsk vea.</p>
+<h3>macOS (Terminal)</h3>
+<pre>tmutil localsnapshot
+tmutil listlocalsnapshots /
+diskutil apfs listSnapshots /</pre>
+<ul>
+<li><strong>1. rida:</strong> tee kohe kohalik hetktõmmis.</li>
+<li><strong>2. rida:</strong> näita juurköite kohalikke hetktõmmiseid.</li>
+<li><strong>3. rida:</strong> näita samu hetktõmmiseid APFS-i vaates koos tunnustega.</li>
+</ul>
+<p>Mida otsida: hetktõmmis tekib kohe ja ei võta alguses ruumi, sest see on ainult viit olemasolevatele plokkidele.</p>
+</section>
+<footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/15-failisusteemid.md">peatükk 15, Failisüsteemid</a>.</footer>
+</main>
+<script>
+(function(){
+  var svg=document.getElementById('anim'),T=50,steps=[{"t0": 0, "t1": 7}, {"t0": 7, "t1": 15}, {"t0": 15, "t1": 23}, {"t0": 23, "t1": 32}, {"t0": 32, "t1": 41}, {"t0": 41, "t1": 50}];
+  var playBtn=document.getElementById('play'),scrub=document.getElementById('scrub'),speedSel=document.getElementById('speed');
+  var cards=[].slice.call(document.querySelectorAll('.step'));
+  var t=0,playing=!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches),last=null,cur=-1;
+  try{svg.pauseAnimations();}catch(e){}
+  function stepAt(x){for(var i=0;i<steps.length;i++){if(x>=steps[i].t0&&x<steps[i].t1)return i;}return steps.length-1;}
+  function show(){
+    try{svg.setCurrentTime(t);}catch(e){}
+    scrub.value=t;
+    var i=stepAt(t);
+    if(i!==cur){cur=i;cards.forEach(function(c,k){c.classList.toggle('on',k===i);c.setAttribute('aria-current',k===i?'step':'false');});}
+    playBtn.textContent=playing?'Paus':'Esita';
+  }
+  function go(x,stop){t=((x%T)+T)%T;if(stop)playing=false;show();}
+  function frame(now){
+    if(last!==null&&playing){t+=(now-last)/1000*parseFloat(speedSel.value);if(t>=T)t-=T;show();}
+    last=now;requestAnimationFrame(frame);
+  }
+  playBtn.addEventListener('click',function(){playing=!playing;show();});
+  document.getElementById('prev').addEventListener('click',function(){var i=stepAt(t);go(steps[(i-1+steps.length)%steps.length].t0+0.02,true);});
+  document.getElementById('next').addEventListener('click',function(){var i=stepAt(t);go(steps[(i+1)%steps.length].t0+0.02,true);});
+  scrub.addEventListener('input',function(){go(parseFloat(scrub.value),true);});
+  cards.forEach(function(c){c.addEventListener('click',function(){go(steps[+c.dataset.i].t0+0.02,false);playing=true;show();});});
+  show();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

@@ -69,6 +69,9 @@ Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-fail
 - [Varundus: täis, inkrementaalne ja diferentsiaalne](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/varundus.html) · peatükk 16.4
 - [Kuhu planeerija lõime paneb: P-tuumad, E-tuumad ja afiinsus](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/planeerimine-mitmel-tuumal.html) · peatükk 10.2
 - [Vale jagamine: kuidas üks vahemälurida kaks tuuma aeglaseks teeb](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/vale-jagamine.html) · peatükk 10.4
+- [Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/logi-ja-kirjutamisel-kopeerimine.html) · peatükk 15.2
+- [Faili salvestamine: NTFS, ext4 ja APFS kõrvuti](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-salvestamine-ntfs-ext4-apfs.html) · peatükk 15.10
+- [Faili kustutamine: mis kaob ja millal](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-kustutamine.html) · peatükk 15.10
 - [Paketi teekond: mis juhtub, kui avad veebilehe](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/paketi-teekond.html) · peatükk 17
 - [Null-usaldus: sama kasutaja, neli erinevat otsust](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/null-usaldus.html) · peatükk 22.2
 - [Logidest ründe jutt: RDP-rünnak sündmuste ID-de kaupa](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/logidest-ryndeni.html) · peatükk 22

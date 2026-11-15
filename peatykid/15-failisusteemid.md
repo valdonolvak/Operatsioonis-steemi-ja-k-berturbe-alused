@@ -69,6 +69,10 @@ Joonis: iga fail on MFT kirje, mis koosneb atribuutidest. Väikese faili sisu ($
 
 Joonis: NTFS kirjutab kavatsuse enne muudatust logisse. Pärast katkestust loeb ta logi ja kas tühistab pooleli jäänud tehingu või viib selle lõpuni – seetõttu ei pea NTFS-i puhul pärast iga krahhi `chkdsk`-i tegema, nagu FAT-i puhul.
 
+![Animatsioon: logi ja kirjutamisel kopeerimine](../animatsioonid/logi-ja-kirjutamisel-kopeerimine.svg)
+
+**Animatsioon:** [Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/logi-ja-kirjutamisel-kopeerimine.html) võrdleb, kuidas NTFS ja ext4 (logi) ning APFS, Btrfs ja ReFS (kirjutamisel kopeerimine) jäävad pärast toitekatkestust terveks. Lehel on mõistete tabel ja harjutused Windowsi, Linuxi ja macOS-i jaoks. Kui link ei avane, ava fail [`animatsioonid/logi-ja-kirjutamisel-kopeerimine.html`](../animatsioonid/logi-ja-kirjutamisel-kopeerimine.html).
+
 ### 15.3 ReFS ja Dev Drive
 
 **ReFS** (Resilient File System, Windows Server 2012) on loodud suurte andmemahtude ja töökindluse jaoks:
@@ -273,6 +277,14 @@ ls -l@ ~/Downloads                      # atribuudid ls-i väljundis
 **Miks Windows ei luba avatud faili kustutada, aga Linux lubab?** Windowsis tuleb sageli teade „Toimingut ei saa lõpule viia, sest fail on avatud programmis X“. Windows seob avatud faili tema nimega. Linuxis ja macOS-is on nimi ja fail eraldi (inode), nii et nime saab eemaldada ka siis, kui fail on lahti – fail ise kaob, kui viimane protsess selle sulgeb. Seetõttu saab Linuxis uuendada programme nende töötamise ajal ilma taaskäivituseta.
 
 > 🖱️ **Proovi ise:** [failinimede kontroll kolmes OS-is](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/15-failisusteemid.html#nimed)
+
+![Animatsioon: faili salvestamine kolmes failisüsteemis](../animatsioonid/faili-salvestamine-ntfs-ext4-apfs.svg)
+
+**Animatsioon:** [Faili salvestamine: NTFS, ext4 ja APFS kõrvuti](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-salvestamine-ntfs-ext4-apfs.html) näitab samm-sammult, mis juhtub uue faili salvestamisel Windowsis, Linuxis ja macOS-is. Lehel on mõistete tabel, võrdlustabel ja harjutused kõigi kolme jaoks rida-realt selgitustega. Kui link ei avane, ava fail [`animatsioonid/faili-salvestamine-ntfs-ext4-apfs.html`](../animatsioonid/faili-salvestamine-ntfs-ext4-apfs.html).
+
+![Animatsioon: faili kustutamine kolmes operatsioonisüsteemis](../animatsioonid/faili-kustutamine.svg)
+
+**Animatsioon:** [Faili kustutamine: mis kaob ja millal](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/faili-kustutamine.html) võrdleb, mis juhtub faili nime, kirje ja andmetega prügikasti panemisel, prügikasti tühjendamisel ja pärast seda. Lehel on mõistete tabel ja harjutused kõigi kolme jaoks rida-realt selgitustega. Kui link ei avane, ava fail [`animatsioonid/faili-kustutamine.html`](../animatsioonid/faili-kustutamine.html).
 
 ### Failisüsteemide võrdlus: Linux ja macOS
 
