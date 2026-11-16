@@ -169,6 +169,8 @@ select,input[type=number]{font:inherit;font-size:14px;padding:.3rem .5rem;border
 </section>
 
 <!-- 5 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="08-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 8 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="vali">
 <h2>5. Vali sobiv mehhanism</h2>
 <p>Igas olukorras on üks sobivaim Windowsi sünkroniseerimismehhanism. Vali see.</p>
@@ -302,13 +304,13 @@ $('xreset').onclick=()=>{owner=null;waiting=[];gone=new Set();abandoned=false;in
 /* ---------- 5. vali ---------- */
 const MO=['Interlocked-funktsioon','Kriitiline sektsioon','SRW-lukk','Sündmus (event)','Nimega mutex','Semafor','Spinlukk'];
 const MQ=[['Veebiserveri loendur, mitu korda lehte on külastatud. Iga päring teeb ainult +1.',0,'Üks aatomtehe (InterlockedIncrement) on kõige kiirem ega vaja lukku.'],
- ['Programmi lõimed kirjutavad samasse logifaili. Kõik on ühes protsessis.',1,'Ühe protsessi lõimede vahel on kriitiline sektsioon (või SRW-lukk) kiire kasutajarežiimi lukk.'],
+ ['Programmi lõimed kirjutavad samasse logifaili. Kõik on ühes protsessis.',1,'Ühe protsessi lõimede vahel on kriitiline sektsioon (või SRW-lukk (SRW – ingl Slim Reader/Writer)) kiire kasutajarežiimi lukk.'],
  ['Hinnakirja vahemälu, mida loevad sajad lõimed sekundis ja mida uuendatakse kord tunnis.',2,'SRW-lukk lubab palju lugejaid korraga ja ainult kirjutaja vajab ainuõigust.'],
  ['Kõik töölõimed peavad ootama, kuni seadistusfail on laaditud, ja siis korraga alustama.',3,'Käsitsi lähtestuv sündmus äratab kõik ootajad korraga.'],
  ['Kaks eraldi PowerShelli skripti (eri protsessid) kirjutavad samasse faili.',4,'Protsesside vahel on vaja tuumaobjekti, millele mõlemad saavad nime järgi ligi: Global\\Logi.'],
  ['Programm tohib käivituda ainult ühe eksemplarina.',4,'Programm loob käivitumisel nimega mutexi. Kui see on juba olemas, töötab teine eksemplar.'],
  ['Server tohib korraga avada kuni 5 andmebaasiühendust.',5,'Loendav semafor algväärtusega 5.'],
- ['Võrgukaardi draiver kaitseb oma andmestruktuuri DISPATCH_LEVEL-il, kus lõim ei tohi ootele minna.',6,'Kõrgel IRQL-il ei saa blokeeruda, seega kasutatakse spinlukku (ptk 5). Lukk peab olema väga lühike.'],
+ ['Võrgukaardi draiver kaitseb oma andmestruktuuri DISPATCH_LEVEL-il, kus lõim ei tohi ootele minna.',6,'Kõrgel IRQL-il (ingl Interrupt Request Level) ei saa blokeeruda, seega kasutatakse spinlukku (ptk 5). Lukk peab olema väga lühike.'],
  ['Videotöötlusprogrammi taustalõim teatab kasutajaliidese lõimele: „renderdamine on valmis“.',3,'Sündmus teavitab, see ei kaitse andmeid.']];
 let vq=shuffle(MQ.map((_,i)=>i)),vp=0,vs={ok:0,n:0},va=null;
 function drawV(){

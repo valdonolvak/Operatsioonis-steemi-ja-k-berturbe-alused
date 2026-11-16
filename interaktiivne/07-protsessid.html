@@ -175,6 +175,8 @@ select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--bo
 </section>
 
 <!-- 5 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="07-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 7 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="ipc">
 <h2>5. Vali sobiv IPC-mehhanism</h2>
 <p>Protsessid ei näe teineteise mälu. Vali igas olukorras kõige sobivam suhtlusviis.</p>
@@ -184,7 +186,7 @@ select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--bo
 <!-- 6 -->
 <section id="puu">
 <h2>6. Protsessipuu detektiiv</h2>
-<p>Sa oled turvaanalüütik ja vaatad EDR-i konsoolis protsessipuud. Klõpsa protsessidel, mis on kahtlased, ja vajuta „Kontrolli“. Vihje: vaata vanemat, käsurida ja failiteed.</p>
+<p>Sa oled turvaanalüütik ja vaatad EDR-i (ingl <i>Endpoint Detection and Response</i>) konsoolis protsessipuud. Klõpsa protsessidel, mis on kahtlased, ja vajuta „Kontrolli“. Vihje: vaata vanemat, käsurida ja failiteed.</p>
 <div class="card">
   <div class="row" style="margin-top:0"><b id="pttl"></b><span class="hint" id="pnum"></span></div>
   <div class="tree" id="ptree"></div>
@@ -202,7 +204,7 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const ST=[
  ['EXE-faili avamine ja kontroll','Windows avab <code>C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE</code>. Smart App Control, App Control for Business / AppLocker ja Defender kontrollivad, kas seda tohib käivitada. Kõik on korras.'],
  ['Protsessiobjekt ja aadressiruum','Tuumas luuakse protsessiobjekt (EPROCESS), Word saab PID-i, oma virtuaalse aadressiruumi ja Mari tokeni koopia. <b>Protsessihaldur teavitab draivereid</b> ja EDR näeb uut protsessi.'],
- ['Esimene lõim','Luuakse esimene lõim koos pinude ja TEB-iga. See on peatatud olekus, sest protsess pole veel valmis.'],
+ ['Esimene lõim','Luuakse esimene lõim koos pinude ja TEB-iga (ingl Thread Environment Block). See on peatatud olekus, sest protsess pole veel valmis.'],
  ['Alamsüsteemi teavitamine','csrss.exe saab teada uuest protsessist ja lõimest.'],
  ['DLL-ide laadimine','Uue protsessi sees laaditakse <code>ntdll.dll</code>, <code>kernel32.dll</code> ja teised teegid. Täidetakse nende algatuskood.'],
  ['Täitmise algus','Esimene lõim hakkab täitma Wordi koodi. Word loob kohe lisalõimed: kasutajaliides, õigekirjakontroll ja automaatsalvestus. Avaneb Wordi aken.']

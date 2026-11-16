@@ -150,7 +150,7 @@ input[type=text],select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1
 <!-- 3 -->
 <section id="autoruns">
 <h2>3. Autorunsi jaht</h2>
-<p>Kasutaja kaebab, et pärast sisselogimist avaneb hetkeks must aken. Sa avasid <strong>Autorunsi</strong> vahekaardi <em>Logon</em>. Märgi kahtlased kirjed ja vajuta „Kontrolli“. Vihje: vaata allkirja, VirusTotali tulemust, failiteed ja seda, kas kirje on HKLM-is või HKCU-s.</p>
+<p>Kasutaja kaebab, et pärast sisselogimist avaneb hetkeks must aken. Sa avasid <strong>Autorunsi</strong> vahekaardi <em>Logon</em>. Märgi kahtlased kirjed ja vajuta „Kontrolli“. Vihje: vaata allkirja, VirusTotali tulemust, failiteed ja seda, kas kirje on HKLM-is (ingl <i>HKEY_LOCAL_MACHINE</i>) või HKCU-s (ingl <i>HKEY_CURRENT_USER</i>).</p>
 <div class="card">
   <div style="overflow-x:auto"><table class="ar" id="ar"></table></div>
   <div class="row"><button class="btn" id="arnew">Uus arvuti</button><button class="btn primary" id="archeck">Kontrolli</button></div>
@@ -183,6 +183,8 @@ input[type=text],select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1
   <div><div class="desk" id="desk"></div><div class="ps" id="gps"></div></div>
 </div>
 </section>
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="06-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 6 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
 
 <script>
 const $=id=>document.getElementById(id);

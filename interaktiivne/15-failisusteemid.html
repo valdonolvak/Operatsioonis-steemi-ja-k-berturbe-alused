@@ -140,7 +140,7 @@ ol.steps li{margin:3px 0}
 <p>Ketas teab ainult nummerdatud plokke. Failisüsteem on nagu <b>raamatukogu kataloog</b>: ta peab meeles, millistes plokkides fail asub, mis on tema nimi, kellele ta kuulub ja millal teda muudeti. Igas failisüsteemis on kolm osa:</p>
 <ol>
 <li><b>Kaust (kataloog)</b> – seob nime ja faili kirje: „kiri.txt → kirje 1234“.</li>
-<li><b>Metaandmete kirje</b> – Windowsis MFT kirje, Linuxis inode, macOS-is inode-kirje: suurus, ajad, omanik, õigused ja kus andmed asuvad.</li>
+<li><b>Metaandmete kirje</b> – Windowsis MFT (ingl <i>Master File Table</i>) kirje, Linuxis inode, macOS-is inode-kirje: suurus, ajad, omanik, õigused ja kus andmed asuvad.</li>
 <li><b>Andmeplokid</b> (klastrid) – faili sisu.</li>
 </ol>
 <p>Kui sellest aru saad, mõistad ka, miks kustutatud faile saab sageli taastada, miks Linuxis võib failil olla mitu nime ja miks Macis faili kopeerimine ei võta lisaruumi.</p>
@@ -152,7 +152,7 @@ ol.steps li{margin:3px 0}
 <h2>1. Kuidas FAT faile hoiab</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>FAT on lihtsaim failisüsteem ja seepärast hea koht, kus põhimõtet näha. Kaustas on kirje „faili nimi + esimene klaster“. <b>FAT-tabelis</b> on iga klastri kohta üks lahter, mis ütleb, <b>milline klaster tuleb järgmisena</b> – fail on nagu aardejaht, kus iga vihje näitab järgmise kohta. FAT-i kasutavad tänapäeval USB-pulgad, mälukaardid ja arvuti EFI-partitsioon.</p>
+<p>FAT (ingl <i>File Allocation Table</i>) on lihtsaim failisüsteem ja seepärast hea koht, kus põhimõtet näha. Kaustas on kirje „faili nimi + esimene klaster“. <b>FAT-tabelis</b> on iga klastri kohta üks lahter, mis ütleb, <b>milline klaster tuleb järgmisena</b> – fail on nagu aardejaht, kus iga vihje näitab järgmise kohta. FAT-i kasutavad tänapäeval USB-pulgad (USB – ingl <i>Universal Serial Bus</i>), mälukaardid ja arvuti EFI-partitsioon (EFI – ingl <i>Extensible Firmware Interface</i>).</p>
 <p><b>Mida teha:</b> vajuta „Järgmine samm“ ja jälgi kolme asja: kaustakirjeid, FAT-tabelit ja andmeklastreid. Pane tähele, mis juhtub faili kasvamisel (killustumine) ja kustutamisel (andmed jäävad alles!).</p>
 </div>
 <div class="card">
@@ -185,11 +185,11 @@ ol.steps li{margin:3px 0}
 <h2>3. Faili elutsükkel: salvestamine, avamine, kustutamine</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Kasutaja jaoks on salvestamine ja kustutamine üks klõps. Kettal toimub aga mitu sammu ja need erinevad OS-iti. Sellest sõltub, <b>kas kustutatud faili saab taastada</b>, <b>miks ruum ei vabane</b> ja <b>kuidas OS teab, et fail tuli internetist</b>.</p>
+<p>Kasutaja jaoks on salvestamine ja kustutamine üks klõps. Kettal toimub aga mitu sammu ja need erinevad OS-iti (OS – ingl <i>Operating System</i>). Sellest sõltub, <b>kas kustutatud faili saab taastada</b>, <b>miks ruum ei vabane</b> ja <b>kuidas OS teab, et fail tuli internetist</b>.</p>
 <ul>
-<li><b>Windows (NTFS)</b> – kustutatud fail läheb prügikasti. Jäädaval kustutamisel jäävad andmed kettale, kuni need üle kirjutatakse.</li>
+<li><b>Windows (NTFS – ingl <i>New Technology File System</i>)</b> – kustutatud fail läheb prügikasti. Jäädaval kustutamisel jäävad andmed kettale, kuni need üle kirjutatakse.</li>
 <li><b>Linux (ext4)</b> – nimi on kataloogis, metaandmed inode’is. <code>rm</code> eemaldab ainult nime; fail kaob, kui ühtegi nime pole ja keegi seda lahti ei hoia.</li>
-<li><b>macOS (APFS)</b> – kirjutamisel kopeerimine: muudatus läheb alati uude plokki. Koopiad on kloonid, mis jagavad plokke.</li>
+<li><b>macOS (APFS – ingl <i>Apple File System</i>)</b> – kirjutamisel kopeerimine: muudatus läheb alati uude plokki. Koopiad on kloonid, mis jagavad plokke.</li>
 </ul>
 <p><b>Mida teha (soovitatud järjekord):</b></p>
 <ol>
@@ -197,7 +197,7 @@ ol.steps li{margin:3px 0}
 <li>„Laadi alla arve.pdf“ – vaata, millise märke OS failile lisab.</li>
 <li>Vali fail <code>kiri.txt</code>, vajuta „Kustuta (prügikasti)“, siis „Taasta“. Seejärel kustuta jäädavalt ja vaata andmeplokke – triibulised plokid on <b>kustutatud, kuid alles</b>.</li>
 <li>Vajuta „Taastetööriist“. Siis salvesta suur video ja proovi taastetööriista uuesti.</li>
-<li>Lülita sisse „SSD (TRIM)“ ja korda kustutamist.</li>
+<li>Lülita sisse „SSD (ingl <i>Solid-State Drive</i>; TRIM)“ ja korda kustutamist.</li>
 <li>Linuxis: ava fail, kustuta jäädavalt ja vaata, mis juhtub ruumiga. Siis sulge fail.</li>
 <li>macOS-is: kopeeri fail (kloon), tee hetktõmmis ja kustuta fail – miks ruum ei vabane?</li>
 </ol>
@@ -222,7 +222,7 @@ ol.steps li{margin:3px 0}
 <h2>4. Kas see failinimi sobib?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Iga OS lubab failinimes erinevaid märke. Windows keelab märgid <code>&lt; &gt; : " / \ | ? *</code> ja mõned nimed (<code>CON</code>, <code>NUL</code>, <code>COM1</code> …), sest need on MS-DOS-i ajast seadmete nimed. Linux keelab ainult <code>/</code>. macOS-is on <code>/</code> keelatud ja Finder ei luba ka koolonit. Lisaks eristab Linux suur- ja väiketähti, Windows ja macOS vaikimisi mitte.</p>
+<p>Iga OS lubab failinimes erinevaid märke. Windows keelab märgid <code>&lt; &gt; : " / \ | ? *</code> ja mõned nimed (<code>CON</code>, <code>NUL</code>, <code>COM1</code> …), sest need on MS-DOS-i (ingl <i>Microsoft Disk Operating System</i>) ajast seadmete nimed. Linux keelab ainult <code>/</code>. macOS-is on <code>/</code> keelatud ja Finder ei luba ka koolonit. Lisaks eristab Linux suur- ja väiketähti, Windows ja macOS vaikimisi mitte.</p>
 <p><b>Miks see administraatorile oluline on?</b> Kui Linuxi serverist kopeerida Windowsi kaust, kus on failid <code>Logo.png</code> ja <code>logo.png</code>, kirjutab üks teise üle. Veebileht, mis Windowsis töötab lingiga <code>Pilt.JPG</code>, annab Linuxi serveris vea 404, kui fail on <code>pilt.jpg</code>.</p>
 <p><b>Mida teha:</b> kirjuta failinimi või vali näide. Proovi ka suur- ja väiketähtede kontrolli.</p>
 </div>
@@ -242,7 +242,7 @@ ol.steps li{margin:3px 0}
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>Linuxis on igal failil <b>omanik</b>, <b>grupp</b> ja kolm õiguste komplekti: omanikule, grupile ja kõigile teistele. Igas komplektis on <b>r</b> (read – lugemine, väärtus 4), <b>w</b> (write – kirjutamine, 2) ja <b>x</b> (execute – käivitamine, 1). Arvud liidetakse: rw- = 4 + 2 = 6. Nii saadakse kolmekohaline arv, nt <code>chmod 640</code>.</p>
-<p>Kataloogi puhul tähendab <b>r</b> sisu nimekirja nägemist, <b>w</b> failide loomist ja kustutamist ning <b>x</b> kataloogi sisenemist. Windowsis on NTFS ACL-id palju detailsemad (ptk 18), kuid põhimõte – kes mida tohib – on sama.</p>
+<p>Kataloogi puhul tähendab <b>r</b> sisu nimekirja nägemist, <b>w</b> failide loomist ja kustutamist ning <b>x</b> kataloogi sisenemist. Windowsis on NTFS ACL-id (ingl <i>Access Control List</i>) palju detailsemad (ptk 18), kuid põhimõte – kes mida tohib – on sama.</p>
 <p><b>Mida teha:</b> märgi õigused või sisesta arv. Proovi näiteid ja loe, kes mida faili <code>aruanne.txt</code> (omanik mari, grupp opetajad) puhul teha saab.</p>
 </div>
 <div class="card">
@@ -254,11 +254,13 @@ ol.steps li{margin:3px 0}
 </section>
 
 <!-- 6 valik -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="15-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 15 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="valik">
 <h2>6. Milline failisüsteem?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Vale failisüsteem tähendab, et fail ei mahu (FAT32 4 GB piir), teine OS ei saa kettale kirjutada (NTFS Macis) või puuduvad õigused ja logimine (exFAT). Rusikareegel: <b>süsteemiketas – OS-i oma failisüsteem</b> (NTFS, ext4, APFS), <b>vahetuskandja – exFAT</b>, <b>EFI-partitsioon – FAT32</b>, <b>suured serveriköited – ReFS</b>.</p>
+<p>Vale failisüsteem tähendab, et fail ei mahu (FAT32 4 GB piir), teine OS ei saa kettale kirjutada (NTFS Macis) või puuduvad õigused ja logimine (exFAT – ingl <i>Extended File Allocation Table</i>). Rusikareegel: <b>süsteemiketas – OS-i oma failisüsteem</b> (NTFS, ext4, APFS), <b>vahetuskandja – exFAT</b>, <b>EFI-partitsioon – FAT32</b>, <b>suured serveriköited – ReFS (ingl <i>Resilient File System</i>)</b>.</p>
 </div>
 <div class="card">
   <div class="tasks" id="qtasks"></div>

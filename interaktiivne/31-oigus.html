@@ -85,8 +85,8 @@ details.help h3{margin:1rem 0 .3rem}
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/31-oigus-ja-juhtimisraamistik.md">← Peatükk 31</a><a href="#nis2">1. NIS2 kuuluvus</a><a href="#tahtajad">2. Teavitamise tähtajad</a><a href="#risk">3. Riskimaatriks</a></nav>
 <h1>Õigus ja juhtimine praktikas</h1>
-<p>Sellel lehel on kolm tööriista, mis aitavad peatüki nõudeid praktikas läbi mõelda: kas organisatsioon kuulub küberturvalisuse seaduse (NIS2) alla, millal ja kellele tuleb intsidendist teatada ning kuidas riske hinnata ja käsitleda.</p>
-<p class="why"><b>NB!</b> Tööriistad on õppimiseks ja lihtsustavad. Need ei ole õigusnõu. Konkreetse organisatsiooni kohustused tuleb täpsustada RIA, Andmekaitse Inspektsiooni või juristiga.</p>
+<p>Sellel lehel on kolm tööriista, mis aitavad peatüki nõudeid praktikas läbi mõelda: kas organisatsioon kuulub küberturvalisuse seaduse (NIS2 – ingl <i>Network and Information Security Directive 2</i>) alla, millal ja kellele tuleb intsidendist teatada ning kuidas riske hinnata ja käsitleda.</p>
+<p class="why"><b>NB!</b> Tööriistad on õppimiseks ja lihtsustavad. Need ei ole õigusnõu. Konkreetse organisatsiooni kohustused tuleb täpsustada RIA (Riigi Infosüsteemi Amet), Andmekaitse Inspektsiooni või juristiga.</p>
 
 <!-- ================= 1 ================= -->
 <h2 id="nis2">1. Kas organisatsioon kuulub NIS2 alla?</h2>
@@ -167,6 +167,8 @@ details.help h3{margin:1rem 0 .3rem}
 <div class="expl" id="rexpl"></div>
 <div id="rout"></div>
 
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="31-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 31 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
 <script>
 const $=id=>document.getElementById(id);
 
@@ -183,7 +185,7 @@ function runNIS(){
                 : 'töötajaid on alla 50 ja käive või bilanss on kuni 10 mln €';
   let cls, verdict, expl;
   if(sec==='ALWAYS_E'){ cls='bad'; verdict='Väga oluline üksus'; expl='See organisatsiooni tüüp kuulub NIS2 alla <b>suurusest olenemata</b>, sest selle teenused on teistele kriitilised (usaldus, nimeteenus, riigivalitsemine, elutähtsad teenused).'; }
-  else if(sec==='NONE'){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Sektor ei ole NIS2 I ega II lisas. Isikuandmete kaitse nõuded (IKÜM) kehtivad aga ikkagi ja head küberhügieeni (MFA, varukoopiad, paikamine) on vaja igal organisatsioonil.'; }
+  else if(sec==='NONE'){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Sektor ei ole NIS2 I ega II lisas. Isikuandmete kaitse nõuded (IKÜM) kehtivad aga ikkagi ja head küberhügieeni (MFA – ingl Multi-Factor Authentication, varukoopiad, paikamine) on vaja igal organisatsioonil.'; }
   else if(!large&&!medium){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Organisatsioon on '+size+' ('+sizeWhy+'). Väikesed ja mikroettevõtted on NIS2 üldreeglist välja jäetud, kui riik ei ole neid eraldi määranud, näiteks ainsa teenuseosutajana või elutähtsa teenuse osutajana.'; }
   else if(sec==='I'&&large){ cls='bad'; verdict='Väga oluline üksus'; expl='Suur organisatsioon ('+sizeWhy+') NIS2 I lisa sektoris.'; }
   else { cls='warn'; verdict='Oluline üksus'; expl=(sec==='I'?'Keskmise suurusega organisatsioon ('+sizeWhy+') I lisa sektoris.':'Organisatsioon on '+size+' ('+sizeWhy+') II lisa sektoris. II lisa sektoris on ka suured organisatsioonid „olulised“, mitte „väga olulised“.'); }

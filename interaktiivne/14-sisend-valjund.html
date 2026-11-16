@@ -120,13 +120,13 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/14-sisend-valjund.md">← Peatükk 14</a> · <a href="14-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Sisend ja väljund – õpileht</h1>
-<p>Sisend-väljund (S/V) on kõik, mis liigutab andmeid protsessori ja mälu ning välisseadmete vahel: klaviatuur, ketas, võrk, USB-pulk. Iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
+<p>Sisend-väljund (S/V) on kõik, mis liigutab andmeid protsessori ja mälu ning välisseadmete vahel: klaviatuur, ketas, võrk, USB-pulk (USB – ingl <i>Universal Serial Bus</i>). Iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
 <div class="why">
 <h4>Suur pilt: miks S/V on keeruline?</h4>
-<p>Protsessor töötab nanosekundite kaupa, kuid seadmed on temast tuhandeid kuni miljardeid kordi aeglasemad ja kõik on erinevad. OS peab lahendama kolm küsimust:</p>
+<p>Protsessor töötab nanosekundite kaupa, kuid seadmed on temast tuhandeid kuni miljardeid kordi aeglasemad ja kõik on erinevad. OS (ingl <i>Operating System</i>) peab lahendama kolm küsimust:</p>
 <ol>
-<li><b>Kuidas seadmega rääkida?</b> Iga seade on erinev. Lahendus on <b>draiverid</b> ja ühtne päringuvorm <b>IRP</b> – rakendus kutsub alati <code>ReadFile</code>, ükskõik kas fail on SSD-l või USB-pulgal.</li>
-<li><b>Kuidas mitte raisata protsessori aega ootamisele?</b> Lahendused on <b>katkestused</b>, <b>DMA</b> ja <b>asünkroonne S/V</b>.</li>
+<li><b>Kuidas seadmega rääkida?</b> Iga seade on erinev. Lahendus on <b>draiverid</b> ja ühtne päringuvorm <b>IRP (ingl <i>I/O Request Packet</i>)</b> – rakendus kutsub alati <code>ReadFile</code>, ükskõik kas fail on SSD-l (ingl <i>Solid-State Drive</i>) või USB-pulgal.</li>
+<li><b>Kuidas mitte raisata protsessori aega ootamisele?</b> Lahendused on <b>katkestused</b>, <b>DMA (ingl <i>Direct Memory Access</i>)</b> ja <b>asünkroonne S/V</b>.</li>
 <li><b>Kuidas tasandada kiiruste ja ajastuse erinevusi?</b> Lahendus on <b>puhver</b>.</li>
 </ol>
 <p>Harjutused käivad selles järjekorras: kõigepealt näed, kui suured on erinevused (1), siis kuidas protsessor seadmetega suhtleb (2), kuidas programm ootamist vältida saab (3), kuidas puhver aitab (4), kuidas päring draiverite vahel liigub (5) ja kuidas seadmeid toitega hallatakse (6).</p>
@@ -138,7 +138,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <h2>1. Seadmed ja nende kiirused</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Klaviatuur annab sekundis mõne baidi, NVMe-ketas miljardeid. Sama OS peab teenindama mõlemat. Aeglase seadme puhul on peamine, et protsessor ei <b>ootaks</b> teda tühja; kiire seadme puhul, et protsessor <b>jõuaks</b> andmeid töödelda. Seepärast kasutatakse eri seadmete jaoks eri võtteid.</p>
+<p>Klaviatuur annab sekundis mõne baidi, NVMe-ketas (NVMe – ingl <i>Non-Volatile Memory Express</i>) miljardeid. Sama OS peab teenindama mõlemat. Aeglase seadme puhul on peamine, et protsessor ei <b>ootaks</b> teda tühja; kiire seadme puhul, et protsessor <b>jõuaks</b> andmeid töödelda. Seepärast kasutatakse eri seadmete jaoks eri võtteid.</p>
 <p><b>Mida teha:</b> vali faili suurus ja vaata, kui kaua kuluks selle edastamiseks eri seadmetega. Riba pikkus on logaritmilises skaalas – iga samm paremale tähendab 10 korda suuremat kiirust.</p>
 </div>
 <div class="card">
@@ -164,7 +164,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <p>Kui seade on andmed valmis saanud, peab protsessor sellest kuidagi teada saama ja andmed mällu viima. Selleks on kolm viisi:</p>
 <ul>
 <li><b>Küsitlus</b> (polling) – protsessor küsib tsüklis „kas oled valmis?“. Nagu käiksid iga minuti järel postkasti vaatamas. Lihtne, kuid protsessor ei saa vahepeal muud teha.</li>
-<li><b>Katkestus</b> (interrupt) – protsessor teeb oma tööd ja seade „helistab uksekella“, kui on valmis. Iga katkestus maksab siiski veidi aega (töö katkestamine, oleku salvestamine, ISR, DPC) ja andmed kopeerib endiselt protsessor.</li>
+<li><b>Katkestus</b> (interrupt) – protsessor teeb oma tööd ja seade „helistab uksekella“, kui on valmis. Iga katkestus maksab siiski veidi aega (töö katkestamine, oleku salvestamine, ISR – ingl <i>Interrupt Service Routine</i>, DPC – ingl <i>Deferred Procedure Call</i>) ja andmed kopeerib endiselt protsessor.</li>
 <li><b>DMA</b> – protsessor ütleb seadmele: „pane andmed otse mällu aadressile X ja anna teada, kui valmis“. Seade kopeerib ise, protsessor saab ainult ühe katkestuse lõpus.</li>
 </ul>
 <p><b>Mida teha:</b> võrdle kolme ribaga, kui suure osa ajast saab protsessor teha kasulikku tööd (roheline). Siis muuda plokkide saabumise vahe väga väikeseks (väga kiire seade) ja vaata, kas katkestused on ikka parimad. Lõpuks lülita sisse katkestuste koondamine.</p>
@@ -177,8 +177,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <div class="info" id="pinfo"></div>
   <details class="more"><summary>Kuidas Windows seda päriselt kasutab?</summary>
   <ul><li><b>Klaviatuur, hiir</b> – katkestused. Sündmusi on vähe ja need on juhuslikud; küsitlus raiskaks aega.</li>
-  <li><b>NVMe-ketas</b> – DMA ja MSI-X katkestused. Iga tuuma jaoks on eraldi päringujärjekord ja katkestus tuleb otse sellele tuumale.</li>
-  <li><b>10–100 Gbit/s võrgukaart</b> – DMA, katkestuste koondamine ja suure koormuse korral küsitlus (Windowsis nt RSS ja NDIS-i küsitlusrežiim). Kui pakette tuleb miljon sekundis, oleks iga paketi kohta katkestus liiga kallis.</li></ul>
+  <li><b>NVMe-ketas</b> – DMA ja MSI-X (ingl <i>Message Signaled Interrupts eXtended</i>) katkestused. Iga tuuma jaoks on eraldi päringujärjekord ja katkestus tuleb otse sellele tuumale.</li>
+  <li><b>10–100 Gbit/s võrgukaart</b> – DMA, katkestuste koondamine ja suure koormuse korral küsitlus (Windowsis nt RSS (ingl <i>Receive Side Scaling</i>) ja NDIS-i (ingl <i>Network Driver Interface Specification</i>) küsitlusrežiim). Kui pakette tuleb miljon sekundis, oleks iga paketi kohta katkestus liiga kallis.</li></ul>
   <p>Järeldus: pole üht parimat viisi – valik sõltub sellest, kui tihti seadmel midagi juhtub.</p></details>
 </div>
 </section>
@@ -191,7 +191,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <p>Veebiserver saab päringu, loeb andmed kettalt või andmebaasist ja saadab vastuse. Suurem osa ajast kulub <b>ootamisele</b> – protsessor oleks valmis töötama, kuid andmed pole veel kohal.</p>
 <ul>
 <li><b>Sünkroonne S/V</b> – lõim saadab päringu ja jääb ootama (blokeeritud). Lihtne programmeerida, kuid lõim ei tee ootamise ajal midagi. Rohkemate klientide teenindamiseks on vaja rohkem lõime, igaüks oma pinu ja mäluga.</li>
-<li><b>Asünkroonne S/V</b> – lõim saadab päringu teele ja võtab kohe järgmise töö. Kui andmed saabuvad, paneb Windows teate <b>S/V lõpetamisporti</b> (IOCP) ja mõni vaba lõim jätkab. Nii teenindavad IIS ja SQL Server tuhandeid kliente väheste lõimedega.</li>
+<li><b>Asünkroonne S/V</b> – lõim saadab päringu teele ja võtab kohe järgmise töö. Kui andmed saabuvad, paneb Windows teate <b>S/V lõpetamisporti</b> (IOCP – ingl <i>I/O Completion Port</i>) ja mõni vaba lõim jätkab. Nii teenindavad IIS (ingl <i>Internet Information Services</i>) ja SQL Server (SQL – ingl <i>Structured Query Language</i>) tuhandeid kliente väheste lõimedega.</li>
 </ul>
 <p>Mudelis vajab iga päring 1 ühiku protsessoriaega (päringu töötlemine), 6 ühikut ootamist (andmebaas) ja 1 ühiku protsessoriaega (vastuse koostamine).</p>
 <p><b>Mida teha:</b> võrdle mõlemat kahe lõimega. Siis suurenda sünkroonse serveri lõimede arvu, kuni see on sama kiire, ja vaata, kui palju mälu kulub lõimede pinudele.</p>
@@ -243,13 +243,15 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 </section>
 
 <!-- 6 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="14-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 14 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="toide">
 <h2>6. Milline toiteolek?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>Toitehaldur otsustab, millised osad arvutist saavad voolu. Mida vähem on toite all, seda vähem kulub energiat, kuid seda kauem võtab ärkamine. Administraatori jaoks on oluline teada, et <b>„Lülita välja“ koos kiire käivitusega ei ole täielik taaskäivitus</b> – tuumaseanss salvestatakse faili ja loetakse järgmisel käivitamisel tagasi. Seepärast lahendab osa probleeme ainult „Taaskäivita“.</p>
 <ul><li><b>S0</b> – töötab. <b>Modern Standby</b> – ekraan väljas, kuid arvuti on nagu telefon: võrk töötab, e-kirjad tulevad.</li>
-<li><b>S3</b> – unerežiim: voolu saab ainult RAM. <b>S4</b> – talveuni: RAM-i sisu kirjutatakse faili <code>hiberfil.sys</code> ja vool lülitatakse välja.</li>
+<li><b>S3</b> – unerežiim: voolu saab ainult RAM (ingl <i>Random-Access Memory</i>). <b>S4</b> – talveuni: RAM-i sisu kirjutatakse faili <code>hiberfil.sys</code> ja vool lülitatakse välja.</li>
 <li><b>S5</b> – täielikult väljas.</li></ul>
 </div>
 <div class="card">

@@ -110,6 +110,8 @@ button.btn:disabled{opacity:.4;cursor:default}
 </section>
 
 <!-- 2 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="02-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 2 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="kes">
 <h2>2. Kes selle eest vastutab?</h2>
 <p>Loe olukorda ja vali, millise operatsioonisüsteemi ülesandega on tegu. Ülesanded on samad, mis peatüki tabelis 2.2.</p>
@@ -122,7 +124,7 @@ button.btn:disabled{opacity:.4;cursor:default}
 <p><strong>Rakendustarkvara</strong> on mõeldud lõppkasutajale. <strong>Süsteemitarkvara</strong> on madala taseme programmid, mis hoiavad arvutit käigus või aitavad teisi programme luua ja hallata. Vali ülal programm ja klõpsa siis kastil, kuhu see kuulub.</p>
 <div class="pool chips" id="spool"></div>
 <div class="buckets">
-  <div class="bucket" data-b="sys" id="b-sys"><h3>Süsteemitarkvara</h3><p class="hint">OS, draiverid, kompilaatorid, haldustööriistad</p><div class="chips"></div></div>
+  <div class="bucket" data-b="sys" id="b-sys"><h3>Süsteemitarkvara</h3><p class="hint">OS (ingl <i>Operating System</i>), draiverid, kompilaatorid, haldustööriistad</p><div class="chips"></div></div>
   <div class="bucket" data-b="app" id="b-app"><h3>Rakendustarkvara</h3><p class="hint">programmid lõppkasutaja tööks ja meelelahutuseks</p><div class="chips"></div></div>
 </div>
 <div class="row"><button class="btn" id="sreset">Alusta uuesti</button><button class="btn primary" id="scheck" disabled>Kontrolli</button></div>
@@ -147,8 +149,8 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 /* ---------- 1. Ctrl+S ---------- */
 const LAYERS=[
  {id:'user',name:'Kasutaja',parts:[['kasutaja','Sina vajutad Ctrl+S. Kasutaja suhtleb ainult rakendusega ega pea teadma, kuidas salvestamine tehniliselt käib.']]},
- {id:'app',name:'Rakendused',parts:[['Word','Word kutsub välja OS-i API funktsiooni „kirjuta fail“ (Windowsis nt WriteFile). Ta ei tea, kas fail on SSD-l, USB-pulgal või OneDrive’is.'],['brauser','Mängib samal ajal muusikat. Ka tema vajab protsessoriaega ja mälu.'],['viirusetõrje','Kontrollib salvestatud faili. OS annab ka talle oma osa ressurssidest.']]},
- {id:'os',name:'Operatsioonisüsteem',parts:[['turvalisus','Turvaviitemonitor (SRM) kontrollib faili või kausta pääsuloendist (ACL), kas sul on lubatud sinna kirjutada.'],['failisüsteem','NTFS leiab kettal vaba ruumi, kirjutab faili andmed ja uuendab oma tabeleid (MFT). Logimine aitab pärast voolukatkestust kiiresti taastuda.'],['vahemälu','Vahemäluhaldur võtab andmed mällu vastu ja Word saab kohe edasi töötada. Kettale kirjutatakse veidi hiljem, kui sobib.'],['planeerija','Planeerija jagab protsessoriaega Wordi, brauseri ja viirusetõrje vahel, nii et kõik tunduvad töötavat korraga.'],['draiver','Salvestusdraiver tõlgib OS-i üldise „kirjuta plokid“ käsu konkreetse NVMe-kontrolleri keelde.']]},
+ {id:'app',name:'Rakendused',parts:[['Word','Word kutsub välja OS-i API (ingl Application Programming Interface) funktsiooni „kirjuta fail“ (Windowsis nt WriteFile). Ta ei tea, kas fail on SSD-l (ingl Solid-State Drive), USB-pulgal (USB – ingl Universal Serial Bus) või OneDrive’is.'],['brauser','Mängib samal ajal muusikat. Ka tema vajab protsessoriaega ja mälu.'],['viirusetõrje','Kontrollib salvestatud faili. OS annab ka talle oma osa ressurssidest.']]},
+ {id:'os',name:'Operatsioonisüsteem',parts:[['turvalisus','Turvaviitemonitor (SRM – ingl Security Reference Monitor) kontrollib faili või kausta pääsuloendist (ACL – ingl Access Control List), kas sul on lubatud sinna kirjutada.'],['failisüsteem','NTFS (ingl New Technology File System) leiab kettal vaba ruumi, kirjutab faili andmed ja uuendab oma tabeleid (MFT – ingl Master File Table). Logimine aitab pärast voolukatkestust kiiresti taastuda.'],['vahemälu','Vahemäluhaldur võtab andmed mällu vastu ja Word saab kohe edasi töötada. Kettale kirjutatakse veidi hiljem, kui sobib.'],['planeerija','Planeerija jagab protsessoriaega Wordi, brauseri ja viirusetõrje vahel, nii et kõik tunduvad töötavat korraga.'],['draiver','Salvestusdraiver tõlgib OS-i üldise „kirjuta plokid“ käsu konkreetse NVMe-kontrolleri (NVMe – ingl Non-Volatile Memory Express) keelde.']]},
  {id:'hw',name:'Riistvara',parts:[['CPU','Täidab kõigi programmide käske. Planeerija otsustab, milline lõim millisel tuumal töötab.'],['RAM','Siin asuvad töötavad programmid ja vahemälus olevad andmed.'],['NVMe-SSD','SSD kontroller kirjutab andmed välkmällu. Ainult draiver teab, kuidas selle kontrolleriga suhelda.']]}
 ];
 const STEPS=[
@@ -178,15 +180,15 @@ drawSim();
 const TASKS=['Protsesside haldus','Mäluhaldus','Failide ja salvestuse haldus','Sisend ja väljund','Võrk','Turvalisus','Kasutajaliides'];
 const SC=[
  ['Avad korraga brauseri, Spotify ja Wordi. Arvutil on 8 tuuma, kuid töötavaid lõimi on üle tuhande. Kes otsustab, milline lõim millal protsessorit kasutab?',0,'Planeerija (scheduler) jagab protsessoriaega lõimede vahel. Tegumihalduri vahekaardilt „Üksikasjad“ näed kõiki protsesse.'],
- ['Avatud programmid vajavad kokku rohkem mälu, kui arvutis RAM-i on. Arvuti töötab aeglasemalt, kuid ei jookse kokku.',1,'Mäluhaldur viib vähem kasutatud mälulehed kettale saalefaili (pagefile.sys). See on virtuaalmälu.'],
+ ['Avatud programmid vajavad kokku rohkem mälu, kui arvutis RAM-i (ingl Random-Access Memory) on. Arvuti töötab aeglasemalt, kuid ei jookse kokku.',1,'Mäluhaldur viib vähem kasutatud mälulehed kettale saalefaili (pagefile.sys). See on virtuaalmälu.'],
  ['Vigane programm üritab kirjutada teise programmi mällu. OS lõpetab vigase programmi, teised jätkavad tööd.',1,'Mälukaitse on mäluhalduri ülesanne: igal protsessil on oma aadressiruum ja võõrasse mällu kirjutamine põhjustab vea.'],
- ['Kopeerid USB-pulgale faili nimega „Aruanne 2026 lõplik.docx“. Kopeerimisprogramm ei tea, kas pulgal on FAT32, exFAT või NTFS.',2,'Failisüsteemi draiver peidab vormingu erinevused. Programm kasutab ainult faile ja kaustu.'],
+ ['Kopeerid USB-pulgale faili nimega „Aruanne 2026 lõplik.docx“. Kopeerimisprogramm ei tea, kas pulgal on FAT32 (FAT – ingl File Allocation Table), exFAT (ingl Extended File Allocation Table) või NTFS.',2,'Failisüsteemi draiver peidab vormingu erinevused. Programm kasutab ainult faile ja kaustu.'],
  ['Ühendad uue USB-printeri. Windows tuvastab selle ja paigaldab draiveri ise.',3,'Plug and Play haldur tuvastab seadme ja S/V-haldur laadib draiveri. Ilma selleta peaks iga programm ise iga printerimudelit toetama.'],
  ['Sülearvuti kaas suletakse ja arvuti läheb unerežiimi. Avamisel jätkub töö samast kohast.',3,'Toitehaldus on osa sisendi ja väljundi haldusest: OS käsib seadmetel minna säästurežiimi ja hiljem taastab nende oleku.'],
- ['Avad kooli võrgukettal kausta \\\\server\\jagatud. Explorer näitab faile nagu kohalikul kettal.',4,'SMB-protokoll ja TCP/IP pinu toovad võrgu failid kohale. Rakenduse jaoks näeb see välja nagu tavaline kaust.'],
+ ['Avad kooli võrgukettal kausta \\\\server\\jagatud. Explorer näitab faile nagu kohalikul kettal.',4,'SMB-protokoll (SMB – ingl Server Message Block) ja TCP/IP pinu toovad võrgu failid kohale. Rakenduse jaoks näeb see välja nagu tavaline kaust.'],
  ['Brauser saadab päringu veebiserverile. Kes paneb andmed TCP/IP pakettidesse ja saadab need võrgukaardini?',4,'TCP/IP pinu on OS-i osa. Brauser kasutab sokleid (sockets) ega tea võrgukaardi tüübist midagi.'],
  ['Kolleeg üritab avada sinu kodukausta ja saab teate „Juurdepääs keelatud“.',5,'Turvaviitemonitor (SRM) võrdleb kasutaja õigusi faili pääsuloendiga (ACL).'],
- ['Sisestad sisselogimisel vale parooli kolm korda. Turvalogisse tekib sündmus 4625.',5,'LSASS kontrollib sisselogimist ja OS kirjutab sündmuse auditilogisse. Sündmuste vaaturist (Event Viewer) näed neid jaotises Security.'],
+ ['Sisestad sisselogimisel vale parooli kolm korda. Turvalogisse tekib sündmus 4625.',5,'LSASS (ingl Local Security Authority Subsystem Service) kontrollib sisselogimist ja OS kirjutab sündmuse auditilogisse. Sündmuste vaaturist (Event Viewer) näed neid jaotises Security.'],
  ['Administraator käivitab PowerShelli ja sisestab käsu Get-Process.',6,'Käsurealõikesüsteem (PowerShell) on kasutajaliides. Get-Process ise küsib andmed protsessihaldurilt.'],
  ['Topeltklõpsad töölaual ikoonil ja programm käivitub.',6,'Graafiline kest (Explorer) on kasutajaliides. Protsessi loob protsessihaldur, kuid käsu annab kest.'],
  ['Kaks programmi tahavad korraga kirjutada samasse faili. OS lubab ühel kirjutada ja teine peab ootama.',2,'Failisüsteem lukustab faili, et andmed ei läheks segi. Sellest tuleb teade „Faili kasutab teine protsess“.'],
@@ -227,7 +229,7 @@ $('scheck').onclick=()=>{schecked=true;drawSW();const wrong=sset.filter(i=>splac
 $('sreset').onclick=newSW;newSW();
 
 /* ---------- 4. Riistvara ---------- */
-const HW=[['Hübriidprotsessor (P- ja E-tuumad)','Jõudluse tuumad teevad rasket tööd, säästlikud tuumad taustatööd. OS-i planeerija peab otsustama, milline lõim millisele tuumale läheb.'],['GPU','Graafika ja paralleelarvutus. Tuhanded lihtsad arvutusüksused teevad sama tehet paljude andmetega korraga.'],['NPU','Tehisintellekti mudelite säästlik käitamine, nt kaameraefektid ja kohalikud Copilot+ funktsioonid.'],['TPM 2.0 / Pluton','Turvaprotsessor, mis hoiab krüptovõtmeid (BitLocker, Windows Hello) ja mõõdab käivitusahelat.'],['NVMe-SSD','Kiire salvesti otse PCIe-siinil. Palju kiirem kui SATA-liidesega ketas.'],['UEFI püsivara','Asendas BIOS-i, käivitab arvuti ja võimaldab Secure Booti.'],['RAM','Põhimälu, kus asuvad töötavad programmid ja nende andmed. Von Neumanni arhitektuuris on käsud ja andmed samas mälus.']];
+const HW=[['Hübriidprotsessor (P- ja E-tuumad)','Jõudluse tuumad teevad rasket tööd, säästlikud tuumad taustatööd. OS-i planeerija peab otsustama, milline lõim millisele tuumale läheb.'],['GPU','Graafika ja paralleelarvutus. Tuhanded lihtsad arvutusüksused teevad sama tehet paljude andmetega korraga.'],['NPU','Tehisintellekti mudelite säästlik käitamine, nt kaameraefektid ja kohalikud Copilot+ funktsioonid.'],['TPM 2.0 / Pluton','Turvaprotsessor, mis hoiab krüptovõtmeid (BitLocker, Windows Hello) ja mõõdab käivitusahelat.'],['NVMe-SSD','Kiire salvesti otse PCIe-siinil (PCIe – ingl Peripheral Component Interconnect Express). Palju kiirem kui SATA-liidesega (SATA – ingl Serial Advanced Technology Attachment) ketas.'],['UEFI püsivara','Asendas BIOS-i (ingl Basic Input/Output System), käivitab arvuti ja võimaldab Secure Booti.'],['RAM','Põhimälu, kus asuvad töötavad programmid ja nende andmed. Von Neumanni arhitektuuris on käsud ja andmed samas mälus.']];
 let hL=[],hR=[],hs=null,hm=new Set(),htries=0;
 function newHW(){hL=shuffle(HW.map((_,i)=>i));hR=shuffle(HW.map((_,i)=>i));hs=null;hm=new Set();htries=0;$('hwinfo').textContent='Vali komponent.';drawHW()}
 function drawHW(){

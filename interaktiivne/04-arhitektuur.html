@@ -92,7 +92,7 @@ label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:po
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/04-arhitektuur.md">← Peatükk 4</a> · <a href="04-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Windowsi arhitektuur – proovi ise</h1>
-<p>Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused ja teenused, tuumarežiimis käivitav süsteem, tuum, draiverid ja HAL. Kõige all on hüperviisor, mis eraldab tavalise Windowsi (VTL 0) turvalisest maailmast (VTL 1).</p>
+<p>Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused ja teenused, tuumarežiimis käivitav süsteem, tuum, draiverid ja HAL (ingl <i>Hardware Abstraction Layer</i>). Kõige all on hüperviisor, mis eraldab tavalise Windowsi (VTL 0 (VTL – ingl <i>Virtual Trust Level</i>)) turvalisest maailmast (VTL 1).</p>
 <div class="toc"><a href="#kaart">1. Arhitektuuri kaart</a><a href="#kihid">2. Pane kihid järjekorda</a><a href="#kes">3. Kes seda teeb?</a><a href="#protsessid">4. Süsteemiprotsessid</a><a href="#cg">5. Credential Guard ründe vastu</a></div>
 
 <!-- 1 -->
@@ -144,6 +144,8 @@ label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:po
   <div class="console" id="con" aria-live="polite"></div>
 </div>
 </section>
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="04-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 4 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -154,15 +156,15 @@ const MODE={um:'kasutajarežiim',km:'tuumarežiim',v1:'VTL 1',hv:'hüperviisor',
 const C={
  apps:['um','Kasutajarakendused','Edge, Office, PowerShell','Lõppkasutaja programmid. Töötavad oma virtuaalses aadressiruumis protsessi tokeni õigustega ega pääse otse riistvara ega tuuma juurde.','ptk 7'],
  svc:['um','Teenused ja süsteemiprotsessid','services.exe, svchost.exe, lsass.exe','Süsteemiprotsessid (smss, winlogon, lsass), teenuseprotsessid (enamasti svchost.exe sees) ja keskkonna alamsüsteemi serverprotsess csrss.exe.','ptk 4.10, 10'],
- dll:['um','Alamsüsteemi DLL-id','kernel32.dll, user32.dll, ntdll.dll','Windows API funktsioonid. ntdll.dll on viimane kasutajarežiimi kiht: see teeb süsteemikutse tuuma.','ptk 3.1'],
- ium:['v1','Isoleeritud kasutajarežiim (IUM)','LsaIso.exe','VTL 1 kasutajarežiim. Siin töötab Credential Guardi isoleeritud LSA, mis hoiab parooliräsisid ja Kerberose võtmeid. VTL 0 tuum ei näe selle mälu.','ptk 4.11'],
- exe:['km','Käivitav süsteem (executive)','ntoskrnl.exe','Haldurid: protsessi-, mälu-, S/V-, PnP-, toite-, vahemälu-, objekti- ja konfiguratsioonihaldur, SRM ning ALPC. Otsustab poliitika: kes mida tohib.','ptk 4.5'],
+ dll:['um','Alamsüsteemi DLL-id','kernel32.dll, user32.dll, ntdll.dll','Windows API (ingl Application Programming Interface) funktsioonid. ntdll.dll on viimane kasutajarežiimi kiht: see teeb süsteemikutse tuuma.','ptk 3.1'],
+ ium:['v1','Isoleeritud kasutajarežiim (IUM)','LsaIso.exe','VTL 1 kasutajarežiim. Siin töötab Credential Guardi isoleeritud LSA (ingl Local Security Authority), mis hoiab parooliräsisid ja Kerberose võtmeid. VTL 0 tuum ei näe selle mälu.','ptk 4.11'],
+ exe:['km','Käivitav süsteem (executive)','ntoskrnl.exe','Haldurid: protsessi-, mälu-, S/V-, PnP-, toite-, vahemälu-, objekti- ja konfiguratsioonihaldur, SRM (ingl Security Reference Monitor) ning ALPC (ingl Advanced Local Procedure Call). Otsustab poliitika: kes mida tohib.','ptk 4.5'],
  krn:['km','Tuum (kernel)','ntoskrnl.exe','Madala taseme töö: lõimede planeerimine ja kontekstivahetus, katkestuste ja erindite suunamine, protsessoritevaheline sünkroniseerimine. Poliitikat ise ei otsusta.','ptk 4.6'],
  drv:['km','Draiverid','*.sys, win32k.sys','Tuumamoodulid: seadme-, failisüsteemi-, filtri- ja võrgudraiverid. Kõik tuumarežiimi komponendid jagavad sama aadressiruumi, nii et vigane draiver võib kogu süsteemi peatada. 64-bitine Windows nõuab Microsofti allkirja.','ptk 4.8'],
- hal:['km','HAL','hal.dll','Riistvara abstraktsioonikiht peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu ACPI-le ja UEFI-le on HAL täna väiksem kui 1990. aastatel.','ptk 4.7'],
- sk:['v1','Turvatuum (Secure Kernel)','securekernel.exe','VTL 1 tuum. Kontrollib HVCI-ga, et tavalises tuumas käivitatakse ainult allkirjastatud koodi, ja teenindab IUM-protsesse.','ptk 4.11'],
- hv:['hv','Hüperviisor','hvix64.exe / hvax64.exe','Töötab tuumast allpool ja eraldab VTL 0 ja VTL 1 mälu. Isegi tuumarežiimi pahavara ei saa VTL 1 mälu lugeda. hvix64 on Inteli, hvax64 AMD protsessoritele.','ptk 4.11'],
- hw:['hw','Riistvara ja püsivara','CPU, UEFI, TPM, Pluton','Protsessor (virtualiseerimislaiendused), UEFI koos Secure Bootiga ning TPM või Pluton võtmete hoidmiseks.','ptk 2.1']
+ hal:['km','HAL','hal.dll','Riistvara abstraktsioonikiht peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu ACPI-le (ingl Advanced Configuration and Power Interface) ja UEFI-le (ingl Unified Extensible Firmware Interface) on HAL täna väiksem kui 1990. aastatel.','ptk 4.7'],
+ sk:['v1','Turvatuum (Secure Kernel)','securekernel.exe','VTL 1 tuum. Kontrollib HVCI-ga (ingl Hypervisor-protected Code Integrity), et tavalises tuumas käivitatakse ainult allkirjastatud koodi, ja teenindab IUM-protsesse (IUM – ingl Isolated User Mode).','ptk 4.11'],
+ hv:['hv','Hüperviisor','hvix64.exe / hvax64.exe','Töötab tuumast allpool ja eraldab VTL 0 ja VTL 1 mälu. Isegi tuumarežiimi pahavara ei saa VTL 1 mälu lugeda. hvix64 on Inteli, hvax64 AMD (ingl Advanced Micro Devices) protsessoritele.','ptk 4.11'],
+ hw:['hw','Riistvara ja püsivara','CPU, UEFI, TPM, Pluton','Protsessor (virtualiseerimislaiendused), UEFI koos Secure Bootiga ning TPM (ingl Trusted Platform Module) või Pluton võtmete hoidmiseks.','ptk 2.1']
 };
 let asel=null;
 function drawArch(){
@@ -206,7 +208,7 @@ const WQ=[
  ['Loob ja lõpetab protsesse ning lõimi.',0,'Protsessihaldur on käivitava süsteemi osa (ptk 7).'],
  ['Võimaldab protsessidel kiiresti sõnumeid vahetada (ALPC).',0,'ALPC on käivitava süsteemi teenus, mida kasutavad näiteks lsass.exe ja teenused.'],
  ['Saadab andmed konkreetse tootja võrgukaardile.',3,'Võrgudraiver tunneb oma seadet. Ülejäänud süsteem kasutab ühtset liidest.'],
- ['Viirusetõrje kontrollib iga faili avamist enne, kui NTFS selle avab.',3,'Seda teeb filtridraiver, mis istub failisüsteemi draiveri peal.'],
+ ['Viirusetõrje kontrollib iga faili avamist enne, kui NTFS (ingl New Technology File System) selle avab.',3,'Seda teeb filtridraiver, mis istub failisüsteemi draiveri peal.'],
  ['Loeb ja kirjutab NTFS-vormingus kettal faile.',3,'Failisüsteem on Windowsis draiver (ntfs.sys).'],
  ['Ei lase isegi tuumarežiimis töötaval koodil VTL 1 mälu lugeda.',4,'Hüperviisor töötab tuumast allpool ja kontrollib, milline mälu kummalegi usaldustasemele nähtav on.'],
  ['Haldab seadmete toidet ja unerežiimi.',0,'Toitehaldur on käivitava süsteemi osa (ptk 14). Konkreetse seadme lülitab säästurežiimi selle draiver.']
@@ -232,8 +234,8 @@ const PR={
  'smss.exe':'Seansihaldur. Esimene kasutajarežiimi protsess: käivitab seansid, iga seansi jaoks csrss.exe ning seansis 0 wininit.exe, kasutaja seansis winlogon.exe.',
  'csrss.exe':'Windowsi alamsüsteemi serverprotsess. Igas seansis on oma csrss.exe. Kui see lõpetatakse, tuleb sinine ekraan.',
  'wininit.exe':'Seansi 0 käivitaja. Käivitab teenusehalduri services.exe ja turva-autoriteedi lsass.exe (ning Credential Guardi korral LsaIso.exe).',
- 'services.exe':'Teenusehaldur (SCM). Käivitab ja peatab Windowsi teenuseid, mis töötavad enamasti svchost.exe protsessides.',
- 'svchost.exe':'Teenuste hostprotsess. Ühes svchost.exe-s võib töötada üks või mitu teenust, nt Windows Update või DNS-klient.',
+ 'services.exe':'Teenusehaldur (SCM – ingl Service Control Manager). Käivitab ja peatab Windowsi teenuseid, mis töötavad enamasti svchost.exe protsessides.',
+ 'svchost.exe':'Teenuste hostprotsess. Ühes svchost.exe-s võib töötada üks või mitu teenust, nt Windows Update või DNS-klient (DNS – ingl Domain Name System).',
  'lsass.exe':'Kohalik turva-autoriteet: autentimine, turvapoliitika ja tokenite loomine. Ründajate sage sihtmärk, sest selle mälus võivad olla parooliräsid.',
  'LsaIso.exe':'Credential Guardi isoleeritud LSA. Töötab VTL 1-s ja hoiab saladusi nii, et isegi administraator ega tuum ei saa neid lugeda.',
  'winlogon.exe':'Sisse- ja väljalogimine ning Ctrl+Alt+Del. Pärast sisselogimist käivitab userinit.exe, mis käivitab explorer.exe.',

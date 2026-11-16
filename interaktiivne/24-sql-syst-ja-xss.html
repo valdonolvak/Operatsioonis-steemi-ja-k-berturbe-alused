@@ -43,7 +43,7 @@ kbd,.mono-in{font-family:var(--mono);font-size:.92em;background:var(--card);padd
 <h1>Veebirünnakud: proovi ise</h1>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md">← Peatükk 24</a><a href="#sqli">SQL-süst</a><a href="#xss">XSS</a></nav>
 <div class="intro">
-<p>SQL-süst ja XSS on kaks levinumat veebirakenduste nõrkust. Mõlemal on sama põhjus: <strong>programm kleebib kasutaja sisendi teksti sisse, mida keegi teine tõlgendab koodina.</strong> SQL-süsti puhul on see tõlgendaja andmebaas, XSS-i puhul brauser.</p>
+<p>SQL-süst (SQL – ingl <i>Structured Query Language</i>) ja XSS (ingl <i>Cross-Site Scripting</i>) on kaks levinumat veebirakenduste nõrkust. Mõlemal on sama põhjus: <strong>programm kleebib kasutaja sisendi teksti sisse, mida keegi teine tõlgendab koodina.</strong> SQL-süsti puhul on see tõlgendaja andmebaas, XSS-i puhul brauser.</p>
 <p>Iga näite juures on kaks paneeli. Ülemine näitab ohtlikku koodi, mis sisendi lihtsalt kokku kleebib. Alumine näitab turvalist koodi, mis hoiab sisendi koodist eraldi. Vali näidisnupp või kirjuta väljale oma tekst. Mõlemad paneelid ja selgituskast uuenevad iga tähe järel.</p>
 <p>Värvid näitavad, mis sinu sisendist sai:</p>
 </div>
@@ -56,7 +56,7 @@ kbd,.mono-in{font-family:var(--mono);font-size:.92em;background:var(--card);padd
 <!-- ============ SQL INJECTION ============ -->
 <h2 id="sqli">1. SQL-süst</h2>
 <div class="intro">
-<p>Kujuta ette veebilehte, kus saab otsida kasutajat nime järgi. Nimi tuleb aadressiribalt, näiteks <span class="mono-in">otsi.php?nimi=mari</span>, ja PHP paneb selle andmebaasipäringusse.</p>
+<p>Kujuta ette veebilehte, kus saab otsida kasutajat nime järgi. Nimi tuleb aadressiribalt, näiteks <span class="mono-in">otsi.php?nimi=mari</span>, ja PHP (ingl <i>PHP: Hypertext Preprocessor</i>) paneb selle andmebaasipäringusse.</p>
 <p>Ohtlik kood ehitab päringu kolmest tükist: programmeerija tekst kuni avava ülakomani, kasutaja sisend ja sulgev ülakoma. Andmebaas saab ühe valmis teksti ega tea, kus kasutaja osa algas ja lõppes. SQL-is tähistab ülakoma <span class="mono-in">'</span> stringi algust ja lõppu. Kui kasutaja kirjutab ülakoma, saab ta stringi ise sulgeda ja kõik järgnev on andmebaasi jaoks käsk.</p>
 <p><strong>Mida proovida:</strong> alusta nimest <span class="mono-in">mari</span>, siis lisa selle lõppu üks ülakoma ja vaata, kuidas värvid muutuvad.</p>
 </div>
@@ -89,7 +89,7 @@ $stmt->execute([$_GET['nimi']]);</div>
 <h2 id="xss">2. XSS (cross-site scripting)</h2>
 <div class="intro">
 <p>Nüüd on tegemist kommentaaridega lehega. Kasutaja kirjutab kommentaari, see salvestatakse andmebaasi ja kõik järgmised külastajad näevad seda. Ohtlik kood paneb kommentaari muutmata kujul <span class="mono-in">&lt;p&gt;</span> sildi sisse.</p>
-<p>Viga on sama mis SQL-süstil, ainult tõlgendaja on teine. HTML-is tähistab märk <span class="mono-in">&lt;</span> sildi algust. Kui kommentaaris on <span class="mono-in">&lt;</span>, loeb brauser selle sildina. Kui sildis on JavaScript, käivitub see <strong>iga lugeja brauseris</strong> ja töötab lehe nimel: näeb küpsiseid, lehe sisu ja saab teha toiminguid kasutaja nimel.</p>
+<p>Viga on sama mis SQL-süstil, ainult tõlgendaja on teine. HTML-is (ingl <i>HyperText Markup Language</i>) tähistab märk <span class="mono-in">&lt;</span> sildi algust. Kui kommentaaris on <span class="mono-in">&lt;</span>, loeb brauser selle sildina. Kui sildis on JavaScript, käivitub see <strong>iga lugeja brauseris</strong> ja töötab lehe nimel: näeb küpsiseid, lehe sisu ja saab teha toiminguid kasutaja nimel.</p>
 <p>Valgel taustal kast näitab, mida teine kasutaja ekraanil näeb. Selles näites on skriptid blokeeritud, nii et midagi päriselt ei käivitu. Selgituskast ütleb, mida päris leht oleks teinud.</p>
 </div>
 <p class="lbl">Kasutaja kommentaar ($_POST['kommentaar'])</p>
@@ -119,6 +119,8 @@ $stmt->execute([$_GET['nimi']]);</div>
 <p class="why"><strong>Miks turvaline kood töötab?</strong> <span class="mono-in">htmlspecialchars()</span> asendab HTML-i erimärgid olemitega: <span class="mono-in">&lt;</span> → <span class="mono-in">&amp;lt;</span>, <span class="mono-in">&gt;</span> → <span class="mono-in">&amp;gt;</span>, <span class="mono-in">"</span> → <span class="mono-in">&amp;quot;</span>, <span class="mono-in">'</span> → <span class="mono-in">&amp;#039;</span> ja <span class="mono-in">&amp;</span> → <span class="mono-in">&amp;amp;</span>. Brauser joonistab olemi ekraanile märgina, kuid ei alusta sellega silti. Põhimõte on sama mis parameetritega päringul: sisend jääb andmeks. Kodeeri väljastamisel, mitte salvestamisel. Lisakaitsena keelab <span class="mono-in">Content-Security-Policy</span> päis lehe sisse süstitud skriptid ja <span class="mono-in">HttpOnly</span> lipp peidab seansiküpsise JavaScripti eest.</p>
 
 
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="24-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 24 test</a>. Test avaneb eraldi aknas.</p></div>
 <script>
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function presets(id,list,inp,fn){const el=document.getElementById(id);list.forEach(p=>{const b=document.createElement('button');b.textContent=p;b.onclick=()=>{inp.value=p;fn()};el.appendChild(b)})}
