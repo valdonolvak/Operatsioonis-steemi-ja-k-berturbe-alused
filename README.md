@@ -1,7 +1,7 @@
 # Operatsioonisüsteemide alused Windowsi näitel (2026)
 
 ## Sissejuhatus ##
-See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi näitel ning on ajakohastatud 2026. aasta seisu järgi. Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) peatükkide ülesehitust ja õppematerjali on täiendatud sellega, mis on vahepeal muutunud: Windows 11, Windows Server 2025, virtualiseerimispõhine turve, tehisintellekt (AI) operatsioonisüsteemis ja tänapäevane küberturve.
+See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi näitel ning on ajakohastatud 2026. aasta seisu järgi. Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) peatükkide ülesehitust ja õppematerjali on täiendatud sellega, mis on vahepeal muutunud. Lisatud on: Windows 11, Windows Server 2025, virtualiseerimispõhine turve, tehisintellekt (AI) operatsioonisüsteemis ja tänapäevane küberturve.
 
 **Iga peatükk sisaldab:** teooriat, jooniseid, näidet, kokkuvõtet, kontrollküsimusi, valikküsimusi, praktilist ülesannet, kahte iseseisvat ülesannet ja viiteid. Peatükkides 4, 7, 12, 15 ja 18 on lisaks võrdlus Linuxi ja macOS-iga. III osa praktilised tööd tehakse WSL-is (Ubuntu või Kali Linux).
 
