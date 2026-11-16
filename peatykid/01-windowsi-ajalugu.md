@@ -12,7 +12,7 @@ IBM-i personaalarvuti (1981) jaoks ostis Microsoft Seattle Computer Productsilt 
 
 ### 1.2 Esimesed Windowsi versioonid
 
-Windows 1.0 (1985) kuni Windows 3.x olid graafilised kasutajaliidesed, mis töötasid MS-DOS-i peal. Windows 95, 98 ja ME („9x-pere“) tutvustasid Start-menüüd, 32-bitiseid rakendusi ja Plug and Play’d, kuid alus oli endiselt DOS: üks vigane programm võis kogu süsteemi kokku jooksutada.
+Windows 1.0 (1985) kuni Windows 3.x olid graafilised kasutajaliidesed, mis töötasid MS-DOS-i peal. Windows 95, 98 ja ME (Millennium Edition ehk aastatuhande väljaanne, sest see ilmus 2000. aastal) – kokku „9x-pere“ – tutvustasid Start-menüüd, 32-bitiseid rakendusi ja Plug and Play’d, kuid alus oli endiselt DOS: üks vigane programm võis kogu süsteemi kokku jooksutada.
 
 #### DOS-põhise liini ajajoon
 
@@ -56,7 +56,7 @@ Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võr
 
 - **Start-menüü, tegumiriba ja töölaud** – kõik programmid leidis Start-nupust ja avatud aknad olid tegumiribal näha. See liidese põhimõte kehtib Windowsis tänini.
 - **32-bitised rakendused** (Win32) – uued programmid said kasutada rohkem mälu ja töötasid kiiremini. Eelisjärjestusega multitegumtöös jagab OS ise protsessori aega, nii et üks 32-bitine programm ei saa teisi kinni hoida. Vanad 16-bitised programmid jagasid aga endiselt ühte ühist ruumi.
-- **Plug and Play** – OS tuvastas uue seadme (nt helikaardi) ja seadistas selle võimaluse korral ise. Varem pidi kasutaja ise draivereid paigaldama ja IRQ-sid ning muid ressursse käsitsi määrama.
+- **Plug and Play** – OS tuvastas uue seadme (nt helikaardi) ja seadistas selle võimaluse korral ise. Varem pidi kasutaja ise draivereid paigaldama ja IRQ-sid ning muid ressursse käsitsi määrama. See töötas aga ainult siis, kui ka BIOS ja seade toetasid Plug and Play’d, nii et vanema riistvaraga tuli sageli ikka käsitsi seadistada (hüüdnimi „Plug and Pray“). Usaldusväärseks muutus see alles Windows 98-ga.
 - **Pikad failinimed** – DOS-i 8.3-vormingu (nt `ARUANNE1.DOC`) asemel sai faili nimeks panna kuni 255 märki, nt „Aruanne 2025 lõplik.doc“.
 - **Sisseehitatud TCP/IP** – interneti protokollide tugi oli OS-is kaasas ja sissehelistamisega sai võrku ühendada ilma lisatarkvarata. See soodustas interneti levikut koduarvutites.
 
@@ -65,14 +65,14 @@ Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võr
 **1998 · Windows 98 / 98 SE** – võrreldes Windows 95-ga:
 
 - **Internet Explorer integreeriti kesta** – brauser oli OS-i osa ning kaustu sai vaadata nagu veebilehti (Active Desktop). Sellest kasvas USA-s Microsofti vastu monopolikohtuasi.
-- **Laialdane USB tugi** – hiire, klaviatuuri, printeri ja muud seadmed sai ühendada ühe universaalse pistikuga, ilma arvutit taaskäivitamata.
+- **Laialdane USB tugi** – hiire, klaviatuuri, printeri ja muud seadmed sai ühendada ühe universaalse pistikuga, ilma arvutit taaskäivitamata. Koos WDM-draiverite ja ACPI-ga muutis see Plug and Play’ toimivaks. Kõige kuulsamalt tutvustati seda 20. aprillil 1998 COMDEX-i messil Chicagos: Bill Gatesi esitlusel ühendati Windows 98 eelversiooniga USB-skanner ja arvuti jooksis sinise ekraaniga kokku. Gates vastas naljaga, et küllap seepärast Windows 98 veel müügil ei olegi.
 - **FAT32 failisüsteem** – toetas suuremaid kettaid ja salvestas väikesed failid tõhusamalt (väiksemad klastrid), nii et kettaruumi raisati vähem.
 - **Windows Update** – parandusi ja draivereid sai alla laadida Microsofti veebilehelt, ilma uut plaati ostmata. Sellest kasvas välja tänane uuendussüsteem.
 - **WDM-draiverid, ACPI ja mitu monitori** – sama draiverimudel töötas nii Windows 98-s kui ka Windows 2000-s. ACPI võimaldas OS-il juhtida toidet (unerežiim, väljalülitus) ja ühe arvutiga sai kasutada mitut ekraani. 98 SE lisas interneti ühiskasutuse: üks arvuti sai jagada internetiühendust teistega.
 
 *Allikad:* [Wikipedia: Windows 98](https://en.wikipedia.org/wiki/Windows_98)
 
-**2000 · Windows ME** – võrreldes Windows 98-ga (viimane DOS-põhine Windows):
+**2000 · Windows ME** (Millennium Edition) – võrreldes Windows 98-ga (viimane DOS-põhine Windows):
 
 - **System Restore** (süsteemitaaste) – süsteem salvestas taastepunkte ja ebaõnnestunud paigalduse järel sai arvuti seadistused varasemasse olekusse tagasi viia, ilma et kasutaja failid kaoksid.
 - **Süsteemifailide kaitse** – takistas programmidel olulisi Windowsi faile vanemate versioonidega üle kirjutada. Varem oli see sage põhjus, miks süsteem pärast tarkvara paigaldamist katki läks („DLL-põrgu“).
@@ -88,7 +88,7 @@ Windows NT (New Technology) loodi nullist, juhiks Dave Cutler. Eesmärgid olid t
 
 ![Windowsi kaks arendusliini · DOS-liin lõppes 2000, NT-liin jätkub](../pildid/01-a.png)
 
-Joonis: DOS-põhine liin lõppes Windows ME-ga; Windows XP-st alates kasutavad ka koduarvutid NT-tuuma, millel põhineb ka Windows 11.
+Joonis: DOS-põhine liin lõppes Windows ME-ga; Windows XP-st (XP = eXPerience, kasutuskogemus) alates kasutavad ka koduarvutid NT-tuuma, millel põhineb ka Windows 11.
 
 ### 1.4 NT-põhised Windowsi versioonid
 
@@ -147,7 +147,7 @@ Joonis: NT-põhise Windowsi versioonid Windows NT 3.1-st kuni Windows 11 26H2-ni
 
 *Allikad:* [Wikipedia: Windows 2000](https://en.wikipedia.org/wiki/Windows_2000) · [Microsoft: Overview of Active Directory Domain Services](https://learn.microsoft.com/windows-server/identity/ad-ds/get-started/virtual-dc/active-directory-domain-services-overview) · [Microsoft: Kerberos Authentication Overview](https://learn.microsoft.com/windows-server/security/kerberos/kerberos-authentication-overview)
 
-**2001 · Windows XP** – võrreldes Windows 2000 ja ME-ga:
+**2001 · Windows XP** – võrreldes Windows 2000 ja ME-ga. Nimi XP tuleb sõnast eXPerience (kogemus): Microsoft rõhutas, et uus Windows on keskendunud kasutaja kogemusele.
 
 - **NT-tuum ka koduarvutites** – XP Home ja Professional ühendasid kaks arendusliini. Ka kodukasutajad said NT stabiilsuse, mälukaitse ja õigused ning DOS-põhine liin lõppes.
 - **Luna kasutajaliides ja ClearType** – värvikam, kodukasutajale mõeldud välimus. ClearType muutis teksti LCD-ekraanidel teravamaks, kasutades ekraanipikslite värvilisi alampiksleid.
