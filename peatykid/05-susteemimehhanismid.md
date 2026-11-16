@@ -8,6 +8,8 @@ Süsteemimehhanismid on tuuma üldised tööriistad, mida kõik teised komponend
 
 **Katkestus** (interrupt) on asünkroonne sündmus, millega seade (klaviatuur, võrgukaart, taimer, SSD) annab protsessorile märku. Protsessor katkestab jooksva töö, salvestab oleku ja käivitab **katkestuse teenindusrutiini** (ISR).
 
+Iga seade saadab katkestuse oma **IRQ** kaudu (Interrupt Request ehk katkestusnõue). Vanades PC-arvutites oli IRQ-sid 16 (0–15): näiteks IRQ 0 oli süsteemitaimer, IRQ 1 klaviatuur ja IRQ 14 kõvaketta kontroller. Laiendkaartidel tuli IRQ sageli hüppelülitiga käsitsi valida ja kahel seadmel ei tohtinud olla sama number. Tänapäeval jagab need Windows ise ning PCIe-seadmed kasutavad MSI-katkestusi, mida ei piira 16 liini (ptk 14.8). **IRQ ütleb, kes katkestuse saatis, IRQL ütleb, kui tähtis see on.**
+
 Windows järjestab katkestused prioriteetide järgi, mida nimetatakse **IRQL**-iks (Interrupt Request Level). Kõrgema IRQL-iga katkestus võib madalama katkestada, mitte vastupidi. Tavaline kood töötab tasemel PASSIVE\_LEVEL, planeerija DISPATCH\_LEVEL-il, seadmekatkestused kõrgemal.
 
 Et ISR oleks lühike, lükkab Windows aeganeelava töö edasi:
