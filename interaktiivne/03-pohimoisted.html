@@ -109,7 +109,7 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/03-pohimoisted.md">← Peatükk 3</a> · <a href="03-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Windowsi põhimõisted – proovi ise</h1>
-<p>Sellel lehel näed põhimõisteid töös: kuidas Windows API kõne jõuab tuuma, kuidas pidemed ja objektid toimivad, mis töötab millises režiimis, mida tähendab sõna „teenus“ ja kui palju baite võtab üks täht eri kodeeringutes.</p>
+<p>Sellel lehel näed põhimõisteid töös: kuidas Windows API (ingl <i>Application Programming Interface</i>) kõne jõuab tuuma, kuidas pidemed ja objektid toimivad, mis töötab millises režiimis, mida tähendab sõna „teenus“ ja kui palju baite võtab üks täht eri kodeeringutes.</p>
 <div class="toc"><a href="#teekond">1. Faili avamise teekond</a><a href="#pidemed">2. Pidemed ja objektid</a><a href="#reziim">3. Kus see töötab?</a><a href="#teenus">4. Mis liiki „teenus“?</a><a href="#unicode">5. Unicode baitideks</a></div>
 
 <!-- 1 -->
@@ -149,7 +149,7 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <!-- 3 -->
 <section id="reziim">
 <h2>3. Kus see töötab?</h2>
-<p>Vali ülal komponent ja klõpsa kastil, kus see töötab. VTL 1 on hüperviisoriga eraldatud usaldustase, kuhu isegi tavaline tuum ligi ei pääse.</p>
+<p>Vali ülal komponent ja klõpsa kastil, kus see töötab. VTL 1 (VTL – ingl <i>Virtual Trust Level</i>) on hüperviisoriga eraldatud usaldustase, kuhu isegi tavaline tuum ligi ei pääse.</p>
 <div class="pool" id="rpool"></div>
 <div class="buckets">
   <div class="bucket" data-b="um"><h3 style="color:var(--um)">Kasutajarežiim (ring 3)</h3><div class="chips"></div></div>
@@ -170,14 +170,16 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <!-- 5 -->
 <section id="unicode">
 <h2>5. Unicode baitideks</h2>
-<p>Kirjuta tekst ja vaata, mitu baiti see võtab eri kodeeringutes ja mis juhtub, kui salvestad selle vana ANSI koodilehega. Eesti Windowsi ANSI koodileht on <strong>Windows-1257</strong> (Balti), mis sisaldab täpitähti, kuid mitte kirillitsat ega emotikone.</p>
+<p>Kirjuta tekst ja vaata, mitu baiti see võtab eri kodeeringutes ja mis juhtub, kui salvestad selle vana ANSI (ingl <i>American National Standards Institute</i>) koodilehega. Eesti Windowsi ANSI koodileht on <strong>Windows-1257</strong> (Balti), mis sisaldab täpitähti, kuid mitte kirillitsat ega emotikone.</p>
 <textarea id="utext" rows="2">Tere, õäöüšž! Привет 😀</textarea>
 <div class="sizes" id="usizes"></div>
 <p class="hint" style="margin:.25rem 0">ANSI-failina salvestamise järel ja uuesti avamisel näed:</p>
 <div class="back" id="uback"></div>
 <p class="hint" style="margin:1rem 0 .25rem">Märk-märgilt:</p>
-<div class="ctab"><table><thead><tr><th>Märk</th><th>Koodipunkt</th><th>UTF-8 baidid</th><th>UTF-16 LE baidid</th><th>ANSI (1257)</th></tr></thead><tbody id="utab"></tbody></table></div>
+<div class="ctab"><table><thead><tr><th>Märk</th><th>Koodipunkt</th><th>UTF-8 (UTF – ingl <i>Unicode Transformation Format</i>) baidid</th><th>UTF-16 LE (ingl <i>Little Endian</i>) baidid</th><th>ANSI (1257)</th></tr></thead><tbody id="utab"></tbody></table></div>
 </section>
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="03-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 3 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -201,7 +203,7 @@ const OK=[
  ['ntdll','um','ntdll.dll täidab käsu <code>syscall</code>','<code>NtCreateFile</code> on Native API funktsioon. Ta paneb süsteemiteenuse numbri registrisse ja täidab protsessori käsu <code>syscall</code>.'],
  ['wall','wall','Režiimivahetus: ring 3 → ring 0','Protsessor lülitub tuumarežiimi ja hüppab kindlasse tuuma sisendpunkti. Rakendus ei saa valida, kuhu tuumas hüpata. Ainult nii pääseb kasutajarežiimist tuuma.'],
  ['disp','km','Dispetšer kontrollib parameetreid','Süsteemiteenuste dispetšer leiab numbri järgi tuumafunktsiooni <code>NtCreateFile</code>. Kõik kasutajarežiimist tulnud aadressid ja väärtused kontrollitakse, sest rakendust ei usaldata.'],
- ['om','km','Objektihaldur leiab nime, SRM kontrollib õigusi','Objektihaldur lahendab nime. Turvaviitemonitor (SRM) võrdleb Notepadi protsessi tokenit faili turvakirjeldaja pääsuloendiga (ACL). Lugemisõigus on olemas.'],
+ ['om','km','Objektihaldur leiab nime, SRM (ingl Security Reference Monitor) kontrollib õigusi','Objektihaldur lahendab nime. Turvaviitemonitor (SRM) võrdleb Notepadi protsessi tokenit faili turvakirjeldaja pääsuloendiga (ACL – ingl Access Control List). Lugemisõigus on olemas.'],
  ['io','km','I/O-haldur ja NTFS avavad faili','I/O-haldur saadab päringu failisüsteemi draiverile <code>ntfs.sys</code>, mis leiab faili kettalt. Tuumamällu luuakse <b>failiobjekt</b>.'],
  ['ht','km','Pidemetabelisse lisatakse kirje <code>0x1A4</code>','Objektihaldur lisab Notepadi pidemetabelisse kirje, mis viitab failiobjektile, ja tagastab selle numbri: <b>pide 0x1A4</b>. Failiobjekti ennast rakendus kunagi ei näe.'],
  ['notepad','um','Notepad saab pideme ja loeb faili','Tagasi kasutajarežiimis. Notepad kutsub <code>ReadFile(0x1A4, …)</code>. Iga kord kontrollib tuum, et pide kuulub sellele protsessile ja lubab lugemist.']
@@ -278,7 +280,7 @@ $('reboot').onclick=()=>{$('bsod').classList.remove('on');resetH();info('Arvuti 
 resetH();
 
 /* ---------- 3. režiim ---------- */
-const RM=[['notepad.exe','um','Tavaline rakendus töötab kasutajarežiimis.'],['Word','um','Rakendused töötavad kasutajarežiimis.'],['kernel32.dll','um','API DLL-id laaditakse rakenduse protsessi, seega töötavad kasutajarežiimis.'],['ntdll.dll','um','ntdll.dll on viimane kasutajarežiimi kiht enne süsteemikutset.'],['svchost.exe','um','Teenused on tavalised protsessid kasutajarežiimis, kuigi sageli suuremate õigustega.'],['lsass.exe','um','LSASS on kasutajarežiimi protsess, mida kaitseb LSA kaitse.'],['ntoskrnl.exe (tuum ja käivitav süsteem)','km','Tuum ja executive töötavad tuumarežiimis.'],['ntfs.sys','km','Failisüsteemi draiver töötab tuumarežiimis.'],['win32k.sys','km','Akende ja graafika tuumaosa töötab tuumarežiimis.'],['Securekernel.exe','v1','Turvatuum töötab VTL 1-s. Tavaline tuum ei näe selle mälu.'],['LsaIso.exe (Credential Guard)','v1','Isoleeritud LSA hoiab paroolide räsisid ja Kerberose pileteid VTL 1-s.']];
+const RM=[['notepad.exe','um','Tavaline rakendus töötab kasutajarežiimis.'],['Word','um','Rakendused töötavad kasutajarežiimis.'],['kernel32.dll','um','API DLL-id (ingl Dynamic-Link Library) laaditakse rakenduse protsessi, seega töötavad kasutajarežiimis.'],['ntdll.dll','um','ntdll.dll on viimane kasutajarežiimi kiht enne süsteemikutset.'],['svchost.exe','um','Teenused on tavalised protsessid kasutajarežiimis, kuigi sageli suuremate õigustega.'],['lsass.exe','um','LSASS (ingl Local Security Authority Subsystem Service) on kasutajarežiimi protsess, mida kaitseb LSA (ingl Local Security Authority) kaitse.'],['ntoskrnl.exe (tuum ja käivitav süsteem)','km','Tuum ja executive töötavad tuumarežiimis.'],['ntfs.sys','km','Failisüsteemi draiver töötab tuumarežiimis.'],['win32k.sys','km','Akende ja graafika tuumaosa töötab tuumarežiimis.'],['Securekernel.exe','v1','Turvatuum töötab VTL 1-s. Tavaline tuum ei näe selle mälu.'],['LsaIso.exe (Credential Guard)','v1','Isoleeritud LSA hoiab paroolide räsisid ja Kerberose pileteid VTL 1-s.']];
 let rset=[],rpl={},rsel=null,rchk=false;
 function newR(){rset=shuffle(RM.map((_,i)=>i)).slice(0,8);if(!rset.some(i=>RM[i][1]==='v1'))rset[7]=9;rset=shuffle(rset);rpl={};rsel=null;rchk=false;$('rres').innerHTML='';drawR()}
 function rchip(i,w){const b=document.createElement('button');let c='chip';if(rsel===i)c+=' sel';if(rchk&&w!=='pool')c+=RM[i][1]===w?' ok':' bad';b.className=c;b.textContent=RM[i][0];

@@ -159,12 +159,12 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Suur pilt: kolm küsimust</h4>
 <p>Kogu Windowsi turvamudel vastab kolmele küsimusele:</p>
 <div class="kv">
-<div><b>1. Kes sa oled? (autentimine)</b>Sisselogimisel tõestad oma identiteeti (parool, PIN, nägu, pääsvõti). Windows annab sulle <b>juurdepääsutokeni</b> – „ID-kaardi“, millel on sinu <b>SID</b>, rühmad, privileegid ja terviklikkuse tase.</div>
-<div><b>2. Mida sa tohid? (autoriseerimine)</b>Igal failil, kaustal ja registrivõtmel on <b>turvakirjeldaja</b> ja selles <b>DACL</b> – loend „kes mida tohib“. Iga kord, kui programm objekti avab, võrdleb tuumas olev <b>SRM</b> tokenit DACL-iga.</div>
+<div><b>1. Kes sa oled? (autentimine)</b>Sisselogimisel tõestad oma identiteeti (parool, PIN – ingl <i>Personal Identification Number</i>, nägu, pääsvõti). Windows annab sulle <b>juurdepääsutokeni</b> – „ID-kaardi (ID – ingl <i>identity card</i>)“, millel on sinu <b>SID (ingl <i>Security Identifier</i>)</b>, rühmad, privileegid ja terviklikkuse tase.</div>
+<div><b>2. Mida sa tohid? (autoriseerimine)</b>Igal failil, kaustal ja registrivõtmel on <b>turvakirjeldaja</b> ja selles <b>DACL (ingl <i>Discretionary Access Control List</i>)</b> – loend „kes mida tohib“. Iga kord, kui programm objekti avab, võrdleb tuumas olev <b>SRM (ingl <i>Security Reference Monitor</i>)</b> tokenit DACL-iga.</div>
 <div><b>3. Mida sa tegid? (audit)</b>Olulised sündmused (sisselogimised, ebaõnnestunud katsed, õiguste muutused) kirjutatakse <b>turvalogisse</b>. Ilma logita ei saa rünnakut hiljem uurida.</div>
 </div>
-<p style="margin-top:10px">Nende ümber on <b>kaitsekihid</b>: uuendused, viirusetõrje ja EDR, rakenduste kontroll, tulemüür, krüpteerimine ja riistvaraline usaldusahel. Põhimõte on <b>kaitse sügavuti</b>: kui üks kiht ebaõnnestub, peatab ründaja järgmine.</p>
-<p><b>Õppimise järjekord:</b> 1. CIA → 2. SID → 3. token → 4. DACL (kõige olulisem!) → 5. UAC → 6. autentimine → 7. lunavara ahel → 8. tulemüür → 9. turvalogi.</p>
+<p style="margin-top:10px">Nende ümber on <b>kaitsekihid</b>: uuendused, viirusetõrje ja EDR (ingl <i>Endpoint Detection and Response</i>), rakenduste kontroll, tulemüür, krüpteerimine ja riistvaraline usaldusahel. Põhimõte on <b>kaitse sügavuti</b>: kui üks kiht ebaõnnestub, peatab ründaja järgmine.</p>
+<p><b>Õppimise järjekord:</b> 1. CIA (ingl <i>Confidentiality, Integrity, Availability</i>) → 2. SID → 3. token → 4. DACL (kõige olulisem!) → 5. UAC (ingl <i>User Account Control</i>) → 6. autentimine → 7. lunavara ahel → 8. tulemüür → 9. turvalogi.</p>
 </div>
 <div class="toc"><a href="#cia">1. CIA</a><a href="#sid">2. SID</a><a href="#token">3. Token</a><a href="#acl">4. DACL-i kontroll</a><a href="#uac">5. UAC</a><a href="#auth">6. Autentimine</a><a href="#ahel">7. Lunavara ahel</a><a href="#tulemuur">8. Tulemüür</a><a href="#logi">9. Turvalogi</a></div>
 
@@ -175,9 +175,9 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Miks see oluline on?</h4>
 <p>Infoturbe eesmärgid on <b>CIA-kolmik</b>. Kui oskad iga intsidendi juures öelda, millist neist see rikub, tead ka, milline kaitse oleks aidanud:</p>
 <ul>
-<li><b>Konfidentsiaalsus</b> (C) – andmeid näevad ainult need, kellel on õigus. Rikkumine = <i>leke</i>. Kaitse: õigused, krüpteerimine, MFA.</li>
+<li><b>Konfidentsiaalsus</b> (C) – andmeid näevad ainult need, kellel on õigus. Rikkumine = <i>leke</i>. Kaitse: õigused, krüpteerimine, MFA (ingl <i>Multi-Factor Authentication</i>).</li>
 <li><b>Terviklus</b> (I) – andmeid ei muudeta loata ega märkamatult. Rikkumine = <i>muutmine, võltsimine</i>. Kaitse: õigused, digiallkirjad, kontrollsummad, auditilogi.</li>
-<li><b>Käideldavus</b> (A) – andmed ja teenused on kättesaadavad, kui neid vaja on. Rikkumine = <i>teenus maas, andmed kättesaamatud</i>. Kaitse: varundus, RAID, uuendused, DDoS-kaitse.</li>
+<li><b>Käideldavus</b> (A) – andmed ja teenused on kättesaadavad, kui neid vaja on. Rikkumine = <i>teenus maas, andmed kättesaamatud</i>. Kaitse: varundus, RAID (ingl <i>Redundant Array of Independent Disks</i>), uuendused, DDoS-kaitse (DDoS – ingl <i>Distributed Denial of Service</i>).</li>
 </ul>
 <p><b>Mida teha:</b> vali iga olukorra jaoks peamine rikutud eesmärk. Mõni intsident rikub mitut – vali see, mis on <b>kõige otsesem</b>, ja loe selgitust.</p>
 </div>
@@ -190,7 +190,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p><b>SID</b> (Security Identifier) on kasutaja, rühma või arvuti püsiv unikaalne tunnus. Windows salvestab õigustesse <b>SID-i, mitte nime</b>: nime saab muuta, SID jääb samaks. Kui konto kustutada ja luua uuesti sama nimega, saab see uue SID-i ja vanad õigused enam ei kehti – õiguste loendis näed siis tundmatut SID-i <code>S-1-5-21-…-1104</code>.</p>
-<p>SID koosneb osadest: versioon, autoriteet, <b>domeeni või arvuti osa</b> (sama kõigil selle domeeni kontodel) ja lõpus <b>RID</b> – konto järjekorranumber. Mõned RID-id on alati samad: 500 on sisseehitatud Administrator, 512 Domain Admins. Ründajad otsivadki RID 500 kontot, sest seda ei saa lukustada.</p>
+<p>SID koosneb osadest: versioon, autoriteet, <b>domeeni või arvuti osa</b> (sama kõigil selle domeeni kontodel) ja lõpus <b>RID (ingl <i>Relative Identifier</i>)</b> – konto järjekorranumber. Mõned RID-id on alati samad: 500 on sisseehitatud Administrator, 512 Domain Admins. Ründajad otsivadki RID 500 kontot, sest seda ei saa lukustada.</p>
 <p><b>Mida teha:</b> sisesta SID või vali näide. Oma SID-i näed käsuga <code>whoami /user</code>.</p>
 </div>
 <div class="card">
@@ -236,10 +236,10 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>See on Windowsi juurdepääsukontrolli <b>süda</b>. Kui saad aru, kuidas SRM otsustab, oskad lahendada enamiku õiguste probleeme („miks Mari ei saa faili muuta?“) ja kujundada õigusi turvaliselt.</p>
-<p>Igal objektil on <b>DACL</b> – loend kirjetest (<b>ACE</b>). Iga ACE ütleb: <i>keda</i> (SID), <i>luba või keela</i>, <i>milliseid õigusi</i>. Lisaks on ACE kas <b>otsene</b> (määratud just sellele failile) või <b>päritud</b> (tuleb ülemkaustast).</p>
+<p>Igal objektil on <b>DACL</b> – loend kirjetest (<b>ACE (ingl <i>Access Control Entry</i>)</b>). Iga ACE ütleb: <i>keda</i> (SID), <i>luba või keela</i>, <i>milliseid õigusi</i>. Lisaks on ACE kas <b>otsene</b> (määratud just sellele failile) või <b>päritud</b> (tuleb ülemkaustast).</p>
 <p><b>SRM-i algoritm:</b></p>
 <ol>
-<li><b>Terviklikkus (MIC):</b> kui tokeni tase on madalam kui objekti oma, ei tohi objekti muuta – olenemata ACL-ist.</li>
+<li><b>Terviklikkus (MIC – ingl <i>Mandatory Integrity Control</i>):</b> kui tokeni tase on madalam kui objekti oma, ei tohi objekti muuta – olenemata ACL-ist (ingl <i>Access Control List</i>).</li>
 <li><b>NULL DACL</b> (DACL puudub) → kõigil kõik õigused.</li>
 <li>ACE-d sorteeritakse: <b>otsesed keelud → otsesed load → päritud keelud → päritud load</b>.</li>
 <li>Iga ACE puhul: kui SID on tokenis ja ACE <b>keelab</b> mõnda soovitud õigust → <b>keelatud kohe</b>. Kui <b>lubab</b> → need õigused kogutakse.</li>
@@ -293,8 +293,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>6. Millise ründe vastu milline autentimine aitab?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Üle 80% sissetungidest algab varastatud või nõrgast paroolist. <b>Mitmikautentimine (MFA)</b> nõuab kaht eri tüüpi tõendit: midagi, mida <b>tead</b> (parool, PIN), midagi, mis sul <b>on</b> (telefon, turvavõti, TPM-iga arvuti) ja/või midagi, mis sa <b>oled</b> (sõrmejälg, nägu).</p>
-<p>Kuid MFA-meetodid pole võrdsed. Peamine küsimus: <b>kas meetod on seotud õige veebilehega?</b> SMS-koodi saab kasutaja õngitsuslehele sisestada samamoodi nagu parooli. Pääsvõtit ja Windows Hello for Businessi ei saa – need on krüptograafiliselt seotud õige domeeniga ja brauser ei paku neid võltslehele. Seepärast nimetatakse neid <b>õngitsuskindlateks</b>.</p>
+<p>Üle 80% sissetungidest algab varastatud või nõrgast paroolist. <b>Mitmikautentimine (MFA)</b> nõuab kaht eri tüüpi tõendit: midagi, mida <b>tead</b> (parool, PIN), midagi, mis sul <b>on</b> (telefon, turvavõti, TPM-iga (ingl <i>Trusted Platform Module</i>) arvuti) ja/või midagi, mis sa <b>oled</b> (sõrmejälg, nägu).</p>
+<p>Kuid MFA-meetodid pole võrdsed. Peamine küsimus: <b>kas meetod on seotud õige veebilehega?</b> SMS-koodi (SMS – ingl <i>Short Message Service</i>) saab kasutaja õngitsuslehele sisestada samamoodi nagu parooli. Pääsvõtit ja Windows Hello for Businessi ei saa – need on krüptograafiliselt seotud õige domeeniga ja brauser ei paku neid võltslehele. Seepärast nimetatakse neid <b>õngitsuskindlateks</b>.</p>
 <p><b>Mida teha:</b> klõpsa tabeli lahtritel. ✅ = kaitseb, ⚠ = kaitseb osaliselt, ❌ = ei kaitse, — = ei puutu asjasse. Iga lahtri juures on selgitus.</p>
 </div>
 <div class="card">
@@ -306,7 +306,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <li><b>Lekkinud parool mujalt</b> – kasutaja kasutab sama parooli mitmes kohas; kui mõni leht lekib, proovivad ründajad seda igal pool (credential stuffing). Kontrolli: haveibeenpwned.com.</li>
   <li><b>Parooli äraarvamine</b> – ründaja proovib levinud paroole paljude kontode peal (password spraying: „Kevad2026!“). Konto lukustus ja MFA aitavad.</li>
   <li><b>MFA-väsimus</b> – ründajal on parool ja ta saadab öösel kümneid kinnituspäringuid, kuni kasutaja vajutab „Kinnita“. Kaitse: numbri sisestamine (number matching).</li>
-  <li><b>SIM-vahetus</b> – ründaja veenab mobiilioperaatorit andma talle ohvri numbriga uue SIM-kaardi ja saab SMS-koodid.</li>
+  <li><b>SIM-vahetus (SIM – ingl <i>Subscriber Identity Module</i>)</b> – ründaja veenab mobiilioperaatorit andma talle ohvri numbriga uue SIM-kaardi ja saab SMS-koodid.</li>
   <li><b>Varastatud sülearvuti</b> – ründaja hoiab seadet käes. Kaitseb BitLocker + PIN/biomeetria, mida varas ei tea.</li>
   </ul></details>
 </div>
@@ -348,11 +348,13 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 </section>
 
 <!-- 9 Logi -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="18-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 18 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="logi">
 <h2>9. Turvalogi analüüs: mis öösel juhtus?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Turvalogi on nagu valvekaamera salvestis: see ei takista rünnakut, kuid näitab, mis juhtus. Ründajad püüavad jälgi peita – seepärast saadetakse logid organisatsioonis kohe keskserverisse (SIEM), kus ründaja neid kustutada ei saa.</p>
+<p>Turvalogi on nagu valvekaamera salvestis: see ei takista rünnakut, kuid näitab, mis juhtus. Ründajad püüavad jälgi peita – seepärast saadetakse logid organisatsioonis kohe keskserverisse (SIEM – ingl <i>Security Information and Event Management</i>), kus ründaja neid kustutada ei saa.</p>
 <p>Olulisemad sündmused: <b>4624</b> edukas sisselogimine (tüüp 2 – klaviatuur, 3 – võrk, 10 – kaugtöölaud), <b>4625</b> ebaõnnestunud, <b>4672</b> administraatori õigused, <b>4688</b> uus protsess, <b>4720</b> kasutaja loodi, <b>4732</b> kasutaja lisati kohalikku rühma, <b>1102</b> turvalogi tühjendati.</p>
 <p><b>Mida teha:</b> loe allolevat logi (server <code>SRV-KOOL01</code>, öö vastu teisipäeva) ja vasta küsimustele. Värvilised read on kahtlased.</p>
 </div>
@@ -388,13 +390,13 @@ quiz('ciat','cias','ciar',['Konfidentsiaalsus','Terviklus','Käideldavus'],[
  ['E-päevik ei avane, sest selle serverit ummistatakse miljonite päringutega (DDoS).',2,'Teenus pole kättesaadav. Kaitse: DDoS-kaitse teenus, koormuse jaotamine.'],
  ['Pahavara asendas süsteemifaili oma versiooniga, et käivituda koos Windowsiga.',1,'Süsteemi <b>terviklus</b> on rikutud. Kaitse: Secure Boot, koodi allkirjastamine, HVCI, failide terviklikkuse kontroll.'],
  ['Varastati krüpteerimata sülearvuti, millel olid töötajate isikukoodid.',0,'Varas saab andmeid lugeda – konfidentsiaalsus. Kaitse: BitLocker. (Omaniku jaoks on andmed ka kadunud – käideldavus –, kuid peamine kahju on leke.)'],
- ['Keegi muutis arve PDF-is pangakonto numbrit enne, kui raamatupidaja selle maksis.',1,'Dokumenti <b>võltsiti</b>. Kaitse: digiallkiri (muudatus muudaks allkirja kehtetuks), kinnitus teise kanali kaudu.'],
+ ['Keegi muutis arve PDF-is (ingl Portable Document Format) pangakonto numbrit enne, kui raamatupidaja selle maksis.',1,'Dokumenti <b>võltsiti</b>. Kaitse: digiallkiri (muudatus muudaks allkirja kehtetuks), kinnitus teise kanali kaudu.'],
  ['Failiserveri ketas läks rikki ja varukoopiat polnud.',2,'Andmed pole enam kättesaadavad. Kaitse: RAID ja varundus.']],
  'Leke → konfidentsiaalsus; muutmine → terviklus; kättesaamatus → käideldavus.');
 
 /* 2. SID */
 const KN={'S-1-1-0':'Everyone – kõik kasutajad','S-1-5-11':'Authenticated Users – kõik sisselogitud','S-1-5-18':'SYSTEM (LocalSystem) – võimsaim konto arvutis','S-1-5-19':'LocalService – piiratud teenusekonto','S-1-5-20':'NetworkService – teenusekonto võrguligipääsuga','S-1-5-32-544':'BUILTIN\\Administrators – kohalikud administraatorid','S-1-5-32-545':'BUILTIN\\Users – kohalikud kasutajad','S-1-5-32-555':'Remote Desktop Users','S-1-16-4096':'terviklikkuse tase Low','S-1-16-8192':'terviklikkuse tase Medium','S-1-16-12288':'terviklikkuse tase High','S-1-16-16384':'terviklikkuse tase System'};
-const RID={500:'sisseehitatud Administrator konto – seda ei saa lukustada, ründajad otsivad just seda; soovitus: nimeta ümber või lülita välja ja kasuta LAPS-i',501:'Guest (külaline) – peaks olema välja lülitatud',502:'krbtgt – Kerberose piletite allkirjastamise konto domeenis; kui selle räsi lekib, saab ründaja võltsida mis tahes pileteid („Golden Ticket“)',512:'Domain Admins – domeeni administraatorid; liikmeid peaks olema väga vähe',513:'Domain Users – kõik domeeni kasutajad',514:'Domain Guests',515:'Domain Computers – kõik domeeni arvutid',516:'Domain Controllers',519:'Enterprise Admins – kogu metsa administraatorid',544:'Administrators'};
+const RID={500:'sisseehitatud Administrator konto – seda ei saa lukustada, ründajad otsivad just seda; soovitus: nimeta ümber või lülita välja ja kasuta LAPS-i (ingl Local Administrator Password Solution)',501:'Guest (külaline) – peaks olema välja lülitatud',502:'krbtgt – Kerberose piletite allkirjastamise konto domeenis; kui selle räsi lekib, saab ründaja võltsida mis tahes pileteid („Golden Ticket“)',512:'Domain Admins – domeeni administraatorid; liikmeid peaks olema väga vähe',513:'Domain Users – kõik domeeni kasutajad',514:'Domain Guests',515:'Domain Computers – kõik domeeni arvutid',516:'Domain Controllers',519:'Enterprise Admins – kogu metsa administraatorid',544:'Administrators'};
 function sidDraw(){const s=$('sidin').value.trim().toUpperCase(),p=s.split('-');const I=$('sidinfo');
   if(p[0]!=='S'||p.length<3||p.slice(1).some(x=>!/^\d+$/.test(x))){$('sidparts').innerHTML='';I.className='info bad';I.innerHTML='See ei ole SID. SID algab „S-1-“ ja koosneb numbritest, nt <code>S-1-5-21-1111-2222-3333-1001</code>.';return}
   const C=['#6b6a65','#6b6a65','#0f7b7b','#185fa5','#3b6d11'];let parts=[['S','SID'],[p[1],'versioon'],[p[2],{1:'World',5:'NT Authority',16:'terviklikkuse silt'}[p[2]]||'autoriteet']];

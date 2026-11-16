@@ -152,7 +152,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h4>Suur pilt: igal ohul on oma kaitse</h4>
 <p>Andmeid ähvardavad väga erinevad ohud ja <b>ükski meede ei kaitse kõige eest</b>:</p>
 <ul>
-<li><b>Ketas läheb rikki</b> → aitab <b>RAID</b> või Storage Spaces (andmed on mitmel kettal).</li>
+<li><b>Ketas läheb rikki</b> → aitab <b>RAID (ingl <i>Redundant Array of Independent Disks</i>)</b> või Storage Spaces (andmed on mitmel kettal).</li>
 <li><b>Fail kustutatakse kogemata või lunavara krüpteerib selle</b> → aitab <b>varundus</b> (RAID kopeeriks vea kohe kõigile ketastele).</li>
 <li><b>Sülearvuti varastatakse</b> → aitab <b>BitLocker</b> (varas ei saa andmeid lugeda).</li>
 <li><b>Serveriruumis on tulekahju</b> → aitab ainult <b>väljaspool hoitav varukoopia</b>.</li>
@@ -166,7 +166,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>1. Miks on SSD nii palju kiirem?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>HDD-s on pöörlevad plaadid ja lugemispea. Iga <b>juhusliku</b> lugemise jaoks peab pea liikuma õigele rajale (<b>otsinguaeg</b>) ja ootama, kuni õige koht pea alt läbi pöörleb (<b>pöördeviide</b> – keskmiselt pool pööret). See on nagu plaadimängija, kus iga laulu jaoks tuleb nõel tõsta õigesse kohta. SSD-l liikuvaid osi pole ja ta leiab iga ploki sama kiiresti.</p>
+<p>HDD-s (ingl <i>Hard Disk Drive</i>) on pöörlevad plaadid ja lugemispea. Iga <b>juhusliku</b> lugemise jaoks peab pea liikuma õigele rajale (<b>otsinguaeg</b>) ja ootama, kuni õige koht pea alt läbi pöörleb (<b>pöördeviide</b> – keskmiselt pool pööret). See on nagu plaadimängija, kus iga laulu jaoks tuleb nõel tõsta õigesse kohta. SSD-l (ingl <i>Solid-State Drive</i>) liikuvaid osi pole ja ta leiab iga ploki sama kiiresti.</p>
 <p>Windowsi käivitamine, programmide avamine ja andmebaasid teevad tuhandeid väikesi juhuslikke lugemisi. Seepärast tundub vana arvuti pärast SSD paigaldamist täiesti uus.</p>
 <p><b>Mida teha:</b> vali ülesanne ja muuda HDD pöörlemiskiirust ning otsinguaega. Võrdle, kui kaua sama töö eri ketastel võtab.</p>
 </div>
@@ -186,7 +186,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>2. Kuidas ketas on jaotatud?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Enne kasutamist jaotatakse ketas <b>partitsioonideks</b>. Partitsioonitabel (MBR või GPT) on nagu raamatu sisukord: see ütleb, kus mingi osa algab ja lõpeb. Windows 11 vajab GPT-d ja UEFI-d. Kui administraator kustutab „tarbetu“ väikese partitsiooni, võib arvuti lakata käivitumast – seepärast tuleb teada, milleks iga partitsioon on.</p>
+<p>Enne kasutamist jaotatakse ketas <b>partitsioonideks</b>. Partitsioonitabel (MBR (ingl <i>Master Boot Record</i>) või GPT – ingl <i>GUID Partition Table</i>) on nagu raamatu sisukord: see ütleb, kus mingi osa algab ja lõpeb. Windows 11 vajab GPT-d ja UEFI-d (ingl <i>Unified Extensible Firmware Interface</i>). Kui administraator kustutab „tarbetu“ väikese partitsiooni, võib arvuti lakata käivitumast – seepärast tuleb teada, milleks iga partitsioon on.</p>
 <p><b>Mida teha:</b> klõpsa ketta skeemil igal partitsioonil ja loe, milleks see on. Siis proovi allpool, kas valitud ketas ja arvuti sobivad MBR-i või GPT-ga.</p>
 </div>
 <div class="card">
@@ -195,7 +195,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
   <h3 style="margin-top:1.2rem">MBR või GPT?</h3>
   <div class="slider"><label for="psize">Ketta suurus</label><input type="range" id="psize" min="0" max="5" value="2"><b id="psizev" class="mono"></b></div>
   <div class="slider"><label for="pcount">Partitsioonide arv</label><input type="range" id="pcount" min="1" max="8" value="4"><b id="pcountv" class="mono"></b></div>
-  <div class="row"><span>Püsivara: <select id="pfw"><option value="uefi">UEFI</option><option value="bios">Vana BIOS (Legacy)</option></select></span><span>OS: <select id="pos"><option value="w11">Windows 11</option><option value="w10">Windows 10</option><option value="data">Ainult andmeketas</option></select></span></div>
+  <div class="row"><span>Püsivara: <select id="pfw"><option value="uefi">UEFI</option><option value="bios">Vana BIOS (Legacy)</option></select></span><span>OS (ingl <i>Operating System</i>): <select id="pos"><option value="w11">Windows 11</option><option value="w10">Windows 10</option><option value="data">Ainult andmeketas</option></select></span></div>
   <div class="kpis" id="pkpi"></div>
   <div class="info" id="pres"></div>
 </div>
@@ -223,7 +223,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
   <div class="kpis" id="rkpi"></div>
   <div class="info" id="rinfo"></div>
   <h3 style="margin-top:1.2rem">Kuidas paarsus andmed tagasi toob? (XOR)</h3>
-  <p style="font-size:14.5px">XOR võrdleb bitte: kui need on samad, on tulemus 0, kui erinevad, siis 1. Paarsus = ketas 1 XOR ketas 2. Klõpsa bittidel, et neid muuta, ja vali, milline ketas läheb rikki.</p>
+  <p style="font-size:14.5px">XOR (ingl <i>Exclusive OR</i>) võrdleb bitte: kui need on samad, on tulemus 0, kui erinevad, siis 1. Paarsus = ketas 1 XOR ketas 2. Klõpsa bittidel, et neid muuta, ja vali, milline ketas läheb rikki.</p>
   <div class="xor" id="xgrid"></div>
   <div class="row"><span>Rikki läheb: <select id="xlost"><option value="-1">mitte ükski</option><option value="0">ketas 1</option><option value="1">ketas 2</option><option value="2">paarsuse ketas</option></select></span></div>
   <div class="info" id="xinfo"></div>
@@ -235,7 +235,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>4. BitLocker: kes saab ketta lahti?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Ilma krüpteerimiseta saab varas sülearvutist ketta välja võtta, ühendada selle oma arvutiga ja lugeda kõiki faile – Windowsi parooli pole vaja. <b>BitLocker</b> krüpteerib kogu köite. Võti on kaitstud <b>TPM</b>-kiibiga, mis annab selle välja ainult siis, kui arvuti käivitub muutmata kujul (sama püsivara, Secure Boot sees, sama alglaadur).</p>
+<p>Ilma krüpteerimiseta saab varas sülearvutist ketta välja võtta, ühendada selle oma arvutiga ja lugeda kõiki faile – Windowsi parooli pole vaja. <b>BitLocker</b> krüpteerib kogu köite. Võti on kaitstud <b>TPM (ingl <i>Trusted Platform Module</i>)</b>-kiibiga, mis annab selle välja ainult siis, kui arvuti käivitub muutmata kujul (sama püsivara, Secure Boot sees, sama alglaadur).</p>
 <p>Kui käivitus muutub, küsib arvuti <b>48-kohalist taastevõtit</b>. Kui seda pole kuhugi salvestatud, on andmed kadunud ka omanikule. Seepärast on taastevõtme hoidmine (Entra ID, Active Directory, Microsofti konto) sama oluline kui krüpteerimine ise.</p>
 <p><b>Mida teha:</b> vali kaitse viis ja kas taastevõti on salvestatud. Siis proovi olukordi ja vaata, kes ketta lahti saab.</p>
 </div>
@@ -271,6 +271,8 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 </section>
 
 <!-- 6 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="16-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 16 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="kaitse">
 <h2>6. Milline kaitse aitab?</h2>
 <div class="why">
@@ -323,7 +325,7 @@ function pDraw(){const s=PS[+$('psize').value],c=+$('pcount').value,fw=$('pfw').
   if(s>2)mbrIssues.push(`MBR näeb ainult 2 TB – ülejäänud ${s-2} TB jääb kasutamata`);
   if(c>4)mbrIssues.push(`MBR-is on ainult 4 primaarset partitsiooni – ${c} partitsiooni jaoks on vaja laiendatud partitsiooni`);
   if(o==='w11')mbrIssues.push('Windows 11 nõuab UEFI-d ja GPT-d');
-  if(fw==='bios'&&o!=='data')gptIssues.push('vana BIOS ei saa GPT-kettalt Windowsi käivitada');
+  if(fw==='bios'&&o!=='data')gptIssues.push('vana BIOS (ingl Basic Input/Output System) ei saa GPT-kettalt Windowsi käivitada');
   if(fw==='bios'&&o==='w11')gptIssues.push('Windows 11 ei toeta BIOS-i üldse – vaja on UEFI-ga arvutit');
   const rec=o==='data'?'GPT':(fw==='bios'?(o==='w11'?'—':'MBR'):'GPT');
   $('pkpi').innerHTML=`<div>Soovitus<b>${rec}</b></div><div>MBR probleeme<b>${mbrIssues.length}</b></div><div>GPT probleeme<b>${gptIssues.length}</b></div>`;

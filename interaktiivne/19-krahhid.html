@@ -182,7 +182,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>Peatuskood on esimene vihje. Kui oskad levinumaid koode ära tunda, tead kohe, kust otsima hakata: <b>draiverist, riistvarast või kettast</b>. Kood koosneb numbrist (nt <code>0x000000D1</code>) ja nimest (<code>DRIVER_IRQL_NOT_LESS_OR_EQUAL</code>) ning sellel on <b>neli parameetrit</b>, mille tähendus sõltub koodist.</p>
-<p><b>IRQL lihtsalt:</b> protsessoril on prioriteeditasemed. Tavaline kood töötab madalal tasemel ja võib oodata, kuni mälu lehefailist laaditakse. Katkestuste töötlemine toimub kõrgel tasemel, kus <b>oodata ei tohi</b>. Kui draiver pöördub kõrgel tasemel mälu poole, mida pole RAM-is, ei saa Windows seda laadida → <code>0xD1</code>.</p>
+<p><b>IRQL (ingl <i>Interrupt Request Level</i>) lihtsalt:</b> protsessoril on prioriteeditasemed. Tavaline kood töötab madalal tasemel ja võib oodata, kuni mälu lehefailist laaditakse. Katkestuste töötlemine toimub kõrgel tasemel, kus <b>oodata ei tohi</b>. Kui draiver pöördub kõrgel tasemel mälu poole, mida pole RAM-is (ingl <i>Random-Access Memory</i>), ei saa Windows seda laadida → <code>0xD1</code>.</p>
 <p><b>Mida teha:</b> klõpsa koodil või sisesta number (nt <code>d1</code>, <code>0x124</code>). Vaata tähendust, parameetreid ja esimest sammu.</p>
 </div>
 <div class="card">
@@ -197,7 +197,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>3. WinDbg-simulaator</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p><b>WinDbg</b> on Microsofti silur, millega IT-tugi ja arendajad uurivad mälutõmmiseid. Tõeline WinDbg on keeruline, kuid krahhi analüüsiks piisab sageli <b>mõnest käsust</b>. See simulaator näitab realistlikku (lühendatud) väljundit neljast tõmmisest.</p>
+<p><b>WinDbg</b> on Microsofti silur, millega IT-tugi (IT – ingl <i>Information Technology</i>) ja arendajad uurivad mälutõmmiseid. Tõeline WinDbg on keeruline, kuid krahhi analüüsiks piisab sageli <b>mõnest käsust</b>. See simulaator näitab realistlikku (lühendatud) väljundit neljast tõmmisest.</p>
 <p><b>Loe väljundist:</b> <code>BUGCHECK_CODE</code> (mis viga), <code>BUGCHECK_P1…P4</code> (parameetrid), <code>PROCESS_NAME</code>, <code>STACK_TEXT</code> (kutsete ahel – loe <b>alt üles</b>: alumine funktsioon kutsus ülemise), <code>IMAGE_NAME</code> (tõenäoline süüdlane). Seejärel <code>lmvm &lt;moodul&gt;</code> näitab draiveri versiooni ja kuupäeva.</p>
 <p><b>Mida teha:</b> vali tõmmis, käivita <code>!analyze -v</code>, leia süüdlane, uuri teda <code>lmvm</code>-iga ja vasta küsimusele allpool.</p>
 </div>
@@ -221,7 +221,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <p>Päris elus ei ütle keegi, mis krahhi põhjustas. Pead koguma vihjed (peatuskood, tõmmis, logid, mis muutus) ja tegema järelduse. Kõige olulisem oskus on eristada <b>draiveri-</b>, <b>riistvara-</b> ja <b>toiteprobleemi</b>, sest lahendused on täiesti erinevad.</p>
 <ul>
 <li><b>Sama kood + sama draiver iga kord</b> → draiver.</li>
-<li><b>Erinevad koodid, erinevad süüdlased, WHEA-sündmused</b> → riistvara (RAM, protsessor, kuumus).</li>
+<li><b>Erinevad koodid, erinevad süüdlased, WHEA-sündmused (WHEA – ingl <i>Windows Hardware Error Architecture</i>)</b> → riistvara (RAM, protsessor, kuumus).</li>
 <li><b>Sündmus 41, aga pole 1001 ega tõmmist</b> → arvuti kustus hetkega: toide või ülekuumenemine.</li>
 <li><b>Krahhid kadusid turvarežiimis</b> → kolmanda osapoole draiver või programm.</li>
 </ul>
@@ -251,8 +251,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>6. Taastamise simulaator: arvuti ei käivitu</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Kõige hullem krahh on see, mis kordub <b>iga käivitusega</b> – nii juhtus CrowdStrike’i juhtumil 2024. Siis ei saa Windowsis midagi parandada, sest Windows ei käivitugi. Appi tuleb <b>Windows RE</b> (taastekeskkond), mis avaneb automaatselt pärast <b>kahte ebaõnnestunud käivitust</b>.</p>
-<p>Windows RE-s on mitu tööriista ja <b>õige valik sõltub põhjusest</b>: vigase draiveri puhul aitab turvarežiim, vigase Windowsi uuenduse puhul uuenduse eemaldamine, laialdase probleemi puhul kiire masinataaste (QMR). <b>BitLocker</b> lisab keerukust: paljud parandustoimingud nõuavad taastevõtit.</p>
+<p>Kõige hullem krahh on see, mis kordub <b>iga käivitusega</b> – nii juhtus CrowdStrike’i juhtumil 2024. Siis ei saa Windowsis midagi parandada, sest Windows ei käivitugi. Appi tuleb <b>Windows RE (ingl <i>Recovery Environment</i>)</b> (taastekeskkond), mis avaneb automaatselt pärast <b>kahte ebaõnnestunud käivitust</b>.</p>
+<p>Windows RE-s on mitu tööriista ja <b>õige valik sõltub põhjusest</b>: vigase draiveri puhul aitab turvarežiim, vigase Windowsi uuenduse puhul uuenduse eemaldamine, laialdase probleemi puhul kiire masinataaste (QMR – ingl <i>Quick Machine Recovery</i>). <b>BitLocker</b> lisab keerukust: paljud parandustoimingud nõuavad taastevõtit.</p>
 <p><b>Mida teha:</b> vali olukord ja seadistus, seejärel proovi Windows RE tööriistu. Proovi sama olukorda ka QMR-iga ja ilma ning BitLockeri võtmega ja ilma.</p>
 </div>
 <div class="card">
@@ -266,7 +266,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <li>Hoia <b>Shift</b> all ja vali Start-menüüst <b>Taaskäivita</b>.</li>
   <li>Käsuviibas: <code>shutdown /r /o /t 0</code>.</li>
   <li>Kui Windows ei käivitu: katkesta käivitus kaks korda järjest (toitenupp) – kolmandal korral avaneb Windows RE.</li>
-  <li>Paigaldusmeediast (USB): „Paranda arvuti“.</li>
+  <li>Paigaldusmeediast (USB – ingl <i>Universal Serial Bus</i>): „Paranda arvuti“.</li>
   <li>Kontrolli olekut: <code>reagentc /info</code> (Windows RE status: Enabled).</li></ul></details>
 </div>
 </section>
@@ -297,6 +297,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 </div>
 </section>
 
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="19-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 19 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
 <p class="hint" style="margin-top:3rem">Edasi: <a href="19-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Peatüki 19 test (25 küsimust)</a> · <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/19-krahhid.md">tagasi peatüki juurde</a></p>
 
 <script>
@@ -355,12 +357,12 @@ const KD={
  '1A':['MEMORY_MANAGEMENT','Mäluhalduri sisemised andmestruktuurid on rikutud.',['alamkood (mis täpselt valesti)','sõltub alamkoodist','sõltub alamkoodist','sõltub alamkoodist'],'sageli vigane RAM, aga ka draiver','Mälutest (mdsched.exe / MemTest86), XMP/kiirendamine välja.','h'],
  '3B':['SYSTEM_SERVICE_EXCEPTION','Süsteemikutse töötlemisel (kui programm palus tuumalt teenust) tekkis käsitlemata erind.',['erindi kood','koodi aadress','konteksti aadress','0'],'draiver, sageli graafikadraiver; ka viirusetõrje','Tõmmis; graafikadraiveri puhul DDU-ga puhas paigaldus.','d'],
  '7E':['SYSTEM_THREAD_EXCEPTION_NOT_HANDLED','Süsteemi lõim tekitas erindi, mida keegi ei käsitlenud.',['erindi kood','aadress','erindi kirje','konteksti kirje'],'draiver','IMAGE_NAME tõmmisest; kui ilmub käivitusel – turvarežiim.','d'],
- '7B':['INACCESSIBLE_BOOT_DEVICE','Windows ei pääse käivituse ajal ligi süsteemikettale.',['seadme objekt','olek','0','0'],'kettakontrolleri režiim BIOS-is muudetud (AHCI ↔ RAID/RST), puuduv salvestusdraiver, rikkis ketas','Pane BIOS-is SATA/NVMe režiim tagasi; kontrolli ketta tervist; Windows RE käivitusparandus.','b'],
+ '7B':['INACCESSIBLE_BOOT_DEVICE','Windows ei pääse käivituse ajal ligi süsteemikettale.',['seadme objekt','olek','0','0'],'kettakontrolleri režiim BIOS-is (ingl Basic Input/Output System) muudetud (AHCI ↔ RAID/RST), puuduv salvestusdraiver, rikkis ketas','Pane BIOS-is SATA/NVMe režiim tagasi; kontrolli ketta tervist; Windows RE käivitusparandus.','b'],
  '9F':['DRIVER_POWER_STATE_FAILURE','Draiver ei reageerinud unerežiimi minekul või ärkamisel õigeaegselt.',['alamkood','seadme objekt','sõltub','sõltub'],'draiver (võrgukaart, USB, graafika), vahel püsivara','Uuenda draiver ja BIOS; toitehalduse sätted.','d'],
  'C2':['BAD_POOL_CALLER','Draiver kasutas tuuma mälukogumit (pool) valesti – nt vabastas sama mälu kaks korda.',['alamkood','sõltub','sõltub','sõltub'],'draiver','Driver Verifier püüab süüdlase kinni.','d'],
  'EF':['CRITICAL_PROCESS_DIED','Kriitiline süsteemiprotsess (nt csrss.exe, wininit.exe, smss.exe) lõpetas töö. Ilma selleta ei saa Windows töötada.',['protsessi objekt','0 = protsess, 1 = lõim','0','0'],'rikutud süsteemifailid, ketta vead, pahavara, vigane uuendus','sfc /scannow, DISM /RestoreHealth, chkdsk; Windows RE-s uuenduse eemaldamine.','s'],
  '124':['WHEA_UNCORRECTABLE_ERROR','Riistvara ise teatas parandamatust veast (Windows Hardware Error Architecture).',['vea allikas (0 = protsessori masinakontroll)','WHEA kirje aadress','sõltub','sõltub'],'RIISTVARA: protsessor, RAM, ülekuumenemine, kiirendamine, toide, emaplaat','BIOS vaikeseaded, temperatuurid, kiirendamine välja, mälutest; WHEA-Logger sündmused.','h'],
- '133':['DPC_WATCHDOG_VIOLATION','Draiver hoidis protsessorit kõrgel IRQL-il liiga kaua – Windowsi „valvekoer“ peatas süsteemi.',['0 = üks DPC liiga kaua, 1 = kokku liiga kaua','aeg','piir','sisemine'],'salvestusdraiver (SATA AHCI, NVMe), SSD püsivara, võrgudraiver','Uuenda SSD püsivara ja kettakontrolleri draiver.','d'],
+ '133':['DPC_WATCHDOG_VIOLATION','Draiver hoidis protsessorit kõrgel IRQL-il liiga kaua – Windowsi „valvekoer“ peatas süsteemi.',['0 = üks DPC (ingl Deferred Procedure Call) liiga kaua, 1 = kokku liiga kaua','aeg','piir','sisemine'],'salvestusdraiver (SATA (ingl Serial Advanced Technology Attachment) AHCI, NVMe – ingl Non-Volatile Memory Express), SSD (ingl Solid-State Drive) püsivara, võrgudraiver','Uuenda SSD püsivara ja kettakontrolleri draiver.','d'],
  '139':['KERNEL_SECURITY_CHECK_FAILURE','Tuum avastas rikutud andmestruktuuri (nt lingitud loendi) – võimalik mälu ülekirjutamine.',['kontrolli tüüp','trap frame','erindi kirje','0'],'draiver, harvem RAM','Tõmmis, Driver Verifier, mälutest.','d'],
  'E2':['MANUALLY_INITIATED_CRASH','Krahh tekitati meelega – parempoolne Ctrl + Scroll Lock kaks korda (CrashOnCtrlScroll) või silur.',['0','0','0','0'],'kasutaja või administraator (testimine, hangunud süsteemi tõmmise saamiseks)','Midagi parandada pole – nii saab tõmmise hangunud süsteemist.','m']};
 const KT={d:'Draiver',h:'Riistvara',b:'Käivitus/ketas',s:'Süsteemifailid',m:'Meelega'};
@@ -469,7 +471,7 @@ function rAct(a){const s=$('rsc').value,qmr=$('rqmr').checked,bl=$('rbl').checke
   const needKey=bl&&!key;
   const L={
    cs:{qmr:qmr?[1,'<b>QMR töötab!</b> Arvuti loob võrguühenduse, Microsoft on avaldanud selle laialdase probleemi jaoks sihitud paranduse, mis eemaldab vigase faili. Arvuti käivitub – IT-tugi ei pidanud kohale tulema. Just selle juhtumi pärast QMR loodi.']:[0,'QMR pole lubatud. Ettevõtte arvutites on QMR vaikimisi väljas – IT peab selle Intune’i või <code>reagentc</code>-ga lubama. Kasuta teist tööriista.'],
-      sr:[0,'Käivitusparandus kontrollib käivitusfaile ja BCD-d – need on korras. Probleem on draiveris, mida käivitusparandus ei tunne. „Käivitusparandus ei suutnud arvutit parandada.“'],
+      sr:[0,'Käivitusparandus kontrollib käivitusfaile ja BCD-d (ingl Boot Configuration Data) – need on korras. Probleem on draiveris, mida käivitusparandus ei tunne. „Käivitusparandus ei suutnud arvutit parandada.“'],
       safe:needKey?[0,'Turvarežiimi minek nõuab <b>BitLockeri taastevõtit</b>, kuid seda ei leita (server, kus võtmed on, jooksis samuti kokku!). See oli CrowdStrike’i juhtumi suurim probleem. Õppetund: hoia võtmed ka teises kohas (Entra ID, väljatrükk seifis).']:[1,'<b>Töötab.</b> Turvarežiimis kolmanda osapoole draiver vigast sisufaili ei laadinud. CrowdStrike’i ja Microsofti juhis oligi: turvarežiim (või Windows RE käsuviip) → kustuta <code>C:\\Windows\\System32\\drivers\\CrowdStrike\\C-00000291*.sys</code> → taaskäivita tavaliselt. Nüüd kujuta ette, et sama tuleb teha 500 arvutiga ükshaaval. '+(bl?'BitLockeri võti leiti Entra ID-st.':'')],
       unup:[0,'Windowsi uuendusi pole viga – vigane on kolmanda osapoole fail. Uuenduse eemaldamine ei aita.'],
       pitr:needKey?[0,'Taaste vajab BitLockeri võtit, mida ei leita.']:[1,'Süsteemitaaste/ajapunktitaaste viib süsteemi eilsesse olekusse, enne vigast sisufaili. Töötab, kuid aeglasem ja võib tagasi võtta ka muid muudatusi.'],
@@ -519,7 +521,7 @@ const OSR=[['Tuuma krahhi nimi',['bugcheck (sinine, nüüd must ekraan)','Bugche
  ['Mälu salvestamine',['MEMORY.DMP, Minidump – lehefaili kaudu','Eraldi dump-draiver kirjutab lehefaili sektoritesse, järgmisel käivitusel kopeeritakse faili.'],['kdump','Käivitusel reserveeritakse mälu teisele „päästetuumale“. Paanika korral käivitab kexec selle tuuma, mis salvestab rikutud süsteemi mälu kausta <code>/var/crash</code>. Sama idee kui Windowsi eraldi dump-draiveril: ära usalda rikutud tuuma.'],['paanikaaruanne','macOS salvestab tekstilise aruande (pinu, laaditud tuumalaiendused – kexts). Täielikku mälutõmmist tavakasutaja ei saa.']],
  ['Logid',['Sündmusvaatur: 41, 1001, 6008; perfmon /rel','Töökindluse monitor näitab krahhe ajajoonel koos paigaldustega.'],['journalctl -k -b -1, dmesg','<code>-b -1</code> = eelmine käivitus (just see, mis kokku jooksis), <code>-k</code> = ainult tuuma teated. Püsiv logi peab olema lubatud (<code>/var/log/journal</code>).'],['Konsool → Crash/Panic reports','Failid <code>/Library/Logs/DiagnosticReports/*.panic</code>.']],
  ['Analüüs',['WinDbg !analyze -v','IMAGE_NAME näitab tõenäolist süüdlast.'],['crash tööriist','<code>crash vmlinux vmcore</code> – sarnased käsud nagu WinDbg-s (bt = pinu, log = tuumalogi).'],['aruande lugemine','Rida „Panicked task“ ja „Kernel Extensions in backtrace“ näitavad süüdlast – sageli kolmanda osapoole kext.']],
- ['Taaste',['Windows RE, turvarežiim, QMR','Windows RE avaneb pärast kaht ebaõnnestunud käivitust.'],['GRUB: vanem tuum, päästerežiim','GRUB-i menüüs saab valida eelmise tuuma versiooni – Linuxi „taasta draiver“. Päästerežiim (rescue.target) on nagu turvarežiim.'],['macOS Recovery','Inteli Macil ⌘R, Apple Siliconil hoia toitenuppu all. Seal: Kettautiliit, Time Machine taaste, macOS uuesti paigaldamine.']]];
+ ['Taaste',['Windows RE, turvarežiim, QMR','Windows RE avaneb pärast kaht ebaõnnestunud käivitust.'],['GRUB: vanem tuum, päästerežiim','GRUB-i (ingl GRand Unified Bootloader) menüüs saab valida eelmise tuuma versiooni – Linuxi „taasta draiver“. Päästerežiim (rescue.target) on nagu turvarežiim.'],['macOS Recovery','Inteli Macil ⌘R, Apple Siliconil hoia toitenuppu all. Seal: Kettautiliit, Time Machine taaste, macOS uuesti paigaldamine.']]];
 $('ost').innerHTML='<tr><th></th><th>Windows</th><th>Linux</th><th>macOS</th></tr>'+OSR.map((r,i)=>`<tr><th>${r[0]}</th>${[1,2,3].map(j=>`<td class="h" data-i="${i}" data-j="${j}">${r[j][0]}</td>`).join('')}</tr>`).join('');
 $('ost').querySelectorAll('td.h').forEach(td=>td.onclick=()=>{const r=OSR[td.dataset.i];$('osinfo').innerHTML=`<b>${['','Windows','Linux','macOS'][td.dataset.j]} – ${r[0].toLowerCase()}:</b> ${r[td.dataset.j][1]}`});
 mq('osq','oss','osr',[

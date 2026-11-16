@@ -99,13 +99,13 @@ label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:po
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/05-susteemimehhanismid.md">← Peatükk 5</a> · <a href="05-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Süsteemimehhanismid – proovi ise</h1>
-<p>Süsteemimehhanismid on tuuma üldised tööriistad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras, WoW64 ja Prism lasevad käitada vanu ja teise arhitektuuri programme.</p>
+<p>Süsteemimehhanismid on tuuma üldised tööriistad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras, WoW64 (ingl <i>Windows 32-bit on Windows 64-bit</i>) ja Prism lasevad käitada vanu ja teise arhitektuuri programme.</p>
 <div class="toc"><a href="#irql">1. Katkestused ja IRQL</a><a href="#ke">2. Katkestus või erind?</a><a href="#erind">3. Nulliga jagamine</a><a href="#nimeruum">4. Objektihalduri nimeruum</a><a href="#wow">5. Kas see programm käivitub?</a></div>
 
 <!-- 1 -->
 <section id="irql">
 <h2>1. Katkestused ja IRQL</h2>
-<p>Protsessoril töötab tavaline lõim (PASSIVE_LEVEL). Saada seadmetelt katkestusi ja liigu sammhaaval edasi. Vaata, kuidas kõrgema IRQL-iga katkestus katkestab madalama, kuidas madalam peab ootama ja kuidas ISR lükkab töö DPC-sse.</p>
+<p>Protsessoril töötab tavaline lõim (PASSIVE_LEVEL). Saada seadmetelt katkestusi ja liigu sammhaaval edasi. Vaata, kuidas kõrgema IRQL-iga (ingl <i>Interrupt Request Level</i>) katkestus katkestab madalama, kuidas madalam peab ootama ja kuidas ISR (ingl <i>Interrupt Service Routine</i>) lükkab töö DPC-sse (ingl <i>Deferred Procedure Call</i>).</p>
 <div class="card">
   <div class="devs" id="devs"></div>
   <div class="irq">
@@ -160,6 +160,8 @@ label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:po
 </section>
 
 <!-- 5 -->
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Seni said peatüki teemasid ise läbi proovida. Järgmised ülesanded kontrollivad, kas said aru. Kogu peatüki teadmisi kontrollib eraldi <a href="05-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 5 test (25 küsimust)</a>, mis avaneb eraldi aknas.</p></div>
 <section id="wow">
 <h2>5. Kas see programm käivitub?</h2>
 <p>Igas olukorras on antud programm ja arvuti. Vali, kuidas Windows programmi käitab.</p>
@@ -212,11 +214,11 @@ function drawI(){
 function stopAuto(){if(timer){clearInterval(timer);timer=null;$('auto').textContent='▶ Automaatselt'}}
 $('auto').onclick=()=>{if(timer)return stopAuto();timer=setInterval(step,1100);$('auto').textContent='⏸ Peata'};
 $('step').onclick=step;$('ireset').onclick=iReset;
-$('scen').onclick=()=>{iReset();fire('nic');step();fire('ssd');fire('kbd');iInfo('Näidis: võrgukaardi ISR-i ajal saabusid SSD (IRQL 9) ja klaviatuuri (IRQL 5) katkestused. Vajuta „Samm“ ja jälgi: SSD katkestab võrgukaardi töö kohe, klaviatuur peab ootama, kuni IRQL langeb alla 5.')};
+$('scen').onclick=()=>{iReset();fire('nic');step();fire('ssd');fire('kbd');iInfo('Näidis: võrgukaardi ISR-i ajal saabusid SSD (ingl Solid-State Drive; IRQL 9) ja klaviatuuri (IRQL 5) katkestused. Vajuta „Samm“ ja jälgi: SSD katkestab võrgukaardi töö kohe, klaviatuur peab ootama, kuni IRQL langeb alla 5.')};
 iReset();
 
 /* ---------- 2. katkestus/erind ---------- */
-const KE=[['Kasutaja vajutas klahvi','k','Klaviatuur annab märku väljastpoolt.'],['Võrgupakett saabus','k','Võrgukaart teatab uuest paketist.'],['Taimer tiksus (ajakvant läbi)','k','Taimer on väline seade.'],['NVMe-SSD lõpetas lugemise','k','Seade teatab töö lõpust MSI-X katkestusega.'],['Hiirt liigutati','k','Sisendseade annab märku.'],['USB-pulk ühendati','k','Kontroller teatab uuest seadmest.'],['Programm jagas nulliga','e','Käsk ise põhjustab erindi EXCEPTION_INT_DIVIDE_BY_ZERO.'],['Programm luges keelatud mäluaadressi','e','Juurdepääsurikkumine (access violation, 0xc0000005) tuleb täidetavast käsust.'],['Leheviga: vajalik mäluleht on saalefailis','e','Leheviga (page fault) on erind, mille mäluhaldur tavaliselt lahendab ja programm jätkab.'],['Silur jõudis katkestuspunktini (breakpoint)','e','Käsk int 3 tekitab erindi.'],['Protsessor kohtas tundmatut käsku','e','Keelatud käsk (illegal instruction) on erind.'],['Programm üritas tavaõigustes täita privilegeeritud käsku','e','Privilegeeritud käsu proovimine kasutajarežiimis on erind.']];
+const KE=[['Kasutaja vajutas klahvi','k','Klaviatuur annab märku väljastpoolt.'],['Võrgupakett saabus','k','Võrgukaart teatab uuest paketist.'],['Taimer tiksus (ajakvant läbi)','k','Taimer on väline seade.'],['NVMe-SSD lõpetas lugemise','k','Seade teatab töö lõpust MSI-X (ingl Message Signaled Interrupts eXtended) katkestusega.'],['Hiirt liigutati','k','Sisendseade annab märku.'],['USB-pulk ühendati','k','Kontroller teatab uuest seadmest.'],['Programm jagas nulliga','e','Käsk ise põhjustab erindi EXCEPTION_INT_DIVIDE_BY_ZERO.'],['Programm luges keelatud mäluaadressi','e','Juurdepääsurikkumine (access violation, 0xc0000005) tuleb täidetavast käsust.'],['Leheviga: vajalik mäluleht on saalefailis','e','Leheviga (page fault) on erind, mille mäluhaldur tavaliselt lahendab ja programm jätkab.'],['Silur jõudis katkestuspunktini (breakpoint)','e','Käsk int 3 tekitab erindi.'],['Protsessor kohtas tundmatut käsku','e','Keelatud käsk (illegal instruction) on erind.'],['Programm üritas tavaõigustes täita privilegeeritud käsku','e','Privilegeeritud käsu proovimine kasutajarežiimis on erind.']];
 let kset=[],kpl={},ksel=null,kchk=false;
 function newK(){kset=shuffle([...shuffle(KE.filter(x=>x[1]==='k')).slice(0,4),...shuffle(KE.filter(x=>x[1]==='e')).slice(0,4)].map(x=>KE.indexOf(x)));kpl={};ksel=null;kchk=false;$('kres').innerHTML='';drawK()}
 function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KE[i][1]===w?' ok':' bad';b.className=c;b.textContent=KE[i][0];
@@ -286,11 +288,11 @@ $('resolve').click();
 /* ---------- 5. WoW64 / ARM64 ---------- */
 const WO=['Omakeelselt','WoW64 kaudu','Prism emuleerib','Ei käivitu'];
 const WS=[
- ['32-bitine x86 programm (nt vana installer)','64-bitine Windows 11, Intel/AMD protsessor',1,'WoW64 tõlgib 32-bitise programmi süsteemikutsed 64-bitistele ja kasutab DLL-e kaustast SysWOW64.'],
+ ['32-bitine x86 programm (nt vana installer)','64-bitine Windows 11, Intel/AMD protsessor',1,'WoW64 tõlgib 32-bitise programmi süsteemikutsed 64-bitistele ja kasutab DLL-e (ingl Dynamic-Link Library) kaustast SysWOW64.'],
  ['64-bitine x64 programm','64-bitine Windows 11, Intel/AMD protsessor',0,'64-bitine programm 64-bitises süsteemis töötab otse, ilma tõlketa.'],
  ['16-bitine DOS-i õppeprogramm','64-bitine Windows 11, Intel/AMD protsessor',3,'64-bitine Windows ei käita 16-bitist koodi. Lahendus on emulaator (nt DOSBox) või võrgust eraldatud virtuaalmasin.'],
  ['Windows 3.1 programm (16-bitine)','64-bitine Windows 10',3,'16-bitine NTVDM kadus 64-bitisest Windowsist juba ammu.'],
- ['x64 programm (nt vana raamatupidamistarkvara)','Snapdragon X sülearvuti, Windows 11 ARM64',2,'Prism tõlgib x64 käsud jooksvalt ARM64 käskudeks. Töötab, kuid võib olla aeglasem kui omakeelne versioon.'],
+ ['x64 programm (nt vana raamatupidamistarkvara)','Snapdragon X sülearvuti, Windows 11 ARM64 (ARM – ingl Advanced RISC Machines)',2,'Prism tõlgib x64 käsud jooksvalt ARM64 käskudeks. Töötab, kuid võib olla aeglasem kui omakeelne versioon.'],
  ['ARM64 programm (nt Edge)','Snapdragon X sülearvuti, Windows 11 ARM64',0,'ARM64 programm töötab ARM64 protsessoril omakeelselt ja kõige kiiremini.'],
  ['x64 tuumadraiver (nt vana VPN-klient)','Snapdragon X sülearvuti, Windows 11 ARM64',3,'Emulatsioon ei toimi tuumadraiveritega. Seadmel peab olema ARM64 draiver.'],
  ['32-bitine x86 programm','Snapdragon X sülearvuti, Windows 11 ARM64',2,'ARM64 Windowsis emuleerib Prism ka 32-bitiseid x86 programme.'],
