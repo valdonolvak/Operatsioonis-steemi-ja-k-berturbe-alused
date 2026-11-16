@@ -4,7 +4,7 @@
 
 ## 1. Windowsi ajalugu
 
-Windows on arenenud MS-DOS-i graafilisest kestast üheks laiemalt kasutatavaks operatsioonisüsteemiks, mille tänane tuum pärineb 1993. aastal ilmunud Windows NT-st. 2026. aasta sügisel on toetatud kliendiversioon Windows 11 (viimane funktsiooniuuendus 26H2) ja serveriversioon Windows Server 2025.
+Windows on arenenud MS-DOS-i graafilisest kestast üheks laiemalt kasutatavaks operatsioonisüsteemiks, mille tänane tuum pärineb 1993. aastal ilmunud Windows NT-st (NT = New Technology, uus tehnoloogia). 2026. aasta sügisel on toetatud kliendiversioon Windows 11 (viimane funktsiooniuuendus 26H2 ehk 2026. aasta teise poolaasta versioon) ja serveriversioon Windows Server 2025.
 
 ### 1.1 MS-DOS
 
@@ -62,7 +62,7 @@ Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võr
 
 *Allikad:* [Wikipedia: Windows 95](https://en.wikipedia.org/wiki/Windows_95)
 
-**1998 · Windows 98 / 98 SE** – võrreldes Windows 95-ga:
+**1998 · Windows 98 / 98 SE** (SE = Second Edition, teine väljaanne, 1999) – võrreldes Windows 95-ga:
 
 - **Internet Explorer integreeriti kesta** – brauser oli OS-i osa ning kaustu sai vaadata nagu veebilehti (Active Desktop). Sellest kasvas USA-s Microsofti vastu monopolikohtuasi.
 - **Laialdane USB tugi** – hiire, klaviatuuri, printeri ja muud seadmed sai ühendada ühe universaalse pistikuga, ilma arvutit taaskäivitamata. Koos WDM-draiverite ja ACPI-ga muutis see Plug and Play’ toimivaks. Kõige kuulsamalt tutvustati seda 20. aprillil 1998 COMDEX-i messil Chicagos: Bill Gatesi esitlusel ühendati Windows 98 eelversiooniga USB-skanner ja arvuti jooksis sinise ekraaniga kokku. Gates vastas naljaga, et küllap seepärast Windows 98 veel müügil ei olegi.
@@ -84,7 +84,7 @@ Joonis: DOS-põhise Windowsi versioonid ja iga versiooni peamised uuendused võr
 
 ### 1.3 Windows NT
 
-Windows NT (New Technology) loodi nullist, juhiks Dave Cutler. Eesmärgid olid töökindlus, turvalisus, kaasaskantavus eri protsessoriarhitektuuridele ja mitme kasutaja tugi. NT 3.1 ilmus 1993. NT-l on kasutajarežiim ja tuumarežiim, mälukaitse, ACL-ipõhine õiguste süsteem ning failisüsteem NTFS.
+Windows NT (New Technology, uus tehnoloogia) loodi nullist, juhiks Dave Cutler. Eesmärgid olid töökindlus, turvalisus, kaasaskantavus eri protsessoriarhitektuuridele ja mitme kasutaja tugi. NT 3.1 ilmus 1993. NT-l on kasutajarežiim ja tuumarežiim, mälukaitse, ACL-ipõhine õiguste süsteem ning failisüsteem NTFS.
 
 ![Windowsi kaks arendusliini · DOS-liin lõppes 2000, NT-liin jätkub](../pildid/01-a.png)
 
@@ -106,6 +106,22 @@ Joonis: DOS-põhine liin lõppes Windows ME-ga; Windows XP-st (XP = eXPerience, 
 | 2024 | Windows 11 24H2 | Copilot+ arvutid, uus tuumaväljalase |
 | 2025 | Windows 11 25H2 | esimene puhas lubamispakett 24H2 peal |
 | 2026 | Windows 11 26H2 | iga-aastane funktsiooniuuendus (enablement package) |
+
+#### Mida Windowsi nimed ja lühendid tähendavad
+
+| Nimi | Tähendus |
+| --- | --- |
+| NT (NT 3.1, NT 4.0) | New Technology ehk uus tehnoloogia. NT arendajate sõnul tuli lühend algselt Inteli i860 protsessori koodnimest N10 („N-Ten“), mille peal NT-d alguses arendati; „New Technology“ oli hilisem turundusselgitus. Alates Windows 2000-st ei ole NT enam nimes, kuid kõik tänased Windowsid põhinevad NT-l. |
+| 95, 98, 2000 | ilmumisaasta |
+| 98 SE | Second Edition ehk teine väljaanne (1999) |
+| ME | Millennium Edition ehk aastatuhande väljaanne, sest see ilmus 2000. aastal |
+| XP | eXPerience ehk (kasutus)kogemus |
+| Vista | ei ole lühend: sõna tähendab vaadet, avarat vaatepilti |
+| 7, 8, 8.1, 10, 11 | turundusnimi. Windowsi sisemine versiooninumber on teine: Windows 7 on 6.1, Windows 8 on 6.2, Windows 8.1 on 6.3, Windows 10 ja 11 on mõlemad 10.0 (11 eristub järgu ehk buildi numbri järgi). Numbri 9 jättis Microsoft vahele. |
+| 24H2, 25H2, 26H2 | aasta kaks viimast numbrit ja H2 (half 2) ehk aasta teine poolaasta, mil versioon ilmub. Näiteks 26H2 on 2026. aasta sügisel ilmunud versioon. |
+| LTSC | Long-Term Servicing Channel ehk pikaajalise hoolduse kanal: väljaanne, mis saab ainult turvauuendusi ja mida toetatakse 5–10 aastat |
+
+Oma arvuti Windowsi nime, versiooni (nt 26H2) ja järgu näed käsuga `winver`.
 
 #### NT-põhise liini ajajoon ja peamised uuendused
 
@@ -159,7 +175,7 @@ Joonis: NT-põhise Windowsi versioonid Windows NT 3.1-st kuni Windows 11 26H2-ni
 
 *Allikad:* [Wikipedia: Windows XP](https://en.wikipedia.org/wiki/Windows_XP) · [Wikipedia: Windows XP SP2](https://en.wikipedia.org/wiki/Windows_XP#Service_Pack_2)
 
-**2007 · Windows Vista** – võrreldes XP-ga:
+**2007 · Windows Vista** – võrreldes XP-ga. Vista ei ole lühend: sõna tähendab vaadet või avarat vaatepilti. Arenduse ajal oli selle nimi Longhorn.
 
 - **UAC** (User Account Control) – XP-s töötas enamik kasutajaid administraatoriõigustega, nii et ka pahavara sai kõik õigused. Vistas töötab ka administraator vaikimisi tavaõigustega ja süsteemi muutmiseks tuleb kinnitada eraldi aknas. See on vähima õiguse põhimõtte rakendus.
 - **BitLocker** – krüpteerib terve süsteemiketta, nii et varastatud sülearvutist ei saa andmeid lugeda. Võtit hoitakse TPM-kiibis.
@@ -250,7 +266,7 @@ Joonis: NT-põhise Windowsi versioonid Windows NT 3.1-st kuni Windows 11 26H2-ni
 
 ### 1.5 Windows Server
 
-Windows Server kasutab sama NT-tuuma, kuid on häälestatud teenuste pakkumiseks: Active Directory, DNS, DHCP, failiteenused, IIS, Hyper-V. Serveril on pikk tugiperiood (LTSC, umbes 10 aastat), väiksem graafiline koormus (Server Core) ja litsentseerimine tuumade järgi.
+Windows Server kasutab sama NT-tuuma, kuid on häälestatud teenuste pakkumiseks: Active Directory, DNS, DHCP, failiteenused, IIS, Hyper-V. Serveril on pikk tugiperiood (LTSC, Long-Term Servicing Channel ehk pikaajalise hoolduse kanal, umbes 10 aastat), väiksem graafiline koormus (Server Core) ja litsentseerimine tuumade järgi.
 
 Windows Server 2025 (üldkasutuses alates novembrist 2024) uuendused:
 
