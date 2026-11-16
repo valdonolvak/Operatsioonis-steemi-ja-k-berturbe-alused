@@ -16,6 +16,8 @@
 | juurdepääsutoken | access token | protsessi turvakontekst |
 | kaudne viipesüst | cross-prompt injection (XPIA) | andmetesse peidetud juhised, mis võtavad AI-agendi üle |
 | katkestus | interrupt | seadme väline signaal protsessorile |
+| katkestusnõue (IRQ) | interrupt request | number või kanal, mille kaudu seade protsessorile katkestuse saadab |
+| katkestuse prioriteeditase (IRQL) | interrupt request level | Windowsi prioriteeditase, mis määrab, milline katkestus võib millise katkestada |
 | kiud | fiber | kasutajarežiimis hallatav täitmisüksus |
 | konteiner | container | jagatud tuumaga isoleeritud rakenduskeskkond |
 | kontekstivahetus | context switch | üleminek ühelt lõimelt teisele |

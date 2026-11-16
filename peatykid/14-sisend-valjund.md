@@ -127,7 +127,7 @@ Kasutajaliideses tähendab sünkroonne S/V UI-lõimes, et aken „ei vasta“, k
 
 Seade annab katkestusega teada, et operatsioon on lõppenud või andmed on saabunud (ptk 5). Katkestuse käsitlemine maksab aga ka midagi: protsessor peab katkestama oma töö, salvestama oleku, käivitama ISR-i ja hiljem DPC.
 
-**Kaasaegsed seadmed** kasutavad **MSI-X** katkestusi (iga järjekord võib saata katkestuse eri tuumale) ja **katkestuste koondamist** (interrupt moderation): 10 Gbit/s võrgukaart võib saada sekundis üle miljoni paketi. Kui iga pakett tekitaks katkestuse, kuluks kogu protsessoriaeg katkestustele. Seepärast kogub kaart pakette ja annab ühe katkestuse näiteks iga 50 paketi kohta.
+**Kaasaegsed seadmed** kasutavad **MSI-X** katkestusi (Message Signaled Interrupts: seade annab katkestuse mälukirjutusega, mitte eraldi IRQ-juhtme kaudu, nii et katkestusi võib olla tuhandeid; iga järjekord võib saata katkestuse eri tuumale) ja **katkestuste koondamist** (interrupt moderation): 10 Gbit/s võrgukaart võib saada sekundis üle miljoni paketi. Kui iga pakett tekitaks katkestuse, kuluks kogu protsessoriaeg katkestustele. Seepärast kogub kaart pakette ja annab ühe katkestuse näiteks iga 50 paketi kohta.
 
 ### 14.9 Otsemälupöördus
 
