@@ -3,7 +3,7 @@
 ## Sissejuhatus ##
 See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi näitel ning on ajakohastatud 2026. aasta seisu järgi. Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) peatükkide ülesehitust ja õppematerjali on täiendatud sellega, mis on vahepeal muutunud. Lisatud on Windows 11, Windows Server 2025, virtualiseerimispõhine turve, tehisintellekt (AI) operatsioonisüsteemis ja tänapäevase küberturbe peatükid.
 
-**Iga peatükk sisaldab:** teooriat, jooniseid, näidet, kokkuvõtet, kontrollküsimusi, valikküsimusi, praktilist ülesannet, kahte iseseisvat ülesannet ja viiteid. Peatükkides 4, 7, 12, 15 ja 18 on lisaks võrdlus Linuxi ja macOS-iga. III osa praktilised tööd tehakse WSL-is (Ubuntu või Kali Linux).
+**Iga peatükk sisaldab** teooriat, jooniseid, näidet, kokkuvõtet, kontrollküsimusi, valikküsimusi, praktilist ülesannet, kahte iseseisvat ülesannet ja viiteid. Peatükkides 4, 7, 12, 15 ja 18 on lisaks võrdlus Linuxi ja macOS-iga. III osa praktilised tööd tehakse WSL-is (Ubuntu või Kali Linux).
 
 **Seotud materjalid:** [Peamised küberohud: teooria, ründevektorid ja praktika](https://github.com/valdonolvak/kyberturvalisus/blob/main/K%C3%BCberturbe_alused/Peamised%20k%C3%BCberohud%20teooria%2C%20r%C3%BCndevektorid%20ja%20praktika.md) · [Küberhügieeni 12 põhimõtet](https://github.com/valdonolvak/kyberturvalisus/blob/main/K%C3%BCberh%C3%BCgieeni%2012%20p%C3%B5him%C3%B5tet%20%E2%80%93%20%C3%B5ppematerjal%20n%C3%A4idete%20ja%20anal%C3%BC%C3%BCsiga.md)
 
