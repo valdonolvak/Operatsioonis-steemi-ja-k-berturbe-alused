@@ -81,6 +81,6 @@ Animeeritud joonised asuvad kaustas [`animatsioonid/`](animatsioonid/). SVG-fail
 
 ## Litsents ja allikad
 
-Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) sisukorda; tekst on kirjutatud uuesti eesti keeles ja ajakohastatud 2026. aasta seisu järgi. Allikad on iga peatüki lõpus ja koondatult failis [allikad.md](peatykid/allikad.md).
+Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) sisukorda; tekst on ajakohastatud 2026. aasta seisu järgi. Allikad on iga peatüki lõpus ja koondatult failis [allikad.md](peatykid/allikad.md).
 
 Seis: november 2026.
