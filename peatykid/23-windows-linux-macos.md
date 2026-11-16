@@ -2,19 +2,19 @@
 
 ## 23. UUS: Windows, Linux ja macOS võrdluses
 
-Kolm levinumat operatsioonisüsteemi lahendavad samu ülesandeid (protsessid, mälu, failid, turve), kuid eri ajaloo ja filosoofiaga. Windows on loodud ühilduvuse ja keskse halduse jaoks, Linux on avatud lähtekoodiga ja domineerib serverites ning pilves, macOS on Apple’i riistvaraga tihedalt seotud Unixi-põhine süsteem. IT-spetsialist puutub täna kokku kõigi kolmega, sageli ühes ja samas võrgus.
+Kolm levinumat operatsioonisüsteemi lahendavad samu ülesandeid (protsessid, mälu, failid, turve), kuid eri ajaloo ja filosoofiaga. Windows on loodud ühilduvuse ja keskse halduse jaoks, Linux on avatud lähtekoodiga ja domineerib serverites ning pilves, macOS on Apple’i riistvaraga tihedalt seotud Unixi-põhine süsteem. IT-spetsialist (IT – ingl *Information Technology*) puutub täna kokku kõigi kolmega, sageli ühes ja samas võrgus.
 
 ### 23.1 Kolm süsteemi 2026. aasta sügisel
 
 - **Windows 11** – viimane versioon 26H2 (september–oktoober 2026, ptk 1). Serveris Windows Server 2025.
-- **Linux** – tuuma versioon 7.0 ilmus 12. aprillil 2026 ([Wikipedia: Linux kernel version history](https://wikwiand-revamp.pages.dev/en/2.6.x_kernel_series)); Ubuntu 26.04 LTS kasutab seda tuuma ([HN / PBX Science](https://hn.jakechampion.name/reader/https://pbxscience.com/linux-7-0-confirmed-by-linus-torvalds-stable-version-due-mid-april)). „Linux“ on tegelikult tuum; kasutaja saab selle **distributsioonina** (Ubuntu, Debian, Fedora, RHEL, openSUSE), kus tuuma juurde kuuluvad tööriistad, paketihaldur ja töölaud.
+- **Linux** – tuuma versioon 7.0 ilmus 12. aprillil 2026 ([Wikipedia: Linux kernel version history](https://wikwiand-revamp.pages.dev/en/2.6.x_kernel_series)); Ubuntu 26.04 LTS (ingl *Long-Term Support*) kasutab seda tuuma ([HN / PBX Science](https://hn.jakechampion.name/reader/https://pbxscience.com/linux-7-0-confirmed-by-linus-torvalds-stable-version-due-mid-april)). „Linux“ on tegelikult tuum; kasutaja saab selle **distributsioonina** (Ubuntu, Debian, Fedora, RHEL – ingl *Red Hat Enterprise Linux*, openSUSE), kus tuuma juurde kuuluvad tööriistad, paketihaldur ja töölaud.
 - **macOS** – macOS 27 Golden Gate ilmus 14. septembril 2026 ([MacTech](https://www.mactech.com/2026/09/09/macos-27-will-arrive-on-september-14-along-with-other-os-updates/amp/)) ja töötab ainult Apple Siliconiga Macidel; macOS 26 Tahoe oli viimane Inteli Macide versioon ([Macworld](https://www.macworld.com/article/2644146)).
 
 ### 23.2 Päritolu ja arhitektuur
 
-- **Windows NT** (1993) – Microsofti oma tuum, VMS-i mõjutustega; suletud lähtekood.
-- **Linux** (1991, Linus Torvalds) – Unixi-laadne monoliitne tuum, mis on avaldatud GPL-litsentsiga; tööriistad suures osas GNU projektist.
-- **macOS** (2001, varem Mac OS X) – pärineb NeXTSTEP-ist; tuum XNU ühendab Machi mikrotuuma ja BSD Unixi; on sertifitseeritud UNIX.
+- **Windows NT** (ingl *New Technology*; 1993) – Microsofti oma tuum, VMS-i (ingl *Virtual Memory System*) mõjutustega; suletud lähtekood.
+- **Linux** (1991, Linus Torvalds) – Unixi-laadne monoliitne tuum, mis on avaldatud GPL-litsentsiga (GPL – ingl *GNU General Public License*); tööriistad suures osas GNU projektist.
+- **macOS** (2001, varem Mac OS X (OS – ingl *Operating System*)) – pärineb NeXTSTEP-ist; tuum XNU (ingl *X is Not Unix*) ühendab Machi mikrotuuma ja BSD (ingl *Berkeley Software Distribution*) Unixi; on sertifitseeritud UNIX.
 
 ![Windows, Linux ja macOS · kihid kõrvuti](../pildid/23-a.png)
 
@@ -27,15 +27,15 @@ Joonis: kõigil kolmel on rakendused, kasutajaruumi teegid ja teenused, tuum, dr
 | Peamine kasutus | tööjaamad, ettevõtte serverid, mängud | serverid, pilv, konteinerid, sardsead, Android | loometöö, arendus, sülearvutid |
 | Litsents | kommerts | vaba (GPL) | Apple’i riistvaraga kaasas |
 | Tuum | hübriid (NT) | monoliitne, moodulid | hübriid (XNU) |
-| Failisüsteem | NTFS, ReFS | ext4, XFS, Btrfs | APFS |
+| Failisüsteem | NTFS (ingl *New Technology File System*), ReFS (ingl *Resilient File System*) | ext4, XFS, Btrfs | APFS |
 | Seadistus | register, rühmapoliitika | tekstifailid kaustas `/etc` | `.plist`-failid, konfiguratsiooniprofiilid |
-| Teenused | teenusehaldur (SCM) | systemd | launchd |
+| Teenused | teenusehaldur (SCM – ingl *Service Control Manager*) | systemd | launchd |
 | Logid | sündmuslogi (Event Log) | journald, syslog | Unified Logging (`log show`) |
 | Käsurida | PowerShell, cmd | bash, zsh jt | zsh (vaikimisi), bash |
 | Tarkvara paigaldus | winget, Microsoft Store, MSI/MSIX | apt, dnf, zypper, snap, flatpak | App Store, `.pkg`, Homebrew |
 | Uuendused | Windows Update, Autopatch | paketihaldur (`apt upgrade`) | Tarkvarauuendus (`softwareupdate`) |
-| Keskhaldus | Active Directory, GPO, Intune | Ansible, Puppet, SSSD/FreeIPA | MDM (nt Intune, Jamf), Apple Business Manager |
-| Kaughaldus | RDP, WinRM, PowerShell, SSH | SSH | SSH, Screen Sharing (VNC) |
+| Keskhaldus | Active Directory, GPO (ingl *Group Policy Object*), Intune | Ansible, Puppet, SSSD/FreeIPA | MDM (ingl *Mobile Device Management*; nt Intune, Jamf), Apple Business Manager |
+| Kaughaldus | RDP (ingl *Remote Desktop Protocol*), WinRM, PowerShell, SSH (ingl *Secure Shell*) | SSH | SSH, Screen Sharing (VNC – ingl *Virtual Network Computing*) |
 
 ### 23.4 Failisüsteemi puu
 
@@ -56,7 +56,7 @@ Windowsis on iga köide eraldi tähe all ja süsteemifailid on kaustas `C:\Windo
 
 ### 23.5 Õigusemudel
 
-Unixi süsteemides on igal failil omanik, rühm ja kolm õiguste kolmikut (*read, write, execute*) omanikule, rühmale ja teistele. Windowsi ACL on paindlikum: igale kasutajale või rühmale saab anda eri õigusi ning keelavaid kirjeid. Linux ja macOS toetavad ka ACL-e, kuid neid kasutatakse harvem.
+Unixi süsteemides on igal failil omanik, rühm ja kolm õiguste kolmikut (*read, write, execute*) omanikule, rühmale ja teistele. Windowsi ACL (ingl *Access Control List*) on paindlikum: igale kasutajale või rühmale saab anda eri õigusi ning keelavaid kirjeid. Linux ja macOS toetavad ka ACL-e, kuid neid kasutatakse harvem.
 
 ![õigused · Unixi rwx ja Windowsi ACL](../pildid/23-c.png)
 
@@ -77,7 +77,7 @@ Joonis: Linuxi distributsioonid uuendavad kõike ühe tööriistaga; Windowsis j
 | Failide loend | `Get-ChildItem` (`ls`) | `ls -l` | `ls -l` |
 | Protsessid | `Get-Process` | `ps aux`, `top` | `ps aux`, `top` |
 | Protsessi lõpetamine | `Stop-Process -Id 1234` | `kill 1234` | `kill 1234` |
-| IP-seadistus | `Get-NetIPConfiguration` | `ip addr` | `ifconfig`, `networksetup` |
+| IP-seadistus (IP – ingl *Internet Protocol*) | `Get-NetIPConfiguration` | `ip addr` | `ifconfig`, `networksetup` |
 | Teenuse olek | `Get-Service wuauserv` | `systemctl status ssh` | `launchctl list` |
 | Logid | `Get-WinEvent -LogName System` | `journalctl -xe` | `log show --last 1h` |
 | Ketta kasutus | `Get-Volume` | `df -h` | `df -h` |
@@ -103,7 +103,7 @@ PowerShell 7 töötab ka Linuxis ja macOS-is, nii et sama skript sobib vahel kõ
 5. Selgita Unixi õiguste kolmikut ja võrdle seda Windowsi ACL-iga.
 6. Miks on paketihaldur turvalisuse seisukohast hea lahendus?
 7. Miks töötavad Linuxi konteinerid Windowsis ja macOS-is virtuaalmasinas?
-8. Millist failisüsteemi kasutad USB-pulgal, mida peavad lugema ja kirjutama kõik kolm OS-i?
+8. Millist failisüsteemi kasutad USB-pulgal (USB – ingl *Universal Serial Bus*), mida peavad lugema ja kirjutama kõik kolm OS-i?
 
 ### Valikküsimused
 

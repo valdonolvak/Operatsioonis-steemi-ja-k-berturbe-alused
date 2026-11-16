@@ -35,9 +35,9 @@ Ajas juhtub järgmine:
 
 Kui lõim B oleks alustanud hetk hiljem, oleks A jõudnud mõlemad lukud võtta ja ummikut poleks tekkinud. Seepärast on ummikud ajastusest sõltuvad ja raskesti korratavad.
 
-**Andmebaas.** Tehing 1 lukustab rea X ja tahab rida Y, tehing 2 vastupidi. SQL Server tuvastab selle ja katkestab ühe tehingu (*deadlock victim*).
+**Andmebaas.** Tehing 1 lukustab rea X ja tahab rida Y, tehing 2 vastupidi. SQL Server (SQL – ingl *Structured Query Language*) tuvastab selle ja katkestab ühe tehingu (*deadlock victim*).
 
-**Kasutajaliides.** Taustalõim ootab, et UI-lõim midagi teeks (nt uuendaks akent), UI-lõim aga ootab sünkroonselt taustalõime lõppu. Aken ei joonista end enam ümber ja Windows kirjutab tiitliribale „Ei vasta“. Tuntud näide on .NET-is `async`-meetodi tulemuse sünkroonne ootamine UI-lõimes (`.Result` või `.Wait()`): UI-lõim jääb ootama, kuid ülesande jätk tahab samuti UI-lõimes töötada.
+**Kasutajaliides.** Taustalõim ootab, et UI-lõim (UI – ingl *User Interface*) midagi teeks (nt uuendaks akent), UI-lõim aga ootab sünkroonselt taustalõime lõppu. Aken ei joonista end enam ümber ja Windows kirjutab tiitliribale „Ei vasta“. Tuntud näide on .NET-is `async`-meetodi tulemuse sünkroonne ootamine UI-lõimes (`.Result` või `.Wait()`): UI-lõim jääb ootama, kuid ülesande jätk tahab samuti UI-lõimes töötada.
 
 **Söövad filosoofid** (Dijkstra, 1965). Viis filosoofi istub ümmarguse laua taga, igaühe vahel on üks kahvel. Söömiseks on vaja kahte kahvlit: vasakut ja paremat. Kui kõik võtavad korraga vasaku kahvli ja ootavad paremat, on igaühel üks kahvel ja keegi ei saa süüa. See on klassikaline ummiku mudel, kus ressursse (kahvleid) jagavad naabrid.
 
@@ -100,7 +100,7 @@ Joonis: tsükkel T1 → P → T2 → S → T3 → F → T1 on olemas, kuid print
 
 #### Ignoreerimine
 
-Miks ei kaitse Windows rakendusi ummikute eest? Täielik kaitse oleks kallis: OS peaks iga luku võtmise juures kontrollima kõiki teisi lõimi ja lukke. Windowsis on korraga tuhandeid lõimi ja sekundis miljoneid lukuoperatsioone. Lisaks ei tea OS ette, milliseid ressursse rakendus tulevikus tahab. Seepärast vastutab ummikute eest **arendaja** ja kasutaja „lahendab“ ummiku sellega, et sulgeb rippuva programmi Tegumihalduris.
+Miks ei kaitse Windows rakendusi ummikute eest? Täielik kaitse oleks kallis: OS (ingl *Operating System*) peaks iga luku võtmise juures kontrollima kõiki teisi lõimi ja lukke. Windowsis on korraga tuhandeid lõimi ja sekundis miljoneid lukuoperatsioone. Lisaks ei tea OS ette, milliseid ressursse rakendus tulevikus tahab. Seepärast vastutab ummikute eest **arendaja** ja kasutaja „lahendab“ ummiku sellega, et sulgeb rippuva programmi Tegumihalduris.
 
 #### Tuvastamine ja taastamine
 
@@ -172,7 +172,7 @@ Nüüd võtavad mõlemad lõimed esmalt sama luku ja tsükkel ei saa tekkida. Wi
 
 ### 11.4 Tööriistad ummikute leidmiseks
 
-- **Ressursimonitor** (`resmon`) → CPU → paremklõps protsessil → „Analüüsi ooteahelat“. See kasutab Windowsi **Wait Chain Traversal** (WCT) funktsiooni ja näitab, millist lõime või protsessi valitud protsess ootab. Kui ahelas on tsükkel, on tegu ummikuga;
+- **Ressursimonitor** (`resmon`) → CPU (ingl *Central Processing Unit*) → paremklõps protsessil → „Analüüsi ooteahelat“. See kasutab Windowsi **Wait Chain Traversal** (WCT) funktsiooni ja näitab, millist lõime või protsessi valitud protsess ootab. Kui ahelas on tsükkel, on tegu ummikuga;
 - **Process Explorer** – lõimede pinud (stack) ja ooteobjektid;
 - **WinDbg** – käsud `!locks` (tuuma lukud), `!analyze -hang` (rippumise analüüs), `~*k` (kõigi lõimede pinud);
 - **Driver Verifier** – draiverite lukureeglite kontroll;

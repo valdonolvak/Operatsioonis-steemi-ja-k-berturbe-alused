@@ -2,11 +2,11 @@
 
 ## 14. Sisend ja väljund
 
-Sisend-väljund (S/V, input/output, I/O) on OS-i kõige mitmekesisem osa: seadmed erinevad kiiruse, andmeedastuse viisi ja vigade poolest miljoneid kordi. OS peidab erinevused draiverite ja ühtse S/V-mudeli taha. Windowsis käib iga S/V päring **IRP**-na (I/O Request Packet) läbi draiverite pinu.
+Sisend-väljund (S/V, input/output, I/O) on OS-i (ingl *Operating System*) kõige mitmekesisem osa: seadmed erinevad kiiruse, andmeedastuse viisi ja vigade poolest miljoneid kordi. OS peidab erinevused draiverite ja ühtse S/V-mudeli taha. Windowsis käib iga S/V päring **IRP**-na (I/O Request Packet) läbi draiverite pinu.
 
-**Miks see oluline on?** Rakenduse kirjutaja ei taha teada, kas fail asub NVMe-kettal, USB-pulgal, võrgukaustas või OneDrive’is. Ta kutsub välja ühe funktsiooni (`ReadFile`) ja OS korraldab ülejäänu. Võrdlus: hotelli külaline helistab vastuvõttu ja ütleb „palun rätikuid“. Ta ei pea teadma, kas rätikud tulevad pesumajast, laost või naaberhotellist – vastuvõtt (S/V-haldur) teab, kellele päring edasi anda (draiver), ja annab teada, kui see on täidetud.
+**Miks see oluline on?** Rakenduse kirjutaja ei taha teada, kas fail asub NVMe-kettal (NVMe – ingl *Non-Volatile Memory Express*), USB-pulgal (USB – ingl *Universal Serial Bus*), võrgukaustas või OneDrive’is. Ta kutsub välja ühe funktsiooni (`ReadFile`) ja OS korraldab ülejäänu. Võrdlus: hotelli külaline helistab vastuvõttu ja ütleb „palun rätikuid“. Ta ei pea teadma, kas rätikud tulevad pesumajast, laost või naaberhotellist – vastuvõtt (S/V-haldur) teab, kellele päring edasi anda (draiver), ja annab teada, kui see on täidetud.
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/14-sisend-valjund.html). Lehel on seadmete kiiruste võrdlus, küsitluse, katkestuste ja DMA simulaator, sünkroonse ja asünkroonse S/V võrdlus, puhvri simulaator, IRP teekond draiverite pinus ning toiteolekute harjutus.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/14-sisend-valjund.html). Lehel on seadmete kiiruste võrdlus, küsitluse, katkestuste ja DMA (ingl *Direct Memory Access*) simulaator, sünkroonse ja asünkroonse S/V võrdlus, puhvri simulaator, IRP teekond draiverite pinus ning toiteolekute harjutus.
 
 ### 14.1 S/V probleemid
 
@@ -24,9 +24,9 @@ Kui suured on kiiruste erinevused?
 | Hiir | ~ sadu baite/s | nädalaid |
 | USB 2.0 mälupulk | ~30 MB/s | ~35 s |
 | 1 Gbit/s Ethernet | ~118 MB/s | ~9 s |
-| Kõvaketas (HDD) | ~150–250 MB/s | ~5 s |
-| SATA SSD | ~550 MB/s | ~2 s |
-| NVMe SSD (PCIe 4/5) | ~7–14 GB/s | alla 0,2 s |
+| Kõvaketas (HDD – ingl *Hard Disk Drive*) | ~150–250 MB/s | ~5 s |
+| SATA (ingl *Serial Advanced Technology Attachment*) SSD (ingl *Solid-State Drive*) | ~550 MB/s | ~2 s |
+| NVMe SSD (PCIe (ingl *Peripheral Component Interconnect Express*) 4/5) | ~7–14 GB/s | alla 0,2 s |
 
 Klaviatuuri ja NVMe-ketta kiirus erineb ligi **miljard korda**. Üks ja sama S/V-süsteem peab teenindama mõlemat – seepärast on vaja eri võtteid: aeglaste seadmete jaoks katkestused, kiirete jaoks DMA ja asünkroonne S/V.
 
@@ -43,7 +43,7 @@ Klaviatuuri ja NVMe-ketta kiirus erineb ligi **miljard korda**. Üks ja sama S/V
 | Andmeühik | plokk (nt 4 KB) | bait/märk | pakett |
 | Suvaline juurdepääs | jah | ei | ei |
 | Tüüpiline kasutus | failisüsteem | sisestus, jadaliides | sokkel (socket) |
-| Näited | SSD, HDD, mälukaart | klaviatuur, hiir, COM-port | Ethernet, Wi-Fi |
+| Näited | SSD, HDD, mälukaart | klaviatuur, hiir, COM-port (COM – ingl *communication port*) | Ethernet, Wi-Fi |
 
 Failisüsteem (ptk 15) saab töötada ainult plokkseadme peal, sest ta peab saama hüpata suvalisse kohta kettal.
 
@@ -70,13 +70,13 @@ PowerShellis liiguvad konveieris (pipeline) **objektid**, mitte baidid. `Get-Pro
 
 ### 14.4 S/V vigade käsitlemine
 
-Vead tuleb lahendada võimalikult seadme lähedal: kontroller kordab lugemist, draiver proovib uuesti, failisüsteem kasutab varukoopiat (ReFS-i peegel) või logi, ja alles siis antakse viga rakendusele. Püsivatest vigadest annavad märku SMART-andmed ja sündmuslogi (`Disk`, `Ntfs`, `stornvme`).
+Vead tuleb lahendada võimalikult seadme lähedal: kontroller kordab lugemist, draiver proovib uuesti, failisüsteem kasutab varukoopiat (ReFS-i (ingl *Resilient File System*) peegel) või logi, ja alles siis antakse viga rakendusele. Püsivatest vigadest annavad märku SMART-andmed (SMART – ingl *Self-Monitoring, Analysis and Reporting Technology*) ja sündmuslogi (`Disk`, `Ntfs`, `stornvme`).
 
 **Näide.** Kõvaketta sektorit ei õnnestu esimesel korral lugeda.
 
-1. Kettakontroller proovib uuesti ja kasutab veaparanduskoodi (ECC). Õnnestub – keegi ei saa midagi teada, SMART-loendur suureneb.
+1. Kettakontroller proovib uuesti ja kasutab veaparanduskoodi (ECC – ingl *Error-Correcting Code*). Õnnestub – keegi ei saa midagi teada, SMART-loendur suureneb.
 2. Kui see ei õnnestu, annab kontroller vea draiverile. Draiver proovib mõne korra uuesti ja kirjutab sündmuslogisse hoiatuse (`Disk`, sündmus 7 või 153).
-3. Kui ka see ei aita, saab NTFS vea. Peegeldatud köite korral loeb ta andmed teiselt kettalt.
+3. Kui ka see ei aita, saab NTFS (ingl *New Technology File System*) vea. Peegeldatud köite korral loeb ta andmed teiselt kettalt.
 4. Alles siis saab rakendus vea (nt „Andmeviga – tsükliline liiasuskontroll“).
 
 Administraatori jaoks on oluline, et sündmuslogis korduvad kettavead on hoiatus enne ketta lõplikku riket. Varunda andmed ja vaheta ketas.
@@ -84,8 +84,8 @@ Administraatori jaoks on oluline, et sündmuslogis korduvad kettavead on hoiatus
 ### 14.5 Sünkroonne ja asünkroonne S/V
 
 - **Sünkroonne** – lõim ootab, kuni operatsioon lõpeb; lihtne programmeerida.
-- **Asünkroonne** – lõim annab päringu üle ja jätkab tööd; teade lõpust tuleb sündmuse, tagasikutse või **S/V lõpetamispordi** (I/O completion port, IOCP) kaudu. IOCP on Windowsi suure jõudlusega serverite (IIS, SQL Server) alus.
-- **I/O Ring** (Windows 11) – uus API, kus rakendus paneb päringud jagatud mälus järjekorda ja saab tulemused samast kohast; vähem süsteemikutseid. Sarnane Linuxi io\_uringiga.
+- **Asünkroonne** – lõim annab päringu üle ja jätkab tööd; teade lõpust tuleb sündmuse, tagasikutse või **S/V lõpetamispordi** (I/O completion port, IOCP) kaudu. IOCP on Windowsi suure jõudlusega serverite (IIS – ingl *Internet Information Services*, SQL Server (SQL – ingl *Structured Query Language*)) alus.
+- **I/O Ring** (Windows 11) – uus API (ingl *Application Programming Interface*), kus rakendus paneb päringud jagatud mälus järjekorda ja saab tulemused samast kohast; vähem süsteemikutseid. Sarnane Linuxi io\_uringiga.
 
 **Võrdlus.** Sünkroonne S/V on nagu kohvikus leti ees ootamine, kuni kohv valmis saab – sa ei saa vahepeal midagi muud teha. Asünkroonne on nagu helisev märguandja: tellid, saad märguandja, istud lauda ja töötad edasi; kui kohv on valmis, märguandja heliseb.
 
@@ -101,7 +101,7 @@ string tekst = File.ReadAllText("suur.txt");
 string tekst = await File.ReadAllTextAsync("suur.txt");
 ```
 
-Kasutajaliideses tähendab sünkroonne S/V UI-lõimes, et aken „ei vasta“, kuni fail on loetud (vt ka ptk 11.1).
+Kasutajaliideses tähendab sünkroonne S/V UI-lõimes (UI – ingl *User Interface*), et aken „ei vasta“, kuni fail on loetud (vt ka ptk 11.1).
 
 > 🖱️ **Proovi ise:** [sünkroonne vs asünkroonne server](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/14-sisend-valjund.html#asunkroonne)
 
@@ -125,9 +125,9 @@ Kasutajaliideses tähendab sünkroonne S/V UI-lõimes, et aken „ei vasta“, k
 
 ### 14.8 Katkestused
 
-Seade annab katkestusega teada, et operatsioon on lõppenud või andmed on saabunud (ptk 5). Katkestuse käsitlemine maksab aga ka midagi: protsessor peab katkestama oma töö, salvestama oleku, käivitama ISR-i ja hiljem DPC.
+Seade annab katkestusega teada, et operatsioon on lõppenud või andmed on saabunud (ptk 5). Katkestuse käsitlemine maksab aga ka midagi: protsessor peab katkestama oma töö, salvestama oleku, käivitama ISR-i (ingl *Interrupt Service Routine*) ja hiljem DPC (ingl *Deferred Procedure Call*).
 
-**Kaasaegsed seadmed** kasutavad **MSI-X** katkestusi (Message Signaled Interrupts: seade annab katkestuse mälukirjutusega, mitte eraldi IRQ-juhtme kaudu, nii et katkestusi võib olla tuhandeid; iga järjekord võib saata katkestuse eri tuumale) ja **katkestuste koondamist** (interrupt moderation): 10 Gbit/s võrgukaart võib saada sekundis üle miljoni paketi. Kui iga pakett tekitaks katkestuse, kuluks kogu protsessoriaeg katkestustele. Seepärast kogub kaart pakette ja annab ühe katkestuse näiteks iga 50 paketi kohta.
+**Kaasaegsed seadmed** kasutavad **MSI-X** katkestusi (Message Signaled Interrupts: seade annab katkestuse mälukirjutusega, mitte eraldi IRQ-juhtme (IRQ – ingl *Interrupt Request*) kaudu, nii et katkestusi võib olla tuhandeid; iga järjekord võib saata katkestuse eri tuumale) ja **katkestuste koondamist** (interrupt moderation): 10 Gbit/s võrgukaart võib saada sekundis üle miljoni paketi. Kui iga pakett tekitaks katkestuse, kuluks kogu protsessoriaeg katkestustele. Seepärast kogub kaart pakette ja annab ühe katkestuse näiteks iga 50 paketi kohta.
 
 ### 14.9 Otsemälupöördus
 
@@ -141,7 +141,7 @@ Joonis: küsitluse korral kontrollib protsessor seadet tühja ja kopeerib andmei
 
 ![Animatsioon: küsitlus, katkestused ja DMA](../animatsioonid/kysitlus-katkestus-dma.svg)
 
-**Animatsioon:** [Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kysitlus-katkestus-dma.html) võrdleb kolme viisi samade kolme andmeploki näitel ja näitab, millal protsessor saab muud tööd teha. Viimane samm näitab, kuidas IOMMU peatab tundmatu seadme katse kirjutada tuuma mällu. Lehel on lahti seletatud mõisted ja praktilised käsud.
+**Animatsioon:** [Küsitlus, katkestused ja DMA: kes kopeerib andmed mällu?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kysitlus-katkestus-dma.html) võrdleb kolme viisi samade kolme andmeploki näitel ja näitab, millal protsessor saab muud tööd teha. Viimane samm näitab, kuidas IOMMU (ingl *Input–Output Memory Management Unit*) peatab tundmatu seadme katse kirjutada tuuma mällu. Lehel on lahti seletatud mõisted ja praktilised käsud.
 
 > 🖱️ **Proovi ise:** [küsitluse, katkestuste ja DMA simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/14-sisend-valjund.html#kysitlus). Muuda seadme kiirust ja vaata, millal on küsitlus katkestustest parem.
 
@@ -152,7 +152,7 @@ Joonis: küsitluse korral kontrollib protsessor seadet tühja ja kopeerib andmei
 **Draiver** on tarkvara, mis tõlgib OS-i üldised päringud (loe, kirjuta) konkreetse seadme käskudeks. Draiverid on kihtides:
 
 - **funktsioonidraiver** – põhiline seadme juhtija (nt `stornvme.sys`);
-- **siini draiver** – tuvastab siinil seadmed (PCI, USB);
+- **siini draiver** – tuvastab siinil seadmed (PCI – ingl *Peripheral Component Interconnect*, USB);
 - **filtridraiverid** – asuvad teiste vahel ja muudavad või jälgivad päringuid (viirusetõrje failifilter, BitLocker).
 
 **Näide: USB-pulga draiverite pinu** (ülevalt alla):
@@ -171,8 +171,8 @@ Iga kiht teeb oma osa ja annab IRP edasi järgmisele. Tänu sellele saab BitLock
 
 **Draiverid ja turvalisus.** Tuumarežiimi draiveril on täielik võim: viga draiveris võib kogu süsteemi kokku jooksutada (sinine ekraan) ja turvaauk annab ründajale tuuma õigused.
 
-- **19. juulil 2024** põhjustas CrowdStrike Falconi turbetarkvara vigane uuendus tuumadraiveris umbes **8,5 miljoni** Windowsi arvuti krahhi – lennujaamad, haiglad ja pangad seisid. See on peamine põhjus, miks Microsoft soovitab draiverid ja turbetarkvara viia võimalikult palju **kasutajarežiimi** (UMDF).
-- **BYOVD** (Bring Your Own Vulnerable Driver) – ründaja paigaldab legaalse, digitaalselt allkirjastatud, kuid haavatava draiveri ja kasutab selle viga tuuma õiguste saamiseks. Kaitse: Microsofti **haavatavate draiverite blokeerimisloend** (Windows 11 22H2-st vaikimisi sees) ja **HVCI** (mälu terviklikkus).
+- **19. juulil 2024** põhjustas CrowdStrike Falconi turbetarkvara vigane uuendus tuumadraiveris umbes **8,5 miljoni** Windowsi arvuti krahhi – lennujaamad, haiglad ja pangad seisid. See on peamine põhjus, miks Microsoft soovitab draiverid ja turbetarkvara viia võimalikult palju **kasutajarežiimi** (UMDF – ingl *User-Mode Driver Framework*).
+- **BYOVD** (Bring Your Own Vulnerable Driver) – ründaja paigaldab legaalse, digitaalselt allkirjastatud, kuid haavatava draiveri ja kasutab selle viga tuuma õiguste saamiseks. Kaitse: Microsofti **haavatavate draiverite blokeerimisloend** (Windows 11 22H2-st vaikimisi sees) ja **HVCI** (ingl *Hypervisor-protected Code Integrity*; mälu terviklikkus).
 
 Windows Update levitab draivereid tootjate eest. Alates 2024. aastast on Microsofti draiveriprogrammis rangemad nõuded ning soovitus viia draiverid kasutajarežiimi (UMDF) või kirjutada mäluturvalises keeles.
 
@@ -205,13 +205,13 @@ Joonis: kui andmed on vahemälus, lõpeb päring kohe; muidu liigub IRP draiveri
 
 ### 14.13 Plug and Play haldur
 
-**PnP-haldur** tuvastab seadmed, laadib nende draiverid, jagab ressursse (katkestused, mälualad) ja teavitab rakendusi seadmete lisamisest või eemaldamisest. Seadmed tuvastatakse riistvara ID-de järgi (nt `PCI\VEN_8086&DEV_…`: VEN = tootja, DEV = seade). Seadmete paigaldamist saab ettevõttes piirata rühmapoliitikaga (nt USB-salvestite keelamine).
+**PnP-haldur** tuvastab seadmed, laadib nende draiverid, jagab ressursse (katkestused, mälualad) ja teavitab rakendusi seadmete lisamisest või eemaldamisest. Seadmed tuvastatakse riistvara ID-de (ingl *Identifier*) järgi (nt `PCI\VEN_8086&DEV_…`: VEN = tootja, DEV = seade). Seadmete paigaldamist saab ettevõttes piirata rühmapoliitikaga (nt USB-salvestite keelamine).
 
 Enne PnP-d (Windows 95 eelne aeg) pidi kasutaja seadme paigaldamisel ise valima katkestuse numbri ja S/V-pordi aadressi hüppelülititega kaardil. Kui kaks seadet kasutasid sama katkestust, ei töötanud kumbki. PnP tegi selle automaatseks.
 
 ### 14.14 Toitehaldur
 
-**Toitehaldur** (Power Manager) koordineerib süsteemi ja seadmete toiteolekuid (ACPI).
+**Toitehaldur** (Power Manager) koordineerib süsteemi ja seadmete toiteolekuid (ACPI – ingl *Advanced Configuration and Power Interface*).
 
 | Olek | Nimi | Mis on toite all | Ärkamine |
 | --- | --- | --- | --- |
@@ -247,11 +247,11 @@ Linuxi põhimõte „kõik on fail“ tähendab, et ka seadmed on failid: `/dev/
 
 1. USB-kontroller tuvastab uue seadme ja annab katkestuse.
 2. **PnP-haldur** küsib seadmelt riistvara-ID (`USB\VID_0781&PID_5581`) ja leiab sobiva draiveri (`usbstor.sys`).
-3. Draiver laaditakse, seade saab nime, partitsioonid tuvastatakse ja exFAT-köide ühendatakse tähena `E:`.
+3. Draiver laaditakse, seade saab nime, partitsioonid tuvastatakse ja exFAT-köide (exFAT – ingl *Extended File Allocation Table*) ühendatakse tähena `E:`.
 4. PnP-haldur teavitab rakendusi; Explorer avab akna ja Defender skannib köite.
 5. Pulga eemaldamisel saadetakse IRP-d, mis sulgevad failid; kuna eemaldatavatel ketastel on kiire eemaldamine (vahemälu väljas), ei kao andmed ka ilma „turvalise eemaldamiseta“, kui faili parajasti ei kirjutata.
 
-**Kooli poliitika.** IT-juht soovib, et õpilased saaksid pulgalt lugeda, kuid mitte kirjutada (andmelekete vältimiseks). Rühmapoliitika *Removable Disks: Deny write access* paneb Windowsi keelduma kirjutamis-IRP-dest. Kirjutamiskatse annab kasutajale veateate „Juurdepääs keelatud“; lugemine töötab.
+**Kooli poliitika.** IT-juht (IT – ingl *Information Technology*) soovib, et õpilased saaksid pulgalt lugeda, kuid mitte kirjutada (andmelekete vältimiseks). Rühmapoliitika *Removable Disks: Deny write access* paneb Windowsi keelduma kirjutamis-IRP-dest. Kirjutamiskatse annab kasutajale veateate „Juurdepääs keelatud“; lugemine töötab.
 
 **Miks see turvalisuse jaoks oluline on?** USB-pulk on üks levinumaid viise, kuidas andmed asutusest lahkuvad või pahavara sisse tuleb. Ründajad on jätnud parklasse pahavaraga pulki lootuses, et keegi need tööarvutisse paneb. Lisaks USB-salvestite piiramisele saab rühmapoliitikaga lubada ainult kindlaid seadmeid riistvara-ID järgi.
 

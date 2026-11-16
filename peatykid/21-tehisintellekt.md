@@ -2,23 +2,23 @@
 
 ## 21. UUS: Tehisintellekt operatsioonisüsteemis
 
-Alates 2024. aastast on tehisintellekt (AI) Windowsi osa kolmel tasandil: riistvaras (NPU), OS-i funktsioonides (Recall, Click to Do, Copilot) ja arendajaplatvormis (Windows ML, kohalikud mudelid, MCP). OS-i ülesanne on sama mis alati – jagada ressursse ja kaitsta andmeid – kuid uus ressurss on NPU ja uus risk on AI-agent, mis tegutseb kasutaja nimel.
+Alates 2024. aastast on tehisintellekt (AI – ingl *Artificial Intelligence*) Windowsi osa kolmel tasandil: riistvaras (NPU – ingl *Neural Processing Unit*), OS-i (ingl *Operating System*) funktsioonides (Recall, Click to Do, Copilot) ja arendajaplatvormis (Windows ML – ingl *Machine Learning*, kohalikud mudelid, MCP – ingl *Model Context Protocol*). OS-i ülesanne on sama mis alati – jagada ressursse ja kaitsta andmeid – kuid uus ressurss on NPU ja uus risk on AI-agent, mis tegutseb kasutaja nimel.
 
 ### 21.1 Miks AI jõuab operatsioonisüsteemi
 
 - **Privaatsus** – kohalik mudel ei saada andmeid pilve.
 - **Viivitus** – reaalajas subtiitrid ja piltöötlus ei talu võrgu viivitust.
-- **Energia** – NPU teeb sama arvutuse murdosa voolu eest võrreldes CPU või GPU-ga.
+- **Energia** – NPU teeb sama arvutuse murdosa voolu eest võrreldes CPU (ingl *Central Processing Unit*) või GPU-ga (ingl *Graphics Processing Unit*).
 - **Kulud** – iga pilvepäring maksab; kohalik arvutus on tasuta.
 - **Uus kasutajaliides** – loomulik keel kui käsk („lülita tumerežiim sisse“).
 
 ### 21.2 Riistvara: NPU ja Copilot+ arvutid
 
-**NPU** (Neural Processing Unit) on maatriksarvutustele spetsialiseeritud kiibiosa. Jõudlust mõõdetakse **TOPS**-ides (triljonit tehet sekundis, tavaliselt INT8 täpsusega).
+**NPU** (Neural Processing Unit) on maatriksarvutustele spetsialiseeritud kiibiosa. Jõudlust mõõdetakse **TOPS**-ides (ingl *Tera Operations Per Second*; triljonit tehet sekundis, tavaliselt INT8 (ingl *8-bit Integer*) täpsusega).
 
-**Copilot+ arvuti** on Windows 11 seadmeklass, mille NPU suudab üle 40 TOPS ([Microsoft Support](https://support.microsoft.com/help/5039678)). Lisaks nõutakse vähemalt 16 GB mälu ja 256 GB SSD-d ning sobivat protsessorit, nt Snapdragon X, AMD Ryzen AI 300 või Intel Core Ultra 200V ([Pureinfotech](https://pureinfotech.com/windows-11-25h2-system-requirements/)).
+**Copilot+ arvuti** on Windows 11 seadmeklass, mille NPU suudab üle 40 TOPS ([Microsoft Support](https://support.microsoft.com/help/5039678)). Lisaks nõutakse vähemalt 16 GB mälu ja 256 GB SSD-d (ingl *Solid-State Drive*) ning sobivat protsessorit, nt Snapdragon X, AMD (ingl *Advanced Micro Devices*) Ryzen AI 300 või Intel Core Ultra 200V ([Pureinfotech](https://pureinfotech.com/windows-11-25h2-system-requirements/)).
 
-OS haldab NPU-d nagu GPU-d: draivermudel (MCDM), planeerimine mitme rakenduse vahel, mälu jagamine ja toitehaldus. Tegumihaldur näitab NPU koormust eraldi graafikuna.
+OS haldab NPU-d nagu GPU-d: draivermudel (MCDM – ingl *Microsoft Compute Driver Model*), planeerimine mitme rakenduse vahel, mälu jagamine ja toitehaldus. Tegumihaldur näitab NPU koormust eraldi graafikuna.
 
 ### 21.3 AI-funktsioonid Windowsis
 
@@ -34,16 +34,16 @@ OS haldab NPU-d nagu GPU-d: draivermudel (MCDM), planeerimine mitme rakenduse va
 **Recall ja turvalisus – juhtumiuuring.** Recalli esimene versioon (mai 2024) hoidis hetktõmmiseid lihtsalt kaitstud andmebaasis ja tekitas suure turvakriitika. Ümbertehtud versioonis:
 
 - funktsioon on **opt-in** ja selle saab Windowsist täielikult eemaldada ([PCWorld](https://www.pcworld.com/article/2470708/microsoft-now-confirms-you-can-opt-out-of-and-remove-windows-recall.html));
-- hetktõmmised on krüpteeritud; võtmed on kaitstud TPM-iga ja seotud kasutaja Windows Hello täiustatud sisselogimise identiteediga;
-- töötlus toimub **VBS-enklaavis**, mis on isoleeritud nii tuumast kui ka administraatoritest ([Windows Experience Blog](https://blogs.windows.com/windowsexperience/2024/09/27/update-on-recall-security-and-privacy-architecture/)).
+- hetktõmmised on krüpteeritud; võtmed on kaitstud TPM-iga (ingl *Trusted Platform Module*) ja seotud kasutaja Windows Hello täiustatud sisselogimise identiteediga;
+- töötlus toimub **VBS-enklaavis** (VBS – ingl *Virtualization-Based Security*), mis on isoleeritud nii tuumast kui ka administraatoritest ([Windows Experience Blog](https://blogs.windows.com/windowsexperience/2024/09/27/update-on-recall-security-and-privacy-architecture/)).
 
 Juhtum näitab OS-i turvapõhimõtteid praktikas: vaikimisi väljas, minimaalne ligipääs, riistvaraline isolatsioon, tugev autentimine.
 
 ### 21.4 AI arendaja jaoks
 
-- **Windows ML** ja **ONNX Runtime** – mudeli käitamine CPU-l, GPU-l või NPU-l ühe liidesega; OS valib sobiva riistvara.
+- **Windows ML** ja **ONNX Runtime (ONNX – ingl *Open Neural Network Exchange*)** – mudeli käitamine CPU-l, GPU-l või NPU-l ühe liidesega; OS valib sobiva riistvara.
 - **Windows AI Foundry** ja **Foundry Local** – avatud mudelite (nt Phi, Mistral, Llama) allalaadimine ja käitamine kohalikult ([PCWorld](https://www.pcworld.com/article/2785893)).
-- **Windows AI API-d** – OS-i sisseehitatud keelemudel (Phi Silica), tekstituvastus, piltide kirjeldamine.
+- **Windows AI API-d** (ingl *Application Programming Interface*) – OS-i sisseehitatud keelemudel (Phi Silica), tekstituvastus, piltide kirjeldamine.
 
 ### 21.5 AI-agendid ja Model Context Protocol
 
@@ -65,7 +65,7 @@ OS-i kaitsepõhimõtted agentide jaoks:
 4. **jälgitavus** – muutmiskindel tegevuslogi;
 5. **isolatsioon** – eraldi seanss või liivakast.
 
-Need on samad põhimõtted, millele on ehitatud kogu Windows NT turvamudel (ptk 18), rakendatuna uut tüüpi „kasutajale“.
+Need on samad põhimõtted, millele on ehitatud kogu Windows NT (ingl *New Technology*) turvamudel (ptk 18), rakendatuna uut tüüpi „kasutajale“.
 
 ### 21.6 AI süsteemihalduses
 
@@ -75,14 +75,14 @@ Need on samad põhimõtted, millele on ehitatud kogu Windows NT turvamudel (ptk 
 
 ### 21.7 Privaatsus ja regulatsioon
 
-- **GDPR** kehtib ka AI-funktsioonidele: ekraanitõmmistes võib olla isikuandmeid, terviseandmeid, paroole.
-- **EL-i tehisintellekti määrus** (AI Act) jõustus 2024 ja selle kohustused rakenduvad järk-järgult.
+- **GDPR** (ingl *General Data Protection Regulation*) kehtib ka AI-funktsioonidele: ekraanitõmmistes võib olla isikuandmeid, terviseandmeid, paroole.
+- **EL-i (Euroopa Liit) tehisintellekti määrus** (AI Act) jõustus 2024 ja selle kohustused rakenduvad järk-järgult.
 - **E-ITS** – Eesti infoturbestandardi 2025. aasta muudatustes lisandus moodul **APP.EE.2 „Tehisintellektisüsteemid“** ([E-ITS muutmise seletuskiri](https://adr-docs.karlerss.com/OjT8fCp4mJdi4CBjUBks9bkhZ6kyRbUj/20250730_SK%20E-ITS%20muutmine.pdf)).
 - Organisatsioon peab otsustama, kas Recall, agendid ja pilve-Copilot on lubatud, ning seadistama selle rühmapoliitika või Intune’iga.
 
 ### Näide: kas lubada Recall ja agendid õpetajate arvutites?
 
-Kool ostab 30 Copilot+ sülearvutit. IT-juht peab otsustama AI-funktsioonide poliitika. Analüüs:
+Kool ostab 30 Copilot+ sülearvutit. IT-juht (IT – ingl *Information Technology*) peab otsustama AI-funktsioonide poliitika. Analüüs:
 
 | Küsimus | Recall | Agendi tööruum |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ Kool ostab 30 Copilot+ sülearvutit. IT-juht peab otsustama AI-funktsioonide pol
 ### Kokkuvõte
 
 - NPU on uus ressurss, mida OS planeerib ja haldab.
-- Copilot+ arvutid nõuavad üle 40 TOPS NPU-d, 16 GB RAM-i ja 256 GB SSD-d.
+- Copilot+ arvutid nõuavad üle 40 TOPS NPU-d, 16 GB RAM-i (ingl *Random-Access Memory*) ja 256 GB SSD-d.
 - Recall näitab, kuidas VBS, TPM ja Windows Hello kaitsevad tundlikke AI-andmeid.
 - AI-agendid ja MCP toovad uue riski (XPIA); kaitse põhineb eraldi identiteedil, vähimatel õigustel ja inimese kinnitusel.
 

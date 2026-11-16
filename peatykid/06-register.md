@@ -24,7 +24,7 @@ Registri juurvõtmed:
 | HKEY\_LOCAL\_MACHINE | HKLM | kogu arvuti seadistus: riistvara, teenused, tarkvara, turvapoliitika |
 | HKEY\_USERS | HKU | kõigi laaditud kasutajaprofiilide seadistus |
 | HKEY\_CURRENT\_USER | HKCU | sisselogitud kasutaja seadistus (viide HKU alamvõtmele) |
-| HKEY\_CLASSES\_ROOT | HKCR | failitüübid ja COM-klassid |
+| HKEY\_CLASSES\_ROOT | HKCR | failitüübid ja COM-klassid (COM – ingl *Component Object Model*) |
 | HKEY\_CURRENT\_CONFIG | HKCC | jooksev riistvaraprofiil |
 
 ![registri puu · juurvõtmed, HKLM tarud, Services ja Run](../pildid/06-a.png)
@@ -33,7 +33,7 @@ Joonis: HKLM koosneb taru-failidest kaustas `System32\config`; Run- ja Services-
 
 Registri andmed on kettal failides, mida nimetatakse **tarudeks** (hive): `C:\Windows\System32\config\SYSTEM`, `SOFTWARE`, `SAM`, `SECURITY` ning kasutaja `NTUSER.DAT` profiilikaustas.
 
-Tähtsad kohad, mida IT-spetsialist peaks teadma:
+Tähtsad kohad, mida IT-spetsialist (IT – ingl *Information Technology*) peaks teadma:
 
 - `HKLM\SYSTEM\CurrentControlSet\Services` – teenused ja draiverid;
 - `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run` ja `HKCU\…\Run` – automaatkäivitus (lemmik koht ka pahavarale);
@@ -44,21 +44,21 @@ Tähtsad kohad, mida IT-spetsialist peaks teadma:
 
 ### 6.2 Konfiguratsioonihaldur
 
-**Konfiguratsioonihaldur** (Configuration Manager, tuumas tähisega Cm) laadib tarud käivitamisel mällu, haldab registri lugemist ja kirjutamist, kontrollib õigusi (igal võtmel on ACL) ja tagab, et muudatused jõuaksid kettale. Töökindluse jaoks kasutab ta **logifaile** (`.LOG1`, `.LOG2`): muudatus kirjutatakse esmalt logisse, siis tarusse. Kui arvuti kaotab toite, taastatakse taru logi järgi.
+**Konfiguratsioonihaldur** (Configuration Manager, tuumas tähisega Cm) laadib tarud käivitamisel mällu, haldab registri lugemist ja kirjutamist, kontrollib õigusi (igal võtmel on ACL – ingl *Access Control List*) ja tagab, et muudatused jõuaksid kettale. Töökindluse jaoks kasutab ta **logifaile** (`.LOG1`, `.LOG2`): muudatus kirjutatakse esmalt logisse, siis tarusse. Kui arvuti kaotab toite, taastatakse taru logi järgi.
 
 > 🖱️ **Proovi ise:** [voolukatkestus registrisse kirjutamise ajal](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#logi). Lülita vool välja suvalisel hetkel ja vaata, mis taaskäivitusel juhtub.
 
 
-Registriga on seotud ka **virtualiseerimine**: kui vana rakendus üritab ilma administraatoriõiguseta kirjutada HKLM\\SOFTWARE alla, suunab Windows kirjutise kasutaja privaatsesse koopiasse. Microsoft Store’i (MSIX) rakendused saavad oma isoleeritud registrivaate.
+Registriga on seotud ka **virtualiseerimine**: kui vana rakendus üritab ilma administraatoriõiguseta kirjutada HKLM\\SOFTWARE alla, suunab Windows kirjutise kasutaja privaatsesse koopiasse. Microsoft Store’i (MSIX – ingl *Microsoft Installer X*, uue põlvkonna paigalduspakett) rakendused saavad oma isoleeritud registrivaate.
 
 ### 6.3 Seadistuse haldus tänapäeval
 
 Registrit ei peaks suures keskkonnas käsitsi muutma. Kasutatakse:
 
-- **rühmapoliitikat (GPO)** domeenis;
+- **rühmapoliitikat (GPO – ingl *Group Policy Object*)** domeenis;
 - **Microsoft Intune’i** ja **CSP-sid** (Configuration Service Provider) pilvehalduses;
-- **PowerShelli DSC-d** või muid konfiguratsiooni kui koodi tööriistu serverites;
-- **turvabaasjooni** (security baselines), nt Microsofti ja CIS-i soovitused ning E-ITS-i meetmed.
+- **PowerShelli DSC-d** (ingl *Desired State Configuration*) või muid konfiguratsiooni kui koodi tööriistu serverites;
+- **turvabaasjooni** (security baselines), nt Microsofti ja CIS-i (ingl *Center for Internet Security*) soovitused ning E-ITS-i (Eesti infoturbestandard) meetmed.
 
 ### Näide: „arvuti avab käivitamisel tundmatu akna“
 
@@ -72,7 +72,7 @@ Registrit ei peaks suures keskkonnas käsitsi muutma. Kasutatakse:
 > 🖱️ **Proovi ise:** [Autorunsi jaht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#autoruns). Leia Run-võtmetest pahavara: vaata allkirja, VirusTotali tulemust, failiteed ja kirje asukohta.
 
 
-**Rühmapoliitika näide.** Kui administraator seab GPO-s „Prohibit access to Control Panel and PC settings“, kirjutab Windows kasutaja registrisse väärtuse `HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel = 1`. Explorer loeb seda väärtust ja peidab juhtpaneeli. Rühmapoliitika on seega mugav ja auditeeritav viis registri muutmiseks.
+**Rühmapoliitika näide.** Kui administraator seab GPO-s „Prohibit access to Control Panel and PC (ingl *Personal Computer*) settings“, kirjutab Windows kasutaja registrisse väärtuse `HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\NoControlPanel = 1`. Explorer loeb seda väärtust ja peidab juhtpaneeli. Rühmapoliitika on seega mugav ja auditeeritav viis registri muutmiseks.
 
 > 🖱️ **Proovi ise:** [rühmapoliitika registris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/06-register.html#gpo). Lülita poliitikaid sisse ja vaata, millise väärtuse Windows registrisse kirjutab ja mis töölaual muutub.
 

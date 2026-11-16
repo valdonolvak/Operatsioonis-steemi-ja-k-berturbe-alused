@@ -2,15 +2,15 @@
 
 ## 29. UUS: Digiallkiri, sertifikaadid, PKI ja TLS
 
-Asümmeetriline krüptograafia lahendab võtmejagamise, kuid jätab ühe küsimuse: **kuidas teada, et avalik võti kuulub tõesti sellele, kellele väidetakse?** Kui ründaja suudab sulle anda oma avaliku võtme panga nime all, krüpteerid sa oma andmed hoolikalt just ründajale. Vastus on digiallkiri ja sertifikaatide süsteem ehk **avaliku võtme taristu** (PKI, public key infrastructure). Selle peale on ehitatud HTTPS, Eesti ID-kaart, draiverite allkirjad, Secure Boot (ptk 18) ja tarkvarauuendused.
+Asümmeetriline krüptograafia lahendab võtmejagamise, kuid jätab ühe küsimuse: **kuidas teada, et avalik võti kuulub tõesti sellele, kellele väidetakse?** Kui ründaja suudab sulle anda oma avaliku võtme panga nime all, krüpteerid sa oma andmed hoolikalt just ründajale. Vastus on digiallkiri ja sertifikaatide süsteem ehk **avaliku võtme taristu** (PKI, public key infrastructure). Selle peale on ehitatud HTTPS (ingl *Hypertext Transfer Protocol Secure*), Eesti ID-kaart (ID – ingl *identity card*), draiverite allkirjad, Secure Boot (ptk 18) ja tarkvarauuendused.
 
 **Pärast peatüki läbimist õppija:**
 
 - kirjeldab digiallkirja andmise ja kontrollimise samme ning selgitab, mida digiallkiri tõendab;
 - selgitab X.509-sertifikaadi sisu, usaldusahelat ja sertifikaadi kontrolli samme;
 - kirjeldab sertifikaadi elukaart: taotlemine, väljastamine, uuendamine ja tühistamine;
-- kirjeldab TLS 1.3 käepigistust ja seda, mida HTTPS tõendab ning mida mitte;
-- selgitab Eesti ID-kaardi ja Smart-ID võtmete kasutust ning loob laboris oma CA ja TLS-serveri.
+- kirjeldab TLS 1.3 (TLS – ingl *Transport Layer Security*) käepigistust ja seda, mida HTTPS tõendab ning mida mitte;
+- selgitab Eesti ID-kaardi ja Smart-ID võtmete kasutust ning loob laboris oma CA (ingl *Certificate Authority*) ja TLS-serveri.
 
 ### 29.1 Digiallkiri
 
@@ -18,12 +18,12 @@ Asümmeetriline krüptograafia lahendab võtmejagamise, kuid jätab ühe küsimu
 
 Joonis: allkirjastaja arvutab dokumendist räsi ja allkirjastab selle oma privaatvõtmega. Kontrollija arvutab sama räsi uuesti ja kontrollib allkirja allkirjastaja avaliku võtmega. Kui dokumendis muutub kas või üks bait, räsid ei klapi ja allkiri on kehtetu.
 
-> 🖱️ **Proovi ise:** [digiallkiri brauseris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#allkiri). Allkirjasta leping päris ECDSA-võtmega, muuda seda ründajana ja vaata, mida kontroll avastab.
+> 🖱️ **Proovi ise:** [digiallkiri brauseris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#allkiri). Allkirjasta leping päris ECDSA-võtmega (ECDSA – ingl *Elliptic Curve Digital Signature Algorithm*), muuda seda ründajana ja vaata, mida kontroll avastab.
 
 **Allkirjastamine:**
 
-1. Arvuta dokumendi räsi, nt SHA-256.
-2. Allkirjasta räsi oma privaatvõtmega (RSA-PSS, ECDSA või Ed25519).
+1. Arvuta dokumendi räsi, nt SHA-256 (SHA – ingl *Secure Hash Algorithm*).
+2. Allkirjasta räsi oma privaatvõtmega (RSA-PSS (RSA – ingl *Rivest–Shamir–Adleman*; PSS – ingl *Probabilistic Signature Scheme*), ECDSA või Ed25519).
 3. Lisa allkiri ja oma sertifikaat dokumendi juurde.
 
 **Kontrollimine:**
@@ -34,11 +34,11 @@ Joonis: allkirjastaja arvutab dokumendist räsi ja allkirjastab selle oma privaa
 
 Digiallkiri annab kolm omadust korraga: **terviklus** (dokumenti ei ole muudetud), **autentsus** (allkirja tegi privaatvõtme omanik) ja **mittesalgamine** (omanik ei saa hiljem väita, et ta ei allkirjastanud, sest kellelgi teisel tema võtit pole). Viimane eeldab, et privaatvõti on hästi kaitstud – näiteks ID-kaardi kiibis, kust seda välja lugeda ei saa.
 
-Allkirjastatakse räsi, mitte kogu dokumenti, sest räsi on lühike ja asümmeetrilised tehted on aeglased. Seetõttu peab ka räsifunktsioon olema kokkupõrkekindel (ptk 27): kui ründaja leiaks kaks sama räsiga dokumenti, kehtiks üks allkiri mõlemale. Levinud allkirjaalgoritmid on RSA-PSS, ECDSA, Ed25519 ja postkvantalgoritm ML-DSA (ptk 30).
+Allkirjastatakse räsi, mitte kogu dokumenti, sest räsi on lühike ja asümmeetrilised tehted on aeglased. Seetõttu peab ka räsifunktsioon olema kokkupõrkekindel (ptk 27): kui ründaja leiaks kaks sama räsiga dokumenti, kehtiks üks allkiri mõlemale. Levinud allkirjaalgoritmid on RSA-PSS, ECDSA, Ed25519 ja postkvantalgoritm ML-DSA (ingl *Module-Lattice-Based Digital Signature Algorithm*, ptk 30).
 
 **Digiallkiri ei ole krüpteerimine.** Allkirjastatud dokument on endiselt loetav kõigile. Kui dokument peab olema ka salajane, see krüpteeritakse lisaks saaja avaliku võtmega (nt DigiDoc4-s eraldi CDOC-konteiner).
 
-**Ajatempel ja pikaajaline kehtivus.** Sertifikaat aegub mõne aasta pärast, kuid leping peab kehtima kümneid aastaid. Seepärast lisatakse allkirjale usaldusteenuse osutaja **ajatempel** (kinnitus, et allkiri oli olemas kindlal hetkel) ja sertifikaadi kehtivuse kinnitus (OCSP-vastus) sellest hetkest. Nii saab ka 20 aasta pärast tõestada, et allkirja andmise ajal oli sertifikaat kehtiv. Eesti `.asice`-konteinerites tehakse seda automaatselt.
+**Ajatempel ja pikaajaline kehtivus.** Sertifikaat aegub mõne aasta pärast, kuid leping peab kehtima kümneid aastaid. Seepärast lisatakse allkirjale usaldusteenuse osutaja **ajatempel** (kinnitus, et allkiri oli olemas kindlal hetkel) ja sertifikaadi kehtivuse kinnitus (OCSP-vastus (OCSP – ingl *Online Certificate Status Protocol*)) sellest hetkest. Nii saab ka 20 aasta pärast tõestada, et allkirja andmise ajal oli sertifikaat kehtiv. Eesti `.asice`-konteinerites tehakse seda automaatselt.
 
 ### 29.2 Sertifikaadid ja usaldusahel
 
@@ -57,7 +57,7 @@ Joonis: usaldusahel. Brauser ei tunne www.kool.ee serverit, kuid usaldab juur-CA
 
 ![sertifikaadi kontroll · kuus sammu brauseris](../pildid/29-c.png)
 
-Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoiatuslehte. Hoiatuse eiramine tähendab, et sa ei tea enam, kellega suhtled – see on täpselt olukord, mida MITM-ründaja vajab.
+Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoiatuslehte. Hoiatuse eiramine tähendab, et sa ei tea enam, kellega suhtled – see on täpselt olukord, mida MITM-ründaja (MITM – ingl *Man-in-the-Middle*) vajab.
 
 > 🖱️ **Proovi ise:** [sertifikaadi kontroll](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#sert). Läbi stsenaariumid (aegunud, vale domeen, iseallkirjastatud, DigiNotar, tulemüür, õngitsusleht) ja vaata, milline kuuest kontrollist ebaõnnestub.
 
@@ -65,15 +65,15 @@ Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoi
 
 | Tase | Mida kontrollitakse | Näide |
 | --- | --- | --- |
-| DV (domain validated) | ainult domeeni kontroll: taotleja paneb serverisse kindla faili (ACME HTTP-01) või DNS-i kindla kirje (DNS-01) | Let’s Encrypt, enamik veebilehti |
+| DV (domain validated) | ainult domeeni kontroll: taotleja paneb serverisse kindla faili (ACME (ingl *Automatic Certificate Management Environment*) HTTP-01) või DNS-i (ingl *Domain Name System*) kindla kirje (DNS-01) | Let’s Encrypt, enamik veebilehti |
 | OV (organization validated) | lisaks organisatsiooni olemasolu ja nimi äriregistris | ettevõtete veebilehed |
 | EV (extended validation) | põhjalikum organisatsiooni kontroll | pangad; brauserid ei näita seda enam eraldi |
 
-**Kui CA-d ennast rünnatakse.** 2011. aastal murti sisse Hollandi CA-sse **DigiNotar** ja ründajad väljastasid võltssertifikaadi muu hulgas domeenile `*.google.com`. Sellega kuulati Iraanis pealt sadade tuhandete kasutajate Gmaili-ühendusi. Brauserid eemaldasid DigiNotari usaldushoidlatest ja ettevõte läks pankrotti. Selliste juhtumite avastamiseks loodi **sertifikaatide läbipaistvuse** (CT) logid: iga avalik TLS-sertifikaat tuleb kanda avalikku logisse, kus domeeni omanik näeb, kui keegi on tema nimele sertifikaadi välja võtnud.
+**Kui CA-d ennast rünnatakse.** 2011. aastal murti sisse Hollandi CA-sse **DigiNotar** ja ründajad väljastasid võltssertifikaadi muu hulgas domeenile `*.google.com`. Sellega kuulati Iraanis pealt sadade tuhandete kasutajate Gmaili-ühendusi. Brauserid eemaldasid DigiNotari usaldushoidlatest ja ettevõte läks pankrotti. Selliste juhtumite avastamiseks loodi **sertifikaatide läbipaistvuse** (CT – ingl *Certificate Transparency*) logid: iga avalik TLS-sertifikaat tuleb kanda avalikku logisse, kus domeeni omanik näeb, kui keegi on tema nimele sertifikaadi välja võtnud.
 
 | Mõiste | Tähendus |
 | --- | --- |
-| Usaldushoidla (trust store) | OS-i või brauseri loend usaldatud juur-CA-dest |
+| Usaldushoidla (trust store) | OS-i (ingl *Operating System*) või brauseri loend usaldatud juur-CA-dest |
 | CSR (certificate signing request) | serveri avalik võti + nimi, mis saadetakse CA-le allkirjastamiseks |
 | Tühistamine (revocation) | sertifikaadi kehtetuks tunnistamine enne aja lõppu, nt privaatvõtme lekke tõttu (CRL, OCSP) |
 | Sertifikaadi läbipaistvus (CT) | avalikud logid kõigist väljastatud TLS-sertifikaatidest; vaata nt [crt.sh](https://crt.sh/) |
@@ -81,11 +81,11 @@ Joonis: sertifikaadi kontroll. Kui ükski samm ebaõnnestub, näitab brauser hoi
 
 **Sertifikaadi elukaar:** võtmepaari loomine serveris → CSR → CA kontrollib ja allkirjastab → sertifikaat paigaldatakse → uuendatakse enne aegumist → aegumine või tühistamine. TLS-sertifikaatide kehtivus lüheneb: CA/Browser Forumi otsuse kohaselt väheneb maksimaalne kehtivus 2026. aasta märtsist 200 päevale ja 2029. aastaks 47 päevale. Seetõttu peab sertifikaatide uuendamine olema automaatne (ACME-protokoll, nt Let’s Encrypt, win-acme, certbot). Aegunud sertifikaat on üks sagedasemaid teenuskatkestuste põhjusi.
 
-**Organisatsiooni sisemine PKI.** Windowsi domeenis saab luua oma CA rolliga **Active Directory Certificate Services** (AD CS). Selle juursertifikaat jagatakse rühmapoliitikaga kõigile domeeni arvutitele ja need saavad automaatselt sertifikaate (autoenrollment) Wi-Fi 802.1X autentimiseks, VPN-i, sisemiste veebiserverite ja kiipkaardiga sisselogimise jaoks. Valesti seadistatud sertifikaadimallid on aga levinud ründetee domeeniadministraatori õigusteni, mistõttu tuleb AD CS-i seadistust regulaarselt auditeerida.
+**Organisatsiooni sisemine PKI.** Windowsi domeenis saab luua oma CA rolliga **Active Directory Certificate Services** (AD CS). Selle juursertifikaat jagatakse rühmapoliitikaga kõigile domeeni arvutitele ja need saavad automaatselt sertifikaate (autoenrollment) Wi-Fi 802.1X autentimiseks, VPN-i (ingl *Virtual Private Network*), sisemiste veebiserverite ja kiipkaardiga sisselogimise jaoks. Valesti seadistatud sertifikaadimallid on aga levinud ründetee domeeniadministraatori õigusteni, mistõttu tuleb AD CS-i seadistust regulaarselt auditeerida.
 
 ### 29.3 TLS ja HTTPS
 
-**TLS** (Transport Layer Security) kaitseb HTTPS-i, e-posti (SMTPS, IMAPS), VPN-e ja paljusid teisi protokolle. Kehtivad versioonid on TLS 1.2 ja 1.3; SSL 3.0, TLS 1.0 ja 1.1 on keelatud.
+**TLS** (Transport Layer Security) kaitseb HTTPS-i, e-posti (SMTPS – ingl *SMTP Secure*, SMTP over TLS, IMAPS – ingl *Internet Message Access Protocol over TLS/SSL*), VPN-e ja paljusid teisi protokolle. Kehtivad versioonid on TLS 1.2 ja 1.3; SSL 3.0 (SSL – ingl *Secure Sockets Layer*), TLS 1.0 ja 1.1 on keelatud.
 
 ![TLS 1.3 käepigistus · sõnumid brauseri ja serveri vahel](../pildid/29-d.png)
 
@@ -95,16 +95,16 @@ Käepigistus samm-sammult:
 
 > 🖱️ **Proovi ise:** [TLS 1.3 käepigistus](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/29-pki.html#tls). Liigu sõnum sõnumi haaval ja vaata, mida pealtkuulaja näeb ning milline sõnum avastab rünnaku.
 
-1. **ClientHello** – brauser saadab toetatud šifrikomplektid, juhusliku arvu, domeeninime (SNI, et server teaks, millist sertifikaati näidata) ja oma ajutise võtmejagamise (key share), nt X25519 või X25519MLKEM768.
-2. **ServerHello** – server valib šifrikomplekti ja saadab oma võtmejagamise. Mõlemad arvutavad nüüd sama jagatud saladuse (Diffie–Hellman, ptk 28.2) ja tuletavad sellest HKDF-iga seansivõtmed.
+1. **ClientHello** – brauser saadab toetatud šifrikomplektid, juhusliku arvu, domeeninime (SNI – ingl *Server Name Indication*, et server teaks, millist sertifikaati näidata) ja oma ajutise võtmejagamise (key share), nt X25519 või X25519MLKEM768.
+2. **ServerHello** – server valib šifrikomplekti ja saadab oma võtmejagamise. Mõlemad arvutavad nüüd sama jagatud saladuse (Diffie–Hellman, ptk 28.2) ja tuletavad sellest HKDF-iga (ingl *HMAC-based Key Derivation Function*) seansivõtmed.
 3. **Certificate** – server saadab oma sertifikaadiahela, juba krüpteeritult. Brauser kontrollib seda (29.2).
 4. **CertificateVerify** – server allkirjastab kogu senise käepigistuse oma privaatvõtmega. See tõendab, et serveril on sertifikaadi privaatvõti. Ilma selleta võiks ründaja saata kellegi teise avaliku sertifikaadi.
-5. **Finished** – mõlemad saadavad HMAC-i kogu käepigistusest. Kui ründaja muutis mõnda sõnumit (nt eemaldas tugevad šifrid, et sundida nõrgemat valikut), see ei klapi.
-6. **Rakenduse andmed** liiguvad AES-GCM-i või ChaCha20-Poly1305-ga.
+5. **Finished** – mõlemad saadavad HMAC-i (ingl *Hash-based Message Authentication Code*) kogu käepigistusest. Kui ründaja muutis mõnda sõnumit (nt eemaldas tugevad šifrid, et sundida nõrgemat valikut), see ei klapi.
+6. **Rakenduse andmed** liiguvad AES-GCM-i (AES – ingl *Advanced Encryption Standard*; GCM – ingl *Galois/Counter Mode*) või ChaCha20-Poly1305-ga.
 
-TLS 1.3 vajab selleks ühe edasi-tagasi sõnumi (TLS 1.2 vajas kahte), eemaldas kõik vanad nõrgad algoritmid (RSA-võtmevahetus, CBC, RC4, SHA-1, staatiline DH) ja krüpteerib ka sertifikaadi. Domeeninimi ClientHellos on siiski näha. Selle peitmiseks on loodud **ECH** (Encrypted Client Hello).
+TLS 1.3 vajab selleks ühe edasi-tagasi sõnumi (TLS 1.2 vajas kahte), eemaldas kõik vanad nõrgad algoritmid (RSA-võtmevahetus, CBC – ingl *Cipher Block Chaining*, RC4 – ingl *Rivest Cipher 4*, SHA-1, staatiline DH – ingl *Diffie–Hellman*) ja krüpteerib ka sertifikaadi. Domeeninimi ClientHellos on siiski näha. Selle peitmiseks on loodud **ECH** (Encrypted Client Hello).
 
-TLS ühendab kõik eelmiste peatükkide ehitusplokid: võtmevahetus (ECDHE või hübriidne X25519MLKEM768, ptk 28 ja 30), sertifikaat ja allkiri (29.1–29.2), sümmeetriline AEAD-krüpteerimine (AES-GCM või ChaCha20-Poly1305, ptk 26) ja räsipõhine võtmetuletus (HKDF, ptk 27). Ubuntu 25.10 ja 26.04 kasutavad OpenSSL 3.5-ga TLS-is vaikimisi hübriidset postkvantvõtmevahetust ([Ubuntu Discourse](https://discourse.ubuntu.com/t/post-quantum-support-in-the-upcoming-26-04-lts/76840)).
+TLS ühendab kõik eelmiste peatükkide ehitusplokid: võtmevahetus (ECDHE (ingl *Elliptic Curve Diffie–Hellman Ephemeral*) või hübriidne X25519MLKEM768, ptk 28 ja 30), sertifikaat ja allkiri (29.1–29.2), sümmeetriline AEAD-krüpteerimine (AEAD – ingl *Authenticated Encryption with Associated Data*; AES-GCM või ChaCha20-Poly1305, ptk 26) ja räsipõhine võtmetuletus (HKDF, ptk 27). Ubuntu 25.10 ja 26.04 kasutavad OpenSSL 3.5-ga TLS-is vaikimisi hübriidset postkvantvõtmevahetust ([Ubuntu Discourse](https://discourse.ubuntu.com/t/post-quantum-support-in-the-upcoming-26-04-lts/76840)).
 
 TLS-i lisavõimalused, mida administraator peaks tundma:
 
@@ -118,7 +118,7 @@ TLS-i lisavõimalused, mida administraator peaks tundma:
 
 ![ID-kaart ja Smart-ID · kus privaatvõtmed asuvad](../pildid/29-e.png)
 
-Joonis: Eesti ID-kaardi kiibis on kaks eraldi võtmepaari koos sertifikaatidega. PIN1 võimaldab autentimist, PIN2 kvalifitseeritud digiallkirja, mis on Euroopa Liidu eIDAS-määruse järgi võrdne omakäelise allkirjaga. Smart-ID kasutab Cyberneticas loodud jagatud võtme tehnoloogiat. Märtsi 2025 seisuga oli Eestis 1,4 miljonit kehtivat ID-kaarti ja Smart-ID tunnistati kõrge tagatistasemega identimisvahendiks ([RIA](https://ria.ee/en/state-information-system/electronic-identity-eid-and-trust-services/integration-tools-eid)).
+Joonis: Eesti ID-kaardi kiibis on kaks eraldi võtmepaari koos sertifikaatidega. PIN1 (PIN – ingl *Personal Identification Number*) võimaldab autentimist, PIN2 kvalifitseeritud digiallkirja, mis on Euroopa Liidu eIDAS-määruse (eIDAS – ingl *electronic IDentification, Authentication and trust Services*) järgi võrdne omakäelise allkirjaga. Smart-ID kasutab Cyberneticas loodud jagatud võtme tehnoloogiat. Märtsi 2025 seisuga oli Eestis 1,4 miljonit kehtivat ID-kaarti ja Smart-ID tunnistati kõrge tagatistasemega identimisvahendiks ([RIA](https://ria.ee/en/state-information-system/electronic-identity-eid-and-trust-services/integration-tools-eid)).
 
 **Miks kaks võtmepaari?** Autentimisel allkirjastab kaart serveri saadetud juhusliku väljakutse (TLS-i kliendisertifikaadiga või Web eID kaudu). Allkirjastamisel allkirjastab kaart dokumendi räsi. Kui oleks üks võti, võiks pahatahtlik veebileht saata „autentimiseks“ tegelikult lepingu räsi ja saada sinu allkirja. Eraldi võtmed ja eraldi PIN-koodid välistavad selle.
 
@@ -126,16 +126,16 @@ Joonis: Eesti ID-kaardi kiibis on kaks eraldi võtmepaari koos sertifikaatidega.
 
 **Digiallkirja konteiner.** DigiDoc4 loob `.asice`-faili, mis on tegelikult ZIP-arhiiv. Selles on allkirjastatud failid, allkirjafail XAdES-vormingus (allkiri, sertifikaat, ajatempel ja kehtivuskinnitus) ja manifest. Seetõttu saab allkirja kontrollida ka aastate pärast ilma internetita.
 
-Eesti e-identiteedi juhtumid näitavad, et krüptograafiat tuleb pidevalt hooldada: 2017. aasta **ROCA** viga kiibi RSA-võtmete genereerimises (ptk 28.4) lahendati kaartide kaugsertifikaatide uuendamisega ja üleminekuga elliptkõveratele. Alates 15. novembrist 2025 väljastatav uus ID-kaart on kontaktivaba ja QR-koodiga, kuid autentimise ja allkirjastamise põhimõte on sama.
+Eesti e-identiteedi juhtumid näitavad, et krüptograafiat tuleb pidevalt hooldada: 2017. aasta **ROCA** (ingl *Return of Coppersmith’s Attack*) viga kiibi RSA-võtmete genereerimises (ptk 28.4) lahendati kaartide kaugsertifikaatide uuendamisega ja üleminekuga elliptkõveratele. Alates 15. novembrist 2025 väljastatav uus ID-kaart on kontaktivaba ja QR-koodiga (QR – ingl *Quick Response*), kuid autentimise ja allkirjastamise põhimõte on sama.
 
 ### Näide: Windowsi koodiallkiri
 
 Kasutaja laadib alla programmi `setup.exe`. Windows kontrollib selle **Authenticode** allkirja:
 
-- kehtiv allkiri usaldatud tootjalt → UAC näitab tootja nime (nt „Verified publisher: Mozilla Corporation“);
+- kehtiv allkiri usaldatud tootjalt → UAC (ingl *User Account Control*) näitab tootja nime (nt „Verified publisher: Mozilla Corporation“);
 - allkiri puudub või on vigane → UAC näitab „Unknown publisher“ ja SmartScreen või Smart App Control võivad käivituse peatada.
 
-Kui ründaja muudab allkirjastatud faili kas või ühe baidi võrra, allkiri enam ei kehti. Seetõttu proovivad ründajad varastada tootjate allkirjastamisvõtmeid. Sama juhtus 2010. aastal Stuxnetiga, mille draiverid olid allkirjastatud kahelt Taiwani firmalt varastatud sertifikaatidega. Turvaline arendaja hoiab koodiallkirja võtit riistvaralises turvamoodulis (HSM) või pilveteenuses, nt Azure Trusted Signing.
+Kui ründaja muudab allkirjastatud faili kas või ühe baidi võrra, allkiri enam ei kehti. Seetõttu proovivad ründajad varastada tootjate allkirjastamisvõtmeid. Sama juhtus 2010. aastal Stuxnetiga, mille draiverid olid allkirjastatud kahelt Taiwani firmalt varastatud sertifikaatidega. Turvaline arendaja hoiab koodiallkirja võtit riistvaralises turvamoodulis (HSM – ingl *Hardware Security Module*) või pilveteenuses, nt Azure Trusted Signing.
 
 Allkiri tõendab, **kes** faili tegi, mitte seda, et fail on ohutu. Ka pahavara võib olla allkirjastatud kehtiva sertifikaadiga, mille ründaja on ostnud väljamõeldud ettevõtte nimele.
 

@@ -2,37 +2,37 @@
 
 ## 17. Võrguvõimalused Windowsis
 
-Windowsi võrgupinu on kihiline: rakendused kasutavad API-sid (Winsock, WinHTTP, SMB), nende all on transpordi- ja võrguprotokollid (TCP, UDP, QUIC, IPv4/IPv6) ning kõige all NDIS-draiverid, mis juhivad võrgukaarti. Liiklust filtreerib Windows Filtering Platform (WFP), millele toetuvad tulemüür ja turvatarkvara.
+Windowsi võrgupinu on kihiline: rakendused kasutavad API-sid (API – ingl *Application Programming Interface*; Winsock, WinHTTP, SMB – ingl *Server Message Block*), nende all on transpordi- ja võrguprotokollid (TCP – ingl *Transmission Control Protocol*, UDP – ingl *User Datagram Protocol*, QUIC – ingl *Quick UDP Internet Connections*, algne tähendus; praegu lihtsalt nimi, IPv4/IPv6) ning kõige all NDIS-draiverid (NDIS – ingl *Network Driver Interface Specification*), mis juhivad võrgukaarti. Liiklust filtreerib Windows Filtering Platform (WFP), millele toetuvad tulemüür ja turvatarkvara.
 
 **Miks see oluline on?** Peaaegu iga tänapäeva programm kasutab võrku: brauser, Teams, OneDrive, Windows Update, viirusetõrje. Samas tuleb enamik rünnakuid ka võrgust. Administraator peab oskama kahte asja: **leida, miks võrk ei tööta**, ja **aru saada, mis võrgus liigub ja kes seda näeb**. Mõlemaks on vaja teada, kuidas andmed arvutist võrku ja tagasi liiguvad.
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/17-vork.html). Lehel on kapseldamise animatsioon, IP-alamvõrgu kalkulaator, DHCP ja DNS-i samm-sammult simulaator, TCP ühenduse ja pordi kontroll, Kerberose ja NTLM-i võrdlus koos releerünnakuga ning tõrkeotsingu mäng.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/17-vork.html). Lehel on kapseldamise animatsioon, IP-alamvõrgu (IP – ingl *Internet Protocol*) kalkulaator, DHCP (ingl *Dynamic Host Configuration Protocol*) ja DNS-i (ingl *Domain Name System*) samm-sammult simulaator, TCP ühenduse ja pordi kontroll, Kerberose ja NTLM-i (ingl *NT LAN Manager*) võrdlus koos releerünnakuga ning tõrkeotsingu mäng.
 
 ### Põhimõisted
 
 Võrguside jagatakse **kihtideks**. Iga kiht lahendab ühe probleemi ja kasutab alumise kihi teenust – nagu postisüsteem: kirjutad kirja (rakendus), paned ümbrikusse aadressiga (IP), postiljon viib selle järgmisse postkontorisse (Ethernet, Wi-Fi).
 
-| TCP/IP kiht | OSI kiht | Mida teeb | Näited | Aadress |
+| TCP/IP kiht | OSI (ingl *Open Systems Interconnection*) kiht | Mida teeb | Näited | Aadress |
 | --- | --- | --- | --- | --- |
-| Rakendus | 5–7 | programmide omavaheline „keel“ | HTTP, DNS, SMB, RDP | URL, failinimi |
+| Rakendus | 5–7 | programmide omavaheline „keel“ | HTTP (ingl *Hypertext Transfer Protocol*), DNS, SMB, RDP (ingl *Remote Desktop Protocol*) | URL (ingl *Uniform Resource Locator*), failinimi |
 | Transport | 4 | ühendus kahe programmi vahel, järjekord, kordamine | TCP, UDP, QUIC | **port** (nt 443) |
-| Võrk | 3 | marsruutimine üle mitme võrgu | IPv4, IPv6, ICMP | **IP-aadress** |
-| Kanal ja füüsiline | 1–2 | edastamine ühe võrgulõigu piires | Ethernet, Wi-Fi | **MAC-aadress** |
+| Võrk | 3 | marsruutimine üle mitme võrgu | IPv4 (ingl *Internet Protocol version 4*), IPv6 (ingl *Internet Protocol version 6*), ICMP (ingl *Internet Control Message Protocol*) | **IP-aadress** |
+| Kanal ja füüsiline | 1–2 | edastamine ühe võrgulõigu piires | Ethernet, Wi-Fi | **MAC-aadress** (MAC – ingl *Media Access Control*) |
 
 Saatmisel lisab iga kiht andmetele oma päise – seda nimetatakse **kapseldamiseks**:
 
 ![kapseldamine · Ethernet-kaader, IP-pakett, TCP-segment ja TLS](../pildid/17-c.png)
 
-Joonis: HTTP-päring on TLS-iga krüpteeritud, see on TCP-segmendis, mis on IP-paketis, mis on Ethernet-kaadris. Ruuter vaatab ainult IP-päist, tulemüür ka porti, veebiserver alles HTTP-päringut.
+Joonis: HTTP-päring on TLS-iga (ingl *Transport Layer Security*) krüpteeritud, see on TCP-segmendis, mis on IP-paketis, mis on Ethernet-kaadris. Ruuter vaatab ainult IP-päist, tulemüür ka porti, veebiserver alles HTTP-päringut.
 
 **Olulised mõisted:**
 
 - **IP-aadress** – arvuti aadress võrgus, nt `192.168.1.57`. **Alamvõrgu mask** (nt `/24` ehk `255.255.255.0`) näitab, milline osa aadressist on võrgu number: kõik `192.168.1.x` aadressid on samas võrgus ja suhtlevad otse.
 - **Vaikelüüs** (default gateway) – ruuter, kuhu saadetakse kõik paketid, mis lähevad teise võrku (nt internetti).
-- **Privaatsed aadressid** – `10.x.x.x`, `172.16–31.x.x`, `192.168.x.x` – kasutatakse kodu- ja asutusevõrkudes. Internetti minnes asendab ruuter need oma avaliku aadressiga (**NAT**).
-- **APIPA** – `169.254.x.x`. Windows annab endale sellise aadressi, kui DHCP-server ei vastanud. Selle nägemine tähendab peaaegu alati, et arvuti ei saanud võrgust aadressi.
+- **Privaatsed aadressid** – `10.x.x.x`, `172.16–31.x.x`, `192.168.x.x` – kasutatakse kodu- ja asutusevõrkudes. Internetti minnes asendab ruuter need oma avaliku aadressiga (**NAT** – ingl *Network Address Translation*).
+- **APIPA** (ingl *Automatic Private IP Addressing*) – `169.254.x.x`. Windows annab endale sellise aadressi, kui DHCP-server ei vastanud. Selle nägemine tähendab peaaegu alati, et arvuti ei saanud võrgust aadressi.
 - **Port** – number, mis ütleb, millisele programmile pakett on mõeldud. Üks IP-aadress, palju teenuseid: veebiserver 443, kaugtöölaud 3389.
-- **MAC-aadress** – võrgukaardi füüsiline aadress, kasutusel ainult kohalikus võrgulõigus. IP-aadress → MAC-aadress tõlkimiseks on **ARP** (`arp -a`).
+- **MAC-aadress** – võrgukaardi füüsiline aadress, kasutusel ainult kohalikus võrgulõigus. IP-aadress → MAC-aadress tõlkimiseks on **ARP** (ingl *Address Resolution Protocol*; `arp -a`).
 - **IPv6** – 128-bitine aadress, nt `2001:db8::57`. Windows eelistab IPv6-t, kui see on olemas.
 
 **Levinud pordid**, mida administraator peab teadma:
@@ -41,14 +41,14 @@ Joonis: HTTP-päring on TLS-iga krüpteeritud, see on TCP-segmendis, mis on IP-p
 | --- | --- | --- |
 | 53 | UDP/TCP | DNS |
 | 67/68 | UDP | DHCP |
-| 80 / 443 | TCP (443 ka UDP – QUIC) | HTTP / HTTPS |
+| 80 / 443 | TCP (443 ka UDP – QUIC) | HTTP / HTTPS (ingl *Hypertext Transfer Protocol Secure*) |
 | 88 | TCP/UDP | Kerberos |
 | 135, 49152–65535 | TCP | RPC (Windowsi haldus) |
-| 389 / 636 | TCP | LDAP / LDAPS (Active Directory) |
+| 389 / 636 | TCP | LDAP (ingl *Lightweight Directory Access Protocol*) / LDAPS (Active Directory) |
 | 445 | TCP | SMB (failijagamine) – ei tohi olla internetti avatud |
 | 3389 | TCP/UDP | RDP (kaugtöölaud) – ei tohi olla internetti avatud |
-| 5985 / 5986 | TCP | WinRM (PowerShelli kaugjuhtimine) |
-| 22 | TCP | SSH (ka Windowsis OpenSSH) |
+| 5985 / 5986 | TCP | WinRM (ingl *Windows Remote Management*; PowerShelli kaugjuhtimine) |
+| 22 | TCP | SSH (ingl *Secure Shell*; ka Windowsis OpenSSH) |
 
 Harjuta pordinumbreid: [milline port?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/17-vork.html#pordid)
 
@@ -66,7 +66,7 @@ Harjuta pordinumbreid: [milline port?](https://valdonolvak.github.io/Operatsioon
 | Remote Desktop | kaugtöölaud (RDP) |
 | Windows Defender Firewall | pakettide filtreerimine (ptk 18) |
 
-**DHCP – kuidas arvuti aadressi saab.** Arvuti ühendamisel toimub neljasammuline vestlus (**DORA**):
+**DHCP – kuidas arvuti aadressi saab.** Arvuti ühendamisel toimub neljasammuline vestlus (**DORA** – ingl *Discover, Offer, Request, Acknowledge*):
 
 1. **Discover** – arvuti saadab kogu võrku: „Kas siin on DHCP-server?“ (tal endal veel aadressi pole);
 2. **Offer** – server pakub: „Võta 192.168.1.57, mask /24, lüüs 192.168.1.1, DNS 192.168.1.10“;
@@ -82,21 +82,21 @@ Kui ükski server ei vasta, võtab Windows APIPA-aadressi `169.254.x.x` ja inter
 3. siis küsib seadistatud **DNS-serverilt** (kodus ruuter, koolis domeenikontroller);
 4. kui serveril vastust pole, küsib ta järjest **juurserverilt** („kes teab `.ee`-d?“), `.ee` serverilt („kes teab `ria.ee`-d?“) ja `ria.ee` serverilt, mis annab lõpuks IP-aadressi.
 
-Vastus salvestatakse vahemällu TTL-i ajaks. **DNS on ka sagedane ründe sihtmärk**: kui pahavara muudab `hosts`-faili või DNS-serveri seadet, suunatakse kasutaja võltslehele. Seepärast on DNS-i seadete kontroll tõrkeotsingu ja intsidendi uurimise osa.
+Vastus salvestatakse vahemällu TTL-i (ingl *Time To Live*) ajaks. **DNS on ka sagedane ründe sihtmärk**: kui pahavara muudab `hosts`-faili või DNS-serveri seadet, suunatakse kasutaja võltslehele. Seepärast on DNS-i seadete kontroll tõrkeotsingu ja intsidendi uurimise osa.
 
 **Võrgu profiil (NLA).** Windows otsustab iga võrgu kohta, kas see on *domeen*, *privaatne* või *avalik*. Avalikus võrgus (kohvik, rong) on tulemüür rangem ja failide jagamine keelatud. Kui koolivõrk on ekslikult märgitud avalikuks, ei näe arvutid üksteist.
 
 > 🖱️ **Proovi ise:** [DHCP ja DNS-i simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/17-vork.html#dhcpdns)
 
-**Aegunud ja eemaldatud:** SMB 1.0 ei ole vaikimisi paigaldatud (WannaCry 2017 levis just selle kaudu); NetBIOS ja LLMNR tuleks domeenis keelata, sest neid kasutatakse parooliräside püüdmiseks; NTLM-ist liigutakse Kerberose poole (17.4).
+**Aegunud ja eemaldatud:** SMB 1.0 ei ole vaikimisi paigaldatud (WannaCry 2017 levis just selle kaudu); NetBIOS (ingl *Network Basic Input/Output System*) ja LLMNR (ingl *Link-Local Multicast Name Resolution*) tuleks domeenis keelata, sest neid kasutatakse parooliräside püüdmiseks; NTLM-ist liigutakse Kerberose poole (17.4).
 
 ### 17.2 Võrgu-API-d
 
-- **Winsock** (Windows Sockets) – BSD pesade põhine API TCP/UDP jaoks; toetab ka Unixi domeenipesi (AF\_UNIX);
+- **Winsock** (Windows Sockets) – BSD (ingl *Berkeley Software Distribution*) pesade põhine API TCP/UDP jaoks; toetab ka Unixi domeenipesi (AF\_UNIX);
 - **WinHTTP ja WinINet** – HTTP-kliendid (teenused vs kasutajarakendused);
-- **HTTP Server API (http.sys)** – tuumarežiimi HTTP-server, millel töötavad IIS ja paljud teenused; toetab HTTP/2 ja HTTP/3 (QUIC);
+- **HTTP Server API (http.sys)** – tuumarežiimi HTTP-server, millel töötavad IIS (ingl *Internet Information Services*) ja paljud teenused; toetab HTTP/2 ja HTTP/3 (QUIC);
 - **MsQuic** – Microsofti avatud lähtekoodiga QUIC-teek, kasutusel HTTP/3 ja SMB over QUIC jaoks;
-- **RPC ja nimega torud** – Windowsi teenuste kaugkutsed (AD, haldustööriistad);
+- **RPC ja nimega torud** – Windowsi teenuste kaugkutsed (AD – ingl *Active Directory*, haldustööriistad);
 - **.NET `HttpClient`, `Socket`** – hallatud koodi liidesed.
 
 **Pesa (socket)** on ühenduse ots: IP-aadress + port + protokoll. TCP-ühendust määrab neli väärtust: lähte-IP, lähteport, siht-IP, sihtport. Brauser avab iga ühenduse jaoks juhusliku **lähtepordi** (49152–65535), nii et samale serverile saab olla mitu ühendust korraga. `Get-NetTCPConnection` näitab kõiki ühendusi ja `OwningProcess` ütleb, milline programm neid kasutab – nii leiab ka pahavara, mis „helistab koju“.
@@ -105,12 +105,12 @@ Vastus salvestatakse vahemällu TTL-i ajaks. **DNS on ka sagedane ründe sihtmä
 
 | | TCP | UDP | QUIC |
 | --- | --- | --- | --- |
-| Ühendus | kolmesammuline käepigistus (SYN, SYN-ACK, ACK) | ühendust pole | käepigistus koos TLS-iga ühes sammus |
+| Ühendus | kolmesammuline käepigistus (SYN – ingl *Synchronize*, SYN-ACK, ACK – ingl *Acknowledgement*) | ühendust pole | käepigistus koos TLS-iga ühes sammus |
 | Kaotatud paketid | saadetakse uuesti, järjekord tagatud | kaovad | saadetakse uuesti |
 | Krüpteerimine | eraldi (TLS) | puudub | alati sisse ehitatud (TLS 1.3) |
 | Kasutus | veeb, SMB, RDP, e-post | DNS, DHCP, video, mängud | HTTP/3, SMB over QUIC |
 
-**Pordi olek** on tõrkeotsingul oluline: kui server vastab SYN-ile SYN-ACK-iga, on port **avatud**; kui RST-iga, siis **suletud** (teenus ei tööta); kui ei vasta üldse, siis on vahel tõenäoliselt **tulemüür**, mis paketid vaikselt ära viskab. `Test-NetConnection -Port` näitab just seda.
+**Pordi olek** on tõrkeotsingul oluline: kui server vastab SYN-ile SYN-ACK-iga, on port **avatud**; kui RST-iga (ingl *Reset*), siis **suletud** (teenus ei tööta); kui ei vasta üldse, siis on vahel tõenäoliselt **tulemüür**, mis paketid vaikselt ära viskab. `Test-NetConnection -Port` näitab just seda.
 
 > 🖱️ **Proovi ise:** [TCP ühendus ja pordi olek](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/17-vork.html#tcp)
 
@@ -118,9 +118,9 @@ Vastus salvestatakse vahemällu TTL-i ajaks. **DNS on ka sagedane ründe sihtmä
 
 - **NDIS** (Network Driver Interface Specification) – võrgukaartide draiverite raamistik: *miniport*-draiver juhib kaarti, *protokolli*draiver (TCP/IP) teenindab ülemist kihti, *filtri*draiverid asuvad nende vahel;
 - **tcpip.sys** – Windowsi TCP/IP pinu (IPv4 ja IPv6; IPv6 on eelistatud);
-- **WFP** (Windows Filtering Platform) – filtreerimisraamistik, kuhu tulemüür, VPN-id ja EDR-id lisavad oma reegleid;
-- **AFD** (`afd.sys`) – Winsocki tuumapoolne osa;
-- **jõudlusfunktsioonid** – RSS (vastuvõtu jagamine tuumade vahel), RSC, kontrollsummade ja TCP segmenteerimise mahalaadimine võrgukaardile, RDMA (SMB Direct).
+- **WFP** (Windows Filtering Platform) – filtreerimisraamistik, kuhu tulemüür, VPN-id (ingl *Virtual Private Network*) ja EDR-id (ingl *Endpoint Detection and Response*) lisavad oma reegleid;
+- **AFD** (ingl *Ancillary Function Driver*; `afd.sys`) – Winsocki tuumapoolne osa;
+- **jõudlusfunktsioonid** – RSS (ingl *Receive Side Scaling*; vastuvõtu jagamine tuumade vahel), RSC (ingl *Receive Segment Coalescing*), kontrollsummade ja TCP segmenteerimise mahalaadimine võrgukaardile, RDMA (ingl *Remote Direct Memory Access*; SMB Direct).
 
 ![Windowsi võrgupinu · kihid ja OSI mudeli vasted](../pildid/17-a.png)
 
@@ -137,7 +137,7 @@ Mis juhtub võrgus, kui avad brauseris aadressi `https://www.kool.ee`? Enne lehe
 1. **ARP.** Server on teises võrgus, seega tuleb paketid saata vaikelüüsile. Arvuti küsib kohtvõrgus leviedastusega, milline MAC-aadress on lüüsil 192.168.1.1. Vastab ainult ruuter.
 2. **DNS.** Arvuti küsib DNS-serverilt nime `www.kool.ee` IP-aadressi (UDP port 53). Ruuter teeb NAT-i: asendab privaatse lähteaadressi oma avaliku aadressiga.
 3. **TCP käepigistus.** Arvuti avab ühenduse serveri pordiga 443: SYN, SYN-ACK, ACK.
-4. **TLS.** Client Hello sisaldab serveri nime (SNI). Pärast Server Hellot on liiklus krüpteeritud (ptk 29).
+4. **TLS.** Client Hello sisaldab serveri nime (SNI – ingl *Server Name Indication*). Pärast Server Hellot on liiklus krüpteeritud (ptk 29).
 5. **HTTP.** Päring ja vastus liiguvad krüpteeritult. Püüdja näeb ainult ridu „Application Data“.
 
 Pakette püütakse **oma arvuti võrgukaardil**. Kommutaator saadab sinu porti ainult sinu arvutile mõeldud kaadrid ja leviedastuse, seega teiste arvutite liiklust sa tavaliselt ei näe. Võõra liikluse pealtkuulamine ilma loata on keelatud (ptk 31.7).
@@ -159,7 +159,7 @@ Kasulikud Wiresharki kuvafiltrid: `arp`, `dns`, `tcp.flags.syn == 1`, `tls.hands
 
 ### 17.4 Autentimine võrgus: NTLM-ist Kerberoseni
 
-**Kerberos** on domeeni vaikimisi autentimisprotokoll: kasutaja saab domeenikontrollerilt (KDC) piletid ja parool võrgus ei liigu. **NTLM** on vanem väljakutse-vastuse protokoll, mis on haavatav releerünnetele ja räside murdmisele.
+**Kerberos** on domeeni vaikimisi autentimisprotokoll: kasutaja saab domeenikontrollerilt (KDC – ingl *Key Distribution Center*) piletid ja parool võrgus ei liigu. **NTLM** on vanem väljakutse-vastuse protokoll, mis on haavatav releerünnetele ja räside murdmisele.
 
 **Kerberos lihtsustatult** (võrdlus: festivali käepael):
 
@@ -169,7 +169,7 @@ Kasulikud Wiresharki kuvafiltrid: `arp`, `dns`, `tcp.flags.syn == 1`, `tls.hands
 
 Pilet kehtib ainult kindlale teenusele ja piiratud aja. Kerberos nõuab, et arvutite **kellad** oleksid kuni 5 minuti täpsusega sünkroonis – vale kellaga arvuti ei saa domeenis sisse logida.
 
-**NTLM-i probleem – relee.** NTLM-is saadab server väljakutse (juhusliku arvu) ja klient vastab sellega, mis on arvutatud parooli räsist. Kui ründaja on kliendi ja serveri vahel, saab ta väljakutse ja vastuse lihtsalt **edasi anda** teisele serverile ja logida sisse kasutaja nimel – parooli teadmata. Seda nimetatakse **NTLM-releeks**. Kaitse: SMB ja LDAP allkirjastamine, EPA, NTLM-i keelamine.
+**NTLM-i probleem – relee.** NTLM-is saadab server väljakutse (juhusliku arvu) ja klient vastab sellega, mis on arvutatud parooli räsist. Kui ründaja on kliendi ja serveri vahel, saab ta väljakutse ja vastuse lihtsalt **edasi anda** teisele serverile ja logida sisse kasutaja nimel – parooli teadmata. Seda nimetatakse **NTLM-releeks**. Kaitse: SMB ja LDAP allkirjastamine, EPA (ingl *Extended Protection for Authentication*), NTLM-i keelamine.
 
 **LLMNR ja NetBIOS-i mürgitamine.** Kui kasutaja trükib vale serveri nime (`\\fileserver` asemel `\\filesrver`), ei leia DNS seda ja Windows küsib kogu kohalikult võrgult: „Kas keegi on filesrver?“ Ründaja tööriist (nt Responder) vastab: „Mina!“ ja Windows saadab talle NTLM-autentimise – ründaja saab räsi murdmiseks või releeks. Seepärast tuleb LLMNR ja NetBIOS domeenis rühmapoliitikaga välja lülitada.
 
@@ -217,7 +217,7 @@ Kasutaja ütleb, et ükski veebileht ei avane. Hea tõrkeotsing liigub võrgupin
 | --- | --- |
 | Võrgukaart *Disconnected* | kaabel, Wi-Fi, lüliti port |
 | Aadress `169.254.x.x` | DHCP-server ei vasta |
-| Lüüs ei vasta | vale lüüs, VLAN, ruuter maas |
+| Lüüs ei vasta | vale lüüs, VLAN (ingl *Virtual Local Area Network*), ruuter maas |
 | `1.1.1.1` vastab, kuid `Resolve-DnsName` ebaõnnestub | DNS-server või -seadistus |
 | Nimi laheneb, kuid port 443 ei vasta | tulemüür, proksi või server maas |
 | Ühel lehel töötab, teisel mitte | probleem on selles serveris, mitte sinu arvutis |
