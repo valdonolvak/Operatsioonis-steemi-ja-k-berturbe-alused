@@ -219,7 +219,7 @@ Joonis: NT-põhise Windowsi versioonid Windows NT 3.1-st kuni Windows 11 26H2-ni
 **2021 · Windows 11** – võrreldes Windows 10-ga:
 
 - **Kohustuslik TPM 2.0, Secure Boot ja uuem protsessor** – riistvaraline turve on baasnõue, mitte valikuline lisa. Seetõttu ei saa paljudele vanematele arvutitele Windows 11 ametlikult paigaldada.
-- **Mälu terviklikkus (HVCI – ingl *Hypervisor-protected Code Integrity*) ja VBS vaikimisi** – uutel seadmetel on virtualiseerimispõhine turve kohe sees: tuuma saab käivitada ainult allkirjastatud ja kontrollitud koodi, mis muudab draiveripõhised rünnakud raskemaks.
+- **Mälu terviklikkus (HVCI – ingl *Hypervisor-protected Code Integrity*) ja VBS vaikimisi** – uutel seadmetel on virtualiseerimispõhine turve kohe sees: tuumas saabkäivitada ainult allkirjastatud ja kontrollitud koodi, mis muudab draiveripõhised rünnakud raskemaks.
 - **Uus kasutajaliides** – tegumiriba ja Start-menüü on ekraani keskel, aknanurgad ümarad ning sätete rakendus ümber kujundatud. Vanad juhtpaneeli osad on järk-järgult Sätetesse viidud.
 - **Snap Layouts** – kui hiir on akna maksimeerimisnupul, saab valida valmis paigutuse (nt kolm akent kõrvuti). See on mugav eriti suurtel ekraanidel.
 - **Üks funktsiooniuuendus aastas** – Windows 10 kahe uuenduse asemel tuleb üks: Home/Pro saavad igale versioonile 24 kuud tuge, Enterprise/Education 36 kuud. Nii jääb administraatoritel uuenduste planeerimiseks rohkem aega.
