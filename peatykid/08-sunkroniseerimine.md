@@ -98,7 +98,7 @@ Selleks on protsessoris **aatomikäsud**, mida teised tuumad ei saa poole pealt 
 
 - x86/x64 `LOCK CMPXCHG` (võrdle ja vaheta): „kui mälus on 0, kirjuta 1 ja teata õnnestumisest – kõik ühe sammuna“;
 - `LOCK XADD` – suurenda mälus olevat arvu aatomselt;
-- ARM64 LSE-laiendused (nt `CAS`, `LDADD`).
+- ARM64 (ARM – ingl *Advanced RISC Machines*) LSE-laiendused (LSE – ingl *Large System Extensions*; nt `CAS`, `LDADD`).
 
 Nende peal on ehitatud kõik kõrgema taseme lukud. Windowsis saab neid kasutada otse `Interlocked`-funktsioonidega, nt `InterlockedIncrement(&x)` teeb `x = x + 1` ühe jagamatu sammuna.
 
@@ -106,10 +106,10 @@ Kui lukk on hõivatud, saab lõim oodata kahel viisil:
 
 | | Aktiivne ootamine (spinlock) | Blokeeriv ootamine |
 | --- | --- | --- |
-| Kuidas | lõim kontrollib tsüklis: „kas juba vaba?“ | lõim pannakse ootele, OS äratab ta, kui lukk vabaneb |
+| Kuidas | lõim kontrollib tsüklis: „kas juba vaba?“ | lõim pannakse ootele, OS (ingl *Operating System*) äratab ta, kui lukk vabaneb |
 | Protsessoriaeg | raiskab, sest tuum on hõivatud tühja kontrolliga | ei raiska, sest ootel lõim ei tööta |
 | Kiirus | väga kiire, kui lukk vabaneb mõne mikrosekundi jooksul | aeglasem, sest ootele minek ja äratamine nõuavad kontekstivahetust |
-| Sobib | väga lühikeseks ajaks; tuumas kõrgel IRQL-il, kus ootele minna ei saa (ptk 5) | kõigeks pikemaks, nt faili või võrgu ootamiseks |
+| Sobib | väga lühikeseks ajaks; tuumas kõrgel IRQL-il (ingl *Interrupt Request Level*), kus ootele minna ei saa (ptk 5) | kõigeks pikemaks, nt faili või võrgu ootamiseks |
 
 **Näide.** Spinlukk on nagu ootamine ukse taga ja käepideme pidev katsumine. Kui teine inimene tuleb kohe välja, on see kiire. Kui ta jääb tunniks, raiskasid sa tunni. Blokeeriv ootamine on nagu numbri võtmine ja istumine: sind kutsutakse, kui on sinu kord.
 

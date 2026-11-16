@@ -2,7 +2,7 @@
 
 ## 26. UUS: Sümmeetriline krüpteerimine
 
-Sümmeetrilises krüptograafias kasutavad krüpteerija ja dekrüpteerija **sama võtit**. See on kiire ja töötab kõikjal, kus andmeid on palju: kettakrüpteerimine (BitLocker), võrguühendused (TLS, SMB, Wi-Fi, VPN), varukoopiad ja ZIP-arhiivid. Kaasaegne protsessor krüpteerib AES-iga mitu gigabaiti sekundis, nii et kasutaja ei pane seda tähelegi.
+Sümmeetrilises krüptograafias kasutavad krüpteerija ja dekrüpteerija **sama võtit**. See on kiire ja töötab kõikjal, kus andmeid on palju: kettakrüpteerimine (BitLocker), võrguühendused (TLS – ingl *Transport Layer Security*, SMB – ingl *Server Message Block*, Wi-Fi, VPN – ingl *Virtual Private Network*), varukoopiad ja ZIP-arhiivid. Kaasaegne protsessor krüpteerib AES-iga (ingl *Advanced Encryption Standard*) mitu gigabaiti sekundis, nii et kasutaja ei pane seda tähelegi.
 
 Peatükk 25 näitas, miks ajaloolised šifrid murti: väike võtmeruum, avateksti mustrid ja kasutusvead. Selles peatükis vaatame, kuidas kaasaegne sümmeetriline krüptograafia need probleemid lahendab ja millised vead on endiselt võimalikud.
 
@@ -10,8 +10,8 @@ Peatükk 25 näitas, miks ajaloolised šifrid murti: väike võtmeruum, avatekst
 
 - selgitab sümmeetrilise krüptograafia põhimõtet ja võtmejagamise probleemi ning arvutab vajalike võtmete arvu;
 - eristab plokk- ja voošifreid ning kirjeldab AES-i ülesehitust;
-- selgitab töörežiimide ECB, CBC, CTR ja GCM erinevusi, täidise, IV ja nonce’i rolli;
-- põhjendab, miks eelistatakse autenditud krüpteerimist (AEAD);
+- selgitab töörežiimide ECB (ingl *Electronic Codebook*), CBC (ingl *Cipher Block Chaining*), CTR (ingl *Counter Mode*) ja GCM (ingl *Galois/Counter Mode*) erinevusi, täidise, IV (ingl *Initialization Vector*) ja nonce’i rolli;
+- põhjendab, miks eelistatakse autenditud krüpteerimist (AEAD – ingl *Authenticated Encryption with Associated Data*);
 - kirjeldab võtmehierarhiat BitLockeri näitel ning krüpteerib ja dekrüpteerib faile OpenSSL-i ja Pythoniga.
 
 ### 26.1 Põhimõte ja võtmejagamise probleem
@@ -40,13 +40,13 @@ Seetõttu kasutatakse päris süsteemides **hübriidkrüpteerimist**: asümmeetr
 
 **Plokkšiffer** (block cipher) krüpteerib korraga kindla suurusega ploki, AES-i puhul 128 bitti ehk 16 baiti. Iga võtme jaoks on plokkšiffer justkui hiiglaslik asendustabel, mis seab igale 16-baidisele sisendile vastavusse ühe 16-baidise väljundi. Võimalikke sisendeid on 2¹²⁸, nii et tabelit ei saa kirja panna ega sagedusanalüüsiga murda. Pikem sõnum jagatakse plokkideks ja nende sidumise reegel on **töörežiim** (26.4).
 
-**Voošiffer** (stream cipher) jäljendab ühekordset plokki (ptk 25.3): lühikesest võtmest ja nonce’ist toodetakse pikk pseudojuhuslik **võtmevoog**, mis liidetakse avatekstiga XOR-tehtega. Tänane näide on **ChaCha20**, mida kasutatakse TLS-is ja VPN-is (WireGuard) seadmetes, millel puudub AES-i riistvaratugi.
+**Voošiffer** (stream cipher) jäljendab ühekordset plokki (ptk 25.3): lühikesest võtmest ja nonce’ist toodetakse pikk pseudojuhuslik **võtmevoog**, mis liidetakse avatekstiga XOR-tehtega (XOR – ingl *Exclusive OR*). Tänane näide on **ChaCha20**, mida kasutatakse TLS-is ja VPN-is (WireGuard) seadmetes, millel puudub AES-i riistvaratugi.
 
-Voošifril on sama ohtlik nõrkus nagu ühekordsel plokil: **võtmevoogu ei tohi kunagi korduvalt kasutada**. Vana Wi-Fi-kaitse **WEP** kasutas voošifrit RC4 ja ainult 24-bitist initsialiseerimisvektorit. Kiire võrgu korral hakkasid IV-d mõne tunni pärast korduma ja 2001. aastal näidati, et võtme saab kogutud liiklusest taastada. Hilisemate rünnetega piisab selleks mõnest minutist. WEP on seetõttu ammu kasutuselt kõrvaldatud.
+Voošifril on sama ohtlik nõrkus nagu ühekordsel plokil: **võtmevoogu ei tohi kunagi korduvalt kasutada**. Vana Wi-Fi-kaitse **WEP** (ingl *Wired Equivalent Privacy*) kasutas voošifrit RC4 (ingl *Rivest Cipher 4*) ja ainult 24-bitist initsialiseerimisvektorit. Kiire võrgu korral hakkasid IV-d mõne tunni pärast korduma ja 2001. aastal näidati, et võtme saab kogutud liiklusest taastada. Hilisemate rünnetega piisab selleks mõnest minutist. WEP on seetõttu ammu kasutuselt kõrvaldatud.
 
 ### 26.3 AES
 
-**AES** (Advanced Encryption Standard, algne nimi Rijndael) on 2001. aastast USA standard FIPS 197 ja maailmas enim kasutatud sümmeetriline šiffer. Plokk on alati 128 bitti, võti 128, 192 või 256 bitti ja ringide arv vastavalt 10, 12 või 14.
+**AES** (Advanced Encryption Standard, algne nimi Rijndael) on 2001. aastast USA standard FIPS 197 (FIPS – ingl *Federal Information Processing Standards*) ja maailmas enim kasutatud sümmeetriline šiffer. Plokk on alati 128 bitti, võti 128, 192 või 256 bitti ja ringide arv vastavalt 10, 12 või 14.
 
 ![AES-i ring · SubBytes, ShiftRows, MixColumns, AddRoundKey](../pildid/26-b.png)
 
@@ -59,12 +59,12 @@ Joonis: AES käsitleb 16 baiti 4 × 4 tabelina (olek, state) ja segab seda mitu 
 | MixColumns | iga veeru neli baiti segatakse omavahel matemaatilise teisendusega | iga väljundbait sõltub veeru kõigist baitidest; koos ShiftRowsiga tekitab **hajutuse** |
 | AddRoundKey | olek XOR-itakse ringivõtmega | seob tulemuse võtmega; ringivõtmed tuletatakse põhivõtmest (key schedule) |
 
-Kahe ringi järel mõjutab iga avateksti bitt kõiki 128 šifriteksti bitti. Kui muudad avatekstis ühe biti, muutub ligikaudu pool šifriteksti bittidest – seda nimetatakse **laviiniefektiks**. Kaasaegsetes protsessorites on AES-i jaoks eraldi käsud (**AES-NI** Intelil ja AMD-l, ARMv8 krüptolaiendus), mis teevad ühe ringi ühe käsuga ja kaitsevad ka ajastusrünnete eest.
+Kahe ringi järel mõjutab iga avateksti bitt kõiki 128 šifriteksti bitti. Kui muudad avatekstis ühe biti, muutub ligikaudu pool šifriteksti bittidest – seda nimetatakse **laviiniefektiks**. Kaasaegsetes protsessorites on AES-i jaoks eraldi käsud (**AES-NI** (NI – ingl *New Instructions*) Intelil ja AMD-l (ingl *Advanced Micro Devices*), ARMv8 krüptolaiendus), mis teevad ühe ringi ühe käsuga ja kaitsevad ka ajastusrünnete eest.
 
 | Algoritm | Võtme pikkus | Seisund 2026 |
 | --- | --- | --- |
-| DES | 56 bitti | murtud toore jõuga (1998), ei kasutata |
-| 3DES | 112 bitti (efektiivne) | NIST keelas uutes süsteemides; Windows eemaldab |
+| DES (ingl *Data Encryption Standard*) | 56 bitti | murtud toore jõuga (1998), ei kasutata |
+| 3DES | 112 bitti (efektiivne) | NIST (ingl *National Institute of Standards and Technology*) keelas uutes süsteemides; Windows eemaldab |
 | RC4 | 40–128 bitti | murtud; Kerberoses ja TLS-is keelatud |
 | AES-128 | 128 bitti | turvaline, BitLockeri vaikimisi valik |
 | AES-256 | 256 bitti | turvaline ka kvantarvuteid arvestades (ptk 30) |
@@ -90,9 +90,9 @@ Joonis: ECB-režiimis krüpteeritakse iga plokk eraldi ja samad avateksti plokid
 
 Nüüd annavad samad avateksti plokid erineva šifriteksti ja ka sama faili kaks krüpteerimist on erinevad, sest IV on iga kord uus. IV ei ole saladus: see salvestatakse šifriteksti ette.
 
-**Täidis** (padding). CBC vajab täisplokke. Levinud **PKCS#7** täidis lisab nii mitu baiti, kui puudu on, ja iga lisatud baidi väärtus on puuduolevate baitide arv. 13-baidisele sõnumile lisatakse `03 03 03`, 15-baidisele `01`. Kui sõnum on täpselt 16 baiti, lisatakse terve plokk baitidega `10` (kümnendis 16), et dekrüpteerija teaks alati, mitu baiti eemaldada.
+**Täidis** (padding). CBC vajab täisplokke. Levinud **PKCS#7** (PKCS – ingl *Public-Key Cryptography Standards*) täidis lisab nii mitu baiti, kui puudu on, ja iga lisatud baidi väärtus on puuduolevate baitide arv. 13-baidisele sõnumile lisatakse `03 03 03`, 15-baidisele `01`. Kui sõnum on täpselt 16 baiti, lisatakse terve plokk baitidega `10` (kümnendis 16), et dekrüpteerija teaks alati, mitu baiti eemaldada.
 
-Kui server ütleb vastuseks erinevalt, kas täidis oli vale või oli viga mujal, saab ründaja seda infot kasutada ja šifriteksti bait-baidi haaval dekrüpteerida ilma võtmeta. Seda nimetatakse **täidiseoraakli rünnakuks** (padding oracle). Nii murti näiteks 2010. aastal ASP.NET-i krüpteeritud küpsised ja 2014. aastal SSL 3.0 (POODLE). Lahendus on kontrollida enne dekrüpteerimist terviklust – ehk kasutada AEAD-režiimi.
+Kui server ütleb vastuseks erinevalt, kas täidis oli vale või oli viga mujal, saab ründaja seda infot kasutada ja šifriteksti bait-baidi haaval dekrüpteerida ilma võtmeta. Seda nimetatakse **täidiseoraakli rünnakuks** (padding oracle). Nii murti näiteks 2010. aastal ASP.NET-i (ASP – ingl *Active Server Pages*) krüpteeritud küpsised ja 2014. aastal SSL 3.0 (SSL – ingl *Secure Sockets Layer*; POODLE – ingl *Padding Oracle On Downgraded Legacy Encryption*). Lahendus on kontrollida enne dekrüpteerimist terviklust – ehk kasutada AEAD-režiimi.
 
 **CTR** (Counter): krüpteeritakse loendur (nonce + ploki number) ja tulemus XOR-itakse avatekstiga. AES muutub nii voošifriks: täidist pole vaja ja plokke saab krüpteerida paralleelselt.
 
@@ -103,8 +103,8 @@ Kui server ütleb vastuseks erinevalt, kas täidis oli vale või oli viga mujal,
 | ECB | iga plokk eraldi | ära kasuta | lekitab mustreid |
 | CBC | iga plokk XOR-itakse eelmise šifriplokiga, algul IV | vanemad süsteemid | vajab täidist; ilma tervikluse kontrollita täidiseoraakli oht |
 | CTR | loendur krüpteeritakse, tulemus XOR-itakse andmetega | voona | nonce ei tohi korduda |
-| GCM | CTR + autentimissilt | TLS, SMB 3.1.1, IPsec | **AEAD**: krüpteerib ja kontrollib terviklust |
-| XTS | iga sektor oma „puudutusega“ (tweak) | kettakrüpteerimine (BitLocker) | sektori suurus ei muutu |
+| GCM | CTR + autentimissilt | TLS, SMB 3.1.1, IPsec (ingl *Internet Protocol Security*) | **AEAD**: krüpteerib ja kontrollib terviklust |
+| XTS (ingl *XEX-based Tweaked-codebook mode with ciphertext Stealing*) | iga sektor oma „puudutusega“ (tweak) | kettakrüpteerimine (BitLocker) | sektori suurus ei muutu |
 
 **AEAD** (authenticated encryption with associated data) tähendab, et lisaks krüpteerimisele kontrollitakse terviklust ja autentsust. Miks see on oluline? CTR- ja CBC-režiimis saab ründaja šifriteksti sihipäraselt muuta. CTR-is muudab šifriteksti biti ümberpööramine täpselt sama biti avatekstis. Kui ründaja teab, et krüpteeritud sõnum algab `Summa: 100`, võib ta muuta selle `Summa: 900`-ks ilma võtit teadmata (bitti ümberpöörav rünne, bit-flipping). Krüpteerimine kaitseb konfidentsiaalsust, aga mitte terviklust – selleks on vaja autentimissilti.
 
@@ -112,9 +112,9 @@ Kui server ütleb vastuseks erinevalt, kas täidis oli vale või oli viga mujal,
 
 ### 26.5 Võtmed tulevad juhuslikkusest või paroolist
 
-Krüptovõti peab olema juhuslik. Selleks kasutatakse krüptograafiliselt turvalist juhuarvugeneraatorit (CSPRNG, ptk 25.5): Windowsis `BCryptGenRandom`, Linuxis `/dev/urandom` või `getrandom()`, Pythonis moodul `secrets` (mitte `random`!).
+Krüptovõti peab olema juhuslik. Selleks kasutatakse krüptograafiliselt turvalist juhuarvugeneraatorit (CSPRNG – ingl *Cryptographically Secure Pseudorandom Number Generator*, ptk 25.5): Windowsis `BCryptGenRandom`, Linuxis `/dev/urandom` või `getrandom()`, Pythonis moodul `secrets` (mitte `random`!).
 
-Inimene ei suuda aga 128-bitist juhuslikku võtit meelde jätta. Kui võti tuleb tuletada paroolist, kasutatakse **võtmetuletusfunktsiooni** (KDF, key derivation function): PBKDF2, scrypt või Argon2 (ptk 27). KDF teeb kaks asja:
+Inimene ei suuda aga 128-bitist juhuslikku võtit meelde jätta. Kui võti tuleb tuletada paroolist, kasutatakse **võtmetuletusfunktsiooni** (KDF, key derivation function): PBKDF2 (ingl *Password-Based Key Derivation Function 2*), scrypt või Argon2 (ptk 27). KDF teeb kaks asja:
 
 - **lisab soola** – juhuslik väärtus, mis salvestatakse šifriteksti juurde, nii et sama parool annab eri failide jaoks erineva võtme;
 - **teeb arvutuse meelega aeglaseks** – näiteks PBKDF2-HMAC-SHA256 600 000 korduse korral kulub ühe parooli kontrollimiseks mõnisada millisekundit. Kasutaja seda ei märka, kuid ründaja, kes tahab proovida miljardit parooli, vajab tuhandeid kordi rohkem aega.
@@ -131,16 +131,16 @@ Joonis: BitLocker kasutab kolmetasandilist hierarhiat. Ketast krüpteerib **FVEK
 
 Miks nii keeruliselt?
 
-- **Kiire võtmevahetus.** Kui kasutaja muudab PIN-koodi, krüpteeritakse uuesti ainult paarsada baiti (VMK), mitte terabaidine ketas.
-- **Mitu võimalust avada.** Tavaliselt avab arvuti TPM, kuid kui emaplaat vahetatakse või Secure Boot muutub, saab ketta avada **taasteparooliga**. Taasteparool salvestatakse organisatsioonis Active Directorysse või Entra ID-sse, kodukasutajal Microsofti kontole.
+- **Kiire võtmevahetus.** Kui kasutaja muudab PIN-koodi (PIN – ingl *Personal Identification Number*), krüpteeritakse uuesti ainult paarsada baiti (VMK), mitte terabaidine ketas.
+- **Mitu võimalust avada.** Tavaliselt avab arvuti TPM (ingl *Trusted Platform Module*), kuid kui emaplaat vahetatakse või Secure Boot muutub, saab ketta avada **taasteparooliga**. Taasteparool salvestatakse organisatsioonis Active Directorysse või Entra ID-sse, kodukasutajal Microsofti kontole.
 - **Kiire kustutamine.** Kui kustutada kõik võtmed, on andmed hetkega loetamatud ilma ketast üle kirjutamata (krüptograafiline kustutamine, crypto erase).
 
-**TPM** (Trusted Platform Module) on kiip, mis annab VMK välja ainult siis, kui käivitusahel (UEFI, Secure Boot, alglaadur) on muutmata (ptk 18). Kui keegi käivitab arvuti oma USB-pulgalt, TPM võtit ei anna. Ainult TPM-iga kaitstud arvuti käivitub aga Windowsi sisselogimisekraanini ise. Füüsilise ligipääsuga ründaja võib siis proovida võtit käivitamise ajal TPM-i ja protsessori vahelisest siinist pealt kuulata. Seetõttu soovitatakse sülearvutitel **TPM + PIN**.
+**TPM** (Trusted Platform Module) on kiip, mis annab VMK välja ainult siis, kui käivitusahel (UEFI – ingl *Unified Extensible Firmware Interface*, Secure Boot, alglaadur) on muutmata (ptk 18). Kui keegi käivitab arvuti oma USB-pulgalt (USB – ingl *Universal Serial Bus*), TPM võtit ei anna. Ainult TPM-iga kaitstud arvuti käivitub aga Windowsi sisselogimisekraanini ise. Füüsilise ligipääsuga ründaja võib siis proovida võtit käivitamise ajal TPM-i ja protsessori vahelisest siinist pealt kuulata. Seetõttu soovitatakse sülearvutitel **TPM + PIN**.
 
 Võtmehalduse põhireeglid:
 
 - võti ei asu kunagi samas kohas kui krüpteeritud andmed ega lähtekoodis;
-- võtmeid hoitakse riistvaras (TPM, HSM, kiipkaart) või võtmehaldusteenuses (Azure Key Vault, AWS KMS);
+- võtmeid hoitakse riistvaras (TPM, HSM – ingl *Hardware Security Module*, kiipkaart) või võtmehaldusteenuses (Azure Key Vault, AWS (ingl *Amazon Web Services*) KMS – ingl *Key Management Service*);
 - võtmeid vahetatakse kindla aja järel ja kohe, kui on kahtlus lekkele (**võtmerotatsioon**);
 - taastevõtmete olemasolu ja taastamist kontrollitakse enne, kui neid vaja läheb.
 
@@ -149,16 +149,16 @@ Võtmehalduse põhireeglid:
 | Koht | Algoritm |
 | --- | --- |
 | BitLocker | XTS-AES-128 (vaikimisi) või XTS-AES-256 |
-| EFS (failide krüpteerimine) | AES, võti kaitstud kasutaja sertifikaadiga |
+| EFS (ingl *Encrypting File System*; failide krüpteerimine) | AES, võti kaitstud kasutaja sertifikaadiga |
 | SMB 3.1.1 | AES-128-GCM, AES-256-GCM |
 | Kerberos | AES-256 ja AES-128; RC4 on kasutuselt kõrvaldamisel |
-| Wi-Fi WPA3 | AES-CCMP või AES-GCMP |
+| Wi-Fi WPA3 (ingl *Wi-Fi Protected Access 3*) | AES-CCMP (CCMP – ingl *Counter Mode with CBC-MAC Protocol*) või AES-GCMP (GCMP – ingl *Galois/Counter Mode Protocol*) |
 | TLS 1.3 | AES-GCM või ChaCha20-Poly1305 |
-| DPAPI (brauseri paroolid, Wi-Fi võtmed) | AES, võti tuletatud kasutaja paroolist |
+| DPAPI (ingl *Data Protection API*; brauseri paroolid, Wi-Fi võtmed) | AES, võti tuletatud kasutaja paroolist |
 
 ### Näide: sülearvuti jäi rongi
 
-Kooli õpetaja sülearvuti, millel on õppijate hinded ja isikuandmed, jäi rongi. Kui ketas on BitLockeriga krüpteeritud ja võti on TPM-is koos PIN-koodiga, ei saa leidja andmeid lugeda, isegi kui ta ketta teise arvutisse paneb: ta näeb ainult XTS-AES-i šifriteksti. Juhtum tuleb isikuandmete kaitse üldmääruse järgi dokumenteerida, kuid kui andmed olid tugevalt krüpteeritud ja võti ei lekkinud, ei ole andmesubjektide teavitamine üldjuhul vajalik ja sageli ei teki ka kohustust Andmekaitse Inspektsiooni teavitada (ptk 31). IT-tugi kontrollib Entra ID-st, et seadme taasteparool on olemas, ja blokeerib seadme. Krüpteerimata kettaga oleks see olnud isikuandmete leke.
+Kooli õpetaja sülearvuti, millel on õppijate hinded ja isikuandmed, jäi rongi. Kui ketas on BitLockeriga krüpteeritud ja võti on TPM-is koos PIN-koodiga, ei saa leidja andmeid lugeda, isegi kui ta ketta teise arvutisse paneb: ta näeb ainult XTS-AES-i šifriteksti. Juhtum tuleb isikuandmete kaitse üldmääruse järgi dokumenteerida, kuid kui andmed olid tugevalt krüpteeritud ja võti ei lekkinud, ei ole andmesubjektide teavitamine üldjuhul vajalik ja sageli ei teki ka kohustust Andmekaitse Inspektsiooni teavitada (ptk 31). IT-tugi (IT – ingl *Information Technology*) kontrollib Entra ID-st, et seadme taasteparool on olemas, ja blokeerib seadme. Krüpteerimata kettaga oleks see olnud isikuandmete leke.
 
 ### Kokkuvõte
 

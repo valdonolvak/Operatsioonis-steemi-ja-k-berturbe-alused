@@ -2,21 +2,21 @@
 
 ## 3. Windowsi põhimõisted
 
-Et Windowsi sisemust mõista, on vaja tunda kaheksat põhimõistet: API, .NET, objekt, pide, kasutaja- ja tuumarežiim, protsess ja lõim, teenus ning Unicode.
+Et Windowsi sisemust mõista, on vaja tunda kaheksat põhimõistet: API (ingl *Application Programming Interface*), .NET, objekt, pide, kasutaja- ja tuumarežiim, protsess ja lõim, teenus ning Unicode.
 
 ### 3.1 Windows API
 
-**API** (Application Programming Interface, rakendusliides) on funktsioonide kogum, mille kaudu programm OS-ilt teenuseid küsib. Windowsi põhiliides on **Windows API** (varem Win32 API): C-keelsed funktsioonid nagu `CreateFile`, `CreateProcess`, `VirtualAlloc`. Programm ei kutsu tuuma otse välja, vaid teekide (DLL) kaudu: `kernel32.dll`, `user32.dll`, `advapi32.dll`, mis omakorda kutsuvad `ntdll.dll`-i dokumenteerimata *Native API* funktsioone.
+**API** (Application Programming Interface, rakendusliides) on funktsioonide kogum, mille kaudu programm OS-ilt (ingl *Operating System*) teenuseid küsib. Windowsi põhiliides on **Windows API** (varem Win32 API): C-keelsed funktsioonid nagu `CreateFile`, `CreateProcess`, `VirtualAlloc`. Programm ei kutsu tuuma otse välja, vaid teekide (DLL – ingl *Dynamic-Link Library*) kaudu: `kernel32.dll`, `user32.dll`, `advapi32.dll`, mis omakorda kutsuvad `ntdll.dll`-i dokumenteerimata *Native API* funktsioone.
 
 Tänapäeval on lisaks:
 
-- **WinRT / Windows App SDK** – objektorienteeritud kaasaegne API (WinUI 3 kasutajaliides);
-- **COM** – komponentmudel, mida kasutavad nii Office kui ka paljud süsteemiteenused;
-- **Windows AI API-d** – rakendus saab kasutada OS-i sisseehitatud keelemudelit või pildituvastust (vt ptk 21).
+- **WinRT / Windows App SDK** (ingl *Software Development Kit*) – objektorienteeritud kaasaegne API (WinUI 3 kasutajaliides);
+- **COM** (ingl *Component Object Model*) – komponentmudel, mida kasutavad nii Office kui ka paljud süsteemiteenused;
+- **Windows AI (ingl *Artificial Intelligence*) API-d** – rakendus saab kasutada OS-i sisseehitatud keelemudelit või pildituvastust (vt ptk 21).
 
 ### 3.2 .NET
 
-Algne õpik (2017) rääkis .NET Frameworkist, mis töötas ainult Windowsis. Praegu arendatakse **.NET-i** (endine .NET Core) kui avatud lähtekoodiga platvormiüleset raamistikku: sama C#-programm töötab Windowsis, Linuxis ja macOS-is. Uus põhiversioon ilmub igal novembril; paarisarvulised versioonid on pikaajalise toega (LTS). .NET Framework 4.8.1 on endiselt Windowsi osa vanade rakenduste jaoks, kuid uusi funktsioone sinna ei lisata. PowerShell 7 on ehitatud .NET-i peale, Windows PowerShell 5.1 aga .NET Frameworki peale.
+Algne õpik (2017) rääkis .NET Frameworkist, mis töötas ainult Windowsis. Praegu arendatakse **.NET-i** (endine .NET Core) kui avatud lähtekoodiga platvormiüleset raamistikku: sama C#-programm töötab Windowsis, Linuxis ja macOS-is. Uus põhiversioon ilmub igal novembril; paarisarvulised versioonid on pikaajalise toega (LTS – ingl *Long-Term Support*). .NET Framework 4.8.1 on endiselt Windowsi osa vanade rakenduste jaoks, kuid uusi funktsioone sinna ei lisata. PowerShell 7 on ehitatud .NET-i peale, Windows PowerShell 5.1 aga .NET Frameworki peale.
 
 ### 3.3 Objektid ja pidemed
 
@@ -48,7 +48,7 @@ Joonis: Windows API funktsioon jõuab ntdll.dll kaudu süsteemikutseni; tuumas k
 > 🖱️ **Proovi ise:** [faili avamise teekond](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#teekond). Liigu sammhaaval kasutajarežiimist tuumarežiimi ja vaata, mis muutub, kui kasutajal pole õigust. Seejärel [paiguta komponendid õigesse režiimi](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#reziim).
 
 
-**Uus kiht: virtuaalsed usaldustasemed.** Alates Windows 10-st kasutab Windows hüperviisorit, et jagada mälu kaheks virtuaalseks usaldustasemeks (VTL 0 ja VTL 1). Tavaline tuum töötab VTL 0-s, turvatuum (Secure Kernel) ja tundlikud andmed VTL 1-s. Isegi tuumarežiimis töötav pahavara ei saa VTL 1 mälu lugeda. Arhitektuuri selgitab ptk 4.
+**Uus kiht: virtuaalsed usaldustasemed.** Alates Windows 10-st kasutab Windows hüperviisorit, et jagada mälu kaheks virtuaalseks usaldustasemeks (VTL 0 (VTL – ingl *Virtual Trust Level*) ja VTL 1). Tavaline tuum töötab VTL 0-s, turvatuum (Secure Kernel) ja tundlikud andmed VTL 1-s. Isegi tuumarežiimis töötav pahavara ei saa VTL 1 mälu lugeda. Arhitektuuri selgitab ptk 4.
 
 ### 3.5 Programm, protsess ja lõim
 
@@ -60,7 +60,7 @@ Joonis: Windows API funktsioon jõuab ntdll.dll kaudu süsteemikutseni; tuumas k
 
 Sõna „teenus“ tähendab Windowsis kolme asja:
 
-1. **Windowsi teenus** (service) – taustaprotsess, mida juhib teenusehaldur (SCM, `services.exe`), nt Windows Update, DNS-klient. Paljud teenused jagavad ühte `svchost.exe` protsessi.
+1. **Windowsi teenus** (service) – taustaprotsess, mida juhib teenusehaldur (SCM – ingl *Service Control Manager*, `services.exe`), nt Windows Update, DNS-klient (DNS – ingl *Domain Name System*). Paljud teenused jagavad ühte `svchost.exe` protsessi.
 2. **Süsteemiteenus** (system service) – tuumafunktsioon, mida kutsutakse süsteemikutse kaudu (nt `NtCreateFile`).
 3. **API-funktsioon** – dokumenteeritud funktsioon DLL-is (nt `CreateFileW`).
 
@@ -71,7 +71,7 @@ Sõna „teenus“ tähendab Windowsis kolme asja:
 
 ### 3.7 Unicode
 
-Windows hoiab tekste sisemiselt **UTF-16** kodeeringus: iga sümbol võtab 2 või 4 baiti. Seetõttu on API-funktsioonidel kaks kuju: `CreateFileW` (lai, Unicode) ja `CreateFileA` (ANSI, vana koodileht). Alates Windows 10 1903-st saab rakendus valida koodileheks ka **UTF-8**, mis lihtsustab platvormiüleseid programme. Unicode võimaldab üheaegselt kasutada täpitähti (õ, ä, ö, ü, š, ž), kirillitsat ja emotikone.
+Windows hoiab tekste sisemiselt **UTF-16** (UTF – ingl *Unicode Transformation Format*) kodeeringus: iga sümbol võtab 2 või 4 baiti. Seetõttu on API-funktsioonidel kaks kuju: `CreateFileW` (lai, Unicode) ja `CreateFileA` (ANSI – ingl *American National Standards Institute*, vana koodileht). Alates Windows 10 1903-st saab rakendus valida koodileheks ka **UTF-8**, mis lihtsustab platvormiüleseid programme. Unicode võimaldab üheaegselt kasutada täpitähti (õ, ä, ö, ü, š, ž), kirillitsat ja emotikone.
 
 > 🖱️ **Proovi ise:** [Unicode baitideks](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/03-pohimoisted.html#unicode). Kirjuta tekst ja vaata, mitu baiti see võtab UTF-8, UTF-16 ja ANSI kodeeringus ning mis ANSI-failist alles jääb.
 
@@ -80,13 +80,13 @@ Windows hoiab tekste sisemiselt **UTF-16** kodeeringus: iga sümbol võtab 2 võ
 
 **Võrdlus.** Teatris annad mantli garderoobi ja saad numbri. Sa ei pääse ise riidepuude juurde; numbri näitamisel toob garderoobitöötaja mantli. **Pide** on nagu see number: rakendus ei näe tuumamälus olevat failiobjekti, vaid saab arvu, mille alusel OS objekti leiab. Garderoobitöötaja kontrollib, et number oleks sinu oma – nii nagu OS kontrollib õigusi pideme avamisel.
 
-**Windowsis.** Käivitad `notepad.exe` (programm kettal). Windows loob **protsessi** (PID nt 7420) oma aadressiruumi ja tokeniga ning sellesse esimese **lõime**. Kui avad faili `markmed.txt`, saab Notepad pideme (nt `0x1A4`). Pideme kaudu loeb ta faili, aga ei saa kirjutada teise protsessi mällu. Kui Notepad jookseb kokku, lõpetab Windows ainult selle protsessi ja vabastab kõik tema pidemed; brauser ja teised programmid töötavad edasi – see on kasutaja- ja tuumarežiimi eralduse kasu.
+**Windowsis.** Käivitad `notepad.exe` (programm kettal). Windows loob **protsessi** (PID – ingl *Process Identifier*, nt 7420) oma aadressiruumi ja tokeniga ning sellesse esimese **lõime**. Kui avad faili `markmed.txt`, saab Notepad pideme (nt `0x1A4`). Pideme kaudu loeb ta faili, aga ei saa kirjutada teise protsessi mällu. Kui Notepad jookseb kokku, lõpetab Windows ainult selle protsessi ja vabastab kõik tema pidemed; brauser ja teised programmid töötavad edasi – see on kasutaja- ja tuumarežiimi eralduse kasu.
 
 ### Kokkuvõte
 
 - Rakendused suhtlevad OS-iga API kaudu, mitte otse tuumaga.
 - Ressursid on objektid; rakendus kasutab neid pidemete kaudu.
-- Kasutaja- ja tuumarežiimi eraldus kaitseb süsteemi; VBS lisab hüperviisoriga veel ühe kihi.
+- Kasutaja- ja tuumarežiimi eraldus kaitseb süsteemi; VBS (ingl *Virtualization-Based Security*) lisab hüperviisoriga veel ühe kihi.
 - Protsess on konteiner, lõim on täitmise üksus.
 
 ### Kontrollküsimused

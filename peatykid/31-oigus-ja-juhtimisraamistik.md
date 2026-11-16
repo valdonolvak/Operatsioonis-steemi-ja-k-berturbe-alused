@@ -2,16 +2,16 @@
 
 ## 31. UUS: Küberturbe õigus- ja juhtimisraamistik
 
-Tehnilised meetmed (peatükid 18, 22, 24–30) on mõjusad ainult siis, kui keegi vastutab nende eest, nende rakendamine on plaanitud ja intsidendi korral on teada, kellele ja millal teatada. Peatükk annab IT-süsteemi haldajale ülevaate Eesti ja Euroopa Liidu nõuetest. Peatükk ei ole õigusnõu: konkreetse organisatsiooni kohustused tuleb täpsustada RIA, Andmekaitse Inspektsiooni või juristiga.
+Tehnilised meetmed (peatükid 18, 22, 24–30) on mõjusad ainult siis, kui keegi vastutab nende eest, nende rakendamine on plaanitud ja intsidendi korral on teada, kellele ja millal teatada. Peatükk annab IT-süsteemi (IT – ingl *Information Technology*) haldajale ülevaate Eesti ja Euroopa Liidu nõuetest. Peatükk ei ole õigusnõu: konkreetse organisatsiooni kohustused tuleb täpsustada RIA (Riigi Infosüsteemi Amet), Andmekaitse Inspektsiooni või juristiga.
 
-Miks peab administraator seadusi tundma? Esiteks rakendab just tema enamikku nõutud meetmetest: logimist, varundust, MFA-d ja krüpteerimist. Teiseks on tema see, kes intsidenti esimesena näeb ja kelle tegevusest sõltub, kas tähtajad peetakse kinni. Kolmandaks on ka administraatoril endal seaduslikud piirid: suured õigused ei tähenda luba vaadata kõike, mida tehniliselt näha saab.
+Miks peab administraator seadusi tundma? Esiteks rakendab just tema enamikku nõutud meetmetest: logimist, varundust, MFA-d (ingl *Multi-Factor Authentication*) ja krüpteerimist. Teiseks on tema see, kes intsidenti esimesena näeb ja kelle tegevusest sõltub, kas tähtajad peetakse kinni. Kolmandaks on ka administraatoril endal seaduslikud piirid: suured õigused ei tähenda luba vaadata kõike, mida tehniliselt näha saab.
 
 **Pärast peatüki läbimist õppija:**
 
-- nimetab Eesti ja EL-i olulisemad küberturbe- ja andmekaitsenõuded ning nende sihtrühma;
-- kirjeldab KüTS-i (NIS2) peamisi kohustusi ja intsidendist teavitamise tähtaegu;
+- nimetab Eesti ja EL-i (Euroopa Liit) olulisemad küberturbe- ja andmekaitsenõuded ning nende sihtrühma;
+- kirjeldab KüTS-i (küberturvalisuse seadus; NIS2 – ingl *Network and Information Security Directive 2*) peamisi kohustusi ja intsidendist teavitamise tähtaegu;
 - selgitab isikuandmete kaitse põhimõtteid ja rikkumisest teavitamise korda;
-- võrdleb E-ITS-i, ISO/IEC 27001-t ja NIST CSF-i;
+- võrdleb E-ITS-i (Eesti infoturbestandard), ISO/IEC 27001-t ja NIST (ingl *National Institute of Standards and Technology*) CSF-i (ingl *Cybersecurity Framework*);
 - hindab riski ja valib riski käsitlemise viisi;
 - tunneb IT-spetsialisti seaduslikke ja eetilisi piire.
 
@@ -19,18 +19,18 @@ Miks peab administraator seadusi tundma? Esiteks rakendab just tema enamikku nõ
 
 ![õigusraamistik · KüTS, GDPR, E-ITS, CRA, DORA, eIDAS](../pildid/31-a.png)
 
-Joonis: kuus olulisemat nõuete kogumit. Need kattuvad osaliselt: haigla peab täitma nii küberturvalisuse seadust kui ka isikuandmete kaitse nõudeid, pank lisaks DORA-t ja tarkvaratootja CRA-d.
+Joonis: kuus olulisemat nõuete kogumit. Need kattuvad osaliselt: haigla peab täitma nii küberturvalisuse seadust kui ka isikuandmete kaitse nõudeid, pank lisaks DORA-t (ingl *Digital Operational Resilience Act*) ja tarkvaratootja CRA-d (ingl *Cyber Resilience Act*).
 
 | Nõue | Mida reguleerib | Keda puudutab |
 | --- | --- | --- |
 | KüTS (NIS2) | organisatsiooni küberturbe meetmed ja intsidentidest teavitamine | elutähtsad ja olulised teenused, avalik sektor, paljud ettevõtted |
-| IKÜM (GDPR) ja isikuandmete kaitse seadus | isikuandmete töötlemine ja kaitse | kõik, kes töötlevad isikuandmeid |
-| E-ITS | Eesti infoturbestandard: konkreetsed meetmed | riigi- ja KOV-asutused, vabatahtlikult teised |
+| IKÜM (GDPR – ingl *General Data Protection Regulation*) ja isikuandmete kaitse seadus | isikuandmete töötlemine ja kaitse | kõik, kes töötlevad isikuandmeid |
+| E-ITS | Eesti infoturbestandard: konkreetsed meetmed | riigi- ja KOV-asutused (KOV – kohalik omavalitsus), vabatahtlikult teised |
 | CRA (küberkerksuse määrus) | digitaalsete toodete turvalisus kogu elukaare jooksul | riist- ja tarkvara tootjad, importijad, turustajad |
-| DORA | finantssektori IKT-riskide juhtimine ja testimine | pangad, kindlustus, investeerimisühingud ja nende IT-tarnijad |
-| eIDAS | e-identimine ja usaldusteenused (digiallkiri, ajatempel) | ID-kaardi, Smart-ID ja usaldusteenuste kasutajad ja osutajad |
+| DORA | finantssektori IKT-riskide (IKT – info- ja kommunikatsioonitehnoloogia) juhtimine ja testimine | pangad, kindlustus, investeerimisühingud ja nende IT-tarnijad |
+| eIDAS (ingl *electronic IDentification, Authentication and trust Services*) | e-identimine ja usaldusteenused (digiallkiri, ajatempel) | ID-kaardi (ID – ingl *identity card*), Smart-ID ja usaldusteenuste kasutajad ja osutajad |
 
-Lisaks puudutab IT-t **tehisintellekti määrus** (AI Act, 2024/1689), mis seab tehisintellektisüsteemidele riskipõhised nõuded, ning **karistusseadustik**, mis määrab arvutikuriteod (31.7).
+Lisaks puudutab IT-t **tehisintellekti määrus** (AI Act (AI – ingl *Artificial Intelligence*), 2024/1689), mis seab tehisintellektisüsteemidele riskipõhised nõuded, ning **karistusseadustik**, mis määrab arvutikuriteod (31.7).
 
 ### 31.2 Küberturvalisuse seadus ja NIS2
 
@@ -46,7 +46,7 @@ NIS2 üldreegel (art 2–3) seob kuuluvuse sektori ja ettevõtte suurusega. Suur
 | Keskmine | vähemalt 50 töötajat või käive ja bilanss kumbki üle 10 mln € | oluline üksus | oluline üksus |
 | Väike või mikro | alla 50 töötaja ja käive või bilanss kuni 10 mln € | üldjuhul ei kuulu | üldjuhul ei kuulu |
 
-Suurusest olenemata kuuluvad kohustatute hulka näiteks kvalifitseeritud usaldusteenuse osutajad, tippdomeeni registrid ja DNS-teenuse osutajad, keskvalitsuse asutused ning elutähtsa teenuse osutajad. Tabel on üldistus: lõpliku kuuluvuse määravad KüTS ja RIA.
+Suurusest olenemata kuuluvad kohustatute hulka näiteks kvalifitseeritud usaldusteenuse osutajad, tippdomeeni registrid ja DNS-teenuse (DNS – ingl *Domain Name System*) osutajad, keskvalitsuse asutused ning elutähtsa teenuse osutajad. Tabel on üldistus: lõpliku kuuluvuse määravad KüTS ja RIA.
 
 > 🖱️ **Proovi ise:** [NIS2 kuuluvuse hindaja](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/31-oigus.html#nis2). Vali sektor ja suurus ning vaata, kas organisatsioon on väga oluline, oluline või ei kuulu üldjuhul kohustatute hulka.
 
@@ -57,7 +57,7 @@ Olulisemad kohustused:
 - **intsidentidest teavitamine** RIA-le (31.4);
 - **järelevalve**: RIA võib teha auditeid ja anda ettekirjutusi. NIS2 näeb ette trahvid kuni 10 miljonit eurot või 2% ülemaailmsest käibest väga olulistele ja kuni 7 miljonit eurot või 1,4% olulistele üksustele.
 
-Seadus ei ütle täpselt, millist tulemüüri või parooli pikkust kasutada. See nõuab, et meetmed oleksid **riskiga proportsionaalsed** ja võtavad arvesse tehnika taset. Praktikas tähendab see E-ITS-i, ISO 27001 või muu tunnustatud raamistiku kasutamist ja oma otsuste dokumenteerimist.
+Seadus ei ütle täpselt, millist tulemüüri või parooli pikkust kasutada. See nõuab, et meetmed oleksid **riskiga proportsionaalsed** ja võtavad arvesse tehnika taset. Praktikas tähendab see E-ITS-i, ISO 27001 (ISO – ingl *International Organization for Standardization*) või muu tunnustatud raamistiku kasutamist ja oma otsuste dokumenteerimist.
 
 ### 31.3 Isikuandmete kaitse
 
@@ -72,7 +72,7 @@ Miks see IT-spetsialisti puudutab? Peaaegu iga süsteem, mida administraator hal
 | Andmed | Kas isikuandmed? | Selgitus |
 | --- | --- | --- |
 | Nimi, isikukood, e-post `mari.maasikas@kool.ee` | jah | tuvastavad inimese otse |
-| IP-aadress, küpsise ID, seadme ID, auto numbrimärk | jah | inimese saab tuvastada teiste andmetega (nt internetiteenuse pakkuja kaudu) |
+| IP-aadress (IP – ingl *Internet Protocol*), küpsise ID, seadme ID, auto numbrimärk | jah | inimese saab tuvastada teiste andmetega (nt internetiteenuse pakkuja kaudu) |
 | Logirida `2026-03-02 08:14 mari logis sisse 10.0.5.23` | jah | näitab konkreetse inimese tegevust |
 | Õpilase kood `Õ-4471`, kui koolil on tabel koodi ja nime vastavusega | jah | see on **pseudonüümitud** andmestik: tuvastamine on võimalik lisateabega |
 | Statistika „9.b klassis on 24 õpilast, keskmine hinne 4,1“ | üldjuhul ei | **anonüümsed** andmed, millest inimest tuvastada ei saa |
@@ -90,7 +90,7 @@ Pseudonüümimine on hea turvameede, kuid pseudonüümitud andmed on endiselt is
 | Vastutav töötleja (controller) | otsustab, milleks ja kuidas andmeid töödeldakse, ja vastutab | kool |
 | Volitatud töötleja (processor) | töötleb andmeid vastutava töötleja nimel ja tema juhiste järgi | õppeinfosüsteemi pakkuja, pilveteenus, IT-hoolduse firma |
 | Alamtöötleja | volitatud töötleja enda teenusepakkuja | õppeinfosüsteemi pakkuja kasutatav andmekeskus |
-| Andmekaitsespetsialist (DPO) | nõustab ja kontrollib organisatsiooni sees | avaliku sektori asutuses kohustuslik |
+| Andmekaitsespetsialist (DPO – ingl *Data Protection Officer*) | nõustab ja kontrollib organisatsiooni sees | avaliku sektori asutuses kohustuslik |
 | Järelevalveasutus | kontrollib, menetleb kaebusi, määrab karistusi | Andmekaitse Inspektsioon |
 
 Vastutava ja volitatud töötleja vahel peab olema leping (art 28). Selles on kirjas, milliseid andmeid ja millisel eesmärgil töödeldakse, millised on turvameetmed, kas tohib kasutada alamtöötlejaid ja mis saab andmetest lepingu lõppedes. Kui IT-administraator valib uut pilveteenust, on lepingu ja turvameetmete kontroll osa valikust, mitte juristi hilisem töö.
@@ -103,7 +103,7 @@ Iga töötlemise jaoks peab olema üks kuuest õiguslikust alusest (art 6). Alus
 | --- | --- | --- |
 | a) nõusolek | inimene on vabatahtlikult nõustunud | kooli uudiskirja tellimine, õpilase foto kooli Facebooki lehel |
 | b) leping | vajalik lepingu täitmiseks | e-poe tellimuse tarnimine, töötaja palgaarvestus |
-| c) juriidiline kohustus | seadus nõuab | õpilase andmete kandmine EHIS-esse, raamatupidamisdokumentide säilitamine |
+| c) juriidiline kohustus | seadus nõuab | õpilase andmete kandmine EHIS-esse (EHIS – Eesti Hariduse Infosüsteem), raamatupidamisdokumentide säilitamine |
 | d) eluliste huvide kaitse | elu või tervise kaitseks | teadvuseta inimese andmed kiirabile |
 | e) avalik ülesanne | asutus täidab seadusest tulenevat ülesannet | kool korraldab õppetööd, KOV menetleb taotlust |
 | f) õigustatud huvi | organisatsiooni huvi kaalub üles inimese huvid | turvalogid sissetungi avastamiseks, videovalve varguste vastu |
@@ -139,7 +139,7 @@ Inimesel on oma andmete üle mitu õigust (art 12–22). Organisatsioon peab vas
 | Parandamine (art 16) | vigaste andmete parandamine | muutmise võimalus ja muutuste logi |
 | Kustutamine (art 17) | „õigus olla unustatud“, kui alust töötlemiseks enam pole | kustutamine kõigist süsteemidest, sh volitatud töötlejatelt |
 | Piiramine (art 18) | andmeid ei kasutata vaidluse ajal | konto või kirje külmutamine |
-| Ülekantavus (art 20) | saada oma andmed masinloetaval kujul | eksport CSV või JSON vormingus |
+| Ülekantavus (art 20) | saada oma andmed masinloetaval kujul | eksport CSV (ingl *Comma-Separated Values*) või JSON (ingl *JavaScript Object Notation*) vormingus |
 | Vastuväide (art 21) | keelduda nt otseturundusest | turundusloendist eemaldamine |
 | Automatiseeritud otsused (art 22) | õigus inimese otsusele | algoritmi otsust peab saama inimene üle vaadata |
 
@@ -148,7 +148,7 @@ Inimesel on oma andmete üle mitu õigust (art 12–22). Organisatsioon peab vas
 #### Dokumentatsioon
 
 - **Töötlemistoimingute register** (art 30): milliseid andmeid, millisel eesmärgil ja õiguslikul alusel, kellele edastatakse, kui kaua hoitakse ja millised on turvameetmed. See on andmekaitse „varade nimekiri“.
-- **Andmekaitsealane mõjuhinnang** (DPIA, art 35) tehakse enne töötlemist, mis võib inimestele kaasa tuua kõrge riski: ulatuslik videovalve, eriliigiliste andmete ulatuslik töötlemine, profiilianalüüs ja uus tehnoloogia (nt näotuvastus või tehisintellekt õpilaste hindamisel). Mõjuhinnang on sisuliselt riskianalüüs (31.6) inimese vaatest.
+- **Andmekaitsealane mõjuhinnang** (DPIA – ingl *Data Protection Impact Assessment*, art 35) tehakse enne töötlemist, mis võib inimestele kaasa tuua kõrge riski: ulatuslik videovalve, eriliigiliste andmete ulatuslik töötlemine, profiilianalüüs ja uus tehnoloogia (nt näotuvastus või tehisintellekt õpilaste hindamisel). Mõjuhinnang on sisuliselt riskianalüüs (31.6) inimese vaatest.
 - **Volitatud töötleja lepingud** (art 28) ja nende turvameetmete kontroll.
 - **Rikkumiste register** (art 33 lg 5): iga rikkumine, ka siis, kui teavitamiskohustust ei teki.
 
@@ -160,7 +160,7 @@ Artikkel 32 nõuab riskiga sobivaid tehnilisi ja korralduslikke meetmeid. Üldm�
 
 | Art 32 nõue | Tehniline meede | Peatükk |
 | --- | --- | --- |
-| Pseudonüümimine ja krüpteerimine | BitLocker, TLS, krüpteeritud varukoopiad | 26, 29 |
+| Pseudonüümimine ja krüpteerimine | BitLocker, TLS (ingl *Transport Layer Security*), krüpteeritud varukoopiad | 26, 29 |
 | Konfidentsiaalsus | vähimad õigused, MFA, paroolide räsimine | 18, 27 |
 | Terviklus | räsid, digiallkiri, muudatuste logi | 27, 29 |
 | Käideldavus ja taastamisvõime | varukoopiad, toimepidevus, harjutatud taastamine | 16, 22 |
@@ -205,7 +205,7 @@ Lisaks trahvile võib rikkumisest kahju saanud inimene nõuda kahjuhüvitist (ar
 
 ![intsidendist teavitamise tähtajad · NIS2, GDPR, CRA](../pildid/31-b.png)
 
-Joonis: teavitamise tähtajad. KüTS-i (NIS2) järgi saadab üksus olulisest intsidendist RIA-le (CERT-EE-le) **varajase hoiatuse 24 tunni** jooksul, **intsidendi teavituse 72 tunni** jooksul ja **lõpparuande ühe kuu** jooksul pärast intsidendi teavitust. Isikuandmetega seotud rikkumisest teavitatakse Andmekaitse Inspektsiooni 72 tunni jooksul. Küberkerksuse määruse (CRA) järgi peavad tootjad alates 11. septembrist 2026 teatama aktiivselt ärakasutatavatest nõrkustest oma toodetes.
+Joonis: teavitamise tähtajad. KüTS-i (NIS2) järgi saadab üksus olulisest intsidendist RIA-le (CERT-EE-le (ingl *Computer Emergency Response Team*, Eesti)) **varajase hoiatuse 24 tunni** jooksul, **intsidendi teavituse 72 tunni** jooksul ja **lõpparuande ühe kuu** jooksul pärast intsidendi teavitust. Isikuandmetega seotud rikkumisest teavitatakse Andmekaitse Inspektsiooni 72 tunni jooksul. Küberkerksuse määruse (CRA) järgi peavad tootjad alates 11. septembrist 2026 teatama aktiivselt ärakasutatavatest nõrkustest oma toodetes.
 
 | Etapp | Tähtaeg | Sisu |
 | --- | --- | --- |
@@ -226,21 +226,21 @@ Intsidendi ajal on lihtne teavitamine unustada. Seepärast kirjutatakse intsiden
 
 | Raamistik | Mis see on | Kellele |
 | --- | --- | --- |
-| **E-ITS** | Eesti infoturbestandard, RIA haldab; põhineb Saksa BSI IT-Grundschutzil; moodulid ja meetmed | kohustuslik riigi- ja KOV-asutustele, sobib ka ettevõtetele |
-| **ISO/IEC 27001:2022** | rahvusvaheline infoturbe juhtimissüsteemi standard (ISMS), sertifitseeritav | ettevõtted, kes vajavad sertifikaati klientidele |
+| **E-ITS** | Eesti infoturbestandard, RIA haldab; põhineb Saksa BSI (saksa *Bundesamt für Sicherheit in der Informationstechnik*) IT-Grundschutzil; moodulid ja meetmed | kohustuslik riigi- ja KOV-asutustele, sobib ka ettevõtetele |
+| **ISO/IEC 27001:2022** | rahvusvaheline infoturbe juhtimissüsteemi standard (ISMS – ingl *Information Security Management System*), sertifitseeritav | ettevõtted, kes vajavad sertifikaati klientidele |
 | **NIST CSF 2.0** | USA raamistik: Govern, Identify, Protect, Detect, Respond, Recover | üldine struktuur, tasuta |
-| **CIS Controls** | 18 prioriseeritud tehnilist kontrolli | väiksemad organisatsioonid, kiire algus |
+| **CIS Controls (CIS – ingl *Center for Internet Security*)** | 18 prioriseeritud tehnilist kontrolli | väiksemad organisatsioonid, kiire algus |
 | **Microsoft Security Baselines** | soovitatud Windowsi ja M365 turvaseaded | Windowsi haldajad (ptk 22) |
 
 **E-ITS** on ehitatud kataloogidena. Organisatsioon kirjeldab oma varad (süsteemid, ruumid, rakendused) ja valib igale sobivad **moodulid** (nt „Windows Server“, „Veebiserver“, „Varundus“). Iga mooduli juures on ohud ja **meetmed**, mis jagunevad põhi-, standard- ja kõrgmeetmeteks. Näiteks Windowsi kliendi moodul nõuab muu hulgas turvauuendusi, kasutajakontode haldust ja logimist. E-ITS-i täisrakendamine on suur projekt. Alates 2025. aasta oktoobrist on osal ettevõtetel võimalus standardi asemel rakendada esmaste turvameetmete komplekti.
 
-**ISO/IEC 27001** ei anna valmis tehnilisi meetmeid, vaid nõuab **juhtimissüsteemi**: organisatsioon määrab ulatuse, hindab riskid, valib meetmed (lisa A-st 93 meetme seast), dokumenteerib otsused ja parendab pidevalt (PDCA-tsükkel: planeeri, teosta, kontrolli, täiusta). Sertifitseerimise auditi teeb sõltumatu audiitor.
+**ISO/IEC 27001** ei anna valmis tehnilisi meetmeid, vaid nõuab **juhtimissüsteemi**: organisatsioon määrab ulatuse, hindab riskid, valib meetmed (lisa A-st 93 meetme seast), dokumenteerib otsused ja parendab pidevalt (PDCA-tsükkel (PDCA – ingl *Plan–Do–Check–Act*): planeeri, teosta, kontrolli, täiusta). Sertifitseerimise auditi teeb sõltumatu audiitor.
 
 ### 31.6 Riskijuhtimine
 
 ![riskijuhtimise tsükkel ja riskimaatriks](../pildid/31-c.png)
 
-Joonis: riskijuhtimise tsükkel ja lihtne 3 × 3 riskimaatriks. Riskianalüüs (ptk 24.3) seob tehnika juhtimisega: juhtkond ei pea teadma, mis on Kerberos, kuid peab otsustama, kas „andmeleke paikamata VPN-i kaudu“ on vastuvõetav risk.
+Joonis: riskijuhtimise tsükkel ja lihtne 3 × 3 riskimaatriks. Riskianalüüs (ptk 24.3) seob tehnika juhtimisega: juhtkond ei pea teadma, mis on Kerberos, kuid peab otsustama, kas „andmeleke paikamata VPN-i (ingl *Virtual Private Network*) kaudu“ on vastuvõetav risk.
 
 #### Kuidas tõenäosust ja mõju hinnata
 
@@ -252,7 +252,7 @@ Risk = **tõenäosus × mõju**, mõlemad skaalal 1–3. Et kaks inimest hindaks
 | --- | --- | --- |
 | 1 – madal | harv | võib juhtuda harvem kui kord mitme aasta jooksul; ründeks on vaja erioskusi või füüsilist ligipääsu; tugevad meetmed on juba olemas |
 | 2 – keskmine | võimalik | võib juhtuda umbes kord aastas; nõrkus on teada, kuid süsteem ei ole otse internetis või osa kaitset on olemas |
-| 3 – kõrge | tõenäoline | juhtub mitu korda aastas või on juba juhtunud; süsteem on internetis, ekspluit on avalik (KEV-loetelus) või rünne käib automaatselt |
+| 3 – kõrge | tõenäoline | juhtub mitu korda aastas või on juba juhtunud; süsteem on internetis, ekspluit on avalik (KEV-loetelus (KEV – ingl *Known Exploited Vulnerabilities*)) või rünne käib automaatselt |
 
 **Mõju** – kui suur on kahju, kui oht realiseerub? Hinne määratakse **kõige suurema** mõju järgi: kui käideldavuse mõju on väike, kuid lekivad terviseandmed, on mõju 3.
 
@@ -298,7 +298,7 @@ Jääkriski aktsepteerimine on juhtkonna allkirjastatud otsus, mitte vaikimine. 
 Rollid organisatsioonis:
 
 - **juhtkond** – vastutab, kinnitab riskid ja eelarve;
-- **infoturbejuht** (CISO) – koordineerib turvet, raporteerib juhtkonnale;
+- **infoturbejuht** (CISO – ingl *Chief Information Security Officer*) – koordineerib turvet, raporteerib juhtkonnale;
 - **andmekaitsespetsialist** (DPO) – nõustab isikuandmete küsimustes, kohustuslik nt avalikus sektoris;
 - **IT-administraator** – rakendab tehnilisi meetmeid, logib ja teavitab;
 - **iga töötaja** – järgib reegleid ja teatab kahtlastest sündmustest.

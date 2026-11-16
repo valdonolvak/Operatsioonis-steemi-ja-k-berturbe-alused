@@ -2,21 +2,21 @@
 
 ## 12. Mäluhaldus
 
-Mäluhaldus annab igale protsessile oma privaatse virtuaalse aadressiruumi, vastendab selle füüsilisele mälule lehtede kaupa ja kaitseb protsesse üksteise eest. Windowsis teeb seda **mäluhaldur**. Tänapäeval kuulub mäluhalduse juurde ka hulk ründekaitseid (ASLR, DEP, CFG, varjupinu).
+Mäluhaldus annab igale protsessile oma privaatse virtuaalse aadressiruumi, vastendab selle füüsilisele mälule lehtede kaupa ja kaitseb protsesse üksteise eest. Windowsis teeb seda **mäluhaldur**. Tänapäeval kuulub mäluhalduse juurde ka hulk ründekaitseid (ASLR – ingl *Address Space Layout Randomization*, DEP – ingl *Data Execution Prevention*, CFG – ingl *Control Flow Guard*, varjupinu).
 
 Mäluhaldusel on kolm põhieesmärki:
 
 1. **Eraldamine ja kaitse.** Üks protsess ei tohi lugeda ega muuta teise protsessi ega tuuma mälu. Kui brauser kokku jookseb, ei tohi Word kaasa minna.
-2. **Lihtsus programmeerijale.** Iga programm näeb sama suurt ja pidevat aadressiruumi ega pea teadma, kus RAM-is tema andmed tegelikult on.
+2. **Lihtsus programmeerijale.** Iga programm näeb sama suurt ja pidevat aadressiruumi ega pea teadma, kus RAM-is (ingl *Random-Access Memory*) tema andmed tegelikult on.
 3. **Rohkem mälu, kui on RAM-i.** Kauem kasutamata andmed saab ajutiselt viia kettale ja tuua tagasi, kui neid vaja on.
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/12-maluhaldus.html). Lehel on killustumise demo, aadressi tõlkimise harjutus, lehtede asendamise simulaator, TLB kalkulaator, eraldatud mälu (commit) simulaator ja ründekaitsete harjutus.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/12-maluhaldus.html). Lehel on killustumise demo, aadressi tõlkimise harjutus, lehtede asendamise simulaator, TLB (ingl *Translation Lookaside Buffer*) kalkulaator, eraldatud mälu (commit) simulaator ja ründekaitsete harjutus.
 
 ### 12.1 Saalimine
 
 **Saalimine** (swapping) tähendab terve protsessi viimist mälust kettale ja tagasi. Vanemates süsteemides oli see ainus viis mälust suurema töökoormusega toime tulla.
 
-**Näide.** Arvutil on 1 MB mälu ja kolm 400 KB programmi. Korraga mahub mällu kaks. Kui kasutaja lülitub kolmandale programmile, kirjutab OS ühe programmi tervenisti kettale ja loeb kolmanda sisse. Iga selline vahetus võtab aega, sest kogu programm (400 KB) tuleb kirjutada ja lugeda – ka need osad, mida programm parajasti ei kasuta.
+**Näide.** Arvutil on 1 MB mälu ja kolm 400 KB programmi. Korraga mahub mällu kaks. Kui kasutaja lülitub kolmandale programmile, kirjutab OS (ingl *Operating System*) ühe programmi tervenisti kettale ja loeb kolmanda sisse. Iga selline vahetus võtab aega, sest kogu programm (400 KB) tuleb kirjutada ja lugeda – ka need osad, mida programm parajasti ei kasuta.
 
 Kaasaegne OS viib kettale üksikuid **lehti** (4 KB), mitte tervet protsessi. Nii jäävad aktiivselt kasutatavad osad mällu ja kettale lähevad ainult kasutamata osad. Windows kasutab saalimist piiratud kujul: Store’i rakenduse peatamisel võib kogu tema tööhulga kirjutada faili `swapfile.sys`.
 
@@ -24,7 +24,7 @@ Kaasaegne OS viib kettale üksikuid **lehti** (4 KB), mitte tervet protsessi. Ni
 
 | Mudel | Kirjeldus | Probleem |
 | --- | --- | --- |
-| Üks pidev ala | programm saab ühe järjestikuse mälulõigu (MS-DOS) | kaitse puudub, üks programm korraga |
+| Üks pidev ala | programm saab ühe järjestikuse mälulõigu (MS-DOS – ingl *Microsoft Disk Operating System*) | kaitse puudub, üks programm korraga |
 | Fikseeritud või muutuvad sektsioonid | mälu jagatakse osadeks, iga programm saab ühe | killustumine |
 | Segmenteerimine | loogilised segmendid (kood, andmed, pinu) eri suurusega | väline killustumine; x64-l praktiliselt kasutusest väljas |
 | Lehekülgedeks jaotamine (paging) | mälu jaotatakse võrdse suurusega lehtedeks (4 KB) | lehetabelid võtavad ruumi |
@@ -40,7 +40,7 @@ Kaasaegne OS viib kettale üksikuid **lehti** (4 KB), mitte tervet protsessi. Ni
 
 ### 12.3 Virtuaalmälu
 
-**Virtuaalmälu** (virtual memory) annab programmile mulje pidevast suurest mälust. Programm kasutab ainult **virtuaalaadresse**. Iga virtuaalaadress tõlgitakse füüsiliseks aadressiks protsessori **mäluhaldusüksuses** (MMU) **lehetabelite** abil. Igal protsessil on oma lehetabelid, seega võib kahe protsessi sama aadress osutada eri kohtadele RAM-is.
+**Virtuaalmälu** (virtual memory) annab programmile mulje pidevast suurest mälust. Programm kasutab ainult **virtuaalaadresse**. Iga virtuaalaadress tõlgitakse füüsiliseks aadressiks protsessori **mäluhaldusüksuses** (MMU – ingl *Memory Management Unit*) **lehetabelite** abil. Igal protsessil on oma lehetabelid, seega võib kahe protsessi sama aadress osutada eri kohtadele RAM-is.
 
 #### Aadressi tõlkimine näitega
 
@@ -83,11 +83,11 @@ Joonis: virtuaalaadress jaguneb viieks osaks. Neli esimest on indeksid nelja tas
 
 Kuna programmid kasutavad mälu tavaliselt **lokaalselt** (samu ja lähedasi aadresse), on TLB tabamusmäär üle 99%.
 
-**Lehekülje suurused:** tavaline 4 KB, suur leht 2 MB, hiiglaslik 1 GB. Suured lehed vähendavad TLB-möödalaskmisi. Kui TLB-s on 1536 kirjet, katab see 4 KB lehtedega vaid 6 MB mälu, 2 MB lehtedega aga 3 GB. Seepärast kasutavad suuri lehti andmebaasid (SQL Server) ja hüperviisorid.
+**Lehekülje suurused:** tavaline 4 KB, suur leht 2 MB, hiiglaslik 1 GB. Suured lehed vähendavad TLB-möödalaskmisi. Kui TLB-s on 1536 kirjet, katab see 4 KB lehtedega vaid 6 MB mälu, 2 MB lehtedega aga 3 GB. Seepärast kasutavad suuri lehti andmebaasid (SQL Server (SQL – ingl *Structured Query Language*)) ja hüperviisorid.
 
 ![virtuaalmälu · kahe protsessi lehed, RAM-i raamid ja lehefail](../pildid/12-a.png)
 
-Joonis: lehetabel tõlgib iga protsessi lehe eraldi; sama DLL võib olla mõlemal, kuid RAM-is üks kord. Kettale viidud lehe juurde tekib leheviga, reserveeritud lehel füüsilist mälu pole.
+Joonis: lehetabel tõlgib iga protsessi lehe eraldi; sama DLL (ingl *Dynamic-Link Library*) võib olla mõlemal, kuid RAM-is üks kord. Kettale viidud lehe juurde tekib leheviga, reserveeritud lehel füüsilist mälu pole.
 
 **Jagatud mälu.** Kui kümme programmi kasutavad `kernel32.dll`-i, on selle kood RAM-is ainult üks kord – kõigi lehetabelid osutavad samadele raamidele. Kui protsess tahab jagatud lehte muuta, kasutab Windows **kopeerimist kirjutamisel** (copy-on-write): protsess saab lehest oma koopia ja teised näevad endiselt originaali.
 
@@ -104,7 +104,7 @@ Kui programm pöördub lehe poole, mille lipp *Present* on 0, tekib **leheviga**
 Leheveaid on kahte liiki:
 
 - **pehme leheviga** – leht on mälus, kuid mitte protsessi tööhulgas (nt ootenimekirjas või teise protsessiga jagatud); lahendatakse mikrosekunditega;
-- **kõva leheviga** – leht tuleb lugeda kettalt (lehefailist või EXE/DLL-failist); SSD-lt kümneid või sadu mikrosekundeid, HDD-lt millisekundeid – tuhandeid kordi aeglasem kui RAM.
+- **kõva leheviga** – leht tuleb lugeda kettalt (lehefailist või EXE/DLL-failist); SSD-lt (ingl *Solid-State Drive*) kümneid või sadu mikrosekundeid, HDD-lt (ingl *Hard Disk Drive*) millisekundeid – tuhandeid kordi aeglasem kui RAM.
 
 Pehmeid lehevigu tekib igas arvutis tuhandeid sekundis ja need on normaalsed. Probleem on paljud **kõvad** lehevead.
 
@@ -114,7 +114,7 @@ Kui vaba raami pole, tuleb mõni leht RAM-ist välja viia. Milline? Parim oleks 
 
 | Algoritm | Kelle viib välja | Märkus |
 | --- | --- | --- |
-| **FIFO** | lehe, mis tuli mällu kõige varem | lihtne, kuid võib välja viia sageli kasutatava lehe |
+| **FIFO** (ingl *First In, First Out*) | lehe, mis tuli mällu kõige varem | lihtne, kuid võib välja viia sageli kasutatava lehe |
 | **LRU** (least recently used) | lehe, mida pole kõige kauem kasutatud | hea, kuid täpne arvestus on kallis |
 | **Kell** (clock, teise võimaluse algoritm) | käib lehti ringiratast läbi; kui *Accessed* = 1, nullib selle ja annab teise võimaluse | LRU odav lähend, kasutatakse päris OS-ides |
 | **Optimaalne** (OPT) | lehe, mida vajatakse kõige hiljem | võimatu (vajab tuleviku teadmist), kasutatakse võrdlusalusena |
@@ -155,7 +155,7 @@ Seetõttu ei tähenda väike „vaba“ mälu Ressursimonitoris probleemi: ooten
 
 **SysMain** (endine SuperFetch) laadib kasutusmustrite järgi rakendusi ette ootenimekirja. Kui avad igal hommikul Outlooki, on selle failid juba mälus ja see käivitub kiiremini.
 
-**Mälukaardistatud failid.** EXE- ja DLL-faile ei loeta mällu tervenisti. Windows vastendab faili aadressiruumi ja lehed loetakse alles siis, kui neid kasutatakse. Seepärast võib programm käivituda kiiresti, kuigi fail on suur.
+**Mälukaardistatud failid.** EXE- ja DLL-faile (EXE – ingl *Executable*) ei loeta mällu tervenisti. Windows vastendab faili aadressiruumi ja lehed loetakse alles siis, kui neid kasutatakse. Seepärast võib programm käivituda kiiresti, kuigi fail on suur.
 
 > 🖱️ **Proovi ise:** [eraldatud mälu ja tööhulga simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/12-maluhaldus.html#commit)
 
@@ -168,8 +168,8 @@ Paljud ründed põhinevad sellel, et ründaja kirjutab mällu oma koodi või muu
 | **DEP / NX** | andmelehti (pinu, kuhi) ei saa käivitada | ründaja ei saa pinusse kirjutatud koodi käivitada |
 | **ASLR** | moodulite, pinu ja kuhja aadressid on igal käivitusel juhuslikud | ründaja ei tea, kuhu hüpata |
 | **CFG** (Control Flow Guard) | kaudsed hüpped ainult lubatud sihtkohtadesse | muudetud funktsiooniviitade ärakasutamine |
-| **Riistvaraline varjupinu** (CET shadow stack) | tagastusaadressi koopia on eraldi kaitstud pinus; erinevus tuvastatakse | tagastusaadressi ülekirjutamine (ROP-ründed) |
-| **HVCI / mälu terviklikkus** | tuumas ei saa lehte korraga kirjutada ja käivitada; seda kontrollib hüperviisor | allkirjastamata koodi käivitamine tuumas |
+| **Riistvaraline varjupinu** (CET (ingl *Control-flow Enforcement Technology*) shadow stack) | tagastusaadressi koopia on eraldi kaitstud pinus; erinevus tuvastatakse | tagastusaadressi ülekirjutamine (ROP-ründed (ROP – ingl *Return-Oriented Programming*)) |
+| **HVCI (ingl *Hypervisor-protected Code Integrity*) / mälu terviklikkus** | tuumas ei saa lehte korraga kirjutada ja käivitada; seda kontrollib hüperviisor | allkirjastamata koodi käivitamine tuumas |
 
 **Näide.** Vanas programmis on puhvri ületäitumise viga: kasutaja sisestatud tekst kirjutatakse pinusse ilma pikkust kontrollimata. Ründaja saadab pika teksti, mis kirjutab üle tagastusaadressi. Ilma kaitseteta hüppab programm ründaja koodile. DEP-iga ei saa pinus olevat koodi käivitada. ASLR-iga ei tea ründaja, kus on kasulikud koodijupid. Varjupinuga märkab protsessor, et tagastusaadress on muudetud, ja lõpetab programmi.
 
@@ -190,7 +190,7 @@ Ta käitab ka süsteemilõimi: **tööhulga haldur** (vähendab mälupuuduses t�
 
 Rakendused ei kasuta väikeste objektide jaoks `VirtualAlloc`-i, sest see eraldab mälu vähemalt 4 KB lehtede kaupa. 20-baidise sõne jaoks oleks see raiskamine. Selle asemel kasutatakse **kuhja** (heap). **Kuhjahaldur** (Heap Manager) jagab suure mälupiirkonna väikesteks plokkideks (`HeapAlloc`, C `malloc`, C++ `new`). Windowsis on kaks kuhjatüüpi:
 
-- **NT-kuhi** – traditsiooniline, madala killustumisega kiht (LFH);
+- **NT-kuhi** (NT – ingl *New Technology*) – traditsiooniline, madala killustumisega kiht (LFH – ingl *Low Fragmentation Heap*);
 - **segmentkuhi** (segment heap) – uuem, turvalisem ja säästlikum; vaikimisi Store’i rakendustel, Edge’il ja paljudel süsteemiprotsessidel.
 
 Kuhjas tuleb mälu ise vabastada (`free`, `delete`). Hallatud keeltes (C#, Java) teeb seda **prügikoristaja** (garbage collector). Levinud vead:
@@ -225,7 +225,7 @@ Kõik kolm kasutavad sama riistvaralist põhimõtet (lehetabelid, TLB), kuid mä
 | Kettale saalimine | `pagefile.sys`, `swapfile.sys` | swap-partitsioon või -fail | dünaamilised swap-failid kaustas `/private/var/vm` |
 | Mälu tihendamine | Memory Compression | zswap, zram | tihendatud mälu (compressed memory) |
 | Ülejaotus (overcommit) | ei: eraldatud mälu piir | vaikimisi lubatud | lubatud |
-| Kui mälu saab otsa | eraldamine ebaõnnestub, rakendus saab vea | **OOM killer** lõpetab ühe protsessi | süsteem palub rakendusi sulgeda |
+| Kui mälu saab otsa | eraldamine ebaõnnestub, rakendus saab vea | **OOM (ingl *Out Of Memory*) killer** lõpetab ühe protsessi | süsteem palub rakendusi sulgeda |
 | Vaatamine | Ressursimonitor, RAMMap | `free -h`, `vmstat`, `/proc/meminfo` | Activity Monitor → Memory, `vm_stat` |
 
 **Mida sellest õppida:** Linux lubab programmidel küsida rohkem mälu, kui seda on, ja lahendab puuduse hiljem protsessi lõpetamisega. Windows keeldub juba eraldamisel. Seetõttu jälgivad Linuxi serverite administraatorid OOM killeri logisid (`dmesg`), Windowsi administraatorid aga eraldatud mälu (*Committed Bytes*) ja lehefaili suurust.
