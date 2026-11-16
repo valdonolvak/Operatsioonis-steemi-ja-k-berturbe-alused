@@ -1,5 +1,7 @@
 [← Sissejuhatus](00-sissejuhatus.md) · [Sisukord](../README.md) · [2. Operatsioonisüsteemi ülesanded →](02-os-i-ulesanded.md)
 
+> 📖 **Loe seda peatükki veebilehena:** [peatükk 1 veebilehena](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/peatykid/01-windowsi-ajalugu.html). Seal avanevad interaktiivsed lehed ja animatsioonid uuel vahekaardil ning test eraldi aknas.
+
 ## 1. Windowsi ajalugu
 
 Windows on arenenud MS-DOS-i graafilisest kestast üheks laiemalt kasutatavaks operatsioonisüsteemiks, mille tänane tuum pärineb 1993. aastal ilmunud Windows NT-st. 2026. aasta sügisel on toetatud kliendiversioon Windows 11 (viimane funktsiooniuuendus 26H2) ja serveriversioon Windows Server 2025.

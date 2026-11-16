@@ -1,0 +1,7 @@
+# GitHub Pages: peatükid kasutavad lehe kujundust _layouts/peatykk.html.
+# Esialgu ainult peatükk 1 (proov). Kui see sobib, laienda path väärtusele "peatykid".
+defaults:
+  - scope:
+      path: "peatykid/01-windowsi-ajalugu.md"
+    values:
+      layout: peatykk

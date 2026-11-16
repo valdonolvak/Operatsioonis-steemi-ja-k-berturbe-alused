@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title | default: "Peatükk" }} · Operatsioonisüsteemide ja küberturbe alused</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:900px;margin:0 auto;padding:0 1rem 3rem;line-height:1.65;font-size:17px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:.6rem 0;margin-bottom:1.5rem;font-size:14px}
+header.top .kursus{color:var(--muted);margin-right:auto}
+a{color:var(--accent)}
+h1,h2{font-size:26px;font-weight:600;line-height:1.3;margin:1.5rem 0 1rem}
+h3{font-size:21px;font-weight:600;margin:2.5rem 0 .6rem;padding-top:.5rem;border-top:1px solid var(--border)}
+h4{font-size:18px;font-weight:600;margin:1.8rem 0 .5rem}
+p,ul,ol{margin:.6rem 0}
+li{margin:.2rem 0}
+img{max-width:100%;height:auto;display:block;margin:1rem auto;border-radius:8px}
+code{font-family:var(--mono);font-size:.88em;background:var(--card);padding:1px 5px;border-radius:4px}
+pre{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.9rem 1rem;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:14px}
+blockquote{margin:1rem 0;padding:.7rem 1.1rem;background:var(--accent-bg);border-left:4px solid var(--accent);border-radius:0 10px 10px 0}
+blockquote p{margin:.3rem 0}
+table{border-collapse:collapse;width:100%;margin:1rem 0;font-size:15px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--border);padding:.45rem .7rem;text-align:left;vertical-align:top}
+th{background:var(--card);font-weight:600}
+hr{border:0;border-top:1px solid var(--border);margin:2rem 0}
+.uus-aken::after{content:" ↗";font-size:.85em}
+</style>
+</head>
+<body>
+<header class="top">
+  <span class="kursus">Operatsioonisüsteemide ja küberturbe alused</span>
+  <a href="../">Sisukord</a>
+  <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/{{ page.path }}">Ava GitHubis</a>
+</header>
+<main>
+{{ content }}
+</main>
+<script>
+// Õpilehed ja animatsioonid avanevad uuel vahekaardil, testid eraldi aknas.
+(function(){
+  var self = location.pathname.replace(/\.html$/, '');
+  document.querySelectorAll('main a[href]').forEach(function(a){
+    var u; try { u = new URL(a.getAttribute('href'), location.href); } catch(e) { return; }
+    // Peida GitHubi vaate jaoks mõeldud rida „Loe peatükki veebilehena“.
+    if (u.pathname.replace(/\.html$/, '') === self) { var blk = a.closest('blockquote') || a.closest('p'); if (blk) { blk.remove(); return; } }
+    if (/\/interaktiivne\/\d+-test\.html$/.test(u.pathname)) {
+      a.target = '_blank'; a.rel = 'noopener'; a.classList.add('uus-aken');
+      a.title = 'Avaneb eraldi aknas';
+      a.addEventListener('click', function(e){
+        if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+        var w = window.open(a.href, 'test', 'popup=yes,width=1100,height=850');
+        if (w) { e.preventDefault(); w.focus(); }
+      });
+    } else if (/\/(interaktiivne|animatsioonid)\//.test(u.pathname)) {
+      a.target = '_blank'; a.rel = 'noopener'; a.classList.add('uus-aken');
+      a.title = 'Avaneb uuel vahekaardil';
+    }
+  });
+})();
+</script>
+</body>
+</html>
