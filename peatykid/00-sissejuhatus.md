@@ -2,7 +2,7 @@
 
 ## Sissejuhatus
 
-See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi näitel ning on ajakohastatud 2026. aasta seisu järgi. Materjal järgib Einar Kroghi õpiku *An Introduction to Windows Operating System* (2. tr, Bookboon 2017) peatükkide ülesehitust, kuid tekst on kirjutatud uuesti eesti keeles ja täiendatud sellega, mis on vahepeal muutunud: Windows 11, Windows Server 2025, virtualiseerimispõhine turve, tehisintellekt (AI) operatsioonisüsteemis ja tänapäevane küberturve.
+See õppematerjal annab operatsioonisüsteemide (OS) teooria alused Windowsi näitel ning on ajakohastatud 2026. aasta seisu järgi. Materjal järgib Einar Kroghi õpiku An Introduction to Windows Operating System (2. tr, Bookboon 2017) peatükkide ülesehitust ja õppematerjali on täiendatud sellega, mis on vahepeal muutunud. Lisatud on Windows 11, Windows Server 2025, virtualiseerimispõhine turve, tehisintellekt (AI) operatsioonisüsteemis ja tänapäevase küberturbe peatükid.
 
 **Sihtrühm.** Kutse- ja kõrghariduse IT-erialade õppijad (IT-süsteemide spetsialist, nooremspetsialist, administraator), samuti täiskasvanud õppijad, kes tahavad mõista, mis toimub Windowsi „kapoti all“. Eeldatakse arvuti tavakasutaja oskusi; programmeerimise kogemus tuleb kasuks, kuid pole vajalik.
 
