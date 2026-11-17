@@ -320,7 +320,7 @@ Get-ComputerInfo -Property OsName, OsVersion, OsBuildNumber, WindowsVersion, OsA
 winver
 ```
 
-Leia [Windows 11 release health]([https://learn.microsoft.com/windows/release-health/](https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information)) lehelt, mis kuupäeval lõpeb sinu versiooni tugi.
+Leia [Windows 11 toe lõppemise info (Microsoft Learn)](https://learn.microsoft.com/en-us/windows/release-health/windows11-release-information)  lehelt, mis kuupäeval lõpeb sinu versiooni tugi.
 
 ### Iseseisvad ülesanded
 
