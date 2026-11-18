@@ -137,7 +137,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/12-maluhaldus.md">← Peatükk 12</a> · <a href="12-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Mäluhaldus – õpileht</h1>
-<p>Mäluhaldur annab igale protsessile oma virtuaalse aadressiruumi, tõlgib aadressid füüsilisteks ja otsustab, millised lehed RAM-is (ingl <i>Random-Access Memory</i>) hoida. See leht aitab aru saada, <b>miks</b> mäluhaldus on üles ehitatud just nii, nagu ta on – iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
+<p>Mäluhaldur annab igale protsessile oma virtuaalse aadressiruumi, tõlgib aadressid füüsilisteks ja otsustab, millised lehed RAM-is (<i>Random-Access Memory</i>) hoida. See leht aitab aru saada, <b>miks</b> mäluhaldus on üles ehitatud just nii, nagu ta on – iga harjutuse juures on selgitus, mida see näitab ja miks see oluline on.</p>
 <div class="why">
 <h4>Suur pilt: milleks mäluhaldust üldse vaja on?</h4>
 <p>Arvutis töötab korraga kümneid programme (brauser, Word, Teams, viirusetõrje, sadu taustaprotsesse), kuid RAM on üks. Kui programmid kasutaksid RAM-i otse, tekiks kolm probleemi:</p>
@@ -148,13 +148,13 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div><b>3. Mälu ei jätku</b>Programmid vajavad kokku rohkem mälu, kui RAM-i on. Midagi tuleb hoida mujal (kettal).</div>
 </div>
 <div class="why">
-<p><b>Lahendus on virtuaalmälu.</b> Iga programm saab oma „kujuteldava“ mälu (virtuaalse aadressiruumi), mis algab nullist ja on tohutu suur. Programm ei tea, kus RAM-is tema andmed tegelikult asuvad. Protsessori <b>MMU (ingl <i>Memory Management Unit</i>)</b> tõlgib igal pöördumisel virtuaalaadressi füüsiliseks aadressiks <b>lehetabeli</b> järgi. Mälu jagatakse selleks 4 KB tükkideks – <b>lehtedeks</b>.</p>
+<p><b>Lahendus on virtuaalmälu.</b> Iga programm saab oma „kujuteldava“ mälu (virtuaalse aadressiruumi), mis algab nullist ja on tohutu suur. Programm ei tea, kus RAM-is tema andmed tegelikult asuvad. Protsessori <b>MMU (<i>Memory Management Unit</i>)</b> tõlgib igal pöördumisel virtuaalaadressi füüsiliseks aadressiks <b>lehetabeli</b> järgi. Mälu jagatakse selleks 4 KB tükkideks – <b>lehtedeks</b>.</p>
 <p><b>Kuidas lehte kasutada?</b> Harjutused on järjekorras, iga järgmine ehitab eelmisele:</p>
 <ol>
 <li><b>Killustumine</b> – miks jaotatakse mälu lehtedeks, mitte antakse programmile üks järjestikune tükk.</li>
 <li><b>Aadressi tõlkimine</b> – kuidas virtuaalaadress muutub füüsiliseks ja miks protsessid üksteise mälu ei näe.</li>
 <li><b>Lehtede asendamine</b> – mis juhtub, kui RAM saab täis.</li>
-<li><b>TLB (ingl <i>Translation Lookaside Buffer</i>)</b> – miks tõlkimine arvutit aeglaseks ei tee.</li>
+<li><b>TLB (<i>Translation Lookaside Buffer</i>)</b> – miks tõlkimine arvutit aeglaseks ei tee.</li>
 <li><b>Eraldatud mälu</b> – kuidas Windows arvestab, kui palju mälu programmidele lubada.</li>
 <li><b>Ründekaitsed</b> – kuidas mäluhaldus aitab rünnete vastu.</li>
 </ol>
@@ -178,8 +178,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <div class="info" id="kinfo"></div>
   <details class="more"><summary>Kus see päriselt esineb?</summary>
   <p>Windows ei anna protsessidele füüsilist mälu ühe tükina – seepärast välist killustumist RAM-is protsesside vahel ei teki. Sama probleem esineb aga mujal:</p>
-  <ul><li><b>Kuhjas</b> – kui programm eraldab ja vabastab eri suurusega objekte, võib kuhja tekkida auke (Windowsi madala killustumisega kuhi LFH (ingl <i>Low Fragmentation Heap</i>) on loodud seda vähendama).</li>
-  <li><b>Kettal</b> – faili osad võivad olla kettal laiali. HDD-l (ingl <i>Hard Disk Drive</i>) on see aeglane, seepärast on Windowsis „Optimeeri draive“ (defragmentimine). SSD-l (ingl <i>Solid-State Drive</i>) see jõudlust praktiliselt ei mõjuta.</li>
+  <ul><li><b>Kuhjas</b> – kui programm eraldab ja vabastab eri suurusega objekte, võib kuhja tekkida auke (Windowsi madala killustumisega kuhi LFH (<i>Low Fragmentation Heap</i>) on loodud seda vähendama).</li>
+  <li><b>Kettal</b> – faili osad võivad olla kettal laiali. HDD-l (<i>Hard Disk Drive</i>) on see aeglane, seepärast on Windowsis „Optimeeri draive“ (defragmentimine). SSD-l (<i>Solid-State Drive</i>) see jõudlust praktiliselt ei mõjuta.</li>
   <li><b>Draiverid</b>, mis vajavad seadme jaoks järjestikust füüsilist mälu – pikalt töötanud arvutis võib seda olla raske leida.</li></ul>
   <p><b>Sisemine killustumine</b> on lehtede hind: keskmiselt jääb iga mälupiirkonna viimasest lehest pool tühjaks. 4 KB lehtede puhul on see väike kadu.</p></details>
 </div>
@@ -226,7 +226,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <ul><li>Iga <b>veerg</b> on üks pöördumine ajas (vasakult paremale). Ülemises reas on lehe number, mida programm vajab.</li>
 <li>Iga <b>rida</b> näitab, mis leht on selles raamis pärast seda pöördumist.</li>
 <li><span style="color:var(--bad);font-weight:700">Punane</span> lahter = leheviga, leht toodi sellesse raami. <span style="color:var(--ok);font-weight:700">Roheline</span> = tabamus, leht oli juba olemas.</li></ul>
-<p><b>Mida teha:</b> vaata peatüki näidet algoritmidega FIFO (ingl <i>First In, First Out</i>) ja LRU (ingl <i>Least Recently Used</i>) ning loe allpool olevat samm-sammult selgitust. Siis vali „Belady anomaalia“ ja võrdle FIFO tulemust 3 ja 4 raamiga.</p>
+<p><b>Mida teha:</b> vaata peatüki näidet algoritmidega FIFO (<i>First In, First Out</i>) ja LRU (<i>Least Recently Used</i>) ning loe allpool olevat samm-sammult selgitust. Siis vali „Belady anomaalia“ ja võrdle FIFO tulemust 3 ja 4 raamiga.</p>
 </div>
 <div class="card">
   <div class="row" style="margin-top:0"><span>Näide: <select id="rpre"><option value="ch">Peatüki näide</option><option value="bel">Belady anomaalia</option><option value="loc">Lokaalsus (tsükkel)</option><option value="scan">Suur fail läbi (skaneerimine)</option></select></span><span>Raame: <select id="rfr"><option>3</option><option>4</option><option>5</option></select></span></div>
@@ -250,7 +250,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks TLB-d vaja on?</h4>
 <p>Lehetabelid asuvad ise RAM-is. Kui protsessor tahab lugeda ühte baiti, peaks ta enne lugema RAM-ist <b>4 lehetabeli kirjet</b> (4 taset) ja alles siis andmed – kokku 5 mälupöördumist ühe asemel. Arvuti oleks 5 korda aeglasem.</p>
-<p><b>TLB</b> (Translation Lookaside Buffer) on protsessoris olev väike ja väga kiire tabel, mis mäletab viimaseid tõlkeid: „leht 0x7FF6A1B2C → raam 0x1F3A“. Võrdlus: sa ei otsi sõbra numbrit iga kord telefoniraamatust, vaid helistad viimaste kõnede nimekirjast.</p>
+<p><b>TLB</b> (<i>Translation Lookaside Buffer</i>) on protsessoris olev väike ja väga kiire tabel, mis mäletab viimaseid tõlkeid: „leht 0x7FF6A1B2C → raam 0x1F3A“. Võrdlus: sa ei otsi sõbra numbrit iga kord telefoniraamatust, vaid helistad viimaste kõnede nimekirjast.</p>
 <p>Kuna programmid kasutavad sama lehte korduvalt (lokaalsus – ühes 4 KB lehes on 1000 täisarvu), leitakse tõlge TLB-st üle 99% juhtudest. Tõlkimine muutub peaaegu nähtamatuks.</p>
 <p><b>Mida teha:</b> vaata, kuidas muutub keskmine aeg, kui tabamusmäär langeb 99%-lt 90%-le. Siis vali allpool lehe suuruseks 2 MB ja vaata, kui palju mälu TLB nüüd katab.</p>
 </div>
@@ -261,7 +261,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <div class="kpis" id="lkpi"></div>
   <div class="info" id="linfo"></div>
   <h3 style="margin-top:1.2rem">Kui palju mälu katab TLB?</h3>
-  <p style="font-size:14.5px">TLB-s on piiratud arv kirjeid ja iga kirje katab ühe lehe. Kui programm kasutab rohkem mälu, kui TLB katab (nt suur andmebaas), tuleb tõlkeid pidevalt uuesti lehetabelist lugeda. <b>Suurem leht</b> tähendab, et üks kirje katab rohkem mälu – seepärast kasutavad SQL Server (SQL – ingl <i>Structured Query Language</i>) ja hüperviisorid 2 MB lehti.</p>
+  <p style="font-size:14.5px">TLB-s on piiratud arv kirjeid ja iga kirje katab ühe lehe. Kui programm kasutab rohkem mälu, kui TLB katab (nt suur andmebaas), tuleb tõlkeid pidevalt uuesti lehetabelist lugeda. <b>Suurem leht</b> tähendab, et üks kirje katab rohkem mälu – seepärast kasutavad SQL Server (SQL – <i>Structured Query Language</i>) ja hüperviisorid 2 MB lehti.</p>
   <div class="row" style="margin-top:4px"><span>TLB kirjeid: <select id="le"><option>64</option><option>512</option><option selected>1536</option><option>2048</option></select></span><span>Lehe suurus: <select id="lp"><option value="4">4 KB</option><option value="2048">2 MB</option><option value="1048576">1 GB</option></select></span></div>
   <div class="kpis" id="lcov"></div>
 </div>
@@ -278,7 +278,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <li><b>Eraldamine (commit)</b> = ostad pileti. Lennufirma <b>lubab</b>, et sul on koht. Windows müüb „pileteid“ ainult nii palju, kui kohti on: <b>eraldatud mälu limiit = RAM + lehefail</b>. Kui limiit on täis, ei saa programm rohkem mälu, isegi kui RAM-is on parajasti vaba ruumi.</li>
 <li><b>Kasutamine</b> = istud lennukis oma kohale. Alles siis võtab leht päriselt RAM-i. Kui RAM on täis, viib Windows kauem kasutamata lehti lehefaili.</li>
 </ul>
-<p><b>Linux</b> käitub nagu lennufirma, mis müüb rohkem pileteid kui kohti (<b>ülebroneerimine</b>, overcommit): ta eeldab, et kõik ei kasuta oma mälu ära. Kui siiski kõik tulevad, tõstetakse keegi lennukist maha – <b>OOM (ingl <i>Out Of Memory</i>) killer</b> lõpetab suurima protsessi.</p>
+<p><b>Linux</b> käitub nagu lennufirma, mis müüb rohkem pileteid kui kohti (<b>ülebroneerimine</b>, overcommit): ta eeldab, et kõik ei kasuta oma mälu ära. Kui siiski kõik tulevad, tõstetakse keegi lennukist maha – <b>OOM (<i>Out Of Memory</i>) killer</b> lõpetab suurima protsessi.</p>
 <p><b>Mida teha (järjekorras):</b></p>
 <ol>
 <li>Brauser: vajuta „Reserveeri 4 GB“ – vaata, et ribad ei muutu.</li>
@@ -319,7 +319,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <div class="stack" id="sst"></div>
   <div class="slab"><span>puhver (8 baiti)</span><span>tagastusaadress</span></div>
   <div class="row"><span>Ründaja meetod: <label class="tg"><input type="radio" name="sm" value="code" checked> <span>oma kood pinus</span></label> <label class="tg"><input type="radio" name="sm" value="rop"> <span>programmi koodijupid (ROP)</span></label></span></div>
-  <div class="row"><span>Kaitsed: <label class="tg"><input type="checkbox" id="sdep"> <span>DEP</span></label> <label class="tg"><input type="checkbox" id="saslr"> <span>ASLR</span></label> <label class="tg"><input type="checkbox" id="sss"> <span>Varjupinu</span></label></span></div>
+  <div class="row"><span>Kaitsed: <label class="tg"><input type="checkbox" id="sdep"> <span>DEP (<i>Data Execution Prevention</i>)</span></label> <label class="tg"><input type="checkbox" id="saslr"> <span>ASLR (<i>Address Space Layout Randomization</i>)</span></label> <label class="tg"><input type="checkbox" id="sss"> <span>Varjupinu</span></label></span></div>
   <div class="info" id="sinfo"></div>
 </div>
 <p style="margin-top:1.2rem">Nüüd harjuta: vali iga ründe kohta kaitse, mis selle kõige otsesemalt peatab või muudab väga raskeks.</p>
@@ -358,7 +358,7 @@ function kRun(){ // tagastab oleku pärast ki sammu
   return {cont,frames,log,fail};
 }
 const KEC=['<b>A (12 KB)</b> laaditakse mälu algusesse – mälu on tühi, nii et esimene vaba koht on aadressil 0.',
- '<b>B (10 KB)</b> pannakse kohe A järele. OS kasutab reeglit <b>„esimene sobiv auk“</b> (first fit): mälu otsitakse algusest ja programm pannakse esimesse vabasse alasse, kuhu ta mahub.',
+ '<b>B (10 KB)</b> pannakse kohe A järele. OS (<i>Operating System</i>) kasutab reeglit <b>„esimene sobiv auk“</b> (first fit): mälu otsitakse algusest ja programm pannakse esimesse vabasse alasse, kuhu ta mahub.',
  '<b>C (14 KB)</b> pannakse B järele – see on esimene koht, kuhu ta mahub.',
  '<b>D (8 KB)</b> pannakse C järele.',
  '<b>E (12 KB)</b> pannakse D järele. Mälu lõppu jääb veel 8 KB vaba ruumi.',
@@ -472,7 +472,7 @@ $('rref').value=RP.ch;rDraw();
 function lDraw(){const h=+$('lh').value/100,m=+$('lm').value,L=+$('ll').value;$('lhv').textContent=fmt(h*100)+'%';$('lmv').textContent=m+' ns';$('llv').textContent=L;
   const hit=1+m,miss=1+L*m+m,eat=h*hit+(1-h)*miss;
   $('lkpi').innerHTML=`<div>TLB tabamus<b>${hit} ns</b></div><div>TLB möödalask<b>${miss} ns</b></div><div>Keskmine<b>${fmt(eat)} ns</b></div><div>Aeglustus võrreldes ideaaliga<b>${fmt((eat/m-1)*100)}%</b></div>`;
-  $('linfo').innerHTML=`<div class="calc">TLB tabamus: 1 ns (TLB) + ${m} ns (andmed) = ${hit} ns<br>TLB möödalask: 1 ns + ${L} × ${m} ns (lehetabelid) + ${m} ns (andmed) = ${miss} ns<br>Keskmine: ${fmt(h,3)} × ${hit} + ${fmt(1-h,3)} × ${miss} = <b>${fmt(eat)} ns</b></div>Ilma TLB-ta võtaks iga pöördumine ${miss-1} ns ehk ${L+1} korda kauem. ${h>=0.99?'Tänu lokaalsusele on tabamusmäär tavaliselt üle 99% ja tõlkimine on peaaegu nähtamatu.':'Kui programm hüppab mälus palju ringi (suur andmebaas, VM), langeb tabamusmäär – siis aitavad suured lehed.'}`;
+  $('linfo').innerHTML=`<div class="calc">TLB tabamus: 1 ns (TLB) + ${m} ns (andmed) = ${hit} ns<br>TLB möödalask: 1 ns + ${L} × ${m} ns (lehetabelid) + ${m} ns (andmed) = ${miss} ns<br>Keskmine: ${fmt(h,3)} × ${hit} + ${fmt(1-h,3)} × ${miss} = <b>${fmt(eat)} ns</b></div>Ilma TLB-ta võtaks iga pöördumine ${miss-1} ns ehk ${L+1} korda kauem. ${h>=0.99?'Tänu lokaalsusele on tabamusmäär tavaliselt üle 99% ja tõlkimine on peaaegu nähtamatu.':'Kui programm hüppab mälus palju ringi (suur andmebaas, VM – <i>Virtual Machine</i>), langeb tabamusmäär – siis aitavad suured lehed.'}`;
   const e=+$('le').value,p=+$('lp').value,kb=e*p;
   $('lcov').innerHTML=`<div>TLB katab<b>${kb>=1048576?fmt(kb/1048576)+' GB':kb>=1024?fmt(kb/1024)+' MB':kb+' KB'}</b></div><div>16 GB mälu jaoks on vaja kirjeid<b>${fmt(16*1048576/p,0)}</b></div>`;}
 ['lh','lm','ll'].forEach(i=>$(i).oninput=lDraw);['le','lp'].forEach(i=>$(i).onchange=lDraw);lDraw();
@@ -514,8 +514,8 @@ function sDraw(){const n=+$('sl').value,code=document.querySelector('input[name=
   if(n<=8){m=`Tekst mahub puhvrisse. Tagastusaadress on puutumata ja funktsiooni lõpus naaseb programm õigesse kohta. ${n===8?'Puhver on täpselt täis – üks märk veel ja algab ületäitumine.':'Liiguta liugurit paremale.'}`;c='ok'}
   else if(n<12){m=`<b>Ületäitumine!</b> Tekst kirjutas üle osa tagastusaadressist. Funktsiooni lõpus hüppab programm suvalisse kohta ja jookseb kokku (access violation). Nii avastatakse sageli turvavigu – ründaja proovib nüüd sisendi pikkust ja sisu nii sättida, et aadress oleks tema valitud.`;c='bad'}
   else{if(ss){m=`<b>Rünne peatatud – varjupinu.</b> Protsessor hoidis tagastusaadressi koopiat eraldi kaitstud pinus. Funktsiooni lõpus võrdles ta mõlemat, leidis erinevuse ja lõpetas programmi. See töötab mõlema meetodi vastu.`;c='ok'}
-   else if(code&&dep){m=`<b>Rünne peatatud – DEP.</b> Tagastusaadress viitab ründaja koodile pinus, kuid pinu lehtedel on NX-lipp. Protsessor keeldub sealt koodi käivitamast ja programm lõpetatakse. Ründaja peab proovima ROP-i.`;c='ok'}
-   else if(!code&&aslr){m=`<b>Rünne suure tõenäosusega ebaõnnestub – ASLR.</b> ROP vajab programmi koodijuppide täpseid aadresse, kuid DLL-id on laaditud juhuslikule aadressile. Ründaja peab aadressi ära arvama või leidma teise vea, mis aadressi lekitab. Pane tähele, et DEP siin ei aita – ROP kasutab programmi enda (käivitatavat) koodi.`;c='ok'}
+   else if(code&&dep){m=`<b>Rünne peatatud – DEP.</b> Tagastusaadress viitab ründaja koodile pinus, kuid pinu lehtedel on NX-lipp (NX – <i>No-eXecute</i>). Protsessor keeldub sealt koodi käivitamast ja programm lõpetatakse. Ründaja peab proovima ROP-i.`;c='ok'}
+   else if(!code&&aslr){m=`<b>Rünne suure tõenäosusega ebaõnnestub – ASLR.</b> ROP vajab programmi koodijuppide täpseid aadresse, kuid DLL-id (<i>Dynamic-Link Library</i>) on laaditud juhuslikule aadressile. Ründaja peab aadressi ära arvama või leidma teise vea, mis aadressi lekitab. Pane tähele, et DEP siin ei aita – ROP kasutab programmi enda (käivitatavat) koodi.`;c='ok'}
    else if(code&&aslr){m=`<b>Rünne võib õnnestuda.</b> ASLR muudab pinu aadressi juhuslikuks, nii et ründajal on raskem teada, kuhu hüpata, kuid ilma DEP-ita saab pinus olevat koodi käivitada. Ründajad kasutavad nt pika „NOP-liuguga“ koodi, et tabada ka ligikaudu õiget kohta. Lülita sisse DEP.`;c='bad'}
    else{m=`<b>Rünne õnnestus!</b> Tagastusaadress on täielikult ründaja oma. ${code?'Programm hüppab pinus olevale ründaja koodile ja täidab selle.':'Programm hüppab DLL-i koodijuppidele, mille ahel teeb ründaja soovitud tegevuse.'} ${!code&&dep?'DEP on küll sees, kuid see ei aita: ROP kasutab programmi enda koodi, mis ongi käivitatav. ':''}Lülita sisse kaitseid ja vaata, milline neist aitab.`;c='bad'}}
   I.className='info '+c;I.innerHTML=m}
@@ -529,9 +529,9 @@ function quiz(box,score,reset,opts,items,done){let ans={};
 quiz('qtasks','qscore','qreset',['DEP / NX','ASLR','CFG','Varjupinu','HVCI'],[
  ['Ründaja kirjutab puhvri ületäitumisega pinusse oma masinkoodi ja üritab selle käivitada.',0,'Pinu lehtedel on NX-lipp – protsessor keeldub sealt koodi käivitamast.'],
  ['Ründaja teab, et vajalik DLL laaditakse alati samale aadressile, ja hüppab sealsele funktsioonile.',1,'ASLR laadib moodulid igal käivitusel (või taaskäivitusel) juhuslikule aadressile, nii et ründaja ei tea, kuhu hüpata.'],
- ['Ründaja kirjutab kuhjas üle objekti funktsiooniviida, et kaudne kutse läheks suvalisse koodikohta.',2,'CFG kontrollib enne iga kaudset kutset, kas sihtkoht on lubatud funktsiooni algus.'],
+ ['Ründaja kirjutab kuhjas üle objekti funktsiooniviida, et kaudne kutse läheks suvalisse koodikohta.',2,'CFG (<i>Control Flow Guard</i>) kontrollib enne iga kaudset kutset, kas sihtkoht on lubatud funktsiooni algus.'],
  ['Ründaja kirjutab üle tagastusaadressi ja ehitab programmi enda koodijuppidest ROP-ahela.',3,'Riistvaraline varjupinu hoiab tagastusaadressi koopiat kaitstud mälus. Kui tavalise pinu aadress erineb, lõpetatakse programm.'],
- ['Pahatahtlik draiver üritab tuumas koodilehte muuta ja seejärel seda käivitada.',4,'HVCI (mälu terviklikkus) laseb hüperviisoril tagada, et tuuma leht pole korraga kirjutatav ja käivitatav ning käivitada saab ainult allkirjastatud koodi.'],
+ ['Pahatahtlik draiver üritab tuumas koodilehte muuta ja seejärel seda käivitada.',4,'HVCI (<i>Hypervisor-protected Code Integrity</i>; mälu terviklikkus) laseb hüperviisoril tagada, et tuuma leht pole korraga kirjutatav ja käivitatav ning käivitada saab ainult allkirjastatud koodi.'],
  ['Ründaja on saanud kuhja kirjutada oma shellcode’i ja suunab programmi sinna.',0,'Kuhi on andmeala ja selle lehed on märgitud mittekäivitatavaks.'],
  ['Rünne töötab ainult siis, kui ründaja teab täpselt, kus asub lõime pinu.',1,'ASLR muudab juhuslikuks ka pinu ja kuhja asukohad.']],
  'Kaitsed täiendavad üksteist: DEP takistab oma koodi käivitamist, ASLR peidab aadressid, CFG ja varjupinu kaitsevad juhtimisvoogu, HVCI kaitseb tuuma.');

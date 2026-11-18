@@ -35,9 +35,9 @@ Ajas juhtub järgmine:
 
 Kui lõim B oleks alustanud hetk hiljem, oleks A jõudnud mõlemad lukud võtta ja ummikut poleks tekkinud. Seepärast on ummikud ajastusest sõltuvad ja raskesti korratavad.
 
-**Andmebaas.** Tehing 1 lukustab rea X ja tahab rida Y, tehing 2 vastupidi. SQL Server (SQL – ingl *Structured Query Language*) tuvastab selle ja katkestab ühe tehingu (*deadlock victim*).
+**Andmebaas.** Tehing 1 lukustab rea X ja tahab rida Y, tehing 2 vastupidi. SQL Server (SQL – *Structured Query Language*) tuvastab selle ja katkestab ühe tehingu (*deadlock victim*).
 
-**Kasutajaliides.** Taustalõim ootab, et UI-lõim (UI – ingl *User Interface*) midagi teeks (nt uuendaks akent), UI-lõim aga ootab sünkroonselt taustalõime lõppu. Aken ei joonista end enam ümber ja Windows kirjutab tiitliribale „Ei vasta“. Tuntud näide on .NET-is `async`-meetodi tulemuse sünkroonne ootamine UI-lõimes (`.Result` või `.Wait()`): UI-lõim jääb ootama, kuid ülesande jätk tahab samuti UI-lõimes töötada.
+**Kasutajaliides.** Taustalõim ootab, et UI-lõim (UI – *User Interface*) midagi teeks (nt uuendaks akent), UI-lõim aga ootab sünkroonselt taustalõime lõppu. Aken ei joonista end enam ümber ja Windows kirjutab tiitliribale „Ei vasta“. Tuntud näide on .NET-is `async`-meetodi tulemuse sünkroonne ootamine UI-lõimes (`.Result` või `.Wait()`): UI-lõim jääb ootama, kuid ülesande jätk tahab samuti UI-lõimes töötada.
 
 **Söövad filosoofid** (Dijkstra, 1965). Viis filosoofi istub ümmarguse laua taga, igaühe vahel on üks kahvel. Söömiseks on vaja kahte kahvlit: vasakut ja paremat. Kui kõik võtavad korraga vasaku kahvli ja ootavad paremat, on igaühel üks kahvel ja keegi ei saa süüa. See on klassikaline ummiku mudel, kus ressursse (kahvleid) jagavad naabrid.
 
@@ -100,7 +100,7 @@ Joonis: tsükkel T1 → P → T2 → S → T3 → F → T1 on olemas, kuid print
 
 #### Ignoreerimine
 
-Miks ei kaitse Windows rakendusi ummikute eest? Täielik kaitse oleks kallis: OS (ingl *Operating System*) peaks iga luku võtmise juures kontrollima kõiki teisi lõimi ja lukke. Windowsis on korraga tuhandeid lõimi ja sekundis miljoneid lukuoperatsioone. Lisaks ei tea OS ette, milliseid ressursse rakendus tulevikus tahab. Seepärast vastutab ummikute eest **arendaja** ja kasutaja „lahendab“ ummiku sellega, et sulgeb rippuva programmi Tegumihalduris.
+Miks ei kaitse Windows rakendusi ummikute eest? Täielik kaitse oleks kallis: OS (*Operating System*) peaks iga luku võtmise juures kontrollima kõiki teisi lõimi ja lukke. Windowsis on korraga tuhandeid lõimi ja sekundis miljoneid lukuoperatsioone. Lisaks ei tea OS ette, milliseid ressursse rakendus tulevikus tahab. Seepärast vastutab ummikute eest **arendaja** ja kasutaja „lahendab“ ummiku sellega, et sulgeb rippuva programmi Tegumihalduris.
 
 #### Tuvastamine ja taastamine
 
@@ -172,7 +172,7 @@ Nüüd võtavad mõlemad lõimed esmalt sama luku ja tsükkel ei saa tekkida. Wi
 
 ### 11.4 Tööriistad ummikute leidmiseks
 
-- **Ressursimonitor** (`resmon`) → CPU (ingl *Central Processing Unit*) → paremklõps protsessil → „Analüüsi ooteahelat“. See kasutab Windowsi **Wait Chain Traversal** (WCT) funktsiooni ja näitab, millist lõime või protsessi valitud protsess ootab. Kui ahelas on tsükkel, on tegu ummikuga;
+- **Ressursimonitor** (`resmon`) → CPU (*Central Processing Unit*) → paremklõps protsessil → „Analüüsi ooteahelat“. See kasutab Windowsi **Wait Chain Traversal** (WCT) funktsiooni ja näitab, millist lõime või protsessi valitud protsess ootab. Kui ahelas on tsükkel, on tegu ummikuga;
 - **Process Explorer** – lõimede pinud (stack) ja ooteobjektid;
 - **WinDbg** – käsud `!locks` (tuuma lukud), `!analyze -hang` (rippumise analüüs), `~*k` (kõigi lõimede pinud);
 - **Driver Verifier** – draiverite lukureeglite kontroll;
@@ -232,7 +232,7 @@ Windowsis: ava Ressursimonitor, vali mõni „Ei vasta“ olekus või ootav prot
 
 **1. Ummiku tekitamine ja lahendamine.** Kirjuta PowerShell 7-s või C#-s kaks lõime ja kaks lukku (`[System.Threading.Monitor]` või C# `lock`). Lõim 1 võtab lukud järjekorras A, B; lõim 2 järjekorras B, A; lisa lukkude vahele `Start-Sleep -Milliseconds 100`. Veendu, et programm jääb kinni, ja vaata Tegumihalduris, kui palju protsessoriaega see kasutab. Paranda programm nii, et mõlemad võtaksid lukud samas järjekorras. **Esita:** mõlemad koodid ja selgitus, millise Coffmani tingimuse parandus murdis.
 
-**2. Ummiku analüüs päriselust.** Leia uudistest, foorumist või oma kogemusest üks näide, kus süsteem või protsess jäi üksteist ootama (IT-s või igapäevaelus, nt asutuste vahel, kus igaüks ootab teise allkirja). **Esita:** ressursijaotuse graaf, neli Coffmani tingimust selle näite peal ja ettepanek, kuidas ummikut vältida.
+**2. Ummiku analüüs päriselust.** Leia uudistest, foorumist või oma kogemusest üks näide, kus süsteem või protsess jäi üksteist ootama (IT-s (*Information Technology*) või igapäevaelus, nt asutuste vahel, kus igaüks ootab teise allkirja). **Esita:** ressursijaotuse graaf, neli Coffmani tingimust selle näite peal ja ettepanek, kuidas ummikut vältida.
 
 ### Viited
 

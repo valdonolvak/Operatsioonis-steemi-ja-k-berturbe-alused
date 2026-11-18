@@ -140,7 +140,7 @@ ol.steps li{margin:3px 0}
 <p>Ketas teab ainult nummerdatud plokke. Failisüsteem on nagu <b>raamatukogu kataloog</b>: ta peab meeles, millistes plokkides fail asub, mis on tema nimi, kellele ta kuulub ja millal teda muudeti. Igas failisüsteemis on kolm osa:</p>
 <ol>
 <li><b>Kaust (kataloog)</b> – seob nime ja faili kirje: „kiri.txt → kirje 1234“.</li>
-<li><b>Metaandmete kirje</b> – Windowsis MFT (ingl <i>Master File Table</i>) kirje, Linuxis inode, macOS-is inode-kirje: suurus, ajad, omanik, õigused ja kus andmed asuvad.</li>
+<li><b>Metaandmete kirje</b> – Windowsis MFT (<i>Master File Table</i>) kirje, Linuxis inode, macOS-is inode-kirje: suurus, ajad, omanik, õigused ja kus andmed asuvad.</li>
 <li><b>Andmeplokid</b> (klastrid) – faili sisu.</li>
 </ol>
 <p>Kui sellest aru saad, mõistad ka, miks kustutatud faile saab sageli taastada, miks Linuxis võib failil olla mitu nime ja miks Macis faili kopeerimine ei võta lisaruumi.</p>
@@ -152,7 +152,7 @@ ol.steps li{margin:3px 0}
 <h2>1. Kuidas FAT faile hoiab</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>FAT (ingl <i>File Allocation Table</i>) on lihtsaim failisüsteem ja seepärast hea koht, kus põhimõtet näha. Kaustas on kirje „faili nimi + esimene klaster“. <b>FAT-tabelis</b> on iga klastri kohta üks lahter, mis ütleb, <b>milline klaster tuleb järgmisena</b> – fail on nagu aardejaht, kus iga vihje näitab järgmise kohta. FAT-i kasutavad tänapäeval USB-pulgad (USB – ingl <i>Universal Serial Bus</i>), mälukaardid ja arvuti EFI-partitsioon (EFI – ingl <i>Extensible Firmware Interface</i>).</p>
+<p>FAT (<i>File Allocation Table</i>) on lihtsaim failisüsteem ja seepärast hea koht, kus põhimõtet näha. Kaustas on kirje „faili nimi + esimene klaster“. <b>FAT-tabelis</b> on iga klastri kohta üks lahter, mis ütleb, <b>milline klaster tuleb järgmisena</b> – fail on nagu aardejaht, kus iga vihje näitab järgmise kohta. FAT-i kasutavad tänapäeval USB-pulgad (USB – <i>Universal Serial Bus</i>), mälukaardid ja arvuti EFI-partitsioon (EFI – <i>Extensible Firmware Interface</i>).</p>
 <p><b>Mida teha:</b> vajuta „Järgmine samm“ ja jälgi kolme asja: kaustakirjeid, FAT-tabelit ja andmeklastreid. Pane tähele, mis juhtub faili kasvamisel (killustumine) ja kustutamisel (andmed jäävad alles!).</p>
 </div>
 <div class="card">
@@ -185,11 +185,11 @@ ol.steps li{margin:3px 0}
 <h2>3. Faili elutsükkel: salvestamine, avamine, kustutamine</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Kasutaja jaoks on salvestamine ja kustutamine üks klõps. Kettal toimub aga mitu sammu ja need erinevad OS-iti (OS – ingl <i>Operating System</i>). Sellest sõltub, <b>kas kustutatud faili saab taastada</b>, <b>miks ruum ei vabane</b> ja <b>kuidas OS teab, et fail tuli internetist</b>.</p>
+<p>Kasutaja jaoks on salvestamine ja kustutamine üks klõps. Kettal toimub aga mitu sammu ja need erinevad OS-iti (OS – <i>Operating System</i>). Sellest sõltub, <b>kas kustutatud faili saab taastada</b>, <b>miks ruum ei vabane</b> ja <b>kuidas OS teab, et fail tuli internetist</b>.</p>
 <ul>
-<li><b>Windows (NTFS – ingl <i>New Technology File System</i>)</b> – kustutatud fail läheb prügikasti. Jäädaval kustutamisel jäävad andmed kettale, kuni need üle kirjutatakse.</li>
+<li><b>Windows (NTFS – <i>New Technology File System</i>)</b> – kustutatud fail läheb prügikasti. Jäädaval kustutamisel jäävad andmed kettale, kuni need üle kirjutatakse.</li>
 <li><b>Linux (ext4)</b> – nimi on kataloogis, metaandmed inode’is. <code>rm</code> eemaldab ainult nime; fail kaob, kui ühtegi nime pole ja keegi seda lahti ei hoia.</li>
-<li><b>macOS (APFS – ingl <i>Apple File System</i>)</b> – kirjutamisel kopeerimine: muudatus läheb alati uude plokki. Koopiad on kloonid, mis jagavad plokke.</li>
+<li><b>macOS (APFS – <i>Apple File System</i>)</b> – kirjutamisel kopeerimine: muudatus läheb alati uude plokki. Koopiad on kloonid, mis jagavad plokke.</li>
 </ul>
 <p><b>Mida teha (soovitatud järjekord):</b></p>
 <ol>
@@ -197,7 +197,7 @@ ol.steps li{margin:3px 0}
 <li>„Laadi alla arve.pdf“ – vaata, millise märke OS failile lisab.</li>
 <li>Vali fail <code>kiri.txt</code>, vajuta „Kustuta (prügikasti)“, siis „Taasta“. Seejärel kustuta jäädavalt ja vaata andmeplokke – triibulised plokid on <b>kustutatud, kuid alles</b>.</li>
 <li>Vajuta „Taastetööriist“. Siis salvesta suur video ja proovi taastetööriista uuesti.</li>
-<li>Lülita sisse „SSD (ingl <i>Solid-State Drive</i>; TRIM)“ ja korda kustutamist.</li>
+<li>Lülita sisse „SSD (<i>Solid-State Drive</i>; TRIM)“ ja korda kustutamist.</li>
 <li>Linuxis: ava fail, kustuta jäädavalt ja vaata, mis juhtub ruumiga. Siis sulge fail.</li>
 <li>macOS-is: kopeeri fail (kloon), tee hetktõmmis ja kustuta fail – miks ruum ei vabane?</li>
 </ol>
@@ -222,7 +222,7 @@ ol.steps li{margin:3px 0}
 <h2>4. Kas see failinimi sobib?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Iga OS lubab failinimes erinevaid märke. Windows keelab märgid <code>&lt; &gt; : " / \ | ? *</code> ja mõned nimed (<code>CON</code>, <code>NUL</code>, <code>COM1</code> …), sest need on MS-DOS-i (ingl <i>Microsoft Disk Operating System</i>) ajast seadmete nimed. Linux keelab ainult <code>/</code>. macOS-is on <code>/</code> keelatud ja Finder ei luba ka koolonit. Lisaks eristab Linux suur- ja väiketähti, Windows ja macOS vaikimisi mitte.</p>
+<p>Iga OS lubab failinimes erinevaid märke. Windows keelab märgid <code>&lt; &gt; : " / \ | ? *</code> ja mõned nimed (<code>CON</code>, <code>NUL</code>, <code>COM1</code> …), sest need on MS-DOS-i (<i>Microsoft Disk Operating System</i>) ajast seadmete nimed. Linux keelab ainult <code>/</code>. macOS-is on <code>/</code> keelatud ja Finder ei luba ka koolonit. Lisaks eristab Linux suur- ja väiketähti, Windows ja macOS vaikimisi mitte.</p>
 <p><b>Miks see administraatorile oluline on?</b> Kui Linuxi serverist kopeerida Windowsi kaust, kus on failid <code>Logo.png</code> ja <code>logo.png</code>, kirjutab üks teise üle. Veebileht, mis Windowsis töötab lingiga <code>Pilt.JPG</code>, annab Linuxi serveris vea 404, kui fail on <code>pilt.jpg</code>.</p>
 <p><b>Mida teha:</b> kirjuta failinimi või vali näide. Proovi ka suur- ja väiketähtede kontrolli.</p>
 </div>
@@ -242,7 +242,7 @@ ol.steps li{margin:3px 0}
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>Linuxis on igal failil <b>omanik</b>, <b>grupp</b> ja kolm õiguste komplekti: omanikule, grupile ja kõigile teistele. Igas komplektis on <b>r</b> (read – lugemine, väärtus 4), <b>w</b> (write – kirjutamine, 2) ja <b>x</b> (execute – käivitamine, 1). Arvud liidetakse: rw- = 4 + 2 = 6. Nii saadakse kolmekohaline arv, nt <code>chmod 640</code>.</p>
-<p>Kataloogi puhul tähendab <b>r</b> sisu nimekirja nägemist, <b>w</b> failide loomist ja kustutamist ning <b>x</b> kataloogi sisenemist. Windowsis on NTFS ACL-id (ingl <i>Access Control List</i>) palju detailsemad (ptk 18), kuid põhimõte – kes mida tohib – on sama.</p>
+<p>Kataloogi puhul tähendab <b>r</b> sisu nimekirja nägemist, <b>w</b> failide loomist ja kustutamist ning <b>x</b> kataloogi sisenemist. Windowsis on NTFS ACL-id (<i>Access Control List</i>) palju detailsemad (ptk 18), kuid põhimõte – kes mida tohib – on sama.</p>
 <p><b>Mida teha:</b> märgi õigused või sisesta arv. Proovi näiteid ja loe, kes mida faili <code>aruanne.txt</code> (omanik mari, grupp opetajad) puhul teha saab.</p>
 </div>
 <div class="card">
@@ -260,7 +260,7 @@ ol.steps li{margin:3px 0}
 <h2>6. Milline failisüsteem?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Vale failisüsteem tähendab, et fail ei mahu (FAT32 4 GB piir), teine OS ei saa kettale kirjutada (NTFS Macis) või puuduvad õigused ja logimine (exFAT – ingl <i>Extended File Allocation Table</i>). Rusikareegel: <b>süsteemiketas – OS-i oma failisüsteem</b> (NTFS, ext4, APFS), <b>vahetuskandja – exFAT</b>, <b>EFI-partitsioon – FAT32</b>, <b>suured serveriköited – ReFS (ingl <i>Resilient File System</i>)</b>.</p>
+<p>Vale failisüsteem tähendab, et fail ei mahu (FAT32 4 GB piir), teine OS ei saa kettale kirjutada (NTFS Macis) või puuduvad õigused ja logimine (exFAT – <i>Extended File Allocation Table</i>). Rusikareegel: <b>süsteemiketas – OS-i oma failisüsteem</b> (NTFS, ext4, APFS), <b>vahetuskandja – exFAT</b>, <b>EFI-partitsioon – FAT32</b>, <b>suured serveriköited – ReFS (<i>Resilient File System</i>)</b>.</p>
 </div>
 <div class="card">
   <div class="tasks" id="qtasks"></div>
@@ -287,7 +287,7 @@ const FS=[
  ['A','LOO','kiri.txt',[2,3,4],'Luuakse <b>kiri.txt</b> (3 klastrit). Kausta lisatakse kirje „KIRI.TXT, algus 2“. FAT-tabelis: 2 → 3 → 4 → EOF. Fail on järjest – lugemine on kiire.'],
  ['B','LOO','foto.jpg',[5,6],'Luuakse <b>foto.jpg</b> (2 klastrit): 5 → 6 → EOF.'],
  ['C','LOO','tabel.xls',[7,8],'Luuakse <b>tabel.xls</b>: 7 → 8 → EOF.'],
- ['A','GROW','kiri.txt',[9,10],'<b>kiri.txt kasvab</b> 2 klastri võrra. Klaster 5 on hõivatud, nii et lisatakse kauged klastrid 9 ja 10. Ahel on nüüd 2 → 3 → 4 → <b>9</b> → 10. Fail on <b>killustunud</b>: HDD lugemispea peab hüppama.'],
+ ['A','GROW','kiri.txt',[9,10],'<b>kiri.txt kasvab</b> 2 klastri võrra. Klaster 5 on hõivatud, nii et lisatakse kauged klastrid 9 ja 10. Ahel on nüüd 2 → 3 → 4 → <b>9</b> → 10. Fail on <b>killustunud</b>: HDD (<i>Hard Disk Drive</i>) lugemispea peab hüppama.'],
  ['B','DEL','foto.jpg',[],'<b>foto.jpg kustutatakse.</b> Kaustakirje esimene märk asendatakse erimärgiga (σ / 0xE5) ja FAT-is märgitakse klastrid 5 ja 6 vabaks (0). <b>Andmed klastrites 5–6 jäävad alles</b> (triibulised) – kustutatud on ainult viited.'],
  ['B','REC','foto.jpg',[],'<b>Taastetööriist</b> (nt PhotoRec) leiab kaustast kustutatud kirje „σOTO.JPG, algus 5, suurus 2 klastrit“ ja klastrid 5–6 on veel vabad ja puutumata. Faili saab taastada! Seepärast ei tohi pärast kogemata kustutamist kandjale midagi uut salvestada.'],
  ['D','LOO','video.mp4',[5,6,11,12],'Luuakse <b>video.mp4</b> (4 klastrit). Failisüsteem võtab esimesed vabad klastrid – 5 ja 6 – ning 11 ja 12. <b>foto.jpg andmed kirjutati üle</b>, nüüd pole seda enam võimalik taastada.']];
@@ -334,8 +334,8 @@ function releaseBlock(i,f,steps){const b=E.blocks[i];b.refs.delete(f.id);
 function create(name,n,mark){const ix=free(n);if(ix.length<n)return ['Kettal pole piisavalt vaba ruumi.'];
   const f={id:E.seq,c:E.seq,meta:OS[os].id(E.seq),names:[{name,dir:'doc'}],blocks:ix,open:0,mark,alive:true,size:n};E.seq++;E.files.push(f);useBlocks(f,ix);
   const S={win:[`Rakendus kutsub <code>CreateFile("${OS.win.dir}\\${name}")</code>. Objektihaldur annab tee NTFS-ile.`,`NTFS kontrollib kausta <b>ACL-i</b>: kas Maril on õigus siia faile luua? Jah.`,`NTFS võtab vaba <b>MFT kirje ${f.meta}</b>, kirjutab sinna nime, ajad ja õigused ning lisab nime kausta indeksisse (<code>$I30</code>). Muudatused kirjutatakse esmalt logisse <code>$LogFile</code>.`,`<code>WriteFile</code>: andmed lähevad vahemällu. Laisk kirjutaja leiab <code>$Bitmap</code>-ist vabad klastrid (${ix.join(', ')}) ja kirjutab andmed kettale umbes sekundi jooksul.`],
-   lin:[`Programm kutsub <code>open("${OS.lin.dir}/${name}", O_CREAT)</code>. VFS-kiht suunab päringu ext4-le.`,`Kontrollitakse kataloogi õigusi: Maril peab olema kataloogil <b>w</b> ja <b>x</b>.`,`ext4 võtab inode’ide bitikaardist vaba <b>inode ${f.meta}</b> (omanik mari, õigused 644, viidete arv 1) ja lisab kataloogi kirje „${name} → ${f.meta}“. Metaandmete muudatus läheb logisse (journal).`,`<code>write()</code>: andmed lähevad lehevahemällu (page cache). Taustalõim kirjutab need plokkidesse ${ix.join(', ')} umbes 30 sekundi jooksul. <code>fsync()</code> sunniks kohe kirjutama.`],
-   mac:[`Rakendus salvestab faili <code>${OS.mac.dir}/${name}</code>. Paljud Maci rakendused kirjutavad esmalt ajutise faili ja nimetavad selle aatomiliselt ümber (safe-save).`,`Kontrollitakse kataloogi õigusi (POSIX + ACL).`,`APFS lisab B-puusse <b>inode-kirje ${f.meta}</b> ja kataloogi kirje „${name} → ${f.meta}“. Logi pole vaja: uued kirjed kirjutatakse uude kohta ja puu juur vahetatakse ühe korraga (kirjutamisel kopeerimine).`,`Andmed kirjutatakse vabadesse plokkidesse ${ix.join(', ')}.`]}[os];
+   lin:[`Programm kutsub <code>open("${OS.lin.dir}/${name}", O_CREAT)</code>. VFS-kiht (VFS – <i>Virtual File System</i>) suunab päringu ext4-le.`,`Kontrollitakse kataloogi õigusi: Maril peab olema kataloogil <b>w</b> ja <b>x</b>.`,`ext4 võtab inode’ide bitikaardist vaba <b>inode ${f.meta}</b> (omanik mari, õigused 644, viidete arv 1) ja lisab kataloogi kirje „${name} → ${f.meta}“. Metaandmete muudatus läheb logisse (journal).`,`<code>write()</code>: andmed lähevad lehevahemällu (page cache). Taustalõim kirjutab need plokkidesse ${ix.join(', ')} umbes 30 sekundi jooksul. <code>fsync()</code> sunniks kohe kirjutama.`],
+   mac:[`Rakendus salvestab faili <code>${OS.mac.dir}/${name}</code>. Paljud Maci rakendused kirjutavad esmalt ajutise faili ja nimetavad selle aatomiliselt ümber (safe-save).`,`Kontrollitakse kataloogi õigusi (POSIX (<i>Portable Operating System Interface</i>) + ACL).`,`APFS lisab B-puusse <b>inode-kirje ${f.meta}</b> ja kataloogi kirje „${name} → ${f.meta}“. Logi pole vaja: uued kirjed kirjutatakse uude kohta ja puu juur vahetatakse ühe korraga (kirjutamisel kopeerimine).`,`Andmed kirjutatakse vabadesse plokkidesse ${ix.join(', ')}.`]}[os];
   if(mark)S.push({win:'Brauser lisab failile alternatiivse andmevoo <b><code>Zone.Identifier</code></b> (ZoneId=3 – internet). See on <b>Mark of the Web</b>: Word avab faili kaitstud vaates, SmartScreen hoiatab.',lin:'Linux ei lisa vaikimisi märget, et fail tuli internetist (mõni brauser lisab laiendatud atribuudi <code>user.xdg.origin.url</code>). Turvaline käitumine sõltub kasutajast: allalaaditud failil puudub ka käivitusõigus <b>x</b>.',mac:'Brauser lisab laiendatud atribuudi <b><code>com.apple.quarantine</code></b>. Esimesel avamisel kontrollib <b>Gatekeeper</b>, kas rakendus on allkirjastatud ja notariseeritud, ja küsib kasutajalt kinnitust.'}[os]);
   return S}
 function act(a){const f=byName($('ltarget').value);E.newb=new Set();let S=[],head='';
@@ -357,7 +357,7 @@ function act(a){const f=byName($('ltarget').value);E.newb=new Set();let S=[],hea
     else{const shared=E.blocks[f.blocks[0]].refs.size>1;f.blocks.push(nb[0]);useBlocks(f,[nb[0]]);f.size++;E.newb.add(f.blocks[0]);
       S=[os==='win'?`NTFS kirjutab muudetud sisu <b>samasse klastrisse</b> ${f.blocks[0]} (otse üle). Metaandmete muudatus läheb logisse.`:`ext4 kirjutab muudetud sisu <b>samasse plokki</b> ${f.blocks[0]} (otse üle).`,`Lisandunud tekst saab uue ${OS[os].bg} ${nb[0]}.`];
       if(shared)S.push('Selle faili plokke kasutab ka teine nimi (kõvaviide) – see on <b>sama fail</b>, nii et ka teine nimi näeb muudatust.');
-      if(os==='win'&&E.snap){const sb=free(1);if(sb.length){E.blocks[sb[0]].snap=true;E.blocks[sb[0]].ghost={name:'vana sisu',c:f.c};S.push(`Kuna köitel on <b>varikoopia</b>, kopeeris VSS enne ülekirjutamist klastri vana sisu varikoopia alale (klaster ${sb[0]}). Nii saab „Eelmised versioonid“ kaudu vana faili taastada.`)}}}}}
+      if(os==='win'&&E.snap){const sb=free(1);if(sb.length){E.blocks[sb[0]].snap=true;E.blocks[sb[0]].ghost={name:'vana sisu',c:f.c};S.push(`Kuna köitel on <b>varikoopia</b>, kopeeris VSS (<i>Volume Shadow Copy Service</i>) enne ülekirjutamist klastri vana sisu varikoopia alale (klaster ${sb[0]}). Nii saab „Eelmised versioonid“ kaudu vana faili taastada.`)}}}}}
   else if(a==='copy'){const cn='koopia_'+nm.name;head='Kopeeri '+nm.name+' → '+cn;
     if(os==='mac'){const g={id:E.seq,c:E.seq,meta:OS.mac.id(E.seq),names:[{name:cn,dir:'doc'}],blocks:f.blocks.slice(),open:0,mark:f.mark,alive:true,size:f.size};E.seq++;E.files.push(g);useBlocks(g,g.blocks);
       S=[`Finder kopeerib samal köitel – APFS loob <b>klooni</b>: uus inode-kirje ${g.meta}, kuid andmeplokke ei kopeerita.`,`Mõlemad failid viitavad samadele plokkidele (⇆). Koopia tekib hetkega ja <b>ei võta lisaruumi</b>.`,`Kui ühte faili hiljem muuta, kirjutatakse ainult muudetud plokk uude kohta. Proovi: vali algne fail ja vajuta „Muuda“.`]}
@@ -369,7 +369,7 @@ function act(a){const f=byName($('ltarget').value);E.newb=new Set();let S=[],hea
     if(os==='win'&&f.open){S=[`<b>Toimingut ei saa lõpule viia, sest fail on avatud.</b> Windows seob avatud faili tema nimega – sulge fail enne kustutamist.`]}else{
     nm.dir='trash';const rn='$R'+Math.random().toString(36).slice(2,8).toUpperCase()+nm.name.slice(nm.name.lastIndexOf('.'));nm.trash=rn;
     S={win:[`Explorer <b>teisaldab</b> faili prügikasti kausta <code>${OS.win.trash}</code> ja nimetab selle ümber <code>${rn}</code>. Kõrvale luuakse fail <code>$I…</code> algse tee ja kustutamise ajaga.`,`MFT kirje ${f.meta} ja andmed jäävad täpselt samaks – muutus ainult nimi ja kaust. Seepärast on „kustutamine“ prügikasti hetkeline ka 10 GB failil.`,`USB-pulgalt ja võrgukaustast kustutades prügikasti ei kasutata.`],
-      lin:[`Töölaud (GNOME, KDE) teisaldab faili kausta <code>${OS.lin.trash}</code> ja loob faili <code>~/.local/share/Trash/info/${nm.name}.trashinfo</code> algse tee ja ajaga.`,`Inode ${f.meta} ja andmed jäävad samaks. <b>NB!</b> Terminali käsk <code>rm</code> prügikasti ei kasuta.`],
+      lin:[`Töölaud (GNOME – <i>GNU Network Object Model Environment</i>, KDE – <i>K Desktop Environment</i>) teisaldab faili kausta <code>${OS.lin.trash}</code> ja loob faili <code>~/.local/share/Trash/info/${nm.name}.trashinfo</code> algse tee ja ajaga.`,`Inode ${f.meta} ja andmed jäävad samaks. <b>NB!</b> Terminali käsk <code>rm</code> prügikasti ei kasuta.`],
       mac:[`Finder teisaldab faili kausta <code>${OS.mac.trash}</code> ja jätab meelde algse asukoha („Tõsta tagasi“).`,`Inode-kirje ja plokid jäävad samaks. Terminali <code>rm</code> prügikasti ei kasuta.`]}[os]}}}
   else if(a==='restore'){head='Taasta '+nm.name;if(nm.dir!=='trash')S=['Fail ei ole prügikastis.'];else{nm.dir='doc';delete nm.trash;S=[`Fail teisaldatakse tagasi algsesse kausta. Kuna andmeid ja metaandmeid ei muudetud, on taastamine hetkeline ja täielik.`]}}
   else if(a==='del'){head='Kustuta jäädavalt '+nm.name;
@@ -386,14 +386,14 @@ function act(a){const f=byName($('ltarget').value);E.newb=new Set();let S=[],hea
       if(sh)S.push(`${N(sh)} ${sh===1?'jäi':'jäid'} alles, sest neid kasutab ka <b>kloon</b> – ruumi ei vabanenud.`);
       if(sn)S.push(`${N(sn)} ${sn===1?'jäi':'jäid'} alles, sest neid hoiab <b>hetktõmmis</b>. Ruum vabaneb alles siis, kui hetktõmmis kustutatakse. ${os==='mac'?'macOS näitab seda „vabastatava“ (purgeable) ruumina.':'Faili saab hetktõmmisest taastada („Eelmised versioonid“).'}`);}}}
   else if(a==='snap'){head=E.snap?'Kustuta hetktõmmis':'Loo hetktõmmis';
-    if(os==='lin'){S=['ext4 ei toeta hetktõmmiseid. Linuxis saab neid teha LVM-i (<code>lvcreate --snapshot</code>) või Btrfs-i (<code>btrfs subvolume snapshot</code>) abil.']}
+    if(os==='lin'){S=['ext4 ei toeta hetktõmmiseid. Linuxis saab neid teha LVM-i (<i>Logical Volume Manager</i>; <code>lvcreate --snapshot</code>) või Btrfs-i (<code>btrfs subvolume snapshot</code>) abil.']}
     else if(!E.snap){E.snap=true;E.blocks.forEach(b=>{if(b.refs.size)b.snap=true});
       S=[os==='win'?'Windows loob <b>varikoopia</b> (VSS) – nt süsteemikaitse või varundus. Kõik praegu kasutusel olevad klastrid on nüüd „külmutatud“: enne ülekirjutamist kopeeritakse vana sisu varikoopia alale.':'Time Machine loob <b>APFS-i kohaliku hetktõmmise</b> (<code>tmutil localsnapshot</code>). Hetktõmmis hoiab kõiki praegu kasutusel olevaid plokke.','Lilla raam näitab plokke, mida hetktõmmis hoiab. Kustuta nüüd mõni fail jäädavalt ja vaata, kas ruum vabaneb.']}
     else{E.snap=false;let n=0;E.blocks.forEach(b=>{if(b.snap){b.snap=false;if(!b.refs.size){n++;b.ghost=$('ssd').checked?null:(b.ghost||{name:'vana',c:7})}}});S=[`Hetktõmmis kustutati. ${n} plokki, mida hoidis ainult hetktõmmis, on nüüd vabad.`]}}
   else if(a==='recover'){head='Taastetööriist';const gs={};E.blocks.forEach((b,i)=>{if(b.ghost&&!b.refs.size)(gs[b.ghost.name]=gs[b.ghost.name]||[]).push(i)});
     const dead=E.files.filter(x=>!x.alive&&x.lastName);
     S=dead.length?dead.map(x=>{const left=(gs[x.lastName]||[]).length,tot=x.blocks.length;return `<b>${x.lastName}</b>: ${left===tot?'kõik '+N(tot)+' on alles – <span style="color:var(--ok)">taastatav</span>':left?`ainult ${left}/${tot} ${OS[os].bp} alles – <span style="color:#c26a0a">osaliselt taastatav</span>`:'<span style="color:var(--bad)">andmeid pole – üle kirjutatud või TRIM-iga kustutatud</span>'}`}):['Jäädavalt kustutatud faile pole. Kustuta enne mõni fail jäädavalt.'];
-    S.push('Taastetööriist (nt PhotoRec, Recuva) otsib vabadest plokkidest vanu andmeid. Kaitse on <b>ketta krüpteerimine</b> (BitLocker, LUKS, FileVault): ilma võtmeta on ka taastatud plokid loetamatud.')}
+    S.push('Taastetööriist (nt PhotoRec, Recuva) otsib vabadest plokkidest vanu andmeid. Kaitse on <b>ketta krüpteerimine</b> (BitLocker, LUKS – <i>Linux Unified Key Setup</i>, FileVault): ilma võtmeta on ka taastatud plokid loetamatud.')}
   E.last=S;E.head=head;eRender()}
 function eRender(){
   $('ostabs').innerHTML=Object.entries(OS).map(([k,v])=>`<button class="btn${k===os?' on':''}" data-os="${k}">${v.n}</button>`).join('');
@@ -456,7 +456,7 @@ function pDraw(){let oct='',sym='-';for(let i=0;i<3;i++){let v=0;BIT.forEach((b,
   let warn='';if(oct[2]==='7'||oct[2]==='6'||oct[2]==='2'||oct[2]==='3')warn=' <b style="color:var(--bad)">Ohtlik: kõik süsteemi kasutajad saavad faili muuta!</b> Õpetus „tee chmod 777, siis töötab“ on levinud turvaviga.';
   else if(+oct[2]&4&&oct!=='644'&&oct!=='755')warn=' Kõik kasutajad saavad faili lugeda – kas see on tundlik?';
   $('pinfo').innerHTML=`Omanik mari saab ${can(0)}. Grupi <i>opetajad</i> liikmed saavad ${can(1)}. Kõik teised saavad ${can(2)}.${warn}`+
-   ({'644':' Tavaline tekstifaili õigus.','755':' Tavaline programmi või skripti ja kataloogi õigus.','600':' Privaatne fail – nt SSH privaatvõti (<code>~/.ssh/id_ed25519</code>) peab olema 600, muidu SSH keeldub seda kasutamast.','640':' Hea valik ühistele tööfailidele: grupp saab lugeda, teised mitte.','750':' Skript, mida grupp saab käivitada, teised ei näe.'}[oct]||'')}
+   ({'644':' Tavaline tekstifaili õigus.','755':' Tavaline programmi või skripti ja kataloogi õigus.','600':' Privaatne fail – nt SSH (<i>Secure Shell</i>) privaatvõti (<code>~/.ssh/id_ed25519</code>) peab olema 600, muidu SSH keeldub seda kasutamast.','640':' Hea valik ühistele tööfailidele: grupp saab lugeda, teised mitte.','750':' Skript, mida grupp saab käivitada, teised ei näe.'}[oct]||'')}
 $('pgrid').querySelectorAll('input').forEach(c=>c.onchange=pDraw);
 $('poct').oninput=()=>{const v=$('poct').value;if(/^[0-7]{3}$/.test(v)){pFrom(v);pDraw()}};
 $('ppres').innerHTML='Näited: '+['644','600','640','755','750','777'].map(x=>`<button class="btn" style="font-size:12.5px;padding:.25rem .55rem">${x}</button>`).join(' ');
@@ -467,7 +467,7 @@ pFrom('640');pDraw();
 quiz('qtasks','qscore','qreset',['FAT32','exFAT','NTFS','ReFS','ext4','APFS'],[
  ['Windows 11 sülearvuti süsteemiketas',2,'NTFS toetab õigusi, logimist, BitLockerit, varikoopiaid ja Windows käivitub ainult sellelt.'],
  ['USB-pulk, millega tõstetakse 6 GB videofaile Windowsi, Maci ja teleri vahel',1,'exFAT töötab kõigil kolmel ja lubab üle 4 GB faile. FAT32-le 6 GB fail ei mahu, NTFS-ile Mac kirjutada ei saa.'],
- ['UEFI süsteemipartitsioon (EFI), kust arvuti alglaadur käivitub',0,'UEFI standard nõuab FAT32-t.'],
+ ['UEFI (<i>Unified Extensible Firmware Interface</i>) süsteemipartitsioon (EFI), kust arvuti alglaadur käivitub',0,'UEFI standard nõuab FAT32-t.'],
  ['Ubuntu serveri juurköide',4,'ext4 on enamiku Linuxi distributsioonide vaikimisi failisüsteem.'],
  ['MacBooki sisemine SSD',5,'APFS on macOS-i failisüsteem alates High Sierrast.'],
  ['Hyper-V virtuaalmasinate suur köide, kus on vaja terviklikkusvooge ja kiiret plokkide kloonimist',3,'ReFS on loodud suurte andmemahtude ja töökindluse jaoks.'],

@@ -63,9 +63,9 @@ tr.use td{font-weight:500}
   <div><label for="mn">Moodul n</label><input id="mn" value="23" inputmode="numeric"></div>
 </div>
 <div class="presets">
-  <button data-m="19,6,23">19⁶ mod 23 (Mari DH-arvutus)</button>
+  <button data-m="19,6,23">19⁶ mod 23 (Mari DH-arvutus; DH – <i>Diffie–Hellman</i>)</button>
   <button data-m="8,15,23">8¹⁵ mod 23 (Jaani DH-arvutus)</button>
-  <button data-m="65,17,3233">65¹⁷ mod 3233 (RSA krüpteerimine)</button>
+  <button data-m="65,17,3233">65¹⁷ mod 3233 (RSA (<i>Rivest–Shamir–Adleman</i>) krüpteerimine)</button>
   <button data-m="2790,2753,3233">2790²⁷⁵³ mod 3233 (RSA dekrüpteerimine)</button>
 </div>
 <div class="err" id="merr"></div>
@@ -90,7 +90,7 @@ tr.use td{font-weight:500}
 
 <!-- ================= 3 ================= -->
 <h2 id="rsa">3. RSA võtme loomine, krüpteerimine ja allkiri</h2>
-<p>RSA (ingl <i>Rivest–Shamir–Adleman</i>) privaatvõtme saab arvutada ainult see, kes teab mooduli n algtegureid p ja q. Sisesta kaks algarvu ja avalik eksponent e. Leht teeb läbi kõik võtme loomise sammud, sealhulgas laiendatud Eukleidese algoritmi, millega leitakse privaatne eksponent d.</p>
+<p>RSA (<i>Rivest–Shamir–Adleman</i>) privaatvõtme saab arvutada ainult see, kes teab mooduli n algtegureid p ja q. Sisesta kaks algarvu ja avalik eksponent e. Leht teeb läbi kõik võtme loomise sammud, sealhulgas laiendatud Eukleidese algoritmi, millega leitakse privaatne eksponent d.</p>
 <div class="inputs">
   <div><label for="rp">Algarv p</label><input id="rp" value="61" inputmode="numeric"></div>
   <div><label for="rq">Algarv q</label><input id="rq" value="53" inputmode="numeric"></div>
@@ -181,7 +181,7 @@ function runDH(){
   h+='<p class="result '+(sM===sJ?'ok':'bad')+'">'+(sM===sJ?'✓ Mõlemad said sama ühise saladuse s = <b>'+g3(sM)+'</b>':'✗ Tulemused erinevad. Kontrolli sisendeid.')+'</p>';
   h+='<p class="why"><strong>Miks sama tulemus?</strong> Mari arvutab (gᵇ)ᵃ ja Jaan (gᵃ)ᵇ. Mõlemad on gᵃᵇ = '+g3(g)+sup(a*b)+' mod '+g3(p)+' = '+g3(powSteps(g,a*b,p).res)+'. Astendamise järjekord ei muuda tulemust.</p>';
   if(tries!==null) h+='<p class="why"><strong>Kui raske on Eve’l?</strong> Väikese p korral proovib ta x = 1, 2, 3 … ja leiab Mari salajase arvu '+g3(tries)+' katsega'+(tries!==a?' (ta leidis arvu '+g3(tries)+', mis annab sama A, ja sellest piisab)':'')+'. Kui p on 2048-bitine, on võimalikke x-e umbes 10⁶¹⁶ ja läbiproovimine on võimatu. See on diskreetse logaritmi probleem.</p>';
-  h+='<p class="why"><strong>Mis siin puudub?</strong> Mari ei tea, kas B tuli tõesti Jaanilt. Eve võiks saata Marile oma väärtuse ja teha mõlemaga eraldi võtmevahetuse (MITM). Seepärast allkirjastab TLS-server oma võtmevahetuse ja SSH kontrollib serveri võtme sõrmejälge.</p>';
+  h+='<p class="why"><strong>Mis siin puudub?</strong> Mari ei tea, kas B tuli tõesti Jaanilt. Eve võiks saata Marile oma väärtuse ja teha mõlemaga eraldi võtmevahetuse (MITM – <i>Man-in-the-Middle</i>). Seepärast allkirjastab TLS-server (TLS – <i>Transport Layer Security</i>) oma võtmevahetuse ja SSH (<i>Secure Shell</i>) kontrollib serveri võtme sõrmejälge.</p>';
   $('dout').innerHTML=h;
 }
 
@@ -225,7 +225,7 @@ function runRSA(){
   h+='</div>';
   h+='<p class="why">Iga astendamise vahesamme näed jaotises 1. Vajuta <button id="toMod">näita krüpteerimise samme</button>.</p>';
   h+='<p class="why"><strong>Miks see on turvaline ainult suurte arvudega?</strong> Ründaja teab n = '+g3(n)+' ja e = '+g3(e)+'. Väikese n korral leiab ta p ja q jagajaid proovides kohe, arvutab φ ja seejärel d samamoodi nagu ülal. 2048-bitine n on 617 kümnendkohta pikk ja selle tegurdamine on klassikaliste arvutitega võimatu.</p>';
-  h+='<p class="why"><strong>Märkus:</strong> see on „õpikus kasutatav RSA“ (textbook RSA) ilma täidiseta. Sama m annab alati sama c. Päris RSA lisab enne krüpteerimist juhusliku OAEP-täidise ja allkirjale PSS-täidise.</p>';
+  h+='<p class="why"><strong>Märkus:</strong> see on „õpikus kasutatav RSA“ (textbook RSA) ilma täidiseta. Sama m annab alati sama c. Päris RSA lisab enne krüpteerimist juhusliku OAEP-täidise (OAEP – <i>Optimal Asymmetric Encryption Padding</i>) ja allkirjale PSS-täidise (PSS – <i>Probabilistic Signature Scheme</i>).</p>';
   $('rout').innerHTML=h;
   $('toMod').onclick=()=>{ $('mg').value=m; $('me').value=e; $('mn').value=n; runMod(); location.hash='#mod'; };
 }

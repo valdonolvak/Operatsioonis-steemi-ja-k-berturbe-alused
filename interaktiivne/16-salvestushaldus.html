@@ -152,7 +152,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h4>Suur pilt: igal ohul on oma kaitse</h4>
 <p>Andmeid ähvardavad väga erinevad ohud ja <b>ükski meede ei kaitse kõige eest</b>:</p>
 <ul>
-<li><b>Ketas läheb rikki</b> → aitab <b>RAID (ingl <i>Redundant Array of Independent Disks</i>)</b> või Storage Spaces (andmed on mitmel kettal).</li>
+<li><b>Ketas läheb rikki</b> → aitab <b>RAID (<i>Redundant Array of Independent Disks</i>)</b> või Storage Spaces (andmed on mitmel kettal).</li>
 <li><b>Fail kustutatakse kogemata või lunavara krüpteerib selle</b> → aitab <b>varundus</b> (RAID kopeeriks vea kohe kõigile ketastele).</li>
 <li><b>Sülearvuti varastatakse</b> → aitab <b>BitLocker</b> (varas ei saa andmeid lugeda).</li>
 <li><b>Serveriruumis on tulekahju</b> → aitab ainult <b>väljaspool hoitav varukoopia</b>.</li>
@@ -166,7 +166,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>1. Miks on SSD nii palju kiirem?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>HDD-s (ingl <i>Hard Disk Drive</i>) on pöörlevad plaadid ja lugemispea. Iga <b>juhusliku</b> lugemise jaoks peab pea liikuma õigele rajale (<b>otsinguaeg</b>) ja ootama, kuni õige koht pea alt läbi pöörleb (<b>pöördeviide</b> – keskmiselt pool pööret). See on nagu plaadimängija, kus iga laulu jaoks tuleb nõel tõsta õigesse kohta. SSD-l (ingl <i>Solid-State Drive</i>) liikuvaid osi pole ja ta leiab iga ploki sama kiiresti.</p>
+<p>HDD-s (<i>Hard Disk Drive</i>) on pöörlevad plaadid ja lugemispea. Iga <b>juhusliku</b> lugemise jaoks peab pea liikuma õigele rajale (<b>otsinguaeg</b>) ja ootama, kuni õige koht pea alt läbi pöörleb (<b>pöördeviide</b> – keskmiselt pool pööret). See on nagu plaadimängija, kus iga laulu jaoks tuleb nõel tõsta õigesse kohta. SSD-l (<i>Solid-State Drive</i>) liikuvaid osi pole ja ta leiab iga ploki sama kiiresti.</p>
 <p>Windowsi käivitamine, programmide avamine ja andmebaasid teevad tuhandeid väikesi juhuslikke lugemisi. Seepärast tundub vana arvuti pärast SSD paigaldamist täiesti uus.</p>
 <p><b>Mida teha:</b> vali ülesanne ja muuda HDD pöörlemiskiirust ning otsinguaega. Võrdle, kui kaua sama töö eri ketastel võtab.</p>
 </div>
@@ -186,7 +186,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>2. Kuidas ketas on jaotatud?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Enne kasutamist jaotatakse ketas <b>partitsioonideks</b>. Partitsioonitabel (MBR (ingl <i>Master Boot Record</i>) või GPT – ingl <i>GUID Partition Table</i>) on nagu raamatu sisukord: see ütleb, kus mingi osa algab ja lõpeb. Windows 11 vajab GPT-d ja UEFI-d (ingl <i>Unified Extensible Firmware Interface</i>). Kui administraator kustutab „tarbetu“ väikese partitsiooni, võib arvuti lakata käivitumast – seepärast tuleb teada, milleks iga partitsioon on.</p>
+<p>Enne kasutamist jaotatakse ketas <b>partitsioonideks</b>. Partitsioonitabel (MBR (<i>Master Boot Record</i>) või GPT – <i>GUID Partition Table</i>) on nagu raamatu sisukord: see ütleb, kus mingi osa algab ja lõpeb. Windows 11 vajab GPT-d ja UEFI-d (<i>Unified Extensible Firmware Interface</i>). Kui administraator kustutab „tarbetu“ väikese partitsiooni, võib arvuti lakata käivitumast – seepärast tuleb teada, milleks iga partitsioon on.</p>
 <p><b>Mida teha:</b> klõpsa ketta skeemil igal partitsioonil ja loe, milleks see on. Siis proovi allpool, kas valitud ketas ja arvuti sobivad MBR-i või GPT-ga.</p>
 </div>
 <div class="card">
@@ -195,7 +195,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
   <h3 style="margin-top:1.2rem">MBR või GPT?</h3>
   <div class="slider"><label for="psize">Ketta suurus</label><input type="range" id="psize" min="0" max="5" value="2"><b id="psizev" class="mono"></b></div>
   <div class="slider"><label for="pcount">Partitsioonide arv</label><input type="range" id="pcount" min="1" max="8" value="4"><b id="pcountv" class="mono"></b></div>
-  <div class="row"><span>Püsivara: <select id="pfw"><option value="uefi">UEFI</option><option value="bios">Vana BIOS (Legacy)</option></select></span><span>OS (ingl <i>Operating System</i>): <select id="pos"><option value="w11">Windows 11</option><option value="w10">Windows 10</option><option value="data">Ainult andmeketas</option></select></span></div>
+  <div class="row"><span>Püsivara: <select id="pfw"><option value="uefi">UEFI</option><option value="bios">Vana BIOS (Legacy)</option></select></span><span>OS (<i>Operating System</i>): <select id="pos"><option value="w11">Windows 11</option><option value="w10">Windows 10</option><option value="data">Ainult andmeketas</option></select></span></div>
   <div class="kpis" id="pkpi"></div>
   <div class="info" id="pres"></div>
 </div>
@@ -206,7 +206,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>3. RAID-simulaator</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Ketas on arvuti üks rikkealtimaid osi. <b>RAID</b> (Redundant Array of Independent Disks) paneb mitu ketast tööle koos nii, et ühe ketta rike ei too kaasa andmekadu. Selleks kasutatakse kahte võtet:</p>
+<p>Ketas on arvuti üks rikkealtimaid osi. <b>RAID</b> (<i>Redundant Array of Independent Disks</i>) paneb mitu ketast tööle koos nii, et ühe ketta rike ei too kaasa andmekadu. Selleks kasutatakse kahte võtet:</p>
 <ul>
 <li><b>Peegeldamine</b> – igast plokist on kaks koopiat eri ketastel (RAID 1, 10). Lihtne ja kiire, kuid pool mahust kulub koopiatele.</li>
 <li><b>Paarsus</b> – andmete kõrvale arvutatakse kontrollplokk (p). Kui üks ketas kaob, arvutatakse tema sisu teiste põhjal välja (RAID 5, 6). Ruumi kulub vähem, kuid kirjutamine on aeglasem.</li>
@@ -223,7 +223,7 @@ table.thr td.bad{color:var(--bad);font-weight:600}
   <div class="kpis" id="rkpi"></div>
   <div class="info" id="rinfo"></div>
   <h3 style="margin-top:1.2rem">Kuidas paarsus andmed tagasi toob? (XOR)</h3>
-  <p style="font-size:14.5px">XOR (ingl <i>Exclusive OR</i>) võrdleb bitte: kui need on samad, on tulemus 0, kui erinevad, siis 1. Paarsus = ketas 1 XOR ketas 2. Klõpsa bittidel, et neid muuta, ja vali, milline ketas läheb rikki.</p>
+  <p style="font-size:14.5px">XOR (<i>Exclusive OR</i>) võrdleb bitte: kui need on samad, on tulemus 0, kui erinevad, siis 1. Paarsus = ketas 1 XOR ketas 2. Klõpsa bittidel, et neid muuta, ja vali, milline ketas läheb rikki.</p>
   <div class="xor" id="xgrid"></div>
   <div class="row"><span>Rikki läheb: <select id="xlost"><option value="-1">mitte ükski</option><option value="0">ketas 1</option><option value="1">ketas 2</option><option value="2">paarsuse ketas</option></select></span></div>
   <div class="info" id="xinfo"></div>
@@ -235,12 +235,12 @@ table.thr td.bad{color:var(--bad);font-weight:600}
 <h2>4. BitLocker: kes saab ketta lahti?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Ilma krüpteerimiseta saab varas sülearvutist ketta välja võtta, ühendada selle oma arvutiga ja lugeda kõiki faile – Windowsi parooli pole vaja. <b>BitLocker</b> krüpteerib kogu köite. Võti on kaitstud <b>TPM (ingl <i>Trusted Platform Module</i>)</b>-kiibiga, mis annab selle välja ainult siis, kui arvuti käivitub muutmata kujul (sama püsivara, Secure Boot sees, sama alglaadur).</p>
+<p>Ilma krüpteerimiseta saab varas sülearvutist ketta välja võtta, ühendada selle oma arvutiga ja lugeda kõiki faile – Windowsi parooli pole vaja. <b>BitLocker</b> krüpteerib kogu köite. Võti on kaitstud <b>TPM (<i>Trusted Platform Module</i>)</b>-kiibiga, mis annab selle välja ainult siis, kui arvuti käivitub muutmata kujul (sama püsivara, Secure Boot sees, sama alglaadur).</p>
 <p>Kui käivitus muutub, küsib arvuti <b>48-kohalist taastevõtit</b>. Kui seda pole kuhugi salvestatud, on andmed kadunud ka omanikule. Seepärast on taastevõtme hoidmine (Entra ID, Active Directory, Microsofti konto) sama oluline kui krüpteerimine ise.</p>
 <p><b>Mida teha:</b> vali kaitse viis ja kas taastevõti on salvestatud. Siis proovi olukordi ja vaata, kes ketta lahti saab.</p>
 </div>
 <div class="card">
-  <div class="row" style="margin-top:0"><span>Kaitse: <select id="bprot"><option value="tpm">Ainult TPM (vaikimisi)</option><option value="pin">TPM + PIN</option><option value="none">BitLocker väljas</option></select></span><label class="tg"><input type="checkbox" id="bkey" checked> <span>Taastevõti salvestatud Entra ID-sse / AD-sse</span></label></div>
+  <div class="row" style="margin-top:0"><span>Kaitse: <select id="bprot"><option value="tpm">Ainult TPM (vaikimisi)</option><option value="pin">TPM + PIN</option><option value="none">BitLocker väljas</option></select></span><label class="tg"><input type="checkbox" id="bkey" checked> <span>Taastevõti salvestatud Entra ID-sse / AD-sse (<i>Active Directory</i>)</span></label></div>
   <div class="scen" id="bscen"></div>
   <div class="chain" id="bchain"></div>
   <div class="info" id="binfo"></div>
@@ -305,16 +305,16 @@ function hDraw(){const n=+$('htask').value,rpm=RPM[+$('hrpm').value],seek=+$('hs
   const rot=60000/rpm/2,xfer=0.03,hdd=seek+rot+xfer,sata=0.1,nvme=0.06;
   const rows=[['HDD',[[seek,'#c26a0a'],[rot,'#a3489c'],[xfer,'#185fa5']],hdd],['SATA SSD',[[sata,'#185fa5']],sata],['NVMe SSD',[[nvme,'#185fa5']],nvme]];
   $('htl').innerHTML='<div class="hint">Üks juhuslik 4 KB lugemine (riba skaala: HDD = täispikk):</div>'+rows.map(([nm,parts,t])=>`<div class="tl"><span>${nm}</span><div class="bar">${parts.map(([v,c])=>`<div style="width:${Math.max(0.6,v/hdd*100)}%;background:${c}"></div>`).join('')}</div><b>${fmt(t,2)} ms</b></div>`).join('');
-  $('hkpi').innerHTML=`<div>HDD: lugemisi sekundis<b>${fmt(1000/hdd,0)}</b></div><div>HDD: kogu ülesanne<b>${dur(n*hdd/1000)}</b></div><div>SATA SSD: kogu ülesanne<b>${dur(n*sata/1000)}</b></div><div>NVMe SSD: kogu ülesanne<b>${dur(n*nvme/1000)}</b></div>`;
+  $('hkpi').innerHTML=`<div>HDD: lugemisi sekundis<b>${fmt(1000/hdd,0)}</b></div><div>HDD: kogu ülesanne<b>${dur(n*hdd/1000)}</b></div><div>SATA (<i>Serial Advanced Technology Attachment</i>) SSD: kogu ülesanne<b>${dur(n*sata/1000)}</b></div><div>NVMe (<i>Non-Volatile Memory Express</i>) SSD: kogu ülesanne<b>${dur(n*nvme/1000)}</b></div>`;
   $('hinfo').innerHTML=`Arvutus: otsinguaeg ${fmt(seek)} ms + pöördeviide ${fmt(rot,2)} ms (pool pööret: 60 000 / ${rpm} / 2) + lugemine ≈ <b>${fmt(hdd,1)} ms</b>. HDD kulutab peaaegu kogu aja <b>ootamisele</b>, mitte lugemisele. SSD on siin ~${fmt(hdd/sata,0)} korda kiirem. ${rpm>=10000?'Kiiremad serverikettad (10 000–15 000 p/min) vähendavad pöördeviidet, kuid jäävad SSD-st ikka kaugele maha – seepärast neid enam ei toodeta.':'Proovi suuremat pöörlemiskiirust – kas HDD jõuab SSD-le järele?'} Päriselt saab NVMe teha mitut päringut korraga (paralleelsed järjekorrad), nii et tema tegelik eelis on veel suurem.`}
 ['hrpm','hseek'].forEach(i=>$(i).oninput=hDraw);$('htask').onchange=hDraw;hDraw();
 
 /* 2. Partitsioonid */
-const PARTS=[['GPT päis','~1 MB',1,'<b>GPT päis ja partitsioonitabel.</b> Ketta alguses on „kaitse-MBR“ (et vanad tööriistad ketast tühjaks ei peaks) ja GPT päis koos partitsioonide nimekirjaga. Päisel on kontrollsumma (CRC).'],
- ['EFI','FAT32 · 100–260 MB',2,'<b>EFI süsteemipartitsioon (ESP).</b> UEFI püsivara oskab lugeda ainult FAT32-t – seepärast on see FAT32. Siin on Windowsi alglaadur <code>\\EFI\\Microsoft\\Boot\\bootmgfw.efi</code> ja käivitusseaded (BCD). Kui see partitsioon kustutada, ei käivitu Windows; parandamiseks käivitatakse taastekeskkond ja <code>bcdboot C:\\Windows</code>.'],
- ['MSR','16 MB',1.4,'<b>Microsofti reserveeritud partitsioon (MSR).</b> Väike ala Windowsi sisemiseks kasutuseks, failisüsteemi pole ja Exploreris seda ei näe. Seda ei tohi kustutada.'],
- ['Windows C:','NTFS · BitLocker',10,'<b>Windowsi partitsioon.</b> Siin on Windows, programmid ja kasutajate failid. Tavaliselt on see BitLockeriga krüpteeritud.'],
- ['Taaste','Windows RE · ~1 GB',2,'<b>Taastepartitsioon (Windows RE).</b> Kui Windows ei käivitu, avaneb siit taastekeskkond: lähtestamine, süsteemitaaste, käsuviip, käivituse parandus. Kui see kustutada, töötab Windows edasi, kuid tõrkeotsing on raskem.'],
+const PARTS=[['GPT päis','~1 MB',1,'<b>GPT päis ja partitsioonitabel.</b> Ketta alguses on „kaitse-MBR“ (et vanad tööriistad ketast tühjaks ei peaks) ja GPT päis koos partitsioonide nimekirjaga. Päisel on kontrollsumma (CRC – <i>Cyclic Redundancy Check</i>).'],
+ ['EFI','FAT32 (FAT – <i>File Allocation Table</i>) · 100–260 MB',2,'<b>EFI (<i>Extensible Firmware Interface</i>) süsteemipartitsioon (ESP – <i>EFI System Partition</i>).</b> UEFI püsivara oskab lugeda ainult FAT32-t – seepärast on see FAT32. Siin on Windowsi alglaadur <code>\\EFI\\Microsoft\\Boot\\bootmgfw.efi</code> ja käivitusseaded (BCD – <i>Boot Configuration Data</i>). Kui see partitsioon kustutada, ei käivitu Windows; parandamiseks käivitatakse taastekeskkond ja <code>bcdboot C:\\Windows</code>.'],
+ ['MSR','16 MB',1.4,'<b>Microsofti reserveeritud partitsioon (MSR – <i>Microsoft Reserved Partition</i>).</b> Väike ala Windowsi sisemiseks kasutuseks, failisüsteemi pole ja Exploreris seda ei näe. Seda ei tohi kustutada.'],
+ ['Windows C:','NTFS (<i>New Technology File System</i>) · BitLocker',10,'<b>Windowsi partitsioon.</b> Siin on Windows, programmid ja kasutajate failid. Tavaliselt on see BitLockeriga krüpteeritud.'],
+ ['Taaste','Windows RE (<i>Recovery Environment</i>) · ~1 GB',2,'<b>Taastepartitsioon (Windows RE).</b> Kui Windows ei käivitu, avaneb siit taastekeskkond: lähtestamine, süsteemitaaste, käsuviip, käivituse parandus. Kui see kustutada, töötab Windows edasi, kuid tõrkeotsing on raskem.'],
  ['GPT koopia','ketta lõpus',1,'<b>GPT varukoopia.</b> Ketta lõpus on päise ja tabeli koopia. Kui ketta algus rikneb, saab partitsioonid sealt taastada. MBR-is sellist koopiat pole.']];
 let psel=3;
 function pDisk(){$('pdisk').innerHTML=PARTS.map((p,i)=>`<div class="${i===psel?'on':''}" style="flex:${p[2]}" data-i="${i}"><b>${p[0]}</b><small>${p[1]}</small></div>`).join('');
@@ -325,8 +325,8 @@ function pDraw(){const s=PS[+$('psize').value],c=+$('pcount').value,fw=$('pfw').
   if(s>2)mbrIssues.push(`MBR näeb ainult 2 TB – ülejäänud ${s-2} TB jääb kasutamata`);
   if(c>4)mbrIssues.push(`MBR-is on ainult 4 primaarset partitsiooni – ${c} partitsiooni jaoks on vaja laiendatud partitsiooni`);
   if(o==='w11')mbrIssues.push('Windows 11 nõuab UEFI-d ja GPT-d');
-  if(fw==='bios'&&o!=='data')gptIssues.push('vana BIOS (ingl Basic Input/Output System) ei saa GPT-kettalt Windowsi käivitada');
-  if(fw==='bios'&&o==='w11')gptIssues.push('Windows 11 ei toeta BIOS-i üldse – vaja on UEFI-ga arvutit');
+  if(fw==='bios'&&o!=='data')gptIssues.push('vana BIOS (<i>Basic Input/Output System</i>) ei saa GPT-kettalt Windowsi käivitada');
+  if(fw==='bios'&&o==='w11')gptIssues.push('Windows 11 ei toeta BIOS-i (<i>Basic Input/Output System</i>) üldse – vaja on UEFI-ga arvutit');
   const rec=o==='data'?'GPT':(fw==='bios'?(o==='w11'?'—':'MBR'):'GPT');
   $('pkpi').innerHTML=`<div>Soovitus<b>${rec}</b></div><div>MBR probleeme<b>${mbrIssues.length}</b></div><div>GPT probleeme<b>${gptIssues.length}</b></div>`;
   $('pres').className='info'+(rec==='—'?' bad':' ok');
@@ -384,7 +384,7 @@ function xDraw(){const p=XB[0].map((b,i)=>b^XB[1][i]),lost=+$('xlost').value;
 $('xlost').onchange=xDraw;xDraw();
 
 /* 4. BitLocker */
-const SC=[['boot','💻 Tavaline käivitus'],['stolen','🕵 Ketas varastati, ühendati teise arvutisse'],['usb','🐧 Ründaja käivitab Linuxi USB-pulgalt'],['bios','⚙ BIOS-i uuendus (BitLocker peatamata)'],['biossus','⚙ BIOS-i uuendus pärast Suspend-BitLocker'],['board','🔧 Emaplaat vahetati'],['onlap','🔒 Varastati sisselülitatud, lukustatud sülearvuti'],['forgot','❓ Kasutaja unustas PIN-i']];
+const SC=[['boot','💻 Tavaline käivitus'],['stolen','🕵 Ketas varastati, ühendati teise arvutisse'],['usb','🐧 Ründaja käivitab Linuxi USB-pulgalt (USB – <i>Universal Serial Bus</i>)'],['bios','⚙ BIOS-i uuendus (BitLocker peatamata)'],['biossus','⚙ BIOS-i uuendus pärast Suspend-BitLocker'],['board','🔧 Emaplaat vahetati'],['onlap','🔒 Varastati sisselülitatud, lukustatud sülearvuti'],['forgot','❓ Kasutaja unustas PIN-i (<i>Personal Identification Number</i>)']];
 let bs='boot';
 $('bscen').innerHTML=SC.map(([k,v])=>`<button class="btn" data-s="${k}">${v}</button>`).join('');
 $('bscen').querySelectorAll('button').forEach(b=>b.onclick=()=>{bs=b.dataset.s;bDraw()});
@@ -395,15 +395,15 @@ function bDraw(){document.querySelectorAll('#bscen button').forEach(b=>b.classLi
     msg={boot:'Arvuti käivitub. Andmed pole krüpteeritud.',stolen:'<b>Varas loeb kõiki faile!</b> Ketas pole krüpteeritud – teise arvutiga ühendades on kõik kaustad avatud, Windowsi parooli pole vaja.',usb:'<b>Ründaja loeb kõiki faile</b> Linuxi alt, Windowsi õigused ei kehti.',bios:'Midagi ei muutu – krüpteerimist pole.',biossus:'Midagi ei muutu – krüpteerimist pole.',board:'Ketas töötab uues arvutis edasi – ja töötaks ka varga arvutis.',onlap:'<b>Varas saab ketta välja võtta ja kõike lugeda.</b>',forgot:'PIN-i pole, kuid andmed on ka kaitseta.'}[bs];
     data=bs==='boot'||bs==='bios'||bs==='biossus'||bs==='board'||bs==='forgot'?'ok':'bad';who=data==='bad'?'varas':'omanik'}
   else{
-    if(bs==='boot'){msg=pr==='pin'?'TPM kontrollib, et käivitus on muutmata, ja kasutaja sisestab PIN-i. Ketas avaneb.':'TPM mõõdab käivitusahelat (püsivara, Secure Boot, alglaadur). Kõik on sama nagu krüpteerimisel, nii et TPM annab VMK ja ketas avaneb – kasutaja ei märka midagi.'}
+    if(bs==='boot'){msg=pr==='pin'?'TPM kontrollib, et käivitus on muutmata, ja kasutaja sisestab PIN-i. Ketas avaneb.':'TPM mõõdab käivitusahelat (püsivara, Secure Boot, alglaadur). Kõik on sama nagu krüpteerimisel, nii et TPM annab VMK (<i>Volume Master Key</i>) ja ketas avaneb – kasutaja ei märka midagi.'}
     else if(bs==='stolen'){tpm='bad';pin='na';rec='bad';data='bad';who='mitte keegi (varas)';msg='Teises arvutis on teine TPM, kus seda võtit pole. Varas näeb ainult juhuslikke baite. <b>BitLocker täitis oma ülesande.</b> Ilma taastevõtmeta ei saa varas midagi teha.'}
     else if(bs==='usb'){tpm='bad';pin='na';rec='bad';data='bad';who='mitte keegi (ründaja)';msg='Käivitusahel on muutunud (teine alglaadur). TPM keeldub VMK-d andmast ja Linux näeb krüpteeritud köidet. <b>Andmed on kaitstud.</b>'}
     else if(bs==='bios'){tpm='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='Püsivara muutus, TPM-i mõõtmised ei klapi ja TPM keeldub võtit andmast. Arvuti küsib <b>48-kohalist taastevõtit</b>. '+(key?'Administraator leiab selle Entra ID-st või AD-st ja arvuti käivitub.':'<b>Taastevõtit pole salvestatud – andmed on kadunud ka omanikule!</b>')+' Õige viis: enne BIOS-i uuendust <code>Suspend-BitLocker -RebootCount 1</code>.'}
     else if(bs==='biossus'){msg='<code>Suspend-BitLocker</code> pani võtme ajutiselt kettale avatult. BIOS uuendati, arvuti käivitus ilma taastevõtmeta, BitLocker mõõtis uue käivituse ja lülitas kaitse automaatselt uuesti sisse. Nii tehakse püsivara uuendusi õigesti.'}
     else if(bs==='board'){tpm='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='Uuel emaplaadil on uus TPM, kus vana võtit pole. Arvuti küsib taastevõtit. '+(key?'Pärast taastevõtme sisestamist saab BitLockeri uue TPM-iga uuesti siduda.':'<b>Taastevõtit pole – andmed on kadunud!</b> Seepärast tuleb taastevõti alati salvestada enne riistvara hooldust.')}
     else if(bs==='onlap'){if(pr==='pin'){tpm='ok';pin='ask';data='ok';who='omanik';msg='Kui arvuti on unerežiimis, on võti mälus. Kuid kui varas lülitab arvuti välja (et nt ketast kopeerida), küsitakse käivitamisel PIN-i, mida ta ei tea. <b>TPM + PIN</b> on seepärast tundlikele sülearvutitele soovitatav. Tugevaim kaitse: kasuta talveunerežiimi või lülita arvuti välja.'}
-      else{tpm='ok';data='ask';who='ehk ka ründaja';msg='Arvuti töötab ja võti on mälus. Lukustatud ekraan kaitseb tavavarga eest, kuid oskuslik ründaja võib proovida mälu lugeda (nt DMA-rünne, ptk 14). TPM-üksi režiimis käivitub arvuti ka pärast taaskäivitust ilma kasutaja abita. Tundlike andmete puhul kasuta <b>TPM + PIN</b> ja Kernel DMA Protectionit.'}}
-    else if(bs==='forgot'){if(pr==='pin'){pin='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='TPM on nõus, kuid PIN on vale. Kasutaja peab sisestama taastevõtme. '+(key?'IT-tugi leiab selle Entra ID-st, kasutaja sisestab selle ja seab uue PIN-i.':'<b>Taastevõtit pole – andmed on kadunud!</b>')}else{msg='TPM-üksi režiimis PIN-i ei küsita – see olukord ei teki.'}}}
+      else{tpm='ok';data='ask';who='ehk ka ründaja';msg='Arvuti töötab ja võti on mälus. Lukustatud ekraan kaitseb tavavarga eest, kuid oskuslik ründaja võib proovida mälu lugeda (nt DMA-rünne, ptk 14; DMA – <i>Direct Memory Access</i>). TPM-üksi režiimis käivitub arvuti ka pärast taaskäivitust ilma kasutaja abita. Tundlike andmete puhul kasuta <b>TPM + PIN</b> ja Kernel DMA Protectionit.'}}
+    else if(bs==='forgot'){if(pr==='pin'){pin='bad';rec=key?'ask':'bad';data=key?'ok':'bad';who=key?'omanik taastevõtmega':'mitte keegi';msg='TPM on nõus, kuid PIN on vale. Kasutaja peab sisestama taastevõtme. '+(key?'IT-tugi (IT – <i>Information Technology</i>) leiab selle Entra ID-st, kasutaja sisestab selle ja seab uue PIN-i.':'<b>Taastevõtit pole – andmed on kadunud!</b>')}else{msg='TPM-üksi režiimis PIN-i ei küsita – see olukord ei teki.'}}}
   const st=x=>({ok:'ok',bad:'bad',ask:'ask',na:''}[x]),tx={ok:'✅',bad:'❌',ask:'⌨',na:'–'};
   $('bchain').innerHTML=`<div class="${st(tpm)}"><b>TPM</b>${tx[tpm]} ${tpm==='ok'?'annab võtme':tpm==='bad'?'keeldub':'ei kasutata'}</div><div class="${st(pin)}"><b>PIN</b>${tx[pin]} ${pin==='ask'?'küsitakse':pin==='bad'?'vale/unustatud':'ei küsita'}</div><div class="${st(rec)}"><b>Taastevõti</b>${tx[rec]} ${rec==='ask'?'küsitakse – leitakse':rec==='bad'?(bs==='stolen'||bs==='usb'?'puudub ründajal':'ei leita'):'pole vaja'}</div><div class="${st(data)}"><b>Andmed</b>${data==='ok'?'✅ avatud: '+who:data==='bad'?(pr==='none'?'⚠ loeb: varas':'🔒 kättesaamatud: '+who):'⚠ '+who}</div>`;
   $('binfo').className='info'+((pr==='none'&&data==='bad')||(data==='bad'&&!(bs==='stolen'||bs==='usb'))?' bad':' ok');
@@ -419,7 +419,7 @@ function vDraw(){const t=$('vtype').value,full=500,ch=20;const sz=DAYS.map((d,i)
   $('vkpi').innerHTML=`<div>Varundusruumi nädalas<b>${fmt(tot,0)} GB</b></div><div>Reedese seisu taastamiseks vaja koopiaid<b>${need.length}</b></div><div>Taastamisel loetakse<b>${rs} GB</b></div>`;
   $('vinfo').innerHTML='Server läks rikki <b>reedel õhtul</b>. Punase raamiga on koopiad, mida taastamiseks vaja on. '+{full:'Iga päev täisvarundus: taastamiseks piisab reedese koopiast – lihtne ja kiire, kuid nädalas kulub 3500 GB ruumi ja iga varundus võtab kaua.',inc:'Inkrementaalne: igal ööl kopeeritakse ainult selle päeva muutused (20 GB) – kiire ja säästlik. Taastamiseks on aga vaja pühapäevast täisvarundust <b>ja kõiki</b> järgnevaid koopiaid. Kui üks neist (nt kolmapäevane) on rikutud, ei saa reedest seisu taastada.',dif:'Diferentsiaalne: iga koopia sisaldab kõiki muutusi alates pühapäevast, nii et see kasvab iga päevaga. Taastamiseks on vaja ainult täisvarundust ja reedest koopiat – kompromiss ruumi ja töökindluse vahel.'}[t]}
 $('vtype').onchange=vDraw;vDraw();
-const OPT=[['raid','Kettad on RAID 1 peeglis','',0,0,0,0,0],['vss','Varikoopiad (VSS) samal kettal, iga 2 h','vss',0,0,0,0,0],['nas','Öine varundus NAS-ile samas majas, võrgus','nas',1,0,0,0,0],['cloud','Pilvevarundus (Azure / Backblaze)','cloud',1,1,1,0,0],['usb','Iganädalane USB-ketas, hoitakse lahtiühendatult seifis','usb',1,1,0,1,0],['immut','Pilves muutumatu (immutable) koopia 30 päeva','immut',1,1,1,1,0],['test','Taastamist testitakse kord kuus','',0,0,0,0,1]];
+const OPT=[['raid','Kettad on RAID 1 peeglis','',0,0,0,0,0],['vss','Varikoopiad (VSS – <i>Volume Shadow Copy Service</i>) samal kettal, iga 2 h','vss',0,0,0,0,0],['nas','Öine varundus NAS-ile (<i>Network Attached Storage</i>) samas majas, võrgus','nas',1,0,0,0,0],['cloud','Pilvevarundus (Azure / Backblaze)','cloud',1,1,1,0,0],['usb','Iganädalane USB-ketas, hoitakse lahtiühendatult seifis','usb',1,1,0,1,0],['immut','Pilves muutumatu (immutable) koopia 30 päeva','immut',1,1,1,1,0],['test','Taastamist testitakse kord kuus','',0,0,0,0,1]];
 const vsel=new Set(['raid','nas']);
 $('vchk').innerHTML=OPT.map(o=>`<label id="vl_${o[0]}"><input type="checkbox" data-k="${o[0]}"> <span>${o[1]}</span></label>`).join('');
 $('vchk').querySelectorAll('input').forEach(c=>{c.checked=vsel.has(c.dataset.k);c.onchange=()=>{c.checked?vsel.add(c.dataset.k):vsel.delete(c.dataset.k);vRules()}});
@@ -445,7 +445,7 @@ quiz('qtasks','qscore','qreset',['RAID','Varundus','BitLocker','Varikoopia','UPS
  ['Õpetaja kirjutas tund aega tagasi dokumendi kogemata üle ja tahab vana versiooni tagasi.',3,'„Eelmised versioonid“ tuleb varikoopiast kiiresti ja kasutaja saab seda ise teha.'],
  ['Lunavara krüpteeris failiserveri, sh varikoopiad ja peegli.',1,'Aitab ainult varukoopia, mis oli võrguühenduseta või muutumatu.'],
  ['Õpetaja sülearvuti, kus on õpilaste andmed, varastati rongis.',2,'Krüpteeritud kettalt ei saa varas andmeid lugeda.'],
- ['Elekter kaob serveriruumis 10 minutiks ja RAID-kontrolleri vahemälus on kirjutamata andmed.',4,'UPS annab aega server korrektselt välja lülitada, et vahemälu jõuaks kettale ja failisüsteem ei rikneks.'],
+ ['Elekter kaob serveriruumis 10 minutiks ja RAID-kontrolleri vahemälus on kirjutamata andmed.',4,'UPS (<i>Uninterruptible Power Supply</i>) annab aega server korrektselt välja lülitada, et vahemälu jõuaks kettale ja failisüsteem ei rikneks.'],
  ['Serveriruumis oli tulekahju, kõik seadmed hävisid.',1,'Ainult väljaspool hoonet hoitud varukoopia (pilv, teine maja) päästab andmed.'],
  ['Vana kõvaketas visatakse ära ja keegi ei tohi sealt andmeid taastada.',2,'Kui ketas on algusest peale BitLockeriga krüpteeritud, on andmed ilma võtmeta loetamatud. Muidu tuleb ketas turvaliselt tühjendada või füüsiliselt hävitada.']],
  'RAID – riistvara rike; varikoopia – kiire taastamine samas kohas; varundus – kustutamine, lunavara, õnnetus; BitLocker – vargus; UPS – voolukatkestus.');

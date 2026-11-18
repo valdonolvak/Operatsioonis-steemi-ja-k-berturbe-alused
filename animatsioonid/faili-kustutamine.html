@@ -190,10 +190,10 @@ a{color:var(--accent)}
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Fail on olemas</strong><span>Kustutamine ei ole üks toiming. Faili <strong>nimi</strong>, <strong>metaandmete kirje</strong> ja <strong>andmed</strong> kaovad eri hetkedel ning sellest sõltub, kas faili saab taastada.</span></span></button></li>
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Prügikasti: fail ainult teisaldatakse</strong><span>Prügikast on tavaline peidetud kaust. Windows nimetab faili ümber <code>$R…</code>-failiks ja teeb kõrvale <code>$I…</code>-faili algse tee ja ajaga. Linuxi töölaud paneb faili kausta <code>files</code> ja algse tee faili <code>.trashinfo</code>. Käsurea <code>rm</code>, <code>del</code> ja <code>Remove-Item</code> prügikasti ei kasuta.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Prügikasti tühjendamine: nimi ja kirje</strong><span>Sama juhtub <kbd>Shift+Delete</kbd> ja <code>rm</code> korral kohe. NTFS-is jääb vabaks märgitud MFT kirjesse vana sisu alles, kuni kirje uuesti kasutusele võetakse. ext4-s kaob inode alles siis, kui viidete arv on null <em>ja</em> ükski protsess faili lahti ei hoia.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Prügikasti tühjendamine: nimi ja kirje</strong><span>Sama juhtub <kbd>Shift+Delete</kbd> ja <code>rm</code> korral kohe. NTFS-is (<i>New Technology File System</i>) jääb vabaks märgitud MFT (<i>Master File Table</i>) kirjesse vana sisu alles, kuni kirje uuesti kasutusele võetakse. ext4-s kaob inode alles siis, kui viidete arv on null <em>ja</em> ükski protsess faili lahti ei hoia.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Andmeplokid: vabaks märgitud ei tähenda kustutatud</strong><span><strong>Windows:</strong> klastrid märgitakse <code>$Bitmap</code>-is vabaks, sisu jääb alles kuni ülekirjutamiseni. <strong>Linux:</strong> avatud faili saab kustutada, nimi kaob kohe, kuid ruum vabaneb alles sulgemisel. <strong>macOS:</strong> kui plokke jagab kloon või Time Machine’i kohalik hetktõmmis, jäävad need alles ja ruumi näidatakse „vabastatavana“.</span></span></button></li>
-<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Millal andmed päriselt kaovad</strong><span><strong>TRIM</strong> ütleb SSD-le, millised plokid on vabad. SSD tühjendab need ja lugemisel tulevad nullid. <strong>HDD-l</strong> TRIM-i ei ole: andmed on alles, kuni mõni uus fail need üle kirjutab, ja taastamisprogramm leiab need üles.</span></span></button></li>
-<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Mida sellest õppida</strong><span>Kogu ketta krüpteerimine (<strong>BitLocker</strong>, <strong>LUKS</strong>, <strong>FileVault</strong>) lahendab probleemi kõigil juhtudel: ilma võtmeta on vanad plokid loetamatud, olgu need tühjendatud või mitte. Ja vastupidi: kui kustutasid kogemata olulise faili HDD-lt, lõpeta kohe kettale kirjutamine.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Millal andmed päriselt kaovad</strong><span><strong>TRIM</strong> ütleb SSD-le (<i>Solid-State Drive</i>), millised plokid on vabad. SSD tühjendab need ja lugemisel tulevad nullid. <strong>HDD-l (<i>Hard Disk Drive</i>)</strong> TRIM-i ei ole: andmed on alles, kuni mõni uus fail need üle kirjutab, ja taastamisprogramm leiab need üles.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Mida sellest õppida</strong><span>Kogu ketta krüpteerimine (<strong>BitLocker</strong>, <strong>LUKS (<i>Linux Unified Key Setup</i>)</strong>, <strong>FileVault</strong>) lahendab probleemi kõigil juhtudel: ilma võtmeta on vanad plokid loetamatud, olgu need tühjendatud või mitte. Ja vastupidi: kui kustutasid kogemata olulise faili HDD-lt, lõpeta kohe kettale kirjutamine.</span></span></button></li>
 </ol>
 </section>
 <section class="extra">
@@ -201,10 +201,10 @@ a{color:var(--accent)}
 <div class="tablewrap"><table>
 <tr><th>Mõiste</th><th>Selgitus</th></tr>
 <tr><td><strong>Prügikast</strong></td><td>Peidetud kaust, kuhu failihaldur kustutatud faili teisaldab. Windowsis <code>C:\$Recycle.Bin\&lt;kasutaja SID&gt;</code>, Linuxi töölaual <code>~/.local/share/Trash</code>, macOS-is <code>~/.Trash</code>.</td></tr>
-<tr><td><strong>SID</strong></td><td>Windowsi kasutaja turvaidentifikaator. Igal kasutajal on prügikastis oma alamkaust.</td></tr>
+<tr><td><strong>SID (<i>Security Identifier</i>)</strong></td><td>Windowsi kasutaja turvaidentifikaator. Igal kasutajal on prügikastis oma alamkaust.</td></tr>
 <tr><td><strong>Viidete arv</strong> (link count)</td><td>Mitu nime inode’ile viitab. Fail kustub, kui arv on null ja ükski protsess seda lahti ei hoia.</td></tr>
 <tr><td><strong>Vabaks märkimine</strong></td><td>Failisüsteem märgib ploki oma kaardil vabaks. Ploki sisu sellest ei muutu.</td></tr>
-<tr><td><strong>TRIM</strong></td><td>Käsk, millega operatsioonisüsteem teatab SSD-le, millised plokid on vabad. SSD tühjendab need ise.</td></tr>
+<tr><td><strong>TRIM</strong></td><td>Käsk, millega operatsioonisüsteem teatab SSD-le (<i>Solid-State Drive</i>), millised plokid on vabad. SSD tühjendab need ise.</td></tr>
 <tr><td><strong>fstrim</strong></td><td>Linuxi käsk, mis saadab TRIM-i kõigi vabade plokkide kohta. Enamikus distributsioonides käivitub taimeriga kord nädalas.</td></tr>
 <tr><td><strong>Hetktõmmis</strong></td><td>Failisüsteemi varasem seis. Hoiab kustutatud faili plokke alles, kuni hetktõmmis ise kustutatakse.</td></tr>
 <tr><td><strong>Vabastatav ruum</strong> (purgeable)</td><td>macOS-i nimetus ruumile, mida hoiavad kinni kohalikud hetktõmmised ja mille süsteem vajadusel vabastab.</td></tr>
@@ -213,13 +213,13 @@ a{color:var(--accent)}
 </table></div>
 <h2>Kolm süsteemi kõrvuti</h2>
 <div class="tablewrap"><table>
-<tr><th></th><th>Windows (NTFS)</th><th>Linux (ext4)</th><th>macOS (APFS)</th></tr>
+<tr><th></th><th>Windows (NTFS – <i>New Technology File System</i>)</th><th>Linux (ext4)</th><th>macOS (APFS – <i>Apple File System</i>)</th></tr>
 <tr><td>Prügikast</td><td><code>C:\$Recycle.Bin\&lt;SID&gt;</code></td><td><code>~/.local/share/Trash</code></td><td><code>~/.Trash</code></td></tr>
 <tr><td>Kohe kustutamine</td><td>Shift+Delete, <code>Remove-Item</code>, <code>del</code></td><td><code>rm</code></td><td>⌥⌘⌫, <code>rm</code></td></tr>
 <tr><td>Avatud faili kustutamine</td><td>tavaliselt keelatud: „fail on kasutusel“</td><td>lubatud, ruum vabaneb sulgemisel</td><td>lubatud, ruum vabaneb sulgemisel</td></tr>
 <tr><td>Mis võib ruumi kinni hoida</td><td>varikoopiad</td><td>avatud fail, kõvaviide</td><td>kloon, hetktõmmis</td></tr>
 <tr><td>TRIM SSD-l</td><td>kohe</td><td>vaikimisi kord nädalas</td><td>kohe (Apple’i SSD-del)</td></tr>
-<tr><td>Kogu ketta krüpteerimine</td><td>BitLocker</td><td>LUKS</td><td>FileVault</td></tr>
+<tr><td>Kogu ketta krüpteerimine</td><td>BitLocker</td><td>LUKS (<i>Linux Unified Key Setup</i>)</td><td>FileVault</td></tr>
 </table></div>
 </section>
 <section class="extra">

@@ -4,7 +4,7 @@
 
 **Vahemälu** (cache) on kiire ja väike mälu, kuhu hoitakse aeglasemast allikast loetud andmete koopiat, et järgmine pöördumine oleks kiirem. Vahemälu töötab, sest programmid kasutavad samu ja lähestikku asuvaid andmeid korduvalt (**ajaline** ja **ruumiline lokaalsus**). Windowsis hoiab failide vahemälu **vahemäluhaldur**.
 
-Vahemälu on arvutis igal pool: protsessoris, kettal, failisüsteemis, brauseris, DNS-is (ingl *Domain Name System*) ja pilveteenustes. Põhimõte on alati sama: **hoia lähedal koopiat sellest, mida tõenäoliselt varsti uuesti vaja läheb**.
+Vahemälu on arvutis igal pool: protsessoris, kettal, failisüsteemis, brauseris, DNS-is (*Domain Name System*) ja pilveteenustes. Põhimõte on alati sama: **hoia lähedal koopiat sellest, mida tõenäoliselt varsti uuesti vaja läheb**.
 
 > 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/13-vahemalu.html). Lehel on ajaskaala ja keskmise pöördumisaja kalkulaator, massiivi läbimise demo, kirjutusviiside simulaator, failide vahemälu ja ettelugemise simulaator, DNS-i vahemälu ajajoon ning kirjutusviisi valiku harjutus.
 
@@ -13,7 +13,7 @@ Vahemälu on arvutis igal pool: protsessoris, kettal, failisüsteemis, brauseris
 - **Tabamus** (hit) – vajalikud andmed on vahemälus;
 - **möödalask** (miss) – andmeid vahemälus pole ja need tuleb tuua aeglasemast allikast;
 - **tabamusmäär** (hit rate) – mitu protsenti pöördumistest on tabamused;
-- **väljatõrjumine** (eviction) – kui vahemälu on täis, tuleb uute andmete jaoks mõni vana koopia eemaldada. Tavaliselt eemaldatakse kõige kauem kasutamata andmed (LRU – ingl *Least Recently Used*, vt ptk 12.3);
+- **väljatõrjumine** (eviction) – kui vahemälu on täis, tuleb uute andmete jaoks mõni vana koopia eemaldada. Tavaliselt eemaldatakse kõige kauem kasutamata andmed (LRU – *Least Recently Used*, vt ptk 12.3);
 - **soe ja külm vahemälu** – külm vahemälu on tühi (nt pärast taaskäivitust), soe sisaldab juba sageli kasutatavaid andmeid.
 
 **Keskmine pöördumisaeg** sõltub tabamusmäärast:
@@ -22,7 +22,7 @@ Vahemälu on arvutis igal pool: protsessoris, kettal, failisüsteemis, brauseris
 keskmine aeg = tabamuse aeg + möödalaskmise osakaal × möödalaskmise lisaaeg
 ```
 
-**Näide.** L1-vahemälu vastab 1 ns-ga, RAM (ingl *Random-Access Memory*) 100 ns-ga.
+**Näide.** L1-vahemälu vastab 1 ns-ga, RAM (*Random-Access Memory*) 100 ns-ga.
 
 | L1 tabamusmäär | Keskmine pöördumisaeg |
 | --- | --- |
@@ -66,13 +66,13 @@ Mõlemad tsüklid teevad täpselt sama arvu liitmisi. Teine on siiski mitu korda
 | L2-vahemälu | 1–3 MB tuuma kohta | \~3–5 ns | 4 sekundit |
 | L3-vahemälu | kümneid MB | \~10–20 ns | 15 sekundit |
 | RAM | 8–512 GB | \~80–100 ns | üle poolteise minuti |
-| NVMe-SSD (NVMe – ingl *Non-Volatile Memory Express*) | TB | \~50–100 µs | ligi päev |
-| Kõvaketas (HDD – ingl *Hard Disk Drive*) | TB | \~5–10 ms | 2–3 kuud |
+| NVMe-SSD (NVMe – *Non-Volatile Memory Express*) | TB | \~50–100 µs | ligi päev |
+| Kõvaketas (HDD – *Hard Disk Drive*) | TB | \~5–10 ms | 2–3 kuud |
 | Võrgu- või pilvesalvesti | piiramatu | ms kuni sajad ms | kuni mitu aastat |
 
 Viimane veerg näitab erinevusi inimlikus mõõtkavas. Kui L1-vahemälust andmete saamine võtaks sekundi, tuleks RAM-ist andmeid oodata nagu kohvi järele ja kõvakettalt nagu kirja, mis saadeti välismaale laevaga. Seepärast on vahemälu nii oluline.
 
-Iga tase on vahemälu järgmisele. OS (ingl *Operating System*) haldab peamiselt RAM-i kui ketta- ja võrguandmete vahemälu; protsessori vahemälusid haldab riistvara.
+Iga tase on vahemälu järgmisele. OS (*Operating System*) haldab peamiselt RAM-i kui ketta- ja võrguandmete vahemälu; protsessori vahemälusid haldab riistvara.
 
 ![mäluhierarhia · registritest pilveni, ligikaudsed pöördumisajad](../pildid/13-a.png)
 
@@ -84,7 +84,7 @@ Joonis (ei ole mõõtkavas): ülemised tasemed haldab protsessor ise; OS-i vahem
 | --- | --- | --- |
 | Otsevastendus (direct-mapped) | iga mäluaadress saab olla ainult ühes kindlas vahemälureas | väga kiire ja lihtne, kuid kaks sageli kasutatavat aadressi võivad üksteist pidevalt välja tõrjuda |
 | Hulgaassotsiatiivne (set-associative) | aadress saab olla ühes kindlas hulgas, hulgas on nt 8 või 12 kohta | tavaline tänapäeva protsessorites, hea kompromiss |
-| Täisassotsiatiivne | aadress võib olla ükskõik kus | kõige paindlikum, kuid otsimine on kallis; kasutatakse väikestes vahemäludes, nt TLB (ingl *Translation Lookaside Buffer*) |
+| Täisassotsiatiivne | aadress võib olla ükskõik kus | kõige paindlikum, kuid otsimine on kallis; kasutatakse väikestes vahemäludes, nt TLB (*Translation Lookaside Buffer*) |
 
 #### Kirjutamine vahemällu
 
@@ -101,7 +101,7 @@ Lugemisega on lihtne: kui koopia on vahemälus, kasuta seda. Kirjutamisel tuleb 
 | Rakenduse ooteaeg | 10 × ketta kirjutusaeg | peaaegu null |
 | Voolukatkestus enne kettale jõudmist | andmed on kettal | viimased muudatused on kadunud |
 
-Seepärast kasutavad serverite RAID-kontrollerid (RAID – ingl *Redundant Array of Independent Disks*) tagasikirjutust ainult siis, kui neil on **akutoega vahemälu** (BBWC/FBWC): voolukatkestuse korral hoiab aku vahemälu sisu alles, kuni vool taastub. Ja seepärast peab serveriruumis olema **UPS** (ingl *Uninterruptible Power Supply*).
+Seepärast kasutavad serverite RAID-kontrollerid (RAID – *Redundant Array of Independent Disks*) tagasikirjutust ainult siis, kui neil on **akutoega vahemälu** (BBWC/FBWC (BBWC – *Battery-Backed Write Cache*; FBWC – *Flash-Backed Write Cache*)): voolukatkestuse korral hoiab aku vahemälu sisu alles, kuni vool taastub. Ja seepärast peab serveriruumis olema **UPS** (*Uninterruptible Power Supply*).
 
 > 🖱️ **Proovi ise:** [läbikirjutus vs tagasikirjutus](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/13-vahemalu.html#kirjutus) ja [milline kirjutusviis sobib?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/13-vahemalu.html#valik)
 
@@ -109,10 +109,10 @@ Seepärast kasutavad serverite RAID-kontrollerid (RAID – ingl *Redundant Array
 
 Vahemälu sisaldab **koopiat**. Kui originaal muutub, võib koopia olla aegunud. Seda probleemi tuleb lahendada igal tasemel:
 
-- protsessorites jälgib riistvara (MESI-protokoll (MESI – ingl *Modified, Exclusive, Shared, Invalid*), ptk 10.3), et kõik tuumad näeksid uusimat väärtust;
-- võrgus ja veebis on igal koopial **eluaeg** (TTL, time to live). Kuni TTL kehtib, kasutatakse koopiat ilma originaali kontrollimata.
+- protsessorites jälgib riistvara (MESI-protokoll (MESI – *Modified, Exclusive, Shared, Invalid*), ptk 10.3), et kõik tuumad näeksid uusimat väärtust;
+- võrgus ja veebis on igal koopial **eluaeg** (TTL, *time to live*). Kuni TTL kehtib, kasutatakse koopiat ilma originaali kontrollimata.
 
-**Näide: DNS.** Administraator kolib kooli veebilehe uuele serverile ja muudab DNS-kirjet: `www.kool.ee` → uus IP-aadress (IP – ingl *Internet Protocol*). Kirje TTL on 3600 sekundit (1 tund). Arvutid, mis küsisid nime hiljuti, kasutavad oma DNS-i vahemälust **kuni tund aega vana aadressi** ja jõuavad vanale serverile. Seepärast tehakse enne kolimist TTL väiksemaks (nt 300 s) ja testarvutis tühjendatakse vahemälu käsuga `ipconfig /flushdns`.
+**Näide: DNS.** Administraator kolib kooli veebilehe uuele serverile ja muudab DNS-kirjet: `www.kool.ee` → uus IP-aadress (IP – *Internet Protocol*). Kirje TTL on 3600 sekundit (1 tund). Arvutid, mis küsisid nime hiljuti, kasutavad oma DNS-i vahemälust **kuni tund aega vana aadressi** ja jõuavad vanale serverile. Seepärast tehakse enne kolimist TTL väiksemaks (nt 300 s) ja testarvutis tühjendatakse vahemälu käsuga `ipconfig /flushdns`.
 
 > 🖱️ **Proovi ise:** [DNS-i vahemälu ja TTL](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/13-vahemalu.html#dns)
 
@@ -134,7 +134,7 @@ Joonis: lugemisel kontrollitakse, kas faili osa on juba RAM-is. Tabamuse korral 
 
 > 🖱️ **Proovi ise:** [failide vahemälu ja ettelugemise simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/13-vahemalu.html#ettelugemine)
 
-**Miks andmebaasid vahemälust mööda lähevad?** SQL Serveril (SQL – ingl *Structured Query Language*) on oma puhvrikogum (buffer pool), mis teab paremini, milliseid andmeid hoida. Kui ka Windows hoiaks samu andmeid vahemälus, oleks iga leht RAM-is kaks korda. Lisaks peab andmebaas teadma, et tehingulogi on **tõesti kettal**, enne kui ta ütleb kliendile „tehing õnnestus“. Seepärast kasutab ta läbikirjutust ja `FlushFileBuffers`-it.
+**Miks andmebaasid vahemälust mööda lähevad?** SQL Serveril (SQL – *Structured Query Language*) on oma puhvrikogum (buffer pool), mis teab paremini, milliseid andmeid hoida. Kui ka Windows hoiaks samu andmeid vahemälus, oleks iga leht RAM-is kaks korda. Lisaks peab andmebaas teadma, et tehingulogi on **tõesti kettal**, enne kui ta ütleb kliendile „tehing õnnestus“. Seepärast kasutab ta läbikirjutust ja `FlushFileBuffers`-it.
 
 **Kus seda näha?**
 
@@ -145,9 +145,9 @@ Joonis: lugemisel kontrollitakse, kas faili osa on juba RAM-is. Tabamuse korral 
 
 ### 13.4 Vahemälud mujal Windowsis
 
-- **Seadme kirjutusvahemälu** – kettal ja kontrolleril on oma vahemälu. Seadmehaldur → ketas → Poliitikad. Eemaldatavatel ketastel on alates Windows 10 1809 vaikimisi „Kiire eemaldamine“ (vahemälu väljas), seega USB-pulga (USB – ingl *Universal Serial Bus*) väljatõmbamine on ohutum. Sisemistel ketastel on kirjutusvahemälu sees, sest see on palju kiirem.
-- **Storage Spaces ja Storage Spaces Direct** – kiirem SSD (ingl *Solid-State Drive*) võib olla aeglasemate ketaste vahemälu.
-- **SMB-kliendi (SMB – ingl *Server Message Block*) vahemälu, BranchCache, ühenduseta failid** – võrgufailide koopiad lokaalselt. BranchCache’iga laaditakse sama fail filiaali ainult ühe korra üle WAN-i (ingl *Wide Area Network*), edasi jagavad arvutid seda kohapeal.
+- **Seadme kirjutusvahemälu** – kettal ja kontrolleril on oma vahemälu. Seadmehaldur → ketas → Poliitikad. Eemaldatavatel ketastel on alates Windows 10 1809 vaikimisi „Kiire eemaldamine“ (vahemälu väljas), seega USB-pulga (USB – *Universal Serial Bus*) väljatõmbamine on ohutum. Sisemistel ketastel on kirjutusvahemälu sees, sest see on palju kiirem.
+- **Storage Spaces ja Storage Spaces Direct** – kiirem SSD (*Solid-State Drive*) võib olla aeglasemate ketaste vahemälu.
+- **SMB-kliendi (SMB – *Server Message Block*) vahemälu, BranchCache, ühenduseta failid** – võrgufailide koopiad lokaalselt. BranchCache’iga laaditakse sama fail filiaali ainult ühe korra üle WAN-i (*Wide Area Network*), edasi jagavad arvutid seda kohapeal.
 - **DNS-kliendi vahemälu** – nimede lahendamise tulemused (`ipconfig /displaydns`, tühjendamine `ipconfig /flushdns`).
 - **OneDrive’i failid nõudmisel** – pilvefail laaditakse kettale alles avamisel. Failil „Hoia alati selles seadmes“ on koopia alati kohapeal.
 - **Brauseri vahemälu** – piltide, skriptide ja stiilide koopiad. Kui veebileht ei uuene pärast muutmist, aitab Ctrl+F5 (laadi uuesti ilma vahemäluta).
@@ -158,7 +158,7 @@ Joonis: lugemisel kontrollitakse, kas faili osa on juba RAM-is. Tabamuse korral 
 Vahemälu teeb arvuti kiireks, kuid tekitab ka turvaküsimusi:
 
 - **Ajastuse kõrvalkanalid.** Ründaja saab mõõta, kui kiiresti mingi aadress vastab: kiire vastus tähendab, et andmed olid vahemälus, ja järelikult kasutas neid hiljuti mõni teine programm. **Spectre** ja **Meltdown** (2018) kasutasid seda, et lugeda protsessori spekulatiivse täitmise kaudu tuuma või teise protsessi mälu. Kaitseks on mikrokoodi, OS-i ja brauserite uuendused – üks põhjus, miks uuendusi tuleb paigaldada.
-- **DNS-i vahemälu mürgitamine.** Kui ründaja suudab DNS-serveri vahemällu sokutada vale vastuse, suunatakse kõik kasutajad võltsserverile, kuni TTL kehtib. Kaitse: DNSSEC (ingl *Domain Name System Security Extensions*), juhuslikud lähteportid, ainult usaldusväärsed edastusserverid.
+- **DNS-i vahemälu mürgitamine.** Kui ründaja suudab DNS-serveri vahemällu sokutada vale vastuse, suunatakse kõik kasutajad võltsserverile, kuni TTL kehtib. Kaitse: DNSSEC (*Domain Name System Security Extensions*), juhuslikud lähteportid, ainult usaldusväärsed edastusserverid.
 - **Tundlikud andmed vahemälus.** Brauseri vahemälus võivad olla pangaväljavõtted, mandaatide vahemälus paroolide räsid. Avalikus arvutis kasuta privaatset akent ja logi välja.
 
 ### Võrdlus: Linux
@@ -213,7 +213,7 @@ Mõlemas süsteemis kehtib: kui `free` või Tegumihaldur näitab, et peaaegu kog
 
 1. Milline on kiireim? a) L3 b) RAM c) L1 d) NVMe-SSD
 2. Mis on tagasikirjutuse risk? a) aeglus b) andmekadu toitekatkestusel c) suur mälukasutus d) vigased failinimed
-3. Mis Windowsi komponent kirjutab muudetud vahemälulehed taustal kettale? a) laisk kirjutaja b) PnP-haldur c) objektihaldur d) SysMain
+3. Mis Windowsi komponent kirjutab muudetud vahemälulehed taustal kettale? a) laisk kirjutaja b) PnP-haldur (PnP – *Plug and Play*) c) objektihaldur d) SysMain
 4. Kui suur on tavaline protsessori vahemälurida? a) 1 bait b) 64 baiti c) 4 KB d) 1 MB
 5. Milline käsk tühjendab Windowsi DNS-kliendi vahemälu? a) `ipconfig /release` b) `ipconfig /flushdns` c) `netsh winsock reset` d) `nslookup`
 

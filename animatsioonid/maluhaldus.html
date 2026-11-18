@@ -58,7 +58,7 @@ a{color:var(--accent)}
 <header>
 <p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
 <h1>Virtuaalmälu: aadressi tõlkimine ja leheviga</h1>
-<p class="lead">Animatsioon näitab, kuidas protsessor tõlgib virtuaalaadressi füüsiliseks TLB ja lehetabeli abil ning mis juhtub, kui vajalikku lehte ei ole mälus.</p>
+<p class="lead">Animatsioon näitab, kuidas protsessor tõlgib virtuaalaadressi füüsiliseks TLB (<i>Translation Lookaside Buffer</i>) ja lehetabeli abil ning mis juhtub, kui vajalikku lehte ei ole mälus.</p>
 </header>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 548" role="img" aria-label="Virtuaalmälu: aadressi tõlkimine ja leheviga" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
@@ -175,7 +175,7 @@ a{color:var(--accent)}
 <section aria-label="Sammud">
 <h2>Sammud</h2>
 <ol class="steps">
-<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Aadress jagatakse leheks ja nihkeks; TLB-s kirjet pole</strong><span>Programm kasutab ainult <strong>virtuaalaadresse</strong>. Aadress 0x2A10 jaguneb lehe numbriks (2) ja nihkeks lehe sees (0xA10), sest leht on 4 KB = 0x1000 baiti. Protsessori mäluhaldusüksus (MMU) otsib tõlget kõigepealt kiirest vahemälust TLB. Kirjet ei ole, seega on see TLB-möödalask.</span></span></button></li>
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Aadress jagatakse leheks ja nihkeks; TLB-s kirjet pole</strong><span>Programm kasutab ainult <strong>virtuaalaadresse</strong>. Aadress 0x2A10 jaguneb lehe numbriks (2) ja nihkeks lehe sees (0xA10), sest leht on 4 KB = 0x1000 baiti. Protsessori mäluhaldusüksus (MMU – <i>Memory Management Unit</i>) otsib tõlget kõigepealt kiirest vahemälust TLB. Kirjet ei ole, seega on see TLB-möödalask.</span></span></button></li>
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Lehetabeli läbikäik</strong><span>MMU loeb mälust protsessi <strong>lehetabeli</strong> kirje (päris x64-süsteemis neli taset järjest). Kirje ütleb, et leht 2 on füüsilises raamis 5. Füüsiline aadress on raami algus pluss nihe. Tõlge lisatakse TLB-sse.</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Sama leht uuesti: TLB-tabamus</strong><span>Kui programm pöördub sama lehe poole uuesti, on tõlge TLB-s olemas. Lehetabelit lugeda ei ole vaja ja pöördumine on mitu korda kiirem. Enamik pöördumisi päris programmides on TLB-tabamused, sest programmid kasutavad lühikese aja jooksul väikest hulka lehti.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Leheviga: lehte ei ole mälus</strong><span>Programm pöördub lehe 4 poole. TLB-s kirjet ei ole ja lehetabeli kirje on märgitud kehtetuks: leht on lehefailis. Protsessor tekitab erindi <strong>leheviga</strong> (page fault) ja juhtimine läheb tuuma mäluhaldurile. Kuna leht tuleb lugeda kettalt, on see kõva leheviga.</span></span></button></li>
@@ -195,7 +195,7 @@ Get-CimInstance Win32_PageFileUsage | Select-Object Name, AllocatedBaseSize, Cur
 <li><code>Pages Input/sec</code> näitab kettalt loetud lehti ehk kõvasid lehevigu. Püsivalt suur väärtus tähendab, et mälu on puudu.</li>
 <li>Tegumihalduris: <em>Jõudlus → Mälu</em> näitab kasutuses, ootel ja vaba mälu ning eraldatud mälu (Committed).</li>
 </ul>
-<p>WSL-is või Linuxis: <code>vmstat 2 5</code> (veerud <code>si</code> ja <code>so</code> näitavad saalimist) ja <code>ps -o pid,comm,min_flt,maj_flt -p $$</code> (pehmed ja kõvad lehevead).</p>
+<p>WSL-is (<i>Windows Subsystem for Linux</i>) või Linuxis: <code>vmstat 2 5</code> (veerud <code>si</code> ja <code>so</code> näitavad saalimist) ja <code>ps -o pid,comm,min_flt,maj_flt -p $$</code> (pehmed ja kõvad lehevead).</p>
 </section>
 <footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/12-maluhaldus.md">peatükk 12, Mäluhaldus</a>.</footer>
 </main>

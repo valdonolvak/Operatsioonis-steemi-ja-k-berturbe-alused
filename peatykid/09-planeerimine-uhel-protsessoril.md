@@ -6,10 +6,10 @@
 
 ### 9.1 Protsessori vabatahtlik ja sunnitud loovutamine
 
-Lõim loovutab protsessori **vabatahtlikult**, kui ta hakkab ootama (S/V, lukk, `Sleep`). Ta kaotab protsessori **sunniviisiliselt**, kui OS (ingl *Operating System*) ta katkestab: kvant sai otsa või saabus olulisem töö. Programmid jagunevad gruppidesse:
+Lõim loovutab protsessori **vabatahtlikult**, kui ta hakkab ootama (S/V – sisend-väljund, *input/output*, lukk, `Sleep`). Ta kaotab protsessori **sunniviisiliselt**, kui OS (*Operating System*) ta katkestab: kvant sai otsa või saabus olulisem töö. Programmid jagunevad gruppidesse:
 
-- **protsessorisõltuvad** (CPU-bound (CPU – ingl *Central Processing Unit*)) – arvutavad palju, nt video kodeerimine, kompileerimine;
-- **S/V-sõltuvad** (I/O-bound) – ootavad enamuse ajast ketast, võrku või kasutajat, nt tekstiredaktor.
+- **protsessorisõltuvad** (CPU-bound (CPU – *Central Processing Unit*)) – arvutavad palju, nt video kodeerimine, kompileerimine;
+- **S/V-sõltuvad** (I/O-bound (I/O – *Input/Output*)) – ootavad enamuse ajast ketast, võrku või kasutajat, nt tekstiredaktor.
 
 Hea planeerija annab S/V-sõltuvatele lõimedele kiiresti protsessori, sest nad kasutavad seda vaid hetke ja lähevad siis jälle ootele.
 
@@ -17,8 +17,8 @@ Hea planeerija annab S/V-sõltuvatele lõimedele kiiresti protsessori, sest nad 
 
 Mitte-eelistavas (non-preemptive) süsteemis töötab lõim seni, kuni ise loovutab. Näited: Windows 3.x, klassikaline Mac OS. Algoritmid:
 
-- **FCFS** (First Come, First Served) – saabumise järjekorras; lihtne, kuid lühikesed tööd ootavad pikkade taga;
-- **SJF** (Shortest Job First) – lühim töö enne; minimeerib keskmise ooteaja, kuid nõuab töö pikkuse teadmist.
+- **FCFS** (*First Come, First Served*) – saabumise järjekorras; lihtne, kuid lühikesed tööd ootavad pikkade taga;
+- **SJF** (*Shortest Job First*) – lühim töö enne; minimeerib keskmise ooteaja, kuid nõuab töö pikkuse teadmist.
 
 ### 9.3 Eelistav planeerimine
 
@@ -26,7 +26,7 @@ Eelistavas (preemptive) süsteemis võib OS lõime igal hetkel peatada. Algoritm
 
 - **Round Robin (RR)** – iga lõim saab kordamööda kvandi;
 - **prioriteedipõhine** – alati töötab kõrgeima prioriteediga valmis lõim; risk: madala prioriteediga lõimed näljutatakse;
-- **mitmetasemeline tagasisidega järjekord** (MLFQ – ingl *Multilevel Feedback Queue*) – mitu prioriteedijärjekorda; lõime prioriteet muutub tema käitumise järgi.
+- **mitmetasemeline tagasisidega järjekord** (MLFQ – *Multilevel Feedback Queue*) – mitu prioriteedijärjekorda; lõime prioriteet muutub tema käitumise järgi.
 
 **Näide (üks protsessor, saabumine samal ajal):** tööd A = 8 ms, B = 4 ms, C = 2 ms.
 
@@ -42,8 +42,8 @@ Joonis: SJF laseb lühikesed tööd ette ja vähendab keskmist ooteaega; Round R
 ### 9.4 Planeerimine eri operatsioonisüsteemides
 
 - **Windows** – 32 prioriteeti, eelistav, kvandipõhine, dünaamilised prioriteeditõusud.
-- **Linux** – kuni versioonini 6.5 CFS (Completely Fair Scheduler), mis jagab protsessoriaega „virtuaalse tööaja“ järgi; alates 6.6 EEVDF (Earliest Eligible Virtual Deadline First). Reaalajalõimedele SCHED\_FIFO ja SCHED\_RR.
-- **macOS / iOS** – teenuse kvaliteedi klassid (QoS – ingl *Quality of Service*): kasutajaliides, kasutaja algatatud, utiliit, taust.
+- **Linux** – kuni versioonini 6.5 CFS (*Completely Fair Scheduler*), mis jagab protsessoriaega „virtuaalse tööaja“ järgi; alates 6.6 EEVDF (*Earliest Eligible Virtual Deadline First*). Reaalajalõimedele SCHED\_FIFO ja SCHED\_RR.
+- **macOS / iOS** – teenuse kvaliteedi klassid (QoS – *Quality of Service*): kasutajaliides, kasutaja algatatud, utiliit, taust.
 - **Reaalaja-OS-id** (nt FreeRTOS, Zephyr) – rangelt prioriteedipõhised, ennustatava viivitusega.
 
 ### 9.5 Kontekstivahetus
@@ -68,7 +68,7 @@ Protsessil on **prioriteediklass** (Idle, Below Normal, Normal, Above Normal, Hi
 
 **Dünaamilised tõusud** (priority boost): lõim saab ajutiselt kõrgema prioriteedi, kui lõppeb tema S/V, kui ta on graafilise liidese lõim ja saab sisendi või kui ta on kaua näljas olnud (näljutamisvastane tõus). Nii reageerib süsteem kasutajale kiiresti ka koormuse all.
 
-**Energiasääst ja QoS.** Windows 11 märgib lõimedele teenuse kvaliteedi taseme (High, Medium, Low, Eco, Utility). Tegumihalduri **Efektiivsusrežiim** (Efficiency mode) seab protsessi EcoQoS-ile (ingl *Ecological Quality of Service*): madal prioriteet ja eelistatult säästlikud tuumad väiksema taktsagedusega. See on oluline sülearvutis, kus aku on piiratud ressurss.
+**Energiasääst ja QoS.** Windows 11 märgib lõimedele teenuse kvaliteedi taseme (High, Medium, Low, Eco, Utility). Tegumihalduri **Efektiivsusrežiim** (Efficiency mode) seab protsessi EcoQoS-ile (*Ecological Quality of Service*): madal prioriteet ja eelistatult säästlikud tuumad väiksema taktsagedusega. See on oluline sülearvutis, kus aku on piiratud ressurss.
 
 ### Näide: poe kassad ja video kodeerimine
 

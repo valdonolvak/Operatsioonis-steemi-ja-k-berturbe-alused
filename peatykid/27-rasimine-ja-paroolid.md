@@ -10,15 +10,15 @@
 - eristab turvalisi ja murtud räsialgoritme;
 - selgitab, kuidas paroole rünnatakse ning miks neid hoitakse soolatud ja aeglase räsina;
 - arvutab ligikaudu parooli murdmise aja;
-- eristab kontrollsummat, HMAC-i (ingl *Hash-based Message Authentication Code*) ja digiallkirja.
+- eristab kontrollsummat, HMAC-i (*Hash-based Message Authentication Code*) ja digiallkirja.
 
 ### 27.1 Räsifunktsiooni omadused
 
 ![räsifunktsioon · fikseeritud pikkus, laviiniefekt, ühesuunalisus](../pildid/27-a.png)
 
-Joonis: SHA-256 (SHA – ingl *Secure Hash Algorithm*) räsi on alati 256 bitti (64 heksamärki), olgu sisend üks sõna või mitme gigabaidine fail. Sisendi ühe biti muutmine muudab ligikaudu poolt räsi bittidest. Räsist sisendit tagasi arvutada ei saa.
+Joonis: SHA-256 (SHA – *Secure Hash Algorithm*) räsi on alati 256 bitti (64 heksamärki), olgu sisend üks sõna või mitme gigabaidine fail. Sisendi ühe biti muutmine muudab ligikaudu poolt räsi bittidest. Räsist sisendit tagasi arvutada ei saa.
 
-Näide: sõna `tere` SHA-256 räsi algab `0aaec463110aaad3…` ja sõna `Tere` räsi `527511deafdcd34a…`. Erineb ainult üks bitt (väike ja suur T erinevad ASCII-s (ingl *American Standard Code for Information Interchange*) ühe biti võrra), kuid räsides pole midagi ühist.
+Näide: sõna `tere` SHA-256 räsi algab `0aaec463110aaad3…` ja sõna `Tere` räsi `527511deafdcd34a…`. Erineb ainult üks bitt (väike ja suur T erinevad ASCII-s (*American Standard Code for Information Interchange*) ühe biti võrra), kuid räsides pole midagi ühist.
 
 Krüptograafiline räsifunktsioon peab olema:
 
@@ -29,14 +29,14 @@ Krüptograafiline räsifunktsioon peab olema:
 
 **Kas kokkupõrkeid on olemas?** Jah, alati: sisendeid on lõpmatult, räsisid ainult 2²⁵⁶. Kokkupõrkekindlus tähendab, et neid on praktiliselt võimatu **leida**.
 
-**Sünnipäevaparadoks.** Mitu inimest peab ruumis olema, et kahel neist oleks 50% tõenäosusega sama sünnipäev? Vastus on ainult 23, sest võrreldakse kõiki paare omavahel, mitte igaühte ühe kindla kuupäevaga. Sama kehtib räsidele: n-bitise räsi kokkupõrke leidmiseks piisab umbes 2^(n/2) katsest, mitte 2ⁿ. Seetõttu pakub 256-bitine räsi kokkupõrgete vastu 128-bitist turvalisust ja 128-bitine MD5 (ingl *Message Digest 5*) ainult 64-bitist – ja tegelikud ründed MD5 vastu on veel palju kiiremad.
+**Sünnipäevaparadoks.** Mitu inimest peab ruumis olema, et kahel neist oleks 50% tõenäosusega sama sünnipäev? Vastus on ainult 23, sest võrreldakse kõiki paare omavahel, mitte igaühte ühe kindla kuupäevaga. Sama kehtib räsidele: n-bitise räsi kokkupõrke leidmiseks piisab umbes 2^(n/2) katsest, mitte 2ⁿ. Seetõttu pakub 256-bitine räsi kokkupõrgete vastu 128-bitist turvalisust ja 128-bitine MD5 (*Message Digest 5*) ainult 64-bitist – ja tegelikud ründed MD5 vastu on veel palju kiiremad.
 
-**Kuidas räsi arvutatakse?** SHA-256 jagab sisendi 512-bitisteks plokkideks ja töötleb neid järjest. Iga plokk segatakse 64 ringis eelmise vahetulemusega, kasutades bititehteid (XOR – ingl *Exclusive OR*, nihked, pööramised) ja liitmist. Viimase ploki järel on vahetulemus räsi. SHA-3 kasutab teistsugust „käsna“-ehitust (Keccak), nii et kui SHA-2-s peaks kunagi leitama struktuurne viga, ei puuduta see SHA-3.
+**Kuidas räsi arvutatakse?** SHA-256 jagab sisendi 512-bitisteks plokkideks ja töötleb neid järjest. Iga plokk segatakse 64 ringis eelmise vahetulemusega, kasutades bititehteid (XOR – *Exclusive OR*, nihked, pööramised) ja liitmist. Viimase ploki järel on vahetulemus räsi. SHA-3 kasutab teistsugust „käsna“-ehitust (Keccak), nii et kui SHA-2-s peaks kunagi leitama struktuurne viga, ei puuduta see SHA-3.
 
 | Algoritm | Räsi pikkus | Seisund |
 | --- | --- | --- |
 | MD5 | 128 bitti | murtud: kokkupõrkeid leitakse sekunditega; Flame-pahavara võltsis 2012 sellega Windows Update’i sertifikaadi |
-| SHA-1 | 160 bitti | murtud: Google ja CWI (hollandi *Centrum Wiskunde & Informatica*) näitasid 2017 kahte erinevat sama räsiga PDF-i (ingl *Portable Document Format*; SHAttered); Git liigub SHA-256 peale |
+| SHA-1 | 160 bitti | murtud: Google ja CWI (*Centrum Wiskunde & Informatica*) näitasid 2017 kahte erinevat sama räsiga PDF-i (*Portable Document Format*; SHAttered); Git liigub SHA-256 peale |
 | SHA-256, SHA-512 (SHA-2) | 256 / 512 bitti | turvaline, enim kasutatud |
 | SHA-3 | 224–512 bitti | turvaline, teistsugune sisemine ülesehitus (Keccak) |
 | BLAKE2, BLAKE3 | muudetav | turvaline, väga kiire |
@@ -64,7 +64,7 @@ Ründaja, kes on varastanud räsid, ei saa neid otse pöörata. Ta arvab paroole
 - **toore jõu rünne** – kõik kombinatsioonid kuni teatud pikkuseni;
 - **eelarvutatud tabelid** (vikerkaaretabelid, rainbow tables) – räsid on juba ette arvutatud ja tuleb ainult otsida.
 
-Tavaline kiire räsi (MD5, SHA-256, NT-räsi (NT – ingl *New Technology*)) on mõeldud kiireks. Hea graafikakaart arvutab neid sadu miljardeid sekundis. Meelega aeglane parooliräsi (bcrypt, Argon2id) laseb sama kaardiga proovida vaid tuhandeid kuni kümneid tuhandeid paroole sekundis.
+Tavaline kiire räsi (MD5, SHA-256, NT-räsi (NT – *New Technology*)) on mõeldud kiireks. Hea graafikakaart arvutab neid sadu miljardeid sekundis. Meelega aeglane parooliräsi (bcrypt, Argon2id) laseb sama kaardiga proovida vaid tuhandeid kuni kümneid tuhandeid paroole sekundis.
 
 **Arvutame.** Oletame, et ründaja kaardipark proovib kiiret räsi 10¹¹ korda sekundis ja aeglast 10⁴ korda sekundis.
 
@@ -94,7 +94,7 @@ Joonis: **sool** (salt) on iga kasutaja jaoks juhuslikult valitud väärtus, mis
 
 Ilma soolata on sama parooli räsi kõigil kasutajatel ühesugune. Ründaja arvutab iga arvatava parooli räsi üks kord ja võrdleb seda korraga miljoni kasutaja räsiga. Soolaga peab ta iga kasutaja jaoks eraldi arvutama – miljon korda rohkem tööd.
 
-Parooliräsi funktsioon (Argon2id, scrypt, bcrypt, PBKDF2 – ingl *Password-Based Key Derivation Function 2*) on meelega aeglane ja seda saab seadistada:
+Parooliräsi funktsioon (Argon2id, scrypt, bcrypt, PBKDF2 – *Password-Based Key Derivation Function 2*) on meelega aeglane ja seda saab seadistada:
 
 - **iteratsioonide arv** – mitu korda räsi arvutatakse (PBKDF2, bcrypti cost);
 - **mälukulu** – Argon2id ja scrypt nõuavad iga katse jaoks mälu (nt 19 MiB), mis teeb graafikakaardid ja eriotstarbelised kiibid ebatõhusaks;
@@ -107,12 +107,12 @@ Lisameetmena kasutatakse vahel ka **pipart** (pepper) – salajane väärtus, mi
 | Kus | Kuidas paroole hoitakse |
 | --- | --- |
 | Linux (`/etc/shadow`) | yescrypt (`$y$`) või SHA-512-crypt (`$6$`), igal kasutajal oma sool |
-| Windows kohalik konto, AD (ingl *Active Directory*) | NT-räsi = MD4(parool UTF-16 (UTF – ingl *Unicode Transformation Format*) kujul), **ilma soolata**; seetõttu on samade paroolidega kasutajatel sama räsi ja toimib pass-the-hash rünne (ptk 17–18). Credential Guard kaitseb räsisid VBS-iga (ingl *Virtualization-Based Security*) |
+| Windows kohalik konto, AD (*Active Directory*) | NT-räsi = MD4(parool UTF-16 (UTF – *Unicode Transformation Format*) kujul), **ilma soolata**; seetõttu on samade paroolidega kasutajatel sama räsi ja toimib pass-the-hash rünne (ptk 17–18). Credential Guard kaitseb räsisid VBS-iga (*Virtualization-Based Security*) |
 | Veebirakendus (soovitus) | Argon2id; kui see pole saadaval, siis scrypt, bcrypt või PBKDF2 suure iteratsioonide arvuga ([OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)) |
 
 Linuxi `/etc/shadow` real `mari:$y$j9T$Fs0nZ…$Qh8…:20400:0:99999:7:::` tähendab `$y$` algoritmi yescrypt, `j9T` selle parameetreid, järgmine osa soola ja viimane räsi.
 
-PHP-s (ingl *PHP: Hypertext Preprocessor*) tee seda nii: `password_hash($parool, PASSWORD_ARGON2ID)` ja kontrolli `password_verify($parool, $rasi)`. `password_needs_rehash()` ütleb, kas salvestatud räsi tuleks uute parameetritega uuendada. Ära kirjuta oma räsimisskeemi.
+PHP-s (*PHP: Hypertext Preprocessor*) tee seda nii: `password_hash($parool, PASSWORD_ARGON2ID)` ja kontrolli `password_verify($parool, $rasi)`. `password_needs_rehash()` ütleb, kas salvestatud räsi tuleks uute parameetritega uuendada. Ära kirjuta oma räsimisskeemi.
 
 ### 27.4 Terviklus: kontrollsumma ja HMAC
 
@@ -122,15 +122,15 @@ Joonis: kontrollsumma avastab allalaadimisvea, aga mitte ründajat, kes vahetab 
 
 **Kontrollsumma** (checksum) on tarkvara allalaadimislehel avaldatud räsi. Kui allalaaditud faili räsi klapib, ei rikutud faili teel juhuslikult. Kui aga ründaja on üle võtnud allalaadimisserveri, vahetab ta nii faili kui ka lehel avaldatud räsi. Seetõttu avaldavad tootjad räside faili koos **digiallkirjaga** (nt Ubuntu `SHA256SUMS` ja `SHA256SUMS.gpg`) või allkirjastavad tarkvara ise (Authenticode, ptk 29).
 
-**HMAC** (hash-based message authentication code) arvutab räsi koos salajase võtmega. Ilma võtmeta ei saa keegi kehtivat HMAC-i luua. HMAC on defineeritud nii:
+**HMAC** (*hash-based message authentication code*) arvutab räsi koos salajase võtmega. Ilma võtmeta ei saa keegi kehtivat HMAC-i luua. HMAC on defineeritud nii:
 
 ```math
 \mathrm{HMAC}(K, m) = H\big((K \oplus \mathrm{opad}) \,\|\, H((K \oplus \mathrm{ipad}) \,\|\, m)\big)
 ```
 
-kus H on räsifunktsioon (nt SHA-256), ‖ tähendab järjestikku kirjutamist ning ipad ja opad on kaks fikseeritud konstanti. Miks nii keeruliselt, miks mitte lihtsalt H(võti ‖ sõnum)? SHA-256 ja teised samal põhimõttel ehitatud räsid on haavatavad **pikendusrünnakule** (length extension): räsi H(võti ‖ sõnum) teades saab ründaja arvutada kehtiva räsi sõnumile, mille lõppu on midagi lisatud, ilma võtit teadmata. Nii võltsiti 2009. aastal Flickri API (ingl *Application Programming Interface*) päringuid. HMAC-i kahekordne räsimine välistab selle.
+kus H on räsifunktsioon (nt SHA-256), ‖ tähendab järjestikku kirjutamist ning ipad ja opad on kaks fikseeritud konstanti. Miks nii keeruliselt, miks mitte lihtsalt H(võti ‖ sõnum)? SHA-256 ja teised samal põhimõttel ehitatud räsid on haavatavad **pikendusrünnakule** (length extension): räsi H(võti ‖ sõnum) teades saab ründaja arvutada kehtiva räsi sõnumile, mille lõppu on midagi lisatud, ilma võtit teadmata. Nii võltsiti 2009. aastal Flickri API (*Application Programming Interface*) päringuid. HMAC-i kahekordne räsimine välistab selle.
 
-HMAC-i kasutavad TLS (ingl *Transport Layer Security*), IPsec (ingl *Internet Protocol Security*), JWT-tokenid (JWT – ingl *JSON Web Token*; HS256), API-päringute allkirjad (nt pilveteenuste REST (ingl *Representational State Transfer*) API-d), Kerberos ja ühekordsed paroolid (TOTP-kood (TOTP – ingl *Time-based One-Time Password*) autentimisrakenduses on HMAC kellaajast).
+HMAC-i kasutavad TLS (*Transport Layer Security*), IPsec (*Internet Protocol Security*), JWT-tokenid (JWT – *JSON Web Token*; HS256), API-päringute allkirjad (nt pilveteenuste REST (*Representational State Transfer*) API-d), Kerberos ja ühekordsed paroolid (TOTP-kood (TOTP – *Time-based One-Time Password*) autentimisrakenduses on HMAC kellaajast).
 
 | Meetod | Avastab juhusliku vea | Avastab võltsingu | Kes saab kontrollida |
 | --- | --- | --- | --- |
@@ -150,7 +150,7 @@ HMAC-i kasutavad TLS (ingl *Transport Layer Security*), IPsec (ingl *Internet Pr
 
 Veebipoe andmebaas lekib. Kui paroolid on salvestatud soolamata MD5-räsina, leiab ründaja populaarsete paroolide räsid valmis tabelitest ja enamiku ülejäänutest mõne tunniga. Kuna inimesed kasutavad sama parooli mitmes kohas, proovib ta neid kohe e-posti ja pangateenustes (volituste täitmine, ptk 24.5). Kui paroolid oleksid Argon2id-räsid soolaga, peaks ründaja iga kasutaja paroole eraldi ja aeglaselt arvama ning tugev parool jääks avastamata.
 
-Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul ja kasutajaid (ptk 31), sundima kõiki kasutajaid parooli vahetama ja vahetama räsimisalgoritmi. Kasutaja poolt aitavad paroolihaldur, unikaalsed paroolid ja MFA (ingl *Multi-Factor Authentication*). Kas sinu e-post on lekkes olnud, saab kontrollida teenusest [Have I Been Pwned](https://haveibeenpwned.com/). Sama teenus pakub ka lekkinud paroolide API-t, mida veebirakendus saab registreerimisel kasutada: parooli SHA-1 räsist saadetakse ainult 5 esimest märki ja võrdlus tehakse kohapeal, nii et parool ise lehelt ei lahku.
+Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul ja kasutajaid (ptk 31), sundima kõiki kasutajaid parooli vahetama ja vahetama räsimisalgoritmi. Kasutaja poolt aitavad paroolihaldur, unikaalsed paroolid ja MFA (*Multi-Factor Authentication*). Kas sinu e-post on lekkes olnud, saab kontrollida teenusest [Have I Been Pwned](https://haveibeenpwned.com/). Sama teenus pakub ka lekkinud paroolide API-t, mida veebirakendus saab registreerimisel kasutada: parooli SHA-1 räsist saadetakse ainult 5 esimest märki ja võrdlus tehakse kohapeal, nii et parool ise lehelt ei lahku.
 
 ### Kokkuvõte
 
@@ -158,7 +158,7 @@ Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul
 - MD5 ja SHA-1 on murtud, kasuta SHA-2 või SHA-3.
 - Paroole hoitakse soolatud, meelega aeglase räsina (Argon2id, scrypt, bcrypt, PBKDF2). Inimese valitud lihtne parool leitakse siiski sõnastikuga.
 - Kontrollsumma avastab vea, HMAC ka võltsingu. Võtmeta kontrolliks on vaja digiallkirja.
-- Windowsi NT-räsi on soolamata, seetõttu tuleb kaitsta räsisid endid (Credential Guard, LAPS – ingl *Local Administrator Password Solution*, vähimad õigused).
+- Windowsi NT-räsi on soolamata, seetõttu tuleb kaitsta räsisid endid (Credential Guard, LAPS – *Local Administrator Password Solution*, vähimad õigused).
 
 ### Kontrollküsimused
 
@@ -186,7 +186,7 @@ Mida peab veebipood tegema? Teavitama Andmekaitse Inspektsiooni 72 tunni jooksul
 
 ### Praktiline ülesanne
 
-**Räsid ja paroolid WSL-is.** Ava WSL Ubuntu: `sudo apt install -y whois john openssl`.
+**Räsid ja paroolid WSL-is (*Windows Subsystem for Linux*).** Ava WSL Ubuntu: `sudo apt install -y whois john openssl`.
 
 1. Laviiniefekt ja fikseeritud pikkus:
 
@@ -248,9 +248,9 @@ Vasta: mitu bitti erines „tere“ ja „Tere“ räsis ligikaudu? Miks andis `
 
 ### Iseseisvad ülesanded
 
-**1. Kontrolli Ubuntu tõmmisfaili.** Laadi alla Ubuntu ISO-tõmmise räsifail `SHA256SUMS` ja selle allkiri `SHA256SUMS.gpg`. Kontrolli allkirja (`gpg --verify`) ja tõmmisfaili räsi (`sha256sum -c SHA256SUMS --ignore-missing`). **Esita:** käsud, väljund ja selgitus, mida kontrollib räsi ja mida allkiri ning miks on vaja mõlemat.
+**1. Kontrolli Ubuntu tõmmisfaili.** Laadi alla Ubuntu ISO-tõmmise (ISO – *International Organization for Standardization*) räsifail `SHA256SUMS` ja selle allkiri `SHA256SUMS.gpg`. Kontrolli allkirja (`gpg --verify`) ja tõmmisfaili räsi (`sha256sum -c SHA256SUMS --ignore-missing`). **Esita:** käsud, väljund ja selgitus, mida kontrollib räsi ja mida allkiri ning miks on vaja mõlemat.
 
-**2. Paroolipoliitika.** Kirjuta oma kooli või ettevõtte jaoks paroolipoliitika, mis järgib NIST SP 800-63B soovitusi: minimaalne pikkus, lekkinud paroolide kontroll, MFA, paroolihaldur, sunniviisilise perioodilise vahetamise puudumine. **Esita:** poliitika (kuni 1 lk) ja lühike selgitus, miks keerukusreeglid (nt „1 suurtäht ja 1 number“) aitavad vähem kui pikkus.
+**2. Paroolipoliitika.** Kirjuta oma kooli või ettevõtte jaoks paroolipoliitika, mis järgib NIST (*National Institute of Standards and Technology*) SP 800-63B (SP – *Special Publication*) soovitusi: minimaalne pikkus, lekkinud paroolide kontroll, MFA, paroolihaldur, sunniviisilise perioodilise vahetamise puudumine. **Esita:** poliitika (kuni 1 lk) ja lühike selgitus, miks keerukusreeglid (nt „1 suurtäht ja 1 number“) aitavad vähem kui pikkus.
 
 ### Viited
 

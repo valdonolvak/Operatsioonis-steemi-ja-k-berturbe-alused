@@ -303,7 +303,7 @@ quiz('ctasks','cscore','creset',['Välistamine','Hoia ja oota','Eelistamise puud
  ['Programmid ei kasuta printerit otse, vaid annavad töö printerijärjekorda (spooler)',0,'Printerit kasutab ainult spooleri teenus. Programmide jaoks on järjekord jagatav ressurss – iga programm saab sinna korraga tööd lisada.'],
  ['Andmeid loetakse lugejad-kirjutajad lukuga, nii et paljud lõimed saavad korraga lugeda',0,'Lugemiseks ei ole vaja ainuõigust, nii et lugejate vahel vastastikust välistamist pole. (Kirjutajal on ikka ainuõigus.)'],
  ['Monitor.TryEnter ajalõpuga – kui teist lukku ei saa, vabastab lõim ka esimese ja proovib hiljem',2,'Lõim loovutab ressursi, mille ta juba sai – justkui see võetaks temalt ära. Õpikutes liigitatakse see eelistamise puudumise murdmiseks (osa autoreid nimetab ka hoia ja oota).'],
- ['SQL Server valib ohvri, kerib tema tehingu tagasi ja annab lukud teisele tehingule',2,'Ressurss võetakse tehingult jõuga ära ja tehing keritakse tagasi. See on tuvastamine ja taastamine eelistamise abil.'],
+ ['SQL Server (SQL – <i>Structured Query Language</i>) valib ohvri, kerib tema tehingu tagasi ja annab lukud teisele tehingule',2,'Ressurss võetakse tehingult jõuga ära ja tehing keritakse tagasi. See on tuvastamine ja taastamine eelistamise abil.'],
  ['Valgusfoor ristmikul',3,'Valgusfoor määrab kindla järjekorra, kes sõidab. Autod ei saa enam kõik üksteist ringiratast oodata.'],
  ['Lõim peab vabastama kõik oma ressursid, enne kui tohib uusi taotleda',1,'Lõim ei hoia midagi ajal, mil ta ootab uusi ressursse.']],
  'Kõige levinum praktiline võte on lukkude kindel järjekord.');
@@ -315,7 +315,7 @@ quiz('ltasks','lscore','lreset',['Ummik','Elavlukk','Näljutamine','Prioriteedi 
  ['Kaks lõime vabastavad konflikti korral kohe oma luku ja proovivad täpselt samal hetkel uuesti. Protsessori kasutus on 100%, kuid tööd ei tehta.',1,'Elavlukk tekib sageli ummiku „parandamisel“. Lahendus on juhuslik ooteaeg enne uut katset.'],
  ['Kaks andmebaasitehingut lukustavad tabelid vastupidises järjekorras ja SQL Server annab ühele veateate 1205.',0,'Tegu oli ummikuga, mille SQL Server tuvastas ja lahendas ohvri valimisega.'],
  ['Lugejaid tuleb pidevalt juurde ja kirjutaja ei saa kunagi lugejad-kirjutajad lukku.',2,'Lugejad saavad tööd teha, kuid kirjutaja jääb lõputult ootama. Hea lukk eelistab ootavat kirjutajat.'],
- ['UI-lõim ootab .Result abil asünkroonse meetodi tulemust, kuid meetodi jätk tahab samuti UI-lõimes töötada. Aken „ei vasta“.',0,'Mõlemad ootavad teineteist: UI-lõim ülesannet ja ülesanne UI-lõime. Lahendus on await.']],
+ ['UI-lõim (UI – <i>User Interface</i>) ootab .Result abil asünkroonse meetodi tulemust, kuid meetodi jätk tahab samuti UI-lõimes töötada. Aken „ei vasta“.',0,'Mõlemad ootavad teineteist: UI-lõim ülesannet ja ülesanne UI-lõime. Lahendus on await.']],
  'Ummikus lõimed ootavad, elavlukus on aktiivsed, näljutamisel jääb ilma üks lõim, inversioonis takistab kolmas lõim.');
 </script>
 </body>

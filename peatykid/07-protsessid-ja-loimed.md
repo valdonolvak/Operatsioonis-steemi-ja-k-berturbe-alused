@@ -2,7 +2,7 @@
 
 ## 7. Protsessid, lõimed ja tööd
 
-Kui käivitad programmi, ei pane Windows lihtsalt EXE-faili (EXE – ingl *Executable*) protsessorisse tööle. Ta loob selle ümber kaitstud keskkonna, mida nimetatakse **protsessiks**, ja selle sees vähemalt ühe **lõime**, mis käske tegelikult täidab. Mitu protsessi saab omakorda koondada **tööks** (job), et neile ühiseid piiranguid seada.
+Kui käivitad programmi, ei pane Windows lihtsalt EXE-faili (EXE – *Executable*) protsessorisse tööle. Ta loob selle ümber kaitstud keskkonna, mida nimetatakse **protsessiks**, ja selle sees vähemalt ühe **lõime**, mis käske tegelikult täidab. Mitu protsessi saab omakorda koondada **tööks** (job), et neile ühiseid piiranguid seada.
 
 Lühidalt:
 
@@ -16,20 +16,20 @@ Neid kolme kasutavad ka tänapäeva isolatsioonitehnoloogiad: AppContainer, Wind
 
 ### 7.1 Protsessid
 
-**Programm** on kettal olev fail, näiteks `notepad.exe`. **Protsess** on selle programmi käivitatud eksemplar. Kui avad Notepadi kolm korda, on kettal üks programm, kuid töötab kolm protsessi. Igaühel on oma PID (ingl *Process Identifier*), oma mälu ja oma avatud failid.
+**Programm** on kettal olev fail, näiteks `notepad.exe`. **Protsess** on selle programmi käivitatud eksemplar. Kui avad Notepadi kolm korda, on kettal üks programm, kuid töötab kolm protsessi. Igaühel on oma PID (*Process Identifier*), oma mälu ja oma avatud failid.
 
 Protsessil on:
 
 | Osa | Mida see tähendab | Kus seda näeb |
 | --- | --- | --- |
 | **Privaatne virtuaalne aadressiruum** | Protsessi enda mälu. x64-l on kasutajarežiimile 128 TB virtuaalset aadressiruumi. Teine protsess seda otse lugeda ei saa. | Tegumihaldur → Üksikasjad → Mälu |
-| **Käivitatav programm** | EXE-fail ja kõik laaditud DLL-id (ingl *Dynamic-Link Library*), nt `kernel32.dll` | Process Explorer → DLL-vaade (Ctrl+D) |
+| **Käivitatav programm** | EXE-fail ja kõik laaditud DLL-id (*Dynamic-Link Library*), nt `kernel32.dll` | Process Explorer → DLL-vaade (Ctrl+D) |
 | **Pidemetabel** | Avatud objektid: failid, registrivõtmed, sündmused (ptk 3.3) | Process Explorer → pidemete vaade (Ctrl+H) |
-| **Juurdepääsutoken** | Turvakontekst: kasutaja SID (ingl *Security Identifier*), rühmad, privileegid ja terviklikkuse tase | Process Explorer → Properties → Security |
+| **Juurdepääsutoken** | Turvakontekst: kasutaja SID (*Security Identifier*), rühmad, privileegid ja terviklikkuse tase | Process Explorer → Properties → Security |
 | **Protsessi ID (PID)** ja vanemprotsessi ID | Unikaalne number ja see, kes protsessi käivitas | Tegumihaldur, `Get-Process` |
 | **Vähemalt üks lõim** | Ilma lõimeta protsess ei saa midagi teha ja lõpetatakse | Process Explorer → Threads |
 
-Tuumas kirjeldab protsessi andmestruktuur **EPROCESS**, kasutajarežiimis **PEB** (Process Environment Block), kus on näiteks käsurida ja laaditud DLL-ide loend.
+Tuumas kirjeldab protsessi andmestruktuur **EPROCESS**, kasutajarežiimis **PEB** (*Process Environment Block*), kus on näiteks käsurida ja laaditud DLL-ide loend.
 
 **Näide: Notepad numbrites.** Käivitad Notepadi ja vaatad PowerShellis:
 
@@ -46,7 +46,7 @@ Token ütleb, **kelle õigustega** protsess töötab. Kui Mari käivitab Wordi, 
 | Tase | Kes sellega töötab |
 | --- | --- |
 | **System** | Windowsi teenused ja süsteemiprotsessid (lsass.exe, services.exe) |
-| **High** | administraatoriõigustes käivitatud programm (UAC-i (ingl *User Account Control*) kinnitusega) |
+| **High** | administraatoriõigustes käivitatud programm (UAC-i (*User Account Control*) kinnitusega) |
 | **Medium** | tavalised programmid, mida kasutaja käivitab |
 | **Low** / AppContainer | brauseri sisuprotsessid ja muud liivakastis töötavad protsessid |
 
@@ -57,7 +57,7 @@ Madala tasemega protsess ei saa kirjutada keskmise tasemega objektidesse. Kui pa
 Kui topeltklõpsad Wordi ikoonil, kutsub Explorer välja funktsiooni `CreateProcess`. Protsess luuakse etappidena:
 
 1. **EXE-faili avamine.** Windows avab `WINWORD.EXE` ja kontrollib, kas see on lubatud. Siin saavad käivituse peatada **Smart App Control**, **App Control for Business / AppLocker** ja Defender.
-2. **Protsessiobjekti ja aadressiruumi loomine.** Tuumas luuakse EPROCESS ja Word saab oma virtuaalse aadressiruumi. Protsessihaldur teavitab registreerunud draivereid (nt EDR-tarkvara (EDR – ingl *Endpoint Detection and Response*)), et uus protsess sündis.
+2. **Protsessiobjekti ja aadressiruumi loomine.** Tuumas luuakse EPROCESS ja Word saab oma virtuaalse aadressiruumi. Protsessihaldur teavitab registreerunud draivereid (nt EDR-tarkvara (EDR – *Endpoint Detection and Response*)), et uus protsess sündis.
 3. **Esimese lõime loomine.** Luuakse lõim koos pinuga, kuid see ei tööta veel.
 4. **Alamsüsteemi teavitamine.** csrss.exe saab teada uuest protsessist.
 5. **DLL-ide laadimine.** Uue protsessi sees laaditakse `ntdll.dll`, `kernel32.dll` ja muud vajalikud teegid.
@@ -77,10 +77,10 @@ Kui auditeerimine on sisse lülitatud, kirjutab Windows iga uue protsessi kohta 
 | Tüüp | Kirjeldus | Näide |
 | --- | --- | --- |
 | Tavaline protsess | täielik Win32 protsess | Notepad, Word |
-| Kaitstud protsess (PP/PPL) | isegi administraator ei saa selle mälu lugeda ega seda lõpetada | lsass.exe LSA (ingl *Local Security Authority*) kaitsega, viirusetõrje teenus |
+| Kaitstud protsess (PP/PPL (PP – *Protected Process*; PPL – *Protected Process Light*)) | isegi administraator ei saa selle mälu lugeda ega seda lõpetada | lsass.exe LSA (*Local Security Authority*) kaitsega, viirusetõrje teenus |
 | AppContainer | piiratud liivakast: ligipääs ainult lubatud ressurssidele | Store’i rakendused, Edge’i sisuprotsessid |
 | Minimaalne / Pico-protsess | ilma Windowsi DLL-ideta | WSL 1 Linuxi protsessid |
-| Trustlet (IUM – ingl *Isolated User Mode*) | töötab VTL 1-s (VTL – ingl *Virtual Trust Level*, ptk 4.11) | LsaIso.exe |
+| Trustlet (IUM – *Isolated User Mode*) | töötab VTL 1-s (VTL – *Virtual Trust Level*, ptk 4.11) | LsaIso.exe |
 
 **Näide: miks lsass.exe on kaitstud.** Ründaja, kes on saanud administraatoriõigused, proovib Tegumihalduriga teha lsass.exe mälutõmmist, et sealt paroolide räsisid leida. Kui LSA kaitse (RunAsPPL) on sees, saab ta vea „Juurdepääs keelatud“. Isegi administraator ei saa kaitstud protsessi mällu, sest seda lubatakse ainult sama või kõrgema kaitsetasemega allkirjastatud protsessidele.
 
@@ -91,10 +91,10 @@ Kui auditeerimine on sisse lülitatud, kirjutab Windows iga uue protsessi kohta 
 - **registrite olek** – kus täitmine parajasti on (käsuloendur) ja millised on vahetulemused;
 - **kaks pinu** – kasutajapinu (vaikimisi kuni 1 MB) ja väike tuumapinu, mida kasutatakse süsteemikutsete ajal;
 - **prioriteet** – kui tähtis on lõim planeerijale (ptk 9);
-- **lõime lokaalne mälu** (TLS – ingl *Thread Local Storage*) – andmed, mis kuuluvad ainult sellele lõimele;
+- **lõime lokaalne mälu** (TLS – *Thread Local Storage*) – andmed, mis kuuluvad ainult sellele lõimele;
 - **olek** – valmis, töötab, ootel või lõpetatud.
 
-Tuumas kirjeldab lõime **ETHREAD/KTHREAD**, kasutajarežiimis **TEB** (Thread Environment Block).
+Tuumas kirjeldab lõime **ETHREAD/KTHREAD**, kasutajarežiimis **TEB** (*Thread Environment Block*).
 
 **Näide: lõimed Wordis.** Kui kirjutad Wordis teksti, töötab samal ajal mitu lõime:
 
@@ -129,9 +129,9 @@ Windowsis on tegelikult ka vahepealseid olekuid (nt *initialized*, *standby*, *d
 
 **Kiud** (fiber) on kasutajarežiimis hallatav kerge täitmisüksus. Lõimede vahel vahetab tuuma planeerija, kiudude vahel vahetab programm ise: ta otsustab, millal ühe kiu töö peatada ja teisega jätkata. Tuum kiude ei näe, tema jaoks on olemas ainult lõim, mille sees kiud vahelduvad.
 
-**Näide.** Andmebaasiserver teenindab 10 000 klienti. 10 000 lõime looks palju pinusid ja kontekstivahetusi. Kiududega saab üks lõim teenindada paljusid kliente: kui üks kiud peab andmeid ootama, lülitab server teise kiu peale. SQL Server (SQL – ingl *Structured Query Language*) kasutas seda võimalust („lightweight pooling“).
+**Näide.** Andmebaasiserver teenindab 10 000 klienti. 10 000 lõime looks palju pinusid ja kontekstivahetusi. Kiududega saab üks lõim teenindada paljusid kliente: kui üks kiud peab andmeid ootama, lülitab server teise kiu peale. SQL Server (SQL – *Structured Query Language*) kasutas seda võimalust („lightweight pooling“).
 
-Tänapäeval täidavad sama rolli **korutiinid** ja asünkroonne programmeerimine (`async/await`). Sarnane mehhanism **UMS** (User-Mode Scheduling) on Windows 11-st eemaldatud.
+Tänapäeval täidavad sama rolli **korutiinid** ja asünkroonne programmeerimine (`async/await`). Sarnane mehhanism **UMS** (*User-Mode Scheduling*) on Windows 11-st eemaldatud.
 
 ### 7.4 Tööd
 
@@ -165,7 +165,7 @@ Protsessihaldur lubab draiveritel registreeruda teavituste saamiseks protsesside
 
 **Mitmeülesandelisus** (multitasking) tähendab, et mitu programmi näivad töötavat samaaegselt. Tähtis on vahet teha kahel mõistel:
 
-- **samaaegsus** (concurrency) – ühe tuumaga arvutis vahetab OS (ingl *Operating System*) lõimi nii kiiresti (iga mõnekümne millisekundi järel), et inimesele tundub, nagu töötaksid kõik korraga. Tegelikult töötab igal hetkel ainult üks lõim;
+- **samaaegsus** (concurrency) – ühe tuumaga arvutis vahetab OS (*Operating System*) lõimi nii kiiresti (iga mõnekümne millisekundi järel), et inimesele tundub, nagu töötaksid kõik korraga. Tegelikult töötab igal hetkel ainult üks lõim;
 - **paralleelsus** (parallelism) – mitme tuumaga arvutis töötavad lõimed päriselt samal ajal, igaüks oma tuumal.
 
 **Kontekstivahetus** (context switch) tähendab, et planeerija salvestab jooksva lõime registrid, valib järgmise lõime ja laadib selle registrid. Kontekstivahetus võtab mikrosekundeid. See on kiire, kuid mitte tasuta. Seetõttu on liiga palju aktiivseid lõimi kahjulik.
@@ -179,17 +179,17 @@ Windows kasutab **eelistavat** (preemptive) mitmeülesandelisust: OS võib lõim
 
 ### 7.7 Protsessidevaheline suhtlus
 
-Protsessid on teineteisest eraldatud ega näe teineteise mälu. Suhtlemiseks vajavad nad OS-i abi ehk **IPC** (Inter-Process Communication) mehhanisme:
+Protsessid on teineteisest eraldatud ega näe teineteise mälu. Suhtlemiseks vajavad nad OS-i abi ehk **IPC** (*Inter-Process Communication*) mehhanisme:
 
 | Mehhanism | Kasutus | Näide |
 | --- | --- | --- |
 | Jagatud mälu (failivastendus, memory-mapped file) | suured andmemahud, kõige kiirem | Edge’i protsessid jagavad renderdatud pilti |
-| Nimega toru (named pipe) | kliendi-serveri suhtlus samas arvutis või võrgus (SMB (ingl *Server Message Block*) kaudu) | prindispuuler `\\.\pipe\spoolss`, Docker `\\.\pipe\docker_engine` |
+| Nimega toru (named pipe) | kliendi-serveri suhtlus samas arvutis või võrgus (SMB (*Server Message Block*) kaudu) | prindispuuler `\\.\pipe\spoolss`, Docker `\\.\pipe\docker_engine` |
 | Anonüümne toru | vanem- ja lapsprotsessi suhtlus | PowerShell loeb käivitatud käsu väljundit |
 | Postkastipesa (mailslot) | ühesuunaline teavitus, aegunud | vanad võrguteavitused |
-| Pesa (socket) | TCP/UDP võrgusuhtlus, ka Unixi domeenipesad (AF\_UNIX) | brauser ja veebiserver |
-| ALPC (ingl *Advanced Local Procedure Call*) | kiire sõnumivahetus OS-i komponentide vahel | rakendus ↔ lsass.exe, teenused |
-| RPC / COM (ingl *Component Object Model*) | kaugprotseduuride väljakutse | Exceli juhtimine skriptist, haldustööriistad |
+| Pesa (socket) | TCP/UDP (TCP – *Transmission Control Protocol*; UDP – *User Datagram Protocol*) võrgusuhtlus, ka Unixi domeenipesad (AF\_UNIX) | brauser ja veebiserver |
+| ALPC (*Advanced Local Procedure Call*) | kiire sõnumivahetus OS-i komponentide vahel | rakendus ↔ lsass.exe, teenused |
+| RPC / COM (*Component Object Model*) | kaugprotseduuride väljakutse | Exceli juhtimine skriptist, haldustööriistad |
 | Aknasõnumid, lõikelaud | graafilised rakendused | kopeeri-kleebi Wordist Excelisse |
 
 **Näide: Ctrl+C ja Ctrl+V.** Kopeerid Wordis tabeli ja kleebid Excelisse. Word ja Excel on eri protsessid ega näe teineteise mälu. Word annab andmed lõikelauale, mis on OS-i hallatav IPC-mehhanism, ja Excel küsib need sealt. Mõlemad suhtlevad OS-iga, mitte otse teineteisega.
@@ -205,10 +205,10 @@ Protsessi ja lõime mõisted on samad, kuid loomise viis erineb. Unixi-laadsetes
 |  | Windows | Linux | macOS |
 | --- | --- | --- | --- |
 | Protsessi loomine | `CreateProcess` | `fork()` + `exec()` | `fork()` + `exec()`, `posix_spawn()` |
-| Lõim | eraldi objekt (ETHREAD) | ülesanne (`task_struct`), luuakse `clone()`-ga | Machi lõim + POSIX-lõim (POSIX – ingl *Portable Operating System Interface*) |
-| Teenuste haldus | services.exe (SCM – ingl *Service Control Manager*) | systemd | launchd |
-| Ressursipiirangud | tööobjekt (job) | cgroups v2 | launchd piirangud, QoS-klassid (QoS – ingl *Quality of Service*) |
-| Isolatsioon / konteinerid | tööobjektid + objektide nimeruumid | nimeruumid (namespaces) + cgroups | omakeelseid konteinereid pole; Docker kasutab Linuxi VM-i (ingl *Virtual Machine*) |
+| Lõim | eraldi objekt (ETHREAD) | ülesanne (`task_struct`), luuakse `clone()`-ga | Machi lõim + POSIX-lõim (POSIX – *Portable Operating System Interface*) |
+| Teenuste haldus | services.exe (SCM – *Service Control Manager*) | systemd | launchd |
+| Ressursipiirangud | tööobjekt (job) | cgroups v2 | launchd piirangud, QoS-klassid (QoS – *Quality of Service*) |
+| Isolatsioon / konteinerid | tööobjektid + objektide nimeruumid | nimeruumid (namespaces) + cgroups | omakeelseid konteinereid pole; Docker kasutab Linuxi VM-i (*Virtual Machine*) |
 | Tööriistad | Tegumihaldur, `Get-Process` | `ps`, `top`, `htop`, `/proc` | Activity Monitor, `ps`, `top` |
 
 **Mida sellest õppida:** Docker on Linuxi tuuma nimeruumide ja cgroupide kasutajaliides. Seetõttu töötavad Linuxi konteinerid Windowsis ja macOS-is tegelikult Linuxi virtuaalmasinas (WSL 2 või Docker Desktopi VM).
@@ -217,7 +217,7 @@ Protsessi ja lõime mõisted on samad, kuid loomise viis erineb. Unixi-laadsetes
 
 **Võrdlus.** Restoran on arvuti, iga köök on **protsess**: oma ruum (aadressiruum), oma külmkapid ja nõud (pidemed) ning luba teatud toiduaineid kasutada (token). **Lõimed** on kokad samas köögis: nad jagavad köögi asju ja peavad omavahel kokku leppima, kes millist potti kasutab (ptk 8). **Töö** (job) on peokorraldus: mitu kööki saavad ühise eelarve ja tunnipiirangu ning kui pidu jäetakse ära, lõpetatakse korraga kõigi töö. **IPC** on köökidevaheline luuk, kust taldrikuid edasi antakse: kokad ei jookse teise kööki, vaid annavad asjad üle kokkulepitud kohas.
 
-**Windowsis.** Ava Edge 10 vahekaardiga ja vaata Process Exploreris: näed üht peaprotsessi ning mitut renderdusprotsessi, GPU-protsessi (GPU – ingl *Graphics Processing Unit*) ja võrguteenuse protsessi.
+**Windowsis.** Ava Edge 10 vahekaardiga ja vaata Process Exploreris: näed üht peaprotsessi ning mitut renderdusprotsessi, GPU-protsessi (GPU – *Graphics Processing Unit*) ja võrguteenuse protsessi.
 
 - Iga vahekaart töötab eraldi **AppContaineris** madala terviklikkuse tasemega. Kui veebilehe kood leiab brauserist vea, ei pääse see kasutaja failideni.
 - Vahekaardi kokkujooksmine ei sulge kogu brauserit.
@@ -279,7 +279,7 @@ Sama loogikaga on kahtlane, kui `lsass.exe` vanem pole `wininit.exe`, kui `svcho
 7. Mis on kiud ja millega on need tänapäeval asendunud?
 8. Milleks kasutatakse tööobjekte? Too praktiline näide.
 9. Mis vahe on samaaegsusel ja paralleelsusel?
-10. Mis on kaitstud protsess (PPL – ingl *Protected Process Light*) ja milleks seda vaja on?
+10. Mis on kaitstud protsess (PPL – *Protected Process Light*) ja milleks seda vaja on?
 11. Nimeta neli protsessidevahelise suhtluse mehhanismi ja too igaühe kohta näide.
 12. Miks on `WINWORD.EXE` → `powershell.exe` ahel kahtlane?
 

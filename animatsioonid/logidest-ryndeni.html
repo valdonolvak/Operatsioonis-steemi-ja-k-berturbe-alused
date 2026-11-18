@@ -171,24 +171,24 @@ a{color:var(--accent)}
 <section aria-label="Sammud">
 <h2>Sammud</h2>
 <ol class="steps">
-<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Lähteolukord: RDP on internetist nähtav</strong><span>Serveri kaugtöölaud (RDP, port 3389) on internetist kättesaadav ja kontol <code>opetaja1</code> on nõrk parool ilma MFA-ta. Automaatsed skannerid leiavad sellise pordi tundidega. Üks asi on tehtud õigesti: Windows Event Forwarding saadab logide koopia kohe kesksesse logiserverisse.</span></span></button></li>
-<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>02:10 Paroolide äraarvamine</strong><span>Ründaja proovib ühelt IP-aadressilt 21 minuti jooksul 1400 parooli. Iga ebaõnnestunud katse on sündmus <strong>4625</strong>. Kontolukustus või häirereegel „4625 üle 20 korra 5 minutiga“ oleks ründe siin peatanud või avastanud.</span></span></button></li>
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Lähteolukord: RDP (<i>Remote Desktop Protocol</i>) on internetist nähtav</strong><span>Serveri kaugtöölaud (RDP, port 3389) on internetist kättesaadav ja kontol <code>opetaja1</code> on nõrk parool ilma MFA-ta (<i>Multi-Factor Authentication</i>). Automaatsed skannerid leiavad sellise pordi tundidega. Üks asi on tehtud õigesti: Windows Event Forwarding saadab logide koopia kohe kesksesse logiserverisse.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>02:10 Paroolide äraarvamine</strong><span>Ründaja proovib ühelt IP-aadressilt (IP – <i>Internet Protocol</i>) 21 minuti jooksul 1400 parooli. Iga ebaõnnestunud katse on sündmus <strong>4625</strong>. Kontolukustus või häirereegel „4625 üle 20 korra 5 minutiga“ oleks ründe siin peatanud või avastanud.</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>02:32 Sisselogimine õnnestub</strong><span>Üks parool sobib. Sündmus <strong>4624</strong> logimistüübiga 10 (RemoteInteractive) näitab edukat RDP-sisselogimist. Edukas sisselogimine kohe pärast sadu ebaõnnestunuid samalt aadressilt on kindel ründe tunnus.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>02:35 PowerShell: „living off the land“</strong><span>Ründaja kasutab Windowsi enda tööriistu, et viirusetõrje ei reageeriks. Sündmus <strong>4688</strong> näitab uut protsessi <code>powershell.exe -enc …</code>. Skriptiplokkide logimine (<strong>4104</strong>) näitab dekodeeritud skripti sisu. Ilma selle logimiseta oleks näha ainult loetamatu Base64.</span></span></button></li>
-<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>02:40 Õiguste tõstmine ja püsivus</strong><span>Ründaja loob uue konto (<strong>4720</strong>) ja lisab selle rühma Administrators (<strong>4732</strong>). Seejärel paigaldab ta teenuse (<strong>7045</strong>), mis käivitab tagaukse igal taaskäivitusel. Seda nimetatakse püsivuse loomiseks (ingl <em>persistence</em>): ründaja ligipääs säilib ka pärast taaskäivitust ja konto <code>opetaja1</code> parooli vahetamist.</span></span></button></li>
-<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>02:47 Ründaja kustutab turvalogi</strong><span>Ründaja tühjendab turvalogi. Tühjendamine jätab maha sündmuse <strong>1102</strong>, mis on alati punane lipp. Kohalik logi on tühi, kuid koopiad on SIEM-is alles, sest need saadeti ära kohe tekkimise hetkel.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>02:40 Õiguste tõstmine ja püsivus</strong><span>Ründaja loob uue konto (<strong>4720</strong>) ja lisab selle rühma Administrators (<strong>4732</strong>). Seejärel paigaldab ta teenuse (<strong>7045</strong>), mis käivitab tagaukse igal taaskäivitusel. Seda nimetatakse püsivuse loomiseks (<i>persistence</i>): ründaja ligipääs säilib ka pärast taaskäivitust ja konto <code>opetaja1</code> parooli vahetamist.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>02:47 Ründaja kustutab turvalogi</strong><span>Ründaja tühjendab turvalogi. Tühjendamine jätab maha sündmuse <strong>1102</strong>, mis on alati punane lipp. Kohalik logi on tühi, kuid koopiad on SIEM-is (<i>Security Information and Event Management</i>) alles, sest need saadeti ära kohe tekkimise hetkel.</span></span></button></li>
 <li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Häire jõuab administraatorini</strong><span>SIEM-i häirereegel „1102 alati“ käivitub. Administraator koostab keskse logi põhjal ajajoone ja näeb kogu ründe käiku: allikas, konto, käivitatud käsud, lisatud konto ja teenus. See on etapp <em>tuvastamine ja analüüs</em>.</span></span></button></li>
-<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Reageerimine: ohjelda, likvideeri, taasta, õpi</strong><span><strong>Ohjeldamine:</strong> server isoleeritakse võrgust, konto <code>opetaja1</code> ja uus konto blokeeritakse. <strong>Likvideerimine ja taastamine:</strong> teenus ja konto eemaldatakse, server taastatakse puhtast varukoopiast, paroolid vahetatakse. <strong>Järeltegevus:</strong> RDP ainult VPN-i ja MFA kaudu, uus häirereegel, teavitus CERT-EE-le.</span></span></button></li>
+<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Reageerimine: ohjelda, likvideeri, taasta, õpi</strong><span><strong>Ohjeldamine:</strong> server isoleeritakse võrgust, konto <code>opetaja1</code> ja uus konto blokeeritakse. <strong>Likvideerimine ja taastamine:</strong> teenus ja konto eemaldatakse, server taastatakse puhtast varukoopiast, paroolid vahetatakse. <strong>Järeltegevus:</strong> RDP ainult VPN-i ja MFA kaudu, uus häirereegel, teavitus CERT-EE-le (<i>Computer Emergency Response Team</i>, Eesti).</span></span></button></li>
 </ol>
 </section>
 <section class="extra">
 <h2>Mida oleks pidanud tegema teisiti</h2>
 <div class="tablewrap"><table>
 <tr><th>Samm</th><th>Mis lasi ründel õnnestuda</th><th>Meede</th></tr>
-<tr><td>1</td><td>RDP oli internetist nähtav</td><td>RDP ainult VPN-i või RD Gateway kaudu; tulemüüris sissetulev vaikimisi keelatud</td></tr>
+<tr><td>1</td><td>RDP (<i>Remote Desktop Protocol</i>) oli internetist nähtav</td><td>RDP ainult VPN-i (<i>Virtual Private Network</i>) või RD Gateway kaudu; tulemüüris sissetulev vaikimisi keelatud</td></tr>
 <tr><td>2</td><td>1400 katset ilma takistuseta</td><td>kontolukustus, häirereegel „4625 üle 20 korra 5 minutiga“</td></tr>
-<tr><td>3</td><td>nõrk parool, MFA puudus</td><td>MFA kaugligipääsul, paroolipoliitika, lekkinud paroolide keeld</td></tr>
-<tr><td>4</td><td>PowerShell oli piiramata</td><td>App Control, AMSI, skriptiplokkide logimine (see oli olemas ja aitas uurimist)</td></tr>
+<tr><td>3</td><td>nõrk parool, MFA (<i>Multi-Factor Authentication</i>) puudus</td><td>MFA kaugligipääsul, paroolipoliitika, lekkinud paroolide keeld</td></tr>
+<tr><td>4</td><td>PowerShell oli piiramata</td><td>App Control, AMSI (<i>Antimalware Scan Interface</i>), skriptiplokkide logimine (see oli olemas ja aitas uurimist)</td></tr>
 <tr><td>5</td><td>tavakasutaja sai luua administraatori</td><td>vähimad õigused; häire sündmusele 4732 administraatorite rühmas</td></tr>
 <tr><td>6</td><td>logi sai kustutada</td><td>logide edastamine kesksesse serverisse (see oli olemas ja päästis uurimise)</td></tr>
 </table></div>
@@ -201,7 +201,7 @@ a{color:var(--accent)}
 <div class="tablewrap"><table>
 <tr><th>Osa</th><th>Mida teeb</th></tr>
 <tr><td><code>Get-WinEvent</code></td><td>loeb sündmusi Windowsi sündmuslogidest (sama, mida näitab Event Viewer)</td></tr>
-<tr><td><code>-FilterHashtable @{…}</code></td><td>filter, mille logi ise rakendab: <code>LogName</code> on logi nimi, <code>Id</code> on sündmuse ID. See on palju kiirem kui lugeda kõik sündmused ja alles siis sõeluda</td></tr>
+<tr><td><code>-FilterHashtable @{…}</code></td><td>filter, mille logi ise rakendab: <code>LogName</code> on logi nimi, <code>Id</code> on sündmuse ID (<i>Identifier</i>). See on palju kiirem kui lugeda kõik sündmused ja alles siis sõeluda</td></tr>
 <tr><td><code>-MaxEvents 10</code></td><td>tagasta ainult 10 kõige uuemat sobivat sündmust</td></tr>
 <tr><td><code>|</code></td><td>toru: annab vasakpoolse käsu tulemuse edasi parempoolsele käsule</td></tr>
 <tr><td><code>Select-Object</code></td><td>valib, milliseid veerge näidata</td></tr>
@@ -219,7 +219,7 @@ a{color:var(--accent)}
 <li><strong>1. rida:</strong> võta turvalogist (Security) 10 viimast sündmust ID-ga 4625.</li>
 <li><strong>2. rida:</strong> näita iga sündmuse toimumise aega.</li>
 <li><strong>3. rida:</strong> lisa veerg „Konto“. Sündmuse 4625 väli 5 on konto nimi, millega üritati sisse logida.</li>
-<li><strong>4. rida:</strong> lisa veerg „Allikas“. Väli 19 on IP-aadress, kust katse tuli. Kohaliku katse korral on see tühi või <code>127.0.0.1</code>.</li>
+<li><strong>4. rida:</strong> lisa veerg „Allikas“. Väli 19 on IP-aadress (IP – <i>Internet Protocol</i>), kust katse tuli. Kohaliku katse korral on see tühi või <code>127.0.0.1</code>.</li>
 </ul>
 <p>Mida otsida: palju ridu lühikese aja jooksul samalt aadressilt tähendab paroolide äraarvamist. Kui käsk annab vea „No events were found“, siis selliseid sündmusi lihtsalt ei ole.</p>
 
@@ -272,7 +272,7 @@ a{color:var(--accent)}
 
 <h3>6. Tekita ise üks sündmus ja leia see üles</h3>
 <ol>
-<li>Lukusta ekraan klahvidega Win+L ja sisesta üks kord vale parool või PIN. Seejärel logi õigesti sisse.</li>
+<li>Lukusta ekraan klahvidega Win+L ja sisesta üks kord vale parool või PIN (<i>Personal Identification Number</i>). Seejärel logi õigesti sisse.</li>
 <li>Käivita uuesti esimene käsk. Kõige ülemine rida peaks olema sinu äsjane katse.</li>
 <li>Kui sündmust ei teki, ei ole sisselogimise auditeerimine lubatud. Kontrolli: <code>auditpol /get /subcategory:"Logon"</code>. Lubamiseks: <code>auditpol /set /subcategory:"Logon" /failure:enable /success:enable</code>.</li>
 </ol>

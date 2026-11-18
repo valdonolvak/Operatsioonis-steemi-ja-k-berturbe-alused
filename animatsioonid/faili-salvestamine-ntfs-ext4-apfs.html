@@ -176,10 +176,10 @@ a{color:var(--accent)}
 <h2>Sammud</h2>
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Sama töö, kolm failisüsteemi</strong><span>Iga failisüsteem peab uue faili jaoks tegema neli asja: kaitsma pooleli jääva muudatuse eest, looma <strong>metaandmete kirje</strong>, lisama <strong>nime kausta</strong> ja kirjutama <strong>sisu</strong> andmeplokkidesse. Erinevus on selles, kuidas ja mis järjekorras.</span></span></button></li>
-<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Kaitse: logi või uued plokid</strong><span><strong>NTFS</strong> kirjutab metaandmete muudatuse kavatsuse faili <code>$LogFile</code>, <strong>ext4</strong> oma logisse (journal). <strong>APFS</strong> kasutab <strong>kirjutamisel kopeerimist</strong>: muudatused lähevad vabadesse plokkidesse ja vana metaandmete puu jääb terveks, kuni uus on valmis.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Metaandmete kirje</strong><span>Kirjes on kõik faili kohta peale sisu: omanik, õigused, ajad, suurus ja andmeplokkide asukoht. <strong>MFT kirjes</strong> on ka faili nimi. <strong>Inode’is</strong> nime ei ole, seepärast võib ühel failil Linuxis olla mitu nime (kõvaviited).</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Kaitse: logi või uued plokid</strong><span><strong>NTFS (<i>New Technology File System</i>)</strong> kirjutab metaandmete muudatuse kavatsuse faili <code>$LogFile</code>, <strong>ext4</strong> oma logisse (journal). <strong>APFS (<i>Apple File System</i>)</strong> kasutab <strong>kirjutamisel kopeerimist</strong>: muudatused lähevad vabadesse plokkidesse ja vana metaandmete puu jääb terveks, kuni uus on valmis.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Metaandmete kirje</strong><span>Kirjes on kõik faili kohta peale sisu: omanik, õigused, ajad, suurus ja andmeplokkide asukoht. <strong>MFT (<i>Master File Table</i>) kirjes</strong> on ka faili nimi. <strong>Inode’is</strong> nime ei ole, seepärast võib ühel failil Linuxis olla mitu nime (kõvaviited).</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Nimi lisatakse kausta</strong><span>Kaust ei sisalda faile, vaid paare <em>nimi → kirje number</em>. NTFS ja APFS hoiavad neid B-puus, ext4 räsipuus, nii et nimi leitakse kiiresti ka tuhandete failidega kaustast.</span></span></button></li>
-<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Sisu: enne vahemällu, siis kettale</strong><span>Kõik kolm kirjutavad sisu esmalt <strong>vahemällu</strong>. Windowsi laisk kirjutaja viib selle kettale umbes sekundiga, Linuxi <em>writeback</em> vaikimisi kuni 30 sekundiga. Seepärast tuleb USB-ketas enne eemaldamist turvaliselt eemaldada (Linuxis <code>sync</code> või lahtiühendamine).</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Sisu: enne vahemällu, siis kettale</strong><span>Kõik kolm kirjutavad sisu esmalt <strong>vahemällu</strong>. Windowsi laisk kirjutaja viib selle kettale umbes sekundiga, Linuxi <em>writeback</em> vaikimisi kuni 30 sekundiga. Seepärast tuleb USB-ketas (USB – <i>Universal Serial Bus</i>) enne eemaldamist turvaliselt eemaldada (Linuxis <code>sync</code> või lahtiühendamine).</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Muudatus kinnitatakse</strong><span>Logiga failisüsteemis loeb pärast krahhi <strong>kinnitatud tehing</strong>: see viiakse lõpule, kinnitamata tehing tühistatakse. APFS-is on kinnitamine üksainus kirjutus: <strong>kontrollpunkt</strong> hakkab viitama uuele puule.</span></span></button></li>
 <li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Internetist pärit faili märge</strong><span>Windowsi <strong>Mark of the Web</strong> (voog <code>Zone.Identifier</code>) on SmartScreeni ja Office’i hoiatuste alus. macOS-i <code>com.apple.quarantine</code> käivitab <strong>Gatekeeperi</strong> kontrolli. Linuxis vaikimisi vastet ei ole.</span></span></button></li>
 </ol>
@@ -190,16 +190,16 @@ a{color:var(--accent)}
 <tr><th>Mõiste</th><th>Selgitus</th></tr>
 <tr><td><strong>Failisüsteem</strong></td><td>Reeglid ja andmestruktuurid, mille abil operatsioonisüsteem hoiab kettal faile: kus on nimed, kus metaandmed, kus sisu.</td></tr>
 <tr><td><strong>Metaandmed</strong></td><td>Andmed faili kohta: omanik, õigused, ajad, suurus, sisu asukoht kettal.</td></tr>
-<tr><td><strong>MFT kirje</strong></td><td>NTFS-i metaandmete kirje (Master File Table). Igal failil ja kaustal on üks. Väikese faili sisu mahub kirje sisse.</td></tr>
+<tr><td><strong>MFT kirje</strong></td><td>NTFS-i (<i>New Technology File System</i>) metaandmete kirje (Master File Table). Igal failil ja kaustal on üks. Väikese faili sisu mahub kirje sisse.</td></tr>
 <tr><td><strong>Inode</strong></td><td>ext4 metaandmete kirje. Faili nime selles ei ole: nimi on kataloogis ja viitab inode’i numbrile.</td></tr>
 <tr><td><strong>Kataloogi kirje</strong></td><td>Paar <em>nimi → kirje number</em>. Kaust (kataloog) on selliste paaride kogu.</td></tr>
 <tr><td><strong>Klaster, plokk</strong></td><td>Väikseim ruumiühik, mille failisüsteem failile annab, tavaliselt 4 KB. Windowsis klaster, Linuxis ja macOS-is plokk.</td></tr>
-<tr><td><strong>Ulatus</strong> (extent)</td><td>Järjestikuste plokkide vahemik kujul „alates plokist X, N plokki“. Nii kirjeldavad faili asukohta NTFS (jooksud), ext4 ja APFS.</td></tr>
+<tr><td><strong>Ulatus</strong> (extent)</td><td>Järjestikuste plokkide vahemik kujul „alates plokist X, N plokki“. Nii kirjeldavad faili asukohta NTFS (jooksud), ext4 ja APFS (<i>Apple File System</i>).</td></tr>
 <tr><td><strong>Logi</strong> (journal)</td><td>Koht kettal, kuhu failisüsteem kirjutab muudatuse kavatsuse enne muudatust ennast. NTFS-is fail <code>$LogFile</code>.</td></tr>
-<tr><td><strong>Kirjutamisel kopeerimine</strong> (copy-on-write)</td><td>Muudatus kirjutatakse alati vabasse kohta, vana plokki üle ei kirjutata. Nii töötavad APFS, Btrfs ja ReFS.</td></tr>
+<tr><td><strong>Kirjutamisel kopeerimine</strong> (copy-on-write)</td><td>Muudatus kirjutatakse alati vabasse kohta, vana plokki üle ei kirjutata. Nii töötavad APFS, Btrfs ja ReFS (<i>Resilient File System</i>).</td></tr>
 <tr><td><strong>Kontrollpunkt</strong></td><td>APFS-i kirje, mis ütleb, milline metaandmete puu parajasti kehtib.</td></tr>
 <tr><td><strong>Vahemälu, laisk kirjutaja, writeback</strong></td><td>Sisu hoitakse esialgu põhimälus ja kirjutatakse kettale taustal. Windowsis teeb seda laisk kirjutaja, Linuxis writeback.</td></tr>
-<tr><td><strong>ADS</strong> (alternatiivne andmevoog)</td><td>NTFS-i faili lisavoog põhisisu kõrval, näiteks <code>Zone.Identifier</code>.</td></tr>
+<tr><td><strong>ADS (<i>Alternate Data Streams</i>)</strong> (alternatiivne andmevoog)</td><td>NTFS-i faili lisavoog põhisisu kõrval, näiteks <code>Zone.Identifier</code>.</td></tr>
 <tr><td><strong>Laiendatud atribuut</strong> (xattr)</td><td>Nimega lisaandmed faili juures Linuxis ja macOS-is, näiteks <code>com.apple.quarantine</code>.</td></tr>
 </table></div>
 <h2>Kolm failisüsteemi kõrvuti</h2>
@@ -258,7 +258,7 @@ diskutil apfs list</pre>
 <li><strong>3. rida:</strong> näita metaandmeid loetaval kujul (<code>-x</code>).</li>
 <li><strong>4. rida:</strong> tee APFS-i kloon (<code>-c</code>): uus fail viitab samadele plokkidele ja lisaruumi ei võta.</li>
 <li><strong>5. rida:</strong> näita allalaaditud failide laiendatud atribuute. Otsi rida <code>com.apple.quarantine</code>.</li>
-<li><strong>6. rida:</strong> näita APFS-i konteinerit ja selles olevaid köiteid (System, Data, Preboot, Recovery, VM).</li>
+<li><strong>6. rida:</strong> näita APFS-i konteinerit ja selles olevaid köiteid (System, Data, Preboot, Recovery, VM – <i>Virtual Machine</i>).</li>
 </ul>
 </section>
 <footer>Animatsioon kuulub õppematerjali „Operatsioonisüsteemide ja küberturbe alused“ peatüki juurde: <a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/15-failisusteemid.md">peatükk 15, Failisüsteemid</a>.</footer>

@@ -2,11 +2,11 @@
 
 ## 15. Failisüsteemid Windowsis
 
-**Failisüsteem** (file system) korraldab, kuidas failid ja kaustad kettale salvestatakse, leitakse ja kaitstakse. Windows 11 süsteemiketas on NTFS (ingl *New Technology File System*); välised kandjad on sageli exFAT (ingl *Extended File Allocation Table*) või FAT32 (FAT – ingl *File Allocation Table*); serverites ja arendajate Dev Drive’il kasutatakse ReFS-i. Linuxis on levinuim **ext4** ja macOS-is **APFS** – neid käsitlevad ptk 15.8 ja 15.9.
+**Failisüsteem** (file system) korraldab, kuidas failid ja kaustad kettale salvestatakse, leitakse ja kaitstakse. Windows 11 süsteemiketas on NTFS (*New Technology File System*); välised kandjad on sageli exFAT (*Extended File Allocation Table*) või FAT32 (FAT – *File Allocation Table*); serverites ja arendajate Dev Drive’il kasutatakse ReFS-i. Linuxis on levinuim **ext4** ja macOS-is **APFS** – neid käsitlevad ptk 15.8 ja 15.9.
 
 **Miks failisüsteemi vaja on?** Ketas ise teab ainult numbritega plokke: „plokk 0, plokk 1, … plokk 500 miljonit“. Ta ei tea midagi failidest, kaustadest, nimedest ega õigustest. Failisüsteem on nagu **raamatukogu kataloog**: raamatud (andmed) on riiulitel, kuid ilma kataloogita ei leiaks keegi midagi üles. Failisüsteem jätab meelde, milline fail millistes plokkides asub, mis on tema nimi, kellele ta kuulub ja millal teda muudeti.
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/15-failisusteemid.html). Lehel on FAT-tabeli simulaator, klastri suuruse kalkulaator, faili elutsükli simulaator Windowsi, Linuxi ja macOS-i jaoks (salvestamine, avamine, muutmine, kustutamine, taastamine), failinimede kontroll kolmes OS-is (ingl *Operating System*), Linuxi õiguste kalkulaator ja failisüsteemi valiku harjutus.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/15-failisusteemid.html). Lehel on FAT-tabeli simulaator, klastri suuruse kalkulaator, faili elutsükli simulaator Windowsi, Linuxi ja macOS-i jaoks (salvestamine, avamine, muutmine, kustutamine, taastamine), failinimede kontroll kolmes OS-is (*Operating System*), Linuxi õiguste kalkulaator ja failisüsteemi valiku harjutus.
 
 ![salvestuse kihid · ketas, partitsioonitabel, partitsioon, köide, failisüsteem, failid](../pildid/15-a.png)
 
@@ -29,7 +29,7 @@ Joonis: failisüsteem on üks kiht kuuest. Kui „ketas ei avane“, tuleb kindl
 
 ### 15.1 FAT
 
-**FAT** (File Allocation Table) on 1970. aastate lihtne failisüsteem: kettal on tabel, mis näitab iga klastri järgmist klastrit. Variandid FAT12, FAT16 ja FAT32. FAT32 puudused: ühe faili suurus kuni 4 GB, õigusi ja logimist pole, toitekatkestusel võib struktuur rikneda. FAT32 on endiselt UEFI (ingl *Unified Extensible Firmware Interface*) süsteemipartitsiooni (EFI System Partition) failisüsteem.
+**FAT** (*File Allocation Table*) on 1970. aastate lihtne failisüsteem: kettal on tabel, mis näitab iga klastri järgmist klastrit. Variandid FAT12, FAT16 ja FAT32. FAT32 puudused: ühe faili suurus kuni 4 GB, õigusi ja logimist pole, toitekatkestusel võib struktuur rikneda. FAT32 on endiselt UEFI (*Unified Extensible Firmware Interface*) süsteemipartitsiooni (EFI System Partition) failisüsteem.
 
 **Kuidas FAT-tabel töötab?** Kaustas on kirje „kiri.txt, algab klastrist 5“. FAT-tabelis on iga klastri kohta üks lahter, mis ütleb, milline klaster tuleb järgmisena:
 
@@ -39,26 +39,26 @@ FAT[8] = 9      → fail jätkub klastris 9
 FAT[9] = EOF    → faili lõpp
 ```
 
-Faili lugemiseks käiakse ahel läbi: 5 → 8 → 9. Kui fail kasvab ja kõrval vaba ruumi pole, lisatakse ahelasse mõni kauge klaster – nii tekib **killustumine** (HDD-l (ingl *Hard Disk Drive*) aeglane).
+Faili lugemiseks käiakse ahel läbi: 5 → 8 → 9. Kui fail kasvab ja kõrval vaba ruumi pole, lisatakse ahelasse mõni kauge klaster – nii tekib **killustumine** (HDD-l (*Hard Disk Drive*) aeglane).
 
 **Kustutamine FAT-is:** kaustakirje esimene märk asendatakse erimärgiga (0xE5) ja faili klastrid märgitakse FAT-is vabaks. **Andmed ise jäävad kettale**, kuni need üle kirjutatakse. Seepärast saavad taastetööriistad (nt PhotoRec) mälukaardilt kogemata kustutatud fotosid sageli tagasi tuua – kui kaarti pärast kustutamist ei kasutatud.
 
 > 🖱️ **Proovi ise:** [FAT-tabeli simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/15-failisusteemid.html#fat)
 
-**exFAT** (2006) on FAT-i edasiarendus mälukaartidele ja USB-pulkadele (USB – ingl *Universal Serial Bus*): suured failid, suured kettad, kerge struktuur, töötab Windowsis, macOS-is, Linuxis ja telefonides. Õigusi ja logimist ei ole.
+**exFAT** (2006) on FAT-i edasiarendus mälukaartidele ja USB-pulkadele (USB – *Universal Serial Bus*): suured failid, suured kettad, kerge struktuur, töötab Windowsis, macOS-is, Linuxis ja telefonides. Õigusi ja logimist ei ole.
 
 ### 15.2 NTFS
 
-**NTFS** (NT File System, 1993) on Windowsi põhifailisüsteem. Põhiomadused:
+**NTFS** (NT File System (NT – *New Technology*), 1993) on Windowsi põhifailisüsteem. Põhiomadused:
 
-- **MFT** (Master File Table) – iga fail ja kaust on MFT kirje; väikesed failid mahuvad otse kirjesse;
+- **MFT** (*Master File Table*) – iga fail ja kaust on MFT kirje; väikesed failid mahuvad otse kirjesse;
 - **logimine** (journaling) – metaandmete muudatused kirjutatakse logisse `$LogFile`; krahhi järel taastatakse ühtlane olek;
-- **õigused** – iga faili ja kausta kohta ACL (ingl *Access Control List*, ptk 18);
-- **tihendamine** ja **EFS-krüpteerimine** (EFS – ingl *Encrypting File System*) failide kaupa;
+- **õigused** – iga faili ja kausta kohta ACL (*Access Control List*, ptk 18);
+- **tihendamine** ja **EFS-krüpteerimine** (EFS – *Encrypting File System*) failide kaupa;
 - **kettakvoodid** kasutajate kaupa;
 - **kõvaviited, sümbolviited, ühenduspunktid** (junctions);
-- **alternatiivsed andmevood** (ADS – ingl *Alternate Data Streams*) – näiteks `Zone.Identifier` vood märgivad internetist alla laaditud faile („Mark of the Web“), mille alusel SmartScreen ja Office hoiatavad;
-- **muudatuste päevik** (USN Journal (USN – ingl *Update Sequence Number*)) – varundus- ja indekseerimisprogrammid saavad teada, mis muutus;
+- **alternatiivsed andmevood** (ADS – *Alternate Data Streams*) – näiteks `Zone.Identifier` vood märgivad internetist alla laaditud faile („Mark of the Web“), mille alusel SmartScreen ja Office hoiatavad;
+- **muudatuste päevik** (USN Journal (USN – *Update Sequence Number*)) – varundus- ja indekseerimisprogrammid saavad teada, mis muutus;
 - **varikoopiad** (Volume Shadow Copy) – hetkeseisud varunduseks ja „Eelmised versioonid“.
 
 ![NTFS-i MFT · väikese ja suure faili kirje](../pildid/15-b.png)
@@ -75,7 +75,7 @@ Joonis: NTFS kirjutab kavatsuse enne muudatust logisse. Pärast katkestust loeb 
 
 ### 15.3 ReFS ja Dev Drive
 
-**ReFS** (Resilient File System, Windows Server 2012) on loodud suurte andmemahtude ja töökindluse jaoks:
+**ReFS** (*Resilient File System*, Windows Server 2012) on loodud suurte andmemahtude ja töökindluse jaoks:
 
 - **terviklikkusvood** (integrity streams) – kontrollsummad tuvastavad vaikse andmeriknemise; Storage Spaces peegliga parandatakse viga automaatselt;
 - **kirjutamisel kopeerimine** metaandmetele – logi pole vaja;
@@ -92,25 +92,25 @@ ReFS-il puuduvad mõned NTFS-i omadused (nt EFS, kettakvoodid), ja Windowsi klie
 
 ### 15.4 SSD-ketaste tugi
 
-SSD-l (ingl *Solid-State Drive*) puuduvad liikuvad osad ning pöördumisaeg ei sõltu andmete asukohast, seega pole killustatuse eemaldamist vaja. Windows tuvastab SSD automaatselt ja:
+SSD-l (*Solid-State Drive*) puuduvad liikuvad osad ning pöördumisaeg ei sõltu andmete asukohast, seega pole killustatuse eemaldamist vaja. Windows tuvastab SSD automaatselt ja:
 
-- saadab **TRIM**-käske (NVMe-l (ingl *Non-Volatile Memory Express*) *Deallocate*): failisüsteem teatab, millised plokid on vabad, et SSD saaks neid ette kustutada;
+- saadab **TRIM**-käske (NVMe-l (*Non-Volatile Memory Express*) *Deallocate*): failisüsteem teatab, millised plokid on vabad, et SSD saaks neid ette kustutada;
 - teeb ajastatud optimeerimisel (`Optimize-Volume`) ainult TRIM-i, mitte killustatuse eemaldamist;
 - kasutab NVMe mitme järjekorra tuge (ptk 5, 14).
 
 ### 15.5 Optiliste ketaste ja tõmmisfailide failisüsteemid
 
-CD-de (ingl *Compact Disc*) failisüsteem on **ISO 9660** (ISO – ingl *International Organization for Standardization*) (laiendustega Joliet pikkade nimede jaoks), DVD-del (ingl *Digital Versatile Disc*) ja Blu-ray’del **UDF** (Universal Disk Format). Optilisi seadmeid kasutatakse harva, kuid samad vormingud elavad edasi **ISO-tõmmistes**: Windowsi paigaldustõmmis on ISO-fail, mille saab Exploreris topeltklõpsuga ühendada virtuaalseks kettaks. Virtuaalmasinate kettatõmmised on **VHD/VHDX** failid, mida saab samuti ühendada (`Mount-VHD`, `Mount-DiskImage`).
+CD-de (*Compact Disc*) failisüsteem on **ISO 9660** (ISO – *International Organization for Standardization*) (laiendustega Joliet pikkade nimede jaoks), DVD-del (*Digital Versatile Disc*) ja Blu-ray’del **UDF** (*Universal Disk Format*). Optilisi seadmeid kasutatakse harva, kuid samad vormingud elavad edasi **ISO-tõmmistes**: Windowsi paigaldustõmmis on ISO-fail, mille saab Exploreris topeltklõpsuga ühendada virtuaalseks kettaks. Virtuaalmasinate kettatõmmised on **VHD/VHDX** failid, mida saab samuti ühendada (`Mount-VHD`, `Mount-DiskImage`).
 
-ISO- ja VHD-failid (VHD – ingl *Virtual Hard Disk*) ei pruugi kanda „Mark of the Web“ märget sisu failidele edasi, mistõttu kasutati neid 2022–2023 pahavara levitamiseks; Microsoft on seda vahepeal parandanud, kuid e-kirjaga tulnud tõmmisfaile tuleb endiselt kahtlustada.
+ISO- ja VHD-failid (VHD – *Virtual Hard Disk*) ei pruugi kanda „Mark of the Web“ märget sisu failidele edasi, mistõttu kasutati neid 2022–2023 pahavara levitamiseks; Microsoft on seda vahepeal parandanud, kuid e-kirjaga tulnud tõmmisfaile tuleb endiselt kahtlustada.
 
 ### 15.6 Pilvefailid
 
-OneDrive kasutab **Cloud Files API**-t (ingl *Application Programming Interface*): failid on kettal kohtäitjatena (placeholders) ja laaditakse alla avamisel. Failisüsteemi filtridraiver `cldflt.sys` vahendab päringuid. Kasutaja näeb olekuikoone: ainult pilves, lokaalselt saadaval, alati selles seadmes.
+OneDrive kasutab **Cloud Files API**-t (*Application Programming Interface*): failid on kettal kohtäitjatena (placeholders) ja laaditakse alla avamisel. Failisüsteemi filtridraiver `cldflt.sys` vahendab päringuid. Kasutaja näeb olekuikoone: ainult pilves, lokaalselt saadaval, alati selles seadmes.
 
 | Failisüsteem | Kus kasutatakse | Õigused | Logimine | Märkus |
 | --- | --- | --- | --- | --- |
-| FAT32 | EFI-partitsioon (EFI – ingl *Extensible Firmware Interface*), vanad kandjad | ei | ei | fail kuni 4 GB |
+| FAT32 | EFI-partitsioon (EFI – *Extensible Firmware Interface*), vanad kandjad | ei | ei | fail kuni 4 GB |
 | exFAT | mälukaardid, USB | ei | ei | platvormiülene |
 | NTFS | Windowsi süsteemiketas | jah | jah | kõige rohkem funktsioone |
 | ReFS | serverid, Dev Drive | jah | kirjutamisel kopeerimine | terviklikkusvood, plokkide kloonimine |
@@ -156,7 +156,7 @@ Paljud rakendused (Word, Excel) salvestavad **turvaliselt**: nad kirjutavad uue 
 
 ### 15.8 Failihaldus Linuxis
 
-Linuxi levinuim failisüsteem on **ext4** (2008). Serverites kasutatakse ka **XFS**-i (Red Hati vaikimisi), töökohtadel ja NAS-ides (ingl *Network Attached Storage*) **Btrfs**-i (kirjutamisel kopeerimine, hetktõmmised).
+Linuxi levinuim failisüsteem on **ext4** (2008). Serverites kasutatakse ka **XFS**-i (Red Hati vaikimisi), töökohtadel ja NAS-ides (*Network Attached Storage*) **Btrfs**-i (kirjutamisel kopeerimine, hetktõmmised).
 
 **Üks puu.** Linuxis ei ole ketta tähti. Kõik köited **ühendatakse** (mount) ühte kaustapuusse, mille juur on `/`:
 
@@ -170,7 +170,7 @@ Linuxi levinuim failisüsteem on **ext4** (2008). Serverites kasutatakse ka **XF
 | `/mnt`, `/media` | ühendatud kettad ja USB-pulgad |
 | `/dev` | seadmed failidena (ptk 14) |
 
-Millised kettad kuhu ühendatakse, on kirjas failis `/etc/fstab` (tavaliselt ketta UUID (ingl *Universally Unique Identifier*) järgi). Käsud `lsblk -f` ja `df -h` näitavad ketaste failisüsteeme ja vaba ruumi.
+Millised kettad kuhu ühendatakse, on kirjas failis `/etc/fstab` (tavaliselt ketta UUID (*Universally Unique Identifier*) järgi). Käsud `lsblk -f` ja `df -h` näitavad ketaste failisüsteeme ja vaba ruumi.
 
 **Inode.** ext4-s on iga faili metaandmed **inode**’is: omanik, grupp, õigused, suurus, ajad, viidete arv ja viited andmeplokkidele. **Faili nime inode’is ei ole!** Nimi on ainult kataloogis, mis seob nime inode’i numbriga (joonis 15-f). Seetõttu:
 
@@ -192,11 +192,11 @@ chmod 640 aruanne.txt     # 6 = rw-, 4 = r--, 0 = ---
 chown mari:opetajad aruanne.txt
 ```
 
-Linuxis on ka POSIX (ingl *Portable Operating System Interface*) ACL-id (`setfacl`), kuid igapäevaselt piisab `rwx`-õigustest. Windowsi NTFS ACL-id on palju detailsemad (ptk 18).
+Linuxis on ka POSIX (*Portable Operating System Interface*) ACL-id (`setfacl`), kuid igapäevaselt piisab `rwx`-õigustest. Windowsi NTFS ACL-id on palju detailsemad (ptk 18).
 
 > 🖱️ **Proovi ise:** [Linuxi õiguste kalkulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/15-failisusteemid.html#oigused)
 
-**Salvestamine.** Programm kutsub `open()` (lipuga `O_CREAT`) ja `write()`. Tuuma **VFS** (Virtual File System) kiht suunab päringu õigele failisüsteemile. ext4 võtab vaba inode’i, lisab kataloogi nime ja inode’i numbri seose ning kirjutab metaandmete muudatused **logisse** (journal, vaikimisi režiim *ordered*). Andmed lähevad **lehevahemällu** (page cache) ja kirjutatakse kettale taustal, vaikimisi umbes 30 sekundi jooksul. Kui programm peab olema kindel, et andmed on kettal, kutsub ta `fsync()` – nii teevad andmebaasid.
+**Salvestamine.** Programm kutsub `open()` (lipuga `O_CREAT`) ja `write()`. Tuuma **VFS** (*Virtual File System*) kiht suunab päringu õigele failisüsteemile. ext4 võtab vaba inode’i, lisab kataloogi nime ja inode’i numbri seose ning kirjutab metaandmete muudatused **logisse** (journal, vaikimisi režiim *ordered*). Andmed lähevad **lehevahemällu** (page cache) ja kirjutatakse kettale taustal, vaikimisi umbes 30 sekundi jooksul. Kui programm peab olema kindel, et andmed on kettal, kutsub ta `fsync()` – nii teevad andmebaasid.
 
 **Avamine.** Tee `/home/mari/kiri.txt` lahendatakse osade kaupa: `/` → `home` → `mari` → `kiri.txt`. Iga sammu juures kontrollitakse kataloogi `x`-õigust (kas kataloogi tohib „läbida“). Tuum hoiab hiljuti leitud nimesid **dentry vahemälus**, nii et sama tee leidmine on teisel korral kiire. Programm saab **failikirjeldaja** (file descriptor – väike number, nt 3).
 
@@ -205,7 +205,7 @@ Linuxis on ka POSIX (ingl *Portable Operating System Interface*) ACL-id (`setfac
 1. viidete arv on 0 (ühtegi nime pole jäänud) **ja**
 2. ükski protsess ei hoia faili lahti.
 
-Siis vabastatakse inode ja andmeplokid. **Prügikasti `rm` ei kasuta** – terminalis kustutatud fail on kohe läinud. Graafilised keskkonnad (GNOME – ingl *GNU Network Object Model Environment*, KDE – ingl *K Desktop Environment*) kasutavad prügikasti kaustas `~/.local/share/Trash/` (failid alamkaustas `files/`, algne asukoht `info/*.trashinfo` failides).
+Siis vabastatakse inode ja andmeplokid. **Prügikasti `rm` ei kasuta** – terminalis kustutatud fail on kohe läinud. Graafilised keskkonnad (GNOME – *GNU Network Object Model Environment*, KDE – *K Desktop Environment*) kasutavad prügikasti kaustas `~/.local/share/Trash/` (failid alamkaustas `files/`, algne asukoht `info/*.trashinfo` failides).
 
 **Tüüpiline administraatori probleem:** server teatab, et ketas on täis. Administraator kustutab 20 GB suuruse logifaili, kuid `df -h` näitab ikka täis ketast. Põhjus: veebiserver hoiab logifaili endiselt lahti. Nimi on kadunud, kuid inode ja plokid on alles, kuni protsess faili sulgeb. Lahendus: `lsof +L1` näitab kustutatud, kuid avatud faile; taaskäivita teenus. (Parem viis on logi tühjendada: `truncate -s 0 logifail`.)
 
@@ -218,13 +218,13 @@ Siis vabastatakse inode ja andmeplokid. **Prügikasti `rm` ei kasuta** – termi
 
 ### 15.9 Failihaldus macOS-is
 
-macOS kasutab alates High Sierrast (2017) **APFS**-i (Apple File System), mis on loodud SSD-de jaoks. Varem kasutati HFS+-i.
+macOS kasutab alates High Sierrast (2017) **APFS**-i (*Apple File System*), mis on loodud SSD-de jaoks. Varem kasutati HFS+-i.
 
 **Konteiner ja köited.** APFS-is on kettal **konteiner** ja selle sees mitu **köidet**, mis jagavad sama vaba ruumi – köidetele ei pea ette suurust määrama. Tavalises Macis on näiteks:
 
 - **System** – macOS ise; **ainult lugemiseks** (alates macOS Catalinast) ja krüptograafiliselt allkirjastatud (*Signed System Volume*, alates macOS Big Surist). Pahavara ei saa süsteemifaile muuta;
 - **Data** – kasutajate failid ja rakendused;
-- **Preboot**, **Recovery**, **VM** (ingl *Virtual Machine*; saalefailid).
+- **Preboot**, **Recovery**, **VM** (*Virtual Machine*; saalefailid).
 
 Kasutaja näeb ühte ketast „Macintosh HD“, sest System ja Data köide on ühendatud **püsiviidetega** (firmlinks). Välised kettad ühendatakse kausta `/Volumes`.
 
@@ -241,7 +241,7 @@ xattr -l ~/Downloads/rakendus.dmg       # näitab laiendatud atribuute
 ls -l@ ~/Downloads                      # atribuudid ls-i väljundis
 ```
 
-**Avamine.** Tee lahendatakse nagu Linuxis (macOS põhineb BSD-l (ingl *Berkeley Software Distribution*)): `/Users/mari/Documents/kiri.txt`. APFS hoiab kataloogide kirjeid B-puudes. **Spotlight** indekseerib failid, nii et otsing (`mdfind kiri`) ei pea ketast läbi käima. Finder loob kaustadesse peidetud failid `.DS_Store` kausta vaate seadetega.
+**Avamine.** Tee lahendatakse nagu Linuxis (macOS põhineb BSD-l (*Berkeley Software Distribution*)): `/Users/mari/Documents/kiri.txt`. APFS hoiab kataloogide kirjeid B-puudes. **Spotlight** indekseerib failid, nii et otsing (`mdfind kiri`) ei pea ketast läbi käima. Finder loob kaustadesse peidetud failid `.DS_Store` kausta vaate seadetega.
 
 **Kustutamine.**
 
@@ -294,9 +294,9 @@ Windows jätab failisüsteemid ketta tähtedena (`C:`, `D:`) eraldi. Linux ja ma
 | --- | --- | --- | --- |
 | Põhifailisüsteem | NTFS | ext4 (ka XFS, Btrfs) | APFS |
 | Töökindlus | metaandmete logi | ext4: logi; Btrfs: kirjutamisel kopeerimine | kirjutamisel kopeerimine |
-| Hetktõmmised | varikoopiad (VSS – ingl *Volume Shadow Copy Service*) | LVM- või Btrfs-hetktõmmised (LVM – ingl *Logical Volume Manager*) | APFS-hetktõmmised (Time Machine) |
+| Hetktõmmised | varikoopiad (VSS – *Volume Shadow Copy Service*) | LVM- või Btrfs-hetktõmmised (LVM – *Logical Volume Manager*) | APFS-hetktõmmised (Time Machine) |
 | Failide kloonimine | ReFS-i plokkide kloonimine | reflink (Btrfs, XFS) | APFS-i kloonid |
-| Krüpteerimine | BitLocker, EFS | LUKS (ingl *Linux Unified Key Setup*) / dm-crypt, fscrypt | FileVault, APFS-i omakeelne krüpteerimine |
+| Krüpteerimine | BitLocker, EFS | LUKS (*Linux Unified Key Setup*) / dm-crypt, fscrypt | FileVault, APFS-i omakeelne krüpteerimine |
 | Õigused | ACL | `rwx` + POSIX ACL | `rwx` + ACL |
 | Suur- ja väiketähed | ei erista (vaikimisi) | eristab: `Fail.txt` ≠ `fail.txt` | ei erista (vaikimisi) |
 | Köidete paiknemine | ketta tähed | üks puu, nt `/home`, `/mnt/usb` | üks puu, välised kettad `/Volumes` |
@@ -342,7 +342,7 @@ Brauser kirjutas faili juurde NTFS-i **alternatiivse andmevoo** `Zone.Identifier
 6. Mis vahe on NTFS-il ja ReFS-il?
 7. Mis on Dev Drive ja milline turvakompromiss sellega kaasneb?
 8. Miks ei tehta SSD-l killustatuse eemaldamist?
-9. Mis on ISO-tõmmis ja VHDX-fail (VHDX – ingl *Virtual Hard Disk v2*, laiendatud vorming)?
+9. Mis on ISO-tõmmis ja VHDX-fail (VHDX – *Virtual Hard Disk v2*, laiendatud vorming)?
 10. Mis on klaster ja miks võtab 1-baidine fail kettal 4 KB?
 11. Kirjelda, mis toimub NTFS-is faili salvestamisel ja kustutamisel. Miks saab HDD-lt kustutatud faile sageli taastada, SSD-lt aga mitte?
 12. Mis on inode? Miks ei ole Linuxis faili nimi inode’is ja mis sellest tuleneb?
@@ -356,7 +356,7 @@ Brauser kirjutas faili juurde NTFS-i **alternatiivse andmevoo** `Zone.Identifier
 1. Mis on FAT32-l ühe faili maksimumsuurus? a) 2 GB b) 4 GB c) 16 GB d) 2 TB
 2. Millises NTFS-i struktuuris on kirje iga faili kohta? a) FAT b) MFT c) USN d) VSS
 3. Mis on ReFS-i terviklikkusvoogude eesmärk? a) krüpteerimine b) vaikse andmeriknemise tuvastamine c) tihendamine d) kvootide jälgimine
-4. Mida saadab Windows SSD-le vabade plokkide kohta? a) SMART b) TRIM c) DMA d) IRP\_MJ\_FLUSH
+4. Mida saadab Windows SSD-le vabade plokkide kohta? a) SMART (*Self-Monitoring, Analysis and Reporting Technology*) b) TRIM c) DMA (*Direct Memory Access*) d) IRP\_MJ\_FLUSH
 5. Kus hoitakse Linuxis faili õigusi ja omanikku? a) kataloogis b) inode’is c) FAT-tabelis d) failinimes
 6. Milline on macOS-i põhifailisüsteem? a) HFS b) ext4 c) APFS d) NTFS
 
@@ -370,7 +370,7 @@ Get-Item $env:USERPROFILE\Downloads\*.* -Stream Zone.Identifier -ErrorAction Sil
 Get-Content "$env:USERPROFILE\Downloads\<mõni_fail>" -Stream Zone.Identifier
 ```
 
-**Linux (WSL-is või Linuxi VM-is):**
+**Linux (WSL-is (*Windows Subsystem for Linux*) või Linuxi VM-is):**
 
 ```bash
 lsblk -f                          # kettad ja failisüsteemid

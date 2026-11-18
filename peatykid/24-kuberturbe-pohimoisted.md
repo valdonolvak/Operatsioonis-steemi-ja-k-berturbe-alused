@@ -9,8 +9,8 @@ Peatükid 24–31 moodustavad III osa **„Küberturbe alused“**. Peatükk 24 
 - selgitab konfidentsiaalsuse, tervikluse ja käideldavuse tähendust ning toob iga kohta ründe ja kaitse näite;
 - eristab mõisteid vara, oht, nõrkus, ekspluit, risk ja meede ning hindab lihtsat riski;
 - kirjeldab levinumaid ründevektoreid, nende tunnuseid ja kaitset;
-- kirjeldab rünnet Cyber Kill Chaini etappide ja MITRE ATT&CK (ingl *Adversarial Tactics, Techniques, and Common Knowledge*) taktikate abil;
-- selgitab MITM-i (ingl *Man-in-the-Middle*), SQL-süsti (SQL – ingl *Structured Query Language*), XSS-i (ingl *Cross-Site Scripting*) ja DDoS-i (ingl *Distributed Denial of Service*) toimimist ning tõrjet.
+- kirjeldab rünnet Cyber Kill Chaini etappide ja MITRE ATT&CK (*Adversarial Tactics, Techniques, and Common Knowledge*) taktikate abil;
+- selgitab MITM-i (*Man-in-the-Middle*), SQL-süsti (SQL – *Structured Query Language*), XSS-i (*Cross-Site Scripting*) ja DDoS-i (*Distributed Denial of Service*) toimimist ning tõrjet.
 
 ### 24.1 Infoturve, küberturve ja ründajad
 
@@ -21,24 +21,24 @@ Kaitse planeerimisel tuleb teada, kes võiks rünnata ja miks. Eri ründajatel o
 | Ründaja tüüp | Eesmärk | Tüüpiline tegevus | Näide |
 | --- | --- | --- | --- |
 | Kurjategijad, lunavararühmad | raha | lunavara, andmete väljapressimine, pangakontode tühjendamine | lunavara krüpteerib haigla failid ja nõuab lunaraha |
-| Riiklikud ründajad (APT – ingl *Advanced Persistent Threat*) | luure, sabotaaž, mõjutamine | pikaajaline varjatud kohalolek, tarneahela ründed | ründaja varastab ministeeriumi e-kirju kuude kaupa |
+| Riiklikud ründajad (APT – *Advanced Persistent Threat*) | luure, sabotaaž, mõjutamine | pikaajaline varjatud kohalolek, tarneahela ründed | ründaja varastab ministeeriumi e-kirju kuude kaupa |
 | Häktivistid | poliitiline sõnum | DDoS, veebilehtede rikkumine, lekked | 2007. aastal halvati DDoS-rünnakutega Eesti riigi- ja pangaveebid |
 | Siseoht | kättemaks, raha või tahtmatu viga | andmete kaasavõtmine, valesti saadetud e-kiri | lahkuv töötaja kopeerib kliendiandmebaasi |
-| Oportunistlikud ründajad | lõbu, kuulsus, väike tulu | valmis tööriistad, kogu interneti skaneerimine | avatud RDP-port (RDP – ingl *Remote Desktop Protocol*) leitakse tunni jooksul ja seda hakatakse parooliga proovima |
+| Oportunistlikud ründajad | lõbu, kuulsus, väike tulu | valmis tööriistad, kogu interneti skaneerimine | avatud RDP-port (RDP – *Remote Desktop Protocol*) leitakse tunni jooksul ja seda hakatakse parooliga proovima |
 
-**Oluline järeldus:** enamik organisatsioone ei ole sihtmärk mitte sellepärast, et keegi neid valis, vaid sellepärast, et automaatne skanner leidis nõrkuse. Seepärast on põhiline küberhügieen (paikamine, MFA – ingl *Multi-Factor Authentication*, varukoopiad) kõige suurema mõjuga meede ka väikeses organisatsioonis.
+**Oluline järeldus:** enamik organisatsioone ei ole sihtmärk mitte sellepärast, et keegi neid valis, vaid sellepärast, et automaatne skanner leidis nõrkuse. Seepärast on põhiline küberhügieen (paikamine, MFA – *Multi-Factor Authentication*, varukoopiad) kõige suurema mõjuga meede ka väikeses organisatsioonis.
 
 ### 24.2 Turvaomadused: CIA kolmik
 
 ![CIA kolmik ja risk · oht, nõrkus, vara](../pildid/24-a.png)
 
-Joonis: infoturbe kolm põhiomadust ja riski tekkimine. Iga rünne kahjustab vähemalt ühte omadust. Risk tekib alles siis, kui oht leiab nõrkuse, mille kaudu vara kahjustada.
+Joonis: infoturbe kolm põhiomadust (CIA – *Confidentiality, Integrity, Availability*) ja riski tekkimine. Iga rünne kahjustab vähemalt ühte omadust. Risk tekib alles siis, kui oht leiab nõrkuse, mille kaudu vara kahjustada.
 
 #### Konfidentsiaalsus (confidentiality)
 
 Teavet näevad ainult need, kellel on selleks õigus. Konfidentsiaalsus on rikutud, kui õpilane näeb teiste õpilaste hindeid, kui lekib kliendiandmebaas või kui keegi kuulab krüpteerimata WiFi-võrgus paroole pealt.
 
-Kaitsemeetmed: **juurdepääsuõigused** (vähimate õiguste põhimõte, ptk 18), **autentimine ja MFA**, **krüpteerimine** kettal (BitLocker) ja võrgus (TLS – ingl *Transport Layer Security*), andmete **klassifitseerimine** (avalik, asutusesisene, piiratud) ning ekraani lukustamine.
+Kaitsemeetmed: **juurdepääsuõigused** (vähimate õiguste põhimõte, ptk 18), **autentimine ja MFA**, **krüpteerimine** kettal (BitLocker) ja võrgus (TLS – *Transport Layer Security*), andmete **klassifitseerimine** (avalik, asutusesisene, piiratud) ning ekraani lukustamine.
 
 #### Terviklus (integrity)
 
@@ -50,7 +50,7 @@ Kaitsemeetmed: **räsid ja kontrollsummad** (ptk 27), **digiallkirjad** (ptk 29)
 
 Teave ja teenused on kasutatavad siis, kui neid vaja on. Käideldavus on rikutud DDoS-rünnaku, lunavara, riistvararikke, voolukatkestuse ja ka halva seadistuse korral (nt täis saanud ketas).
 
-Kaitsemeetmed: **varukoopiad** ja harjutatud taastamine, **reservsüsteemid** (RAID – ingl *Redundant Array of Independent Disks*, klaster, teine andmekeskus), **DDoS-kaitse**, **toimepidevuse plaan**, kettaruumi ja koormuse **jälgimine**.
+Kaitsemeetmed: **varukoopiad** ja harjutatud taastamine, **reservsüsteemid** (RAID – *Redundant Array of Independent Disks*, klaster, teine andmekeskus), **DDoS-kaitse**, **toimepidevuse plaan**, kettaruumi ja koormuse **jälgimine**.
 
 #### Omaduste vastuolud ja lisaomadused
 
@@ -75,7 +75,7 @@ Neid mõisteid aetakse sageli segi. Vaatame neid ühe näite abil: **kooli õppe
 | Mõju (impact) | kahju, kui oht realiseerub | hinded lekivad või neid muudetakse, kool peab teavitama Andmekaitse Inspektsiooni |
 | Tõenäosus (likelihood) | kui tõenäoline on, et see juhtub | kõrge, kui ekspluit on avalik ja süsteem internetis |
 | Risk | tõenäosus × mõju | „kõrge risk: avalik ekspluit ja tundlikud andmed“ |
-| Meede (control) | tegevus, mis vähendab tõenäosust või mõju | paikamine, MFA, varukoopia, ligipääs ainult VPN-i (ingl *Virtual Private Network*) kaudu |
+| Meede (control) | tegevus, mis vähendab tõenäosust või mõju | paikamine, MFA, varukoopia, ligipääs ainult VPN-i (*Virtual Private Network*) kaudu |
 
 **Riski lihtne hindamine.** Hinda tõenäosust ja mõju skaalal 1–3 (madal, keskmine, kõrge) ja korruta. Tulemus 1–2 on madal risk, 3–4 keskmine ja 6–9 kõrge. Õppeinfosüsteemi näites: tõenäosus 3 (avalik ekspluit) × mõju 3 (isikuandmed) = 9, ehk kõrge risk. Kui süsteem paigatakse ja sinna pääseb ainult MFA-ga, langeb tõenäosus 1-ni ja risk on 3 – keskmine. Mõju ei muutunud, sest andmed on endiselt samad. Mõju vähendaksid näiteks andmete minimeerimine ja krüpteerimine. Riskihaldusest räägib täpsemalt peatükk 31.
 
@@ -85,9 +85,9 @@ Neid mõisteid aetakse sageli segi. Vaatame neid ühe näite abil: **kooli õppe
 
 Joonis: nõrkuse elukaar. **Nullpäevane nõrkus** (zero-day) on nõrkus, mida ründaja kasutab enne, kui tootja on sellest teada saanud või paiga välja andnud. Palju sagedamini kasutavad ründajad aga aega, mis jääb paiga ilmumise ja selle paigaldamise vahele.
 
-- **CVE** (Common Vulnerabilities and Exposures) on avalikult teada nõrkuse unikaalne tunnus, nt `CVE-2024-3400`. Sellega saavad tootja, administraator ja turvatarkvara rääkida samast veast.
-- **CVSS** (Common Vulnerability Scoring System) hindab nõrkuse tehnilist raskust skaalal 0–10: 0,1–3,9 madal, 4,0–6,9 keskmine, 7,0–8,9 kõrge ja 9,0–10 kriitiline. Hinne arvestab näiteks seda, kas rünne käib üle võrgu, kas on vaja sisse logida ja kas on vaja kasutaja tegevust. Kehtiv versioon on CVSS 4.0 ([FIRST](https://www.first.org/cvss/)).
-- CVSS **ei ole sinu risk**. Sama 9,8-punktiline nõrkus on internetis avatud VPN-seadmes kriitiline, kuid isoleeritud laborivõrgus väike. Seetõttu vaatavad administraatorid ka seda, kas nõrkust kasutatakse päriselt. USA küberagentuur CISA (ingl *Cybersecurity and Infrastructure Security Agency*) peab avalikku **KEV-loetelu** (Known Exploited Vulnerabilities) nõrkustest, mida on rünnetes kasutatud ([CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)). Selles loetelus olevad nõrkused tuleb paigata esimesena.
+- **CVE** (*Common Vulnerabilities and Exposures*) on avalikult teada nõrkuse unikaalne tunnus, nt `CVE-2024-3400`. Sellega saavad tootja, administraator ja turvatarkvara rääkida samast veast.
+- **CVSS** (*Common Vulnerability Scoring System*) hindab nõrkuse tehnilist raskust skaalal 0–10: 0,1–3,9 madal, 4,0–6,9 keskmine, 7,0–8,9 kõrge ja 9,0–10 kriitiline. Hinne arvestab näiteks seda, kas rünne käib üle võrgu, kas on vaja sisse logida ja kas on vaja kasutaja tegevust. Kehtiv versioon on CVSS 4.0 ([FIRST](https://www.first.org/cvss/)).
+- CVSS **ei ole sinu risk**. Sama 9,8-punktiline nõrkus on internetis avatud VPN-seadmes kriitiline, kuid isoleeritud laborivõrgus väike. Seetõttu vaatavad administraatorid ka seda, kas nõrkust kasutatakse päriselt. USA küberagentuur CISA (*Cybersecurity and Infrastructure Security Agency*) peab avalikku **KEV-loetelu** (*Known Exploited Vulnerabilities*) nõrkustest, mida on rünnetes kasutatud ([CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)). Selles loetelus olevad nõrkused tuleb paigata esimesena.
 - Microsoft avaldab turvaparandused tavaliselt iga kuu teisel teisipäeval (**Patch Tuesday**).
 
 ### 24.4 Ründepind
@@ -96,12 +96,12 @@ Joonis: nõrkuse elukaar. **Nullpäevane nõrkus** (zero-day) on nõrkus, mida r
 
 | Ründepinna osa | Näited | Kuidas vähendada |
 | --- | --- | --- |
-| Võrk | avatud pordid, internetis nähtav RDP, SMB (ingl *Server Message Block*), haldusliides | sulge mittevajalikud pordid, haldus ainult VPN-i või haldusvõrgu kaudu |
-| Tarkvara | iga paigaldatud programm, brauseri laiendus, vana PHP-versioon (PHP – ingl *PHP: Hypertext Preprocessor*) | eemalda kasutamata tarkvara, uuenda, kasuta rakenduste lubamisloendit |
+| Võrk | avatud pordid, internetis nähtav RDP, SMB (*Server Message Block*), haldusliides | sulge mittevajalikud pordid, haldus ainult VPN-i või haldusvõrgu kaudu |
+| Tarkvara | iga paigaldatud programm, brauseri laiendus, vana PHP-versioon (PHP – *PHP: Hypertext Preprocessor*) | eemalda kasutamata tarkvara, uuenda, kasuta rakenduste lubamisloendit |
 | Identiteedid | kasutajakontod, teenusekontod, vanad kontod, ühised paroolid | sulge lahkunute kontod, kasuta MFA-d, vaata õigused üle |
 | Inimesed | e-post, telefon, sotsiaalmeedia | teadlikkuskoolitus, teatamise lihtne kanal |
-| Füüsiline | lukustamata serveriruum, USB-pordid (USB – ingl *Universal Serial Bus*), kaotatud sülearvuti | lukud, BitLocker, USB-seadmete kontroll |
-| Tarneahel | IT-partneri (IT – ingl *Information Technology*) kaugligipääs, tarkvara uuendused, pilveteenused | lepingud, tarnija ligipääsu piiramine ja logimine |
+| Füüsiline | lukustamata serveriruum, USB-pordid (USB – *Universal Serial Bus*), kaotatud sülearvuti | lukud, BitLocker, USB-seadmete kontroll |
+| Tarneahel | IT-partneri (IT – *Information Technology*) kaugligipääs, tarkvara uuendused, pilveteenused | lepingud, tarnija ligipääsu piiramine ja logimine |
 
 Ründepinda tuleb vaadata ka väljastpoolt. Teenused nagu Shodan ja Censys skaneerivad pidevalt kogu internetti ja näitavad, millised seadmed ja versioonid on nähtavad. Sama infot kasutavad ründajad. Iga suletud port, eemaldatud teenus ja kustutatud vana konto on üks võimalus vähem.
 
@@ -117,13 +117,13 @@ Ründepinda tuleb vaadata ka väljastpoolt. Teenused nagu Shodan ja Censys skane
 | --- | --- |
 | Massõngitsus | sama kiri tuhandetele, nt „teie pakk ootab, makske tollimaks“ |
 | Sihitud õngitsus (spear phishing) | kiri ühele inimesele, kasutades tema nime, ametit ja kolleegide nimesid |
-| Ärikirja kompromiteerimine (BEC – ingl *Business Email Compromise*) | ründaja esineb juhi või tarnijana ja palub teha makse uuele kontole |
-| Vishing ja smishing | sama telefonikõne või SMS-i (ingl *Short Message Service*) teel, nt „pangast helistatakse, kinnitage Smart-ID“ |
-| QR-õngitsus (QR – ingl *Quick Response*; quishing) | link peidetakse QR-koodi, mida e-posti filter ei loe |
+| Ärikirja kompromiteerimine (BEC – *Business Email Compromise*) | ründaja esineb juhi või tarnijana ja palub teha makse uuele kontole |
+| Vishing ja smishing | sama telefonikõne või SMS-i (*Short Message Service*) teel, nt „pangast helistatakse, kinnitage Smart-ID“ |
+| QR-õngitsus (QR – *Quick Response*; quishing) | link peidetakse QR-koodi, mida e-posti filter ei loe |
 
 **Õngitsuse tunnused:** kiirustamine („konto suletakse 2 tunni pärast“), ebatavaline palve (uus pangakonto, kinkekaardid), saatja aadress, mis erineb vähe õigest (`rnicrosoft.com`), link, mis viib teisele domeenile, ootamatu manus (`.zip`, `.html`, `.iso`, makrodega dokument) ning palve hoida asja saladuses.
 
-**Kaitse:** teadlikkuskoolitus ja õngitsuse harjutused, lihtne viis kahtlasest kirjast teatada, e-posti filter, domeeni kaitse SPF-, DKIM- ja DMARC-kirjetega (SPF – ingl *Sender Policy Framework*; DKIM – ingl *DomainKeys Identified Mail*; DMARC – ingl *Domain-based Message Authentication, Reporting and Conformance*; takistab sinu domeeni nimel võltskirjade saatmist), **õngitsuskindel MFA** (FIDO2-võti (FIDO – ingl *Fast Identity Online*), pääsuvõti) ning reegel, et makse- ja kontoandmete muudatus kinnitatakse alati teise kanali kaudu (helistades teadaolevale numbrile).
+**Kaitse:** teadlikkuskoolitus ja õngitsuse harjutused, lihtne viis kahtlasest kirjast teatada, e-posti filter, domeeni kaitse SPF-, DKIM- ja DMARC-kirjetega (SPF – *Sender Policy Framework*; DKIM – *DomainKeys Identified Mail*; DMARC – *Domain-based Message Authentication, Reporting and Conformance*; takistab sinu domeeni nimel võltskirjade saatmist), **õngitsuskindel MFA** (FIDO2-võti (FIDO – *Fast Identity Online*), pääsuvõti) ning reegel, et makse- ja kontoandmete muudatus kinnitatakse alati teise kanali kaudu (helistades teadaolevale numbrile).
 
 #### Paroolirünnakud
 
@@ -136,7 +136,7 @@ Ründepinda tuleb vaadata ka väljastpoolt. Teenused nagu Shodan ja Censys skane
 
 #### Paikamata teenused
 
-Ründajad otsivad automaatselt internetis nähtavaid seadmeid, mille tarkvaras on teadaolev nõrkus. Eriti ohustatud on **võrgu servas asuvad seadmed**: VPN-lüüsid, tulemüürid, e-posti- ja failiedastusserverid. Nendel puudub sageli EDR (ingl *Endpoint Detection and Response*), need on alati internetis ja nende kaudu pääseb otse sisevõrku. Paljud suured intsidendid on alanud just VPN-seadme või tulemüüri nõrkusest.
+Ründajad otsivad automaatselt internetis nähtavaid seadmeid, mille tarkvaras on teadaolev nõrkus. Eriti ohustatud on **võrgu servas asuvad seadmed**: VPN-lüüsid, tulemüürid, e-posti- ja failiedastusserverid. Nendel puudub sageli EDR (*Endpoint Detection and Response*), need on alati internetis ja nende kaudu pääseb otse sisevõrku. Paljud suured intsidendid on alanud just VPN-seadme või tulemüüri nõrkusest.
 
 **Kaitse:** varade nimekiri (sa ei saa paigata seda, millest sa ei tea), kriitiliste ja KEV-loetelus olevate nõrkuste paikamine päevade jooksul, tootja turvateadete jälgimine, haldusliidese peitmine internetist ning servaseadmete logide saatmine keskse jälgimise süsteemi.
 
@@ -167,15 +167,15 @@ Pahavara jõuab arvutisse e-kirja manuse, võltsitud allalaadimise, nakatunud US
 
 Ründaja ei ründa sihtmärki otse, vaid tema tarnijat: tarkvaratootjat, IT-teenuse pakkujat või avatud lähtekoodiga teeki. Tuntud näited: **SolarWinds** (2020) – ründajad lisasid tagaukse Orion-tarkvara uuendusse, mille paigaldasid tuhanded organisatsioonid; **XZ Utils** (2024) – ründaja töötas kaks aastat usaldusväärse kaasautorina, et lisada Linuxi pakkimisteeki tagauks, mille avastas juhuslikult Microsofti insener Andres Freund.
 
-**Kaitse:** tarnijate turvanõuded lepingus, tarnijate kaugligipääsu piiramine ja logimine, allkirjastatud tarkvara, tarkvara koostisosade nimekiri (SBOM – ingl *Software Bill of Materials*) ja kõrvalekallete jälgimine.
+**Kaitse:** tarnijate turvanõuded lepingus, tarnijate kaugligipääsu piiramine ja logimine, allkirjastatud tarkvara, tarkvara koostisosade nimekiri (SBOM – *Software Bill of Materials*) ja kõrvalekallete jälgimine.
 
 #### Siseoht
 
-Siseoht võib olla **tahtlik** (rahulolematu töötaja) või **tahtmatu** (töötaja saadab tabeli valele adressaadile, jätab sülearvuti autosse). Tahtmatud vead on palju sagedasemad. **Kaitse:** vähimad õigused, lahkuja kontode kohene sulgemine, tundlike andmete liikumise jälgimine (DLP – ingl *Data Loss Prevention*), logid ning kultuur, kus vigadest julgetakse rääkida.
+Siseoht võib olla **tahtlik** (rahulolematu töötaja) või **tahtmatu** (töötaja saadab tabeli valele adressaadile, jätab sülearvuti autosse). Tahtmatud vead on palju sagedasemad. **Kaitse:** vähimad õigused, lahkuja kontode kohene sulgemine, tundlike andmete liikumise jälgimine (DLP – *Data Loss Prevention*), logid ning kultuur, kus vigadest julgetakse rääkida.
 
 #### Tehisintellekti väärkasutus
 
-Tehisintellekt teeb vanad võtted tõhusamaks: õngitsuskirjad on veatus keeles ja isikupärastatud, häält saab kloonida mõne sekundi salvestuse põhjal ja võltsvideokõne näib usutav. 2024. aastal kandis Arupi Hongkongi kontori töötaja üle umbes 25 miljonit dollarit pärast videokõnet, kus kõik teised osalejad olid süvavõltsingud. AI-agentide (AI – ingl *Artificial Intelligence*) endi vastu kasutatakse viipesüsti (ptk 21). **Kaitse:** maksete ja õiguste muudatuste kinnitamine teise kanali kaudu, kokkulepitud kontrollsõnad, teadlikkus.
+Tehisintellekt teeb vanad võtted tõhusamaks: õngitsuskirjad on veatus keeles ja isikupärastatud, häält saab kloonida mõne sekundi salvestuse põhjal ja võltsvideokõne näib usutav. 2024. aastal kandis Arupi Hongkongi kontori töötaja üle umbes 25 miljonit dollarit pärast videokõnet, kus kõik teised osalejad olid süvavõltsingud. AI-agentide (AI – *Artificial Intelligence*) endi vastu kasutatakse viipesüsti (ptk 21). **Kaitse:** maksete ja õiguste muudatuste kinnitamine teise kanali kaudu, kokkulepitud kontrollsõnad, teadlikkus.
 
 ### 24.6 Ründe käik: Cyber Kill Chain ja MITRE ATT&CK
 
@@ -192,7 +192,7 @@ Joonis: Lockheed Martini **Cyber Kill Chain** jagab sihitud ründe seitsmeks eta
 | 3. Kohaletoimetamine (delivery) | toimetab ründevahendi sihtmärgini | õngitsuskiri, nakatunud USB, ekspluit üle võrgu | e-posti filter, teadlikkus, tulemüür |
 | 4. Ärakasutamine (exploitation) | kasutab nõrkust või inimese tegevust | kasutaja lubab makrod, VPN-seadme viga | paikamine, makrode blokeerimine, MFA |
 | 5. Paigaldamine (installation) | jätab endale püsiva ligipääsu | tagauks, ajastatud ülesanne, uus kasutaja | EDR, rakenduste lubamisloend, kasutaja ilma admini-õigusteta |
-| 6. Juhtimiskanal (command and control, C2) | loob ühenduse oma serveriga | HTTPS-ühendus (HTTPS – ingl *Hypertext Transfer Protocol Secure*) tundmatule domeenile iga 5 minuti tagant | väljuva liikluse kontroll, DNS-filter (DNS – ingl *Domain Name System*), anomaaliate tuvastus |
+| 6. Juhtimiskanal (command and control, C2) | loob ühenduse oma serveriga | HTTPS-ühendus (HTTPS – *Hypertext Transfer Protocol Secure*) tundmatule domeenile iga 5 minuti tagant | väljuva liikluse kontroll, DNS-filter (DNS – *Domain Name System*), anomaaliate tuvastus |
 | 7. Tegevus eesmärgi nimel (actions on objectives) | teeb seda, milleks tuli | andmete väljavedu, lunavara käivitamine | segmentimine, DLP, varukoopiad, intsidendile reageerimine |
 
 Kill Chaini kriitika on, et see on loodud välise ründaja ja pahavara mudeliks. Siseohtu ja pilvekontode ülevõtmist (kus pahavara polegi) kirjeldab see halvasti. Seetõttu kasutatakse tänapäeval sageli detailsemat mudelit.
@@ -246,20 +246,20 @@ Vaata rünnet kaitsja pilguga:
 
 #### Vahendajarünne (MITM)
 
-**Vahendajarünne** (man-in-the-middle, MITM) tähendab, et ründaja paigutab end kahe osapoole vahele. Mõlemad arvavad, et suhtlevad otse, kuid kogu liiklus käib läbi ründaja, kes saab seda lugeda ja muuta.
+**Vahendajarünne** (*man-in-the-middle*, MITM) tähendab, et ründaja paigutab end kahe osapoole vahele. Mõlemad arvavad, et suhtlevad otse, kuid kogu liiklus käib läbi ründaja, kes saab seda lugeda ja muuta.
 
 Kuidas ründaja vahele saab:
 
 - **võlts-WiFi tugijaam** (evil twin) – kohvikus on avatud võrk "Kohvik\_WiFi" ja ründaja loob sama nimega tugevama signaaliga võrgu;
-- **ARP-võltsimine** (ARP – ingl *Address Resolution Protocol*) – kohtvõrgus teatab ründaja, et tema MAC-aadress (MAC – ingl *Media Access Control*) kuulub vaikelüüsile, ja kogu liiklus läheb tema kaudu (vt ARP-i ptk 11);
-- **DNS-i võltsimine** – ohver saab domeeninimele vale IP-aadressi (IP – ingl *Internet Protocol*) ja jõuab ründaja serverisse;
+- **ARP-võltsimine** (ARP – *Address Resolution Protocol*) – kohtvõrgus teatab ründaja, et tema MAC-aadress (MAC – *Media Access Control*) kuulub vaikelüüsile, ja kogu liiklus läheb tema kaudu (vt ARP-i ptk 11);
+- **DNS-i võltsimine** – ohver saab domeeninimele vale IP-aadressi (IP – *Internet Protocol*) ja jõuab ründaja serverisse;
 - **võlts-DHCP-server** – jagab ründaja aadressi vaikelüüsi või DNS-serverina.
 
 ![vahendajarünne (MITM) · ilma krüpteerimiseta ja TLS-iga](../pildid/24-e.png)
 
 Joonis: krüpteerimata ühenduses näeb ja muudab ründaja kõike. TLS-iga näeb ta ainult krüpteeritud baite. Kui ta esitab võltssertifikaadi, katkestab brauser ühenduse. TLS-i ja sertifikaate käsitleb peatükk 29.
 
-**Kaitse:** krüpteerimine otsast otsani (HTTPS, TLS, VPN avalikus võrgus), **HSTS** (ingl *HTTP Strict Transport Security*), mis keelab brauseril kasutada sama saidi puhul krüpteerimata HTTP-d (ingl *Hypertext Transfer Protocol*), sertifikaadihoiatuste mitte eiramine ning võrguseadmetes DHCP (ingl *Dynamic Host Configuration Protocol*) Snooping ja Dynamic ARP Inspection, mis blokeerivad võlts-DHCP- ja ARP-vastused.
+**Kaitse:** krüpteerimine otsast otsani (HTTPS, TLS, VPN avalikus võrgus), **HSTS** (*HTTP Strict Transport Security*), mis keelab brauseril kasutada sama saidi puhul krüpteerimata HTTP-d (*Hypertext Transfer Protocol*), sertifikaadihoiatuste mitte eiramine ning võrguseadmetes DHCP (*Dynamic Host Configuration Protocol*) Snooping ja Dynamic ARP Inspection, mis blokeerivad võlts-DHCP- ja ARP-vastused.
 
 #### SQL-süst
 
@@ -283,7 +283,7 @@ Punkt (`.`) liidab PHP-s stringid kokku. Päring tekib kolmest tükist:
 | Tükk | Kes kirjutas | Sisu |
 | --- | --- | --- |
 | 1 | programmeerija | `SELECT * FROM users WHERE name = '` (lõpeb avava ülakomaga) |
-| 2 | kasutaja | `$_GET['nimi']` ehk URL-ist (ingl *Uniform Resource Locator*) tulnud tekst, nt `?nimi=mari` |
+| 2 | kasutaja | `$_GET['nimi']` ehk URL-ist (*Uniform Resource Locator*) tulnud tekst, nt `?nimi=mari` |
 | 3 | programmeerija | `'` (sulgev ülakoma) |
 
 PHP ei tunne SQL-i. Ta liidab tekstid kokku ja saadab andmebaasile ühe stringi, milles ei ole enam näha, kus üks tükk lõppes ja teine algas. SQL-is tähistab ülakoma stringi algust ja lõppu. Kui kasutaja sisendis on ülakoma, sulgeb see programmeerija avatud stringi ja kõik järgnev loetakse käsuna.
@@ -314,13 +314,13 @@ Päring jõuab andmebaasi kahes osas:
 Väärtust ei tõlgendata kunagi käsuna, olgu selles mis tahes märgid. Sisendi `' OR '1'='1` korral otsib andmebaas kasutajat, kelle nimi on täpselt `' OR '1'='1`, ega leia teda. `O'Brien` leitakse aga õigesti.
 
 - Ülakomade „puhastamine“ (`addslashes()`, `str_replace()`) ei ole lahendus. Sellest saab mööda, näiteks numbriväljas pole ülakoma vajagi: `WHERE id = 1 OR 1=1`.
-- PDO-s (ingl *PHP Data Objects*) lülita päringute emuleerimine välja (`PDO::ATTR_EMULATE_PREPARES => false`). Siis eraldab päringu ja väärtuse andmebaasiserver, mitte PHP.
+- PDO-s (*PHP Data Objects*) lülita päringute emuleerimine välja (`PDO::ATTR_EMULATE_PREPARES => false`). Siis eraldab päringu ja väärtuse andmebaasiserver, mitte PHP.
 - Parameetriks saab panna ainult väärtusi, mitte tabeli- ega veerunimesid. Kui kasutaja valib näiteks sorteerimisveeru, kontrolli valikut lubatud nimede loendi vastu.
 - Lisakaitsena kasutab rakendus andmebaasikontot, millel on ainult vajalikud õigused (ei saa näiteks tabeleid kustutada).
 
 #### XSS
 
-**XSS** (cross-site scripting) on sama viga veebilehel. SQL-süsti korral muutub sisend andmebaasi jaoks käsuks, XSS-i korral brauseri jaoks HTML-iks (ingl *HyperText Markup Language*) ja JavaScriptiks. Skript ei käivitu ründaja, vaid **teise kasutaja** brauseris ja töötab lehe nimel: see näeb lehe sisu ja küpsiseid ning saab teha toiminguid kasutaja nimel.
+**XSS** (*cross-site scripting*) on sama viga veebilehel. SQL-süsti korral muutub sisend andmebaasi jaoks käsuks, XSS-i korral brauseri jaoks HTML-iks (*HyperText Markup Language*) ja JavaScriptiks. Skript ei käivitu ründaja, vaid **teise kasutaja** brauseris ja töötab lehe nimel: see näeb lehe sisu ja küpsiseid ning saab teha toiminguid kasutaja nimel.
 
 > 🖱️ **Proovi ise:** [interaktiivne näide](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/24-sql-syst-ja-xss.html#xss). Kirjuta kommentaar ja vaata, mida brauser sellest teeb.
 
@@ -346,7 +346,7 @@ XSS-i liigid:
 
 - **salvestatud XSS** – pahatahtlik tekst salvestatakse andmebaasi (kommentaar, profiilinimi) ja käivitub kõigil vaatajatel;
 - **peegeldatud XSS** – skript on lingis (`?otsing=<script>…`) ja käivitub ainult sellel, kes lingile klõpsab;
-- **DOM-põhine XSS (DOM – ingl *Document Object Model*)** – viga on lehe enda JavaScriptis, mis kirjutab URL-i osa lehele.
+- **DOM-põhine XSS (DOM – *Document Object Model*)** – viga on lehe enda JavaScriptis, mis kirjutab URL-i osa lehele.
 
 Lahendus on **väljundi kodeerimine**: enne HTML-i panemist muudetakse erimärgid HTML-olemiteks.
 
@@ -363,7 +363,7 @@ echo "<p>" . htmlspecialchars($kommentaar, ENT_QUOTES, 'UTF-8') . "</p>";
 
 Kommentaar `<script>…` jõuab brauserisse kujul `&lt;script&gt;…`. Brauser näitab ekraanil märke `<script>`, kuid ei loe neid sildina. Põhimõte on sama mis parameetritega päringul: sisend jääb andmeks.
 
-- Kodeeri **väljastamisel**, mitte salvestamisel. Andmebaasis hoitakse algne tekst, sest sama teksti võidakse näidata HTML-is, JSON-is (ingl *JavaScript Object Notation*) või e-kirjas ja igaüks vajab oma kodeerimist.
+- Kodeeri **väljastamisel**, mitte salvestamisel. Andmebaasis hoitakse algne tekst, sest sama teksti võidakse näidata HTML-is, JSON-is (*JavaScript Object Notation*) või e-kirjas ja igaüks vajab oma kodeerimist.
 - Kodeerimine sõltub kohast. `htmlspecialchars()` kaitseb HTML-i teksti ja jutumärkides atribuudi väärtust, kuid mitte lingi aadressi: `<a href="javascript:alert(1)">` ei sisalda ühtki kodeeritavat märki. Kasutaja antud URL-i puhul kontrolli, et see algab `https://`-ga. Kasutaja andmeid ära kirjuta `<script>`-ploki sisse.
 - JavaScriptis kasuta `element.textContent = tekst`, mitte `innerHTML`. `innerHTML` on DOM-põhise XSS-i levinuim põhjus.
 
@@ -375,12 +375,12 @@ Kommentaar `<script>…` jõuab brauserisse kujul `&lt;script&gt;…`. Brauser n
 
 | Liik | Kuidas toimib | Näide |
 | --- | --- | --- |
-| Mahupõhine | täidab võrguühenduse läbilaskevõime | sadu gigabitte UDP-liiklust (UDP – ingl *User Datagram Protocol*) |
-| Võimendusrünne | ründaja saadab väikese päringu võltsitud saatja-aadressiga, server saadab ohvrile suure vastuse | DNS- või NTP-võimendus (NTP – ingl *Network Time Protocol*) |
-| Protokolli rünne | kurnab ühenduste tabelit | SYN-tulv (SYN – ingl *Synchronize*): palju poolikuid TCP-ühendusi (TCP – ingl *Transmission Control Protocol*) |
+| Mahupõhine | täidab võrguühenduse läbilaskevõime | sadu gigabitte UDP-liiklust (UDP – *User Datagram Protocol*) |
+| Võimendusrünne | ründaja saadab väikese päringu võltsitud saatja-aadressiga, server saadab ohvrile suure vastuse | DNS- või NTP-võimendus (NTP – *Network Time Protocol*) |
+| Protokolli rünne | kurnab ühenduste tabelit | SYN-tulv (SYN – *Synchronize*): palju poolikuid TCP-ühendusi (TCP – *Transmission Control Protocol*) |
 | Rakenduskihi rünne | näeb välja nagu tavalised päringud, kuid koormab serverit | tuhanded otsingupäringud sekundis |
 
-**Kaitse:** teenusepakkuja või pilve DDoS-kaitse (mahupõhist rünnet oma tulemüüriga ei peata, sest ühendus ise saab täis), sisuedastusvõrk (CDN – ingl *Content Delivery Network*), päringute piiramine (rate limiting), SYN-küpsised ning plaan, kellele rünnaku ajal helistada.
+**Kaitse:** teenusepakkuja või pilve DDoS-kaitse (mahupõhist rünnet oma tulemüüriga ei peata, sest ühendus ise saab täis), sisuedastusvõrk (CDN – *Content Delivery Network*), päringute piiramine (rate limiting), SYN-küpsised ning plaan, kellele rünnaku ajal helistada.
 
 ### 24.8 Kaitse kihtidena
 
@@ -436,7 +436,7 @@ Tänapäeva lähenemine lisab sellele **eelduse, et rikkumine on juba toimunud**
 
 ### Praktiline ülesanne
 
-**Ründepinna kaardistamine, domeeni e-postikaitse ja SQL-süst oma masinas.** Tee ülesanne oma õppe-VM-is või WSL-is (ptk 20.5). Skanni ainult oma masinat: võõraste süsteemide skaneerimine ilma loata võib olla seadusevastane.
+**Ründepinna kaardistamine, domeeni e-postikaitse ja SQL-süst oma masinas.** Tee ülesanne oma õppe-VM-is või WSL-is (*Windows Subsystem for Linux*, ptk 20.5). Skanni ainult oma masinat: võõraste süsteemide skaneerimine ilma loata võib olla seadusevastane.
 
 1. Windowsi kuulavad pordid (PowerShell):
 
@@ -485,7 +485,7 @@ Vasta: mitu porti kuulab Windowsis ja mitu WSL-is? Milline teenus on mõttetu ja
 
 ### Iseseisvad ülesanded
 
-**1. Intsidendi analüüs.** Vali üks avalikult kirjeldatud intsident viimase viie aasta seest (nt RIA küberturvalisuse aastaraamatust või rahvusvahelisest uudisest). Kirjelda rünnet Kill Chaini seitsme etapi kaupa ja seo vähemalt kolm sammu MITRE ATT&CK tehnikaga. **Esita:** tabel (etapp, mis juhtus, ATT&CK tehnika, meede, mis oleks sammu katkestanud).
+**1. Intsidendi analüüs.** Vali üks avalikult kirjeldatud intsident viimase viie aasta seest (nt RIA (Riigi Infosüsteemi Amet) küberturvalisuse aastaraamatust või rahvusvahelisest uudisest). Kirjelda rünnet Kill Chaini seitsme etapi kaupa ja seo vähemalt kolm sammu MITRE ATT&CK tehnikaga. **Esita:** tabel (etapp, mis juhtus, ATT&CK tehnika, meede, mis oleks sammu katkestanud).
 
 **2. Ohtude ja riskide tabel.** Vali oma kool, töökoht või kodu. Nimeta viis vara, iga vara kohta oht ja nõrkus ning hinda tõenäosust ja mõju skaalal 1–3. **Esita:** riskitabel, kolme suurima riski kohta üks meede ja selgitus, kas see vähendab tõenäosust või mõju.
 

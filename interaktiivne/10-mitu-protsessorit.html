@@ -94,7 +94,7 @@ svg text{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/10-planeerimine-mitmel-protsessoril.md">← Peatükk 10</a> · <a href="10-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Planeerimine mitmel protsessoril – õpileht</h1>
-<p>Mitme tuumaga arvutis peab planeerija otsustama, <b>millal</b> ja ka <b>kus</b> lõim töötab. Sellel lehel arvutad paralleelsuse kasu, võrdled afiinsuse strateegiaid, koostad afiinsusmaski, valid lõimedele P- või E-tuuma, paigutad virtuaalmasina NUMA-sõlmedesse (NUMA – ingl <i>Non-Uniform Memory Access</i>) ja näed, kuidas vale jagamine programmi aeglustab.</p>
+<p>Mitme tuumaga arvutis peab planeerija otsustama, <b>millal</b> ja ka <b>kus</b> lõim töötab. Sellel lehel arvutad paralleelsuse kasu, võrdled afiinsuse strateegiaid, koostad afiinsusmaski, valid lõimedele P- või E-tuuma, paigutad virtuaalmasina NUMA-sõlmedesse (NUMA – <i>Non-Uniform Memory Access</i>) ja näed, kuidas vale jagamine programmi aeglustab.</p>
 <div class="toc"><a href="#amdahl">1. Amdahli seadus</a><a href="#afiinsus">2. Afiinsuse simulaator</a><a href="#mask">3. Afiinsusmask</a><a href="#hybriid">4. P- või E-tuum?</a><a href="#numa">5. NUMA ja VM</a><a href="#vale">6. Vale jagamine</a></div>
 
 <!-- 1 -->
@@ -134,7 +134,7 @@ svg text{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
   <div class="row" style="margin-top:4px"><span><button class="btn" id="mall">Kõik</button> <button class="btn" id="mnone">Ainult LP 0</button> <button class="btn" id="mp">Ainult P-tuumad</button> <button class="btn" id="me">Ainult E-tuumad</button></span><span>Või sisesta arv: <input type="number" id="mdec" min="1" max="255" value="255" style="width:80px"></span></div>
   <div class="kpis"><div>Kahendkujul (LP 7 … LP 0)<b id="mbin">11111111</b></div><div>Kümnendkujul<b id="mdv">255</b></div><div>Kuueteistkümnendkujul<b id="mhex">0xFF</b></div></div>
   <div class="info" id="minfo"></div>
-  <p class="hint">Näiteprotsessor nagu peatüki joonisel: LP 0–3 on kahe SMT-ga (ingl <i>Simultaneous Multithreading</i>) P-tuuma loogilised protsessorid, LP 4–7 neli E-tuuma.</p>
+  <p class="hint">Näiteprotsessor nagu peatüki joonisel: LP 0–3 on kahe SMT-ga (<i>Simultaneous Multithreading</i>) P-tuuma loogilised protsessorid, LP 4–7 neli E-tuuma.</p>
 </div>
 </section>
 
@@ -153,10 +153,10 @@ svg text{fill:var(--muted);font-size:11px;font-family:system-ui,sans-serif}
 <h2>5. Kas virtuaalmasin mahub ühte NUMA-sõlme?</h2>
 <p>Sisesta hosti ja virtuaalmasina andmed. Sõlme mahtuvust hinnatakse <b>füüsiliste tuumade</b> järgi (SMT loogilised protsessorid ei ole täisväärtuslikud tuumad) ja sõlme mälu järgi.</p>
 <div class="card">
-  <div class="row" style="margin-top:0"><span>Näide: <select id="npre"><option value="ch">Peatüki näide (SQL VM 24 vCPU / 384 GB)</option><option value="ok">Hea VM (16 vCPU / 192 GB)</option><option value="mem">Liiga palju mälu (8 vCPU / 300 GB)</option><option value="small">Väike server (1 pesa)</option></select></span></div>
+  <div class="row" style="margin-top:0"><span>Näide: <select id="npre"><option value="ch">Peatüki näide (SQL VM 24 vCPU / 384 GB)</option><option value="ok">Hea VM (16 vCPU / 192 GB)</option><option value="mem">Liiga palju mälu (8 vCPU / 300 GB)</option><option value="small">Väike server (1 pesa)</option></select></span><small style="display:block;margin-top:4px;opacity:.8">SQL – <i>Structured Query Language</i> (SQL Server on Microsofti andmebaasiserver).</small></div>
   <table class="t" style="margin-top:8px"><tbody>
   <tr><td>Host: pesi (= NUMA-sõlmi)</td><td><input type="number" id="nsock" min="1" max="8"></td><td>Tuumi pesa kohta</td><td><input type="number" id="ncore" min="1" max="128"></td></tr>
-  <tr><td>RAM (ingl <i>Random-Access Memory</i>) sõlme kohta (GB)</td><td><input type="number" id="nram" min="1" max="4096" style="width:80px"></td><td>VM (ingl <i>Virtual Machine</i>) vCPU-sid (vCPU – ingl <i>virtual CPU</i>)</td><td><input type="number" id="vcpu" min="1" max="512"></td></tr>
+  <tr><td>RAM (<i>Random-Access Memory</i>) sõlme kohta (GB)</td><td><input type="number" id="nram" min="1" max="4096" style="width:80px"></td><td>VM (<i>Virtual Machine</i>) vCPU-sid (vCPU – <i>virtual CPU</i>; CPU – <i>Central Processing Unit</i>)</td><td><input type="number" id="vcpu" min="1" max="512"></td></tr>
   <tr><td>VM RAM (GB)</td><td><input type="number" id="vram" min="1" max="8192" style="width:80px"></td><td></td><td></td></tr>
   </tbody></table>
   <div class="nodes" id="nodes"></div>
@@ -277,14 +277,14 @@ drawM();
 
 /* 4. Hübriid */
 const TASKS=[
- ['Teamsi videokõne aktiivses aknas','P','Esiplaanil olev interaktiivne töö saab kõrge QoS-i. Hangumine oleks kohe näha ja kuulda, seega läheb see P-tuumale (tausta hägustamine võib minna NPU-le).'],
- ['OneDrive sünkroonib taustal faile','E','Taustal töötav sünkroonimine saab madala QoS-i või EcoQoS-i. Pole oluline, kas see lõpeb sekund varem – E-tuum säästab akut.'],
- ['Mäng täisekraanil','P','Mäng vajab maksimaalset jõudlust ja ühtlast kaadrisagedust. Mängud võivad ka CPU Sets API-ga tuumi enda jaoks reserveerida.'],
+ ['Teamsi videokõne aktiivses aknas','P','Esiplaanil olev interaktiivne töö saab kõrge QoS-i (<i>Quality of Service</i>). Hangumine oleks kohe näha ja kuulda, seega läheb see P-tuumale (tausta hägustamine võib minna NPU-le (<i>Neural Processing Unit</i>)).'],
+ ['OneDrive sünkroonib taustal faile','E','Taustal töötav sünkroonimine saab madala QoS-i või EcoQoS-i (<i>Ecological Quality of Service</i>). Pole oluline, kas see lõpeb sekund varem – E-tuum säästab akut.'],
+ ['Mäng täisekraanil','P','Mäng vajab maksimaalset jõudlust ja ühtlast kaadrisagedust. Mängud võivad ka CPU Sets API-ga (<i>Application Programming Interface</i>) tuumi enda jaoks reserveerida.'],
  ['Windows Update laadib uuendusi alla','E','Uuenduste allalaadimine ja ettevalmistus on tüüpiline taustatöö (EcoQoS).'],
  ['Visual Studio kompileerib projekti (aken on aktiivne)','P','Kasutaja ootab tulemust. Aktiivse akna töö saab kõrge QoS-i ja kasutab P-tuumi (kompileerimine kasutab vabu E-tuumi lisaks).'],
  ['Windowsi otsing indekseerib faile','E','Indekseerimine on taustatöö, mida keegi ei oota – sobib E-tuumale ja peatub, kui kasutaja on aktiivne.'],
  ['Brauseri vaheleht, mis on minimeeritud aknas','E','Minimeeritud akna ja taustal oleva vahelehe lõimed saavad madalama QoS-i. Edge ja Chrome kasutavad selleks ise EcoQoS-i.'],
- ['Kasutaja kerib PDF-dokumenti','P','Kerimine peab olema sujuv – see on esiplaanil kasutaja tegevus, mis saab kõrge QoS-i.']];
+ ['Kasutaja kerib PDF-dokumenti (PDF – <i>Portable Document Format</i>)','P','Kerimine peab olema sujuv – see on esiplaanil kasutaja tegevus, mis saab kõrge QoS-i.']];
 let hans={};
 function drawH(){
   $('tasks').innerHTML=TASKS.map(([n,c,e],i)=>{const a=hans[i];return `<div class="task${a?(a===c?' ok':' bad'):''}"><span>${n}</span><span><button class="btn${a==='P'?' on':''}" data-i="${i}" data-v="P" ${a?'disabled':''}>P-tuum</button> <button class="btn${a==='E'?' on':''}" data-i="${i}" data-v="E" ${a?'disabled':''}>E-tuum</button></span>${a?`<div class="ex"><b>${a===c?'Õige.':'Mitte päris – õige on '+c+'-tuum.'}</b> ${e}</div>`:''}</div>`}).join('');
@@ -309,7 +309,7 @@ function drawN(){
   const sugV=Math.min(V,Cn),sugM=Math.min(M,Math.floor(Rn*0.75));
   $('ninfo').innerHTML=tot?`VM vajab ${need} sõlme, kuid hostil on ainult ${S}. Selline VM ei mahu sellele hostile (või konkureerib iga tuuma pärast teiste VM-idega).`:
    need===1?`<b>VM mahub ühte NUMA-sõlme.</b> Kõik vCPU-d ja kogu mälu saavad olla samas sõlmes, nii et iga mälupöördumine on kohalik. Jäta sõlme veidi mälu ka hostile ja teistele VM-idele.`:
-   `<b>VM ei mahu ühte sõlme</b> – see jaotub ${need} sõlme vahele (`+(needC>1&&needM>1?'liiga palju nii vCPU-sid kui ka mälu':needC>1?'liiga palju vCPU-sid':'liiga palju mälu, kuigi vCPU-sid on vähe')+`). Hüperviisor peab andma külalisele õige <b>vNUMA</b>-topoloogia (${need} virtuaalset sõlme), muidu teeb osa pöördumisi aeglasemat kaugpöördumist. Kui võimalik, vähenda VM-i: nt <b>${sugV} vCPU ja ${sugM} GB</b> mahuks ühte sõlme.`;
+   `<b>VM ei mahu ühte sõlme</b> – see jaotub ${need} sõlme vahele (`+(needC>1&&needM>1?'liiga palju nii vCPU-sid kui ka mälu':needC>1?'liiga palju vCPU-sid':'liiga palju mälu, kuigi vCPU-sid on vähe')+`). Hüperviisor peab andma külalisele õige <b>vNUMA (<i>virtual NUMA</i>)</b>-topoloogia (${need} virtuaalset sõlme), muidu teeb osa pöördumisi aeglasemat kaugpöördumist. Kui võimalik, vähenda VM-i: nt <b>${sugV} vCPU ja ${sugM} GB</b> mahuks ühte sõlme.`;
 }
 ['nsock','ncore','nram','vcpu','vram'].forEach(id=>$(id).oninput=drawN);
 $('npre').onchange=()=>setN($('npre').value);setN('ch');
