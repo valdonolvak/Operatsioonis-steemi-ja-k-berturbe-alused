@@ -161,8 +161,8 @@ a{color:var(--accent)}
 <h2>Sammud</h2>
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Null-usaldus: iga päring kontrollitakse</strong><span>Vanas mudelis oli sisevõrk „turvaline“ ja kes oli sees, sai kõigele ligi. Null-usalduses ei usaldata ühtegi kasutajat, seadet ega võrku ainult asukoha tõttu. Iga päringu juures hindab poliitika nelja signaali ja otsustab uuesti.</span></span></button></li>
-<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>A: kooli hallatud sülearvuti</strong><span>Õpetaja Mari logib sisse Windows Helloga (PIN ja TPM-is hoitav võti) kooli hallatud sülearvutist, mis on krüpteeritud ja uuendatud. Kõik signaalid on korras ja ta saab täieliku ligipääsu. Õigused on siiski ainult need, mida tema töö nõuab.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>B: isiklik tahvelarvuti kodus</strong><span>Sama kasutaja ja õige MFA, kuid seade on isiklik. Kool ei tea, kas see on krüpteeritud, uuendatud või nakatunud. Poliitika lubab ainult veebiversiooni ja keelab allalaadimise, et andmed ei jääks haldamata seadmesse.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>A: kooli hallatud sülearvuti</strong><span>Õpetaja Mari logib sisse Windows Helloga (PIN (<i>Personal Identification Number</i>) ja TPM-is (<i>Trusted Platform Module</i>) hoitav võti) kooli hallatud sülearvutist, mis on krüpteeritud ja uuendatud. Kõik signaalid on korras ja ta saab täieliku ligipääsu. Õigused on siiski ainult need, mida tema töö nõuab.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>B: isiklik tahvelarvuti kodus</strong><span>Sama kasutaja ja õige MFA (<i>Multi-Factor Authentication</i>), kuid seade on isiklik. Kool ei tea, kas see on krüpteeritud, uuendatud või nakatunud. Poliitika lubab ainult veebiversiooni ja keelab allalaadimise, et andmed ei jääks haldamata seadmesse.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>C: õige parool, aga kõik muu on vale</strong><span>Keegi kasutab Mari <em>õiget</em> parooli (lekkinud õngitsuslehel), kuid tundmatust riigist ja uuendamata seadmest. Kolm signaali neljast on punased. Ligipääs keelatakse ja Marit palutakse parool vahetada. Vanas mudelis oleks õigest paroolist piisanud.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>D: seanss varastatakse keset tööd</strong><span>Mari seanss stsenaariumist A kehtib. Pahavara varastab seansiküpsise ja ründaja kasutab seda teisest riigist. Kuna poliitika hindab signaale <em>pidevalt</em>, mitte ainult sisselogimisel, märkab see võimatut reisi ja teist seadet ning tühistab seansi.</span></span></button></li>
 </ol>
@@ -172,15 +172,15 @@ a{color:var(--accent)}
 <div class="tablewrap"><table>
 <tr><th>Põhimõte</th><th>Mida see tähendab</th><th>Windowsi ja Microsofti vahendid</th></tr>
 <tr><td><strong>Kontrolli selgesõnaliselt</strong></td><td>iga päring autenditakse ja autoriseeritakse kõigi signaalide põhjal</td><td>Windows Hello, pääsuvõtmed, Entra tingimuslik juurdepääs</td></tr>
-<tr><td><strong>Vähimad õigused</strong></td><td>õigused ainult vajalikus ulatuses ja vajalikuks ajaks</td><td>tavakasutaja konto, administraatori kaitse, JIT-ligipääs, LAPS</td></tr>
-<tr><td><strong>Eelda rünnet</strong></td><td>käitu nii, nagu ründaja oleks juba sees: segmenteeri, krüpteeri, logi, hinda seansse pidevalt</td><td>BitLocker, VBS, Defender, logide edastus, seansi pidev hindamine</td></tr>
+<tr><td><strong>Vähimad õigused</strong></td><td>õigused ainult vajalikus ulatuses ja vajalikuks ajaks</td><td>tavakasutaja konto, administraatori kaitse, JIT-ligipääs (JIT – <i>Just-In-Time</i>), LAPS (<i>Local Administrator Password Solution</i>)</td></tr>
+<tr><td><strong>Eelda rünnet</strong></td><td>käitu nii, nagu ründaja oleks juba sees: segmenteeri, krüpteeri, logi, hinda seansse pidevalt</td><td>BitLocker, VBS (<i>Virtualization-Based Security</i>), Defender, logide edastus, seansi pidev hindamine</td></tr>
 </table></div>
 <h2>Kust signaalid tulevad</h2>
 <div class="tablewrap"><table>
 <tr><th>Signaal</th><th>Allikas</th></tr>
-<tr><td>Identiteet</td><td>autentimisviis: parool, MFA, Windows Hello, FIDO2-võti</td></tr>
-<tr><td>Seade</td><td>TPM tõendab seadme identiteeti; Secure Boot ja kaugkinnitus tõendavad, et alglaadimine oli puhas; Intune kontrollib krüpteerimist, uuendusi ja viirusetõrjet</td></tr>
-<tr><td>Asukoht</td><td>IP-aadress, riik, tuntud võrgud</td></tr>
+<tr><td>Identiteet</td><td>autentimisviis: parool, MFA (<i>Multi-Factor Authentication</i>), Windows Hello, FIDO2-võti (FIDO – <i>Fast Identity Online</i>)</td></tr>
+<tr><td>Seade</td><td>TPM (<i>Trusted Platform Module</i>) tõendab seadme identiteeti; Secure Boot ja kaugkinnitus tõendavad, et alglaadimine oli puhas; Intune kontrollib krüpteerimist, uuendusi ja viirusetõrjet</td></tr>
+<tr><td>Asukoht</td><td>IP-aadress (IP – <i>Internet Protocol</i>), riik, tuntud võrgud</td></tr>
 <tr><td>Risk</td><td>ebatavaline käitumine: võimatu reis, lekkinud parool, anonüümne võrk</td></tr>
 </table></div>
 </section>

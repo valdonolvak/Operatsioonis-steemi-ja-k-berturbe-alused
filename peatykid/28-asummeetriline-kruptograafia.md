@@ -7,10 +7,10 @@ Asümmeetrilises ehk **avaliku võtme krüptograafias** on igal osapoolel **võt
 **Pärast peatüki läbimist õppija:**
 
 - selgitab, millist võtit kasutatakse krüpteerimisel, dekrüpteerimisel, allkirjastamisel ja kontrollimisel;
-- arvutab moodularitmeetikas lihtsaid tehteid ning teeb Diffie–Hellmani võtmevahetuse ja RSA (ingl *Rivest–Shamir–Adleman*) väikeste arvudega läbi;
+- arvutab moodularitmeetikas lihtsaid tehteid ning teeb Diffie–Hellmani võtmevahetuse ja RSA (*Rivest–Shamir–Adleman*) väikeste arvudega läbi;
 - selgitab, miks Diffie–Hellman vajab autentimist ja mida tähendab edasine salastatus;
 - võrdleb RSA-d ja elliptkõverkrüptograafiat ning valib sobiva võtmepikkuse;
-- kasutab OpenSSL-i, SSH-d (ingl *Secure Shell*) ja GPG-d (ingl *GNU Privacy Guard*) võtmepaaride loomiseks ja kasutamiseks.
+- kasutab OpenSSL-i, SSH-d (*Secure Shell*) ja GPG-d (*GNU Privacy Guard*) võtmepaaride loomiseks ja kasutamiseks.
 
 ### 28.1 Võtmepaar
 
@@ -37,8 +37,8 @@ Asümmeetriline krüptograafia arvutab **moodularitmeetikas** ehk „kellaaritme
 | --- | --- | --- |
 | RSA | suure arvu tegurdamine algarvudeks | krüpteerimine, allkiri, vanemad sertifikaadid |
 | Diffie–Hellman (DH) | diskreetne logaritm | võtmevahetus |
-| ECC (ingl *Elliptic Curve Cryptography*): ECDH (ingl *Elliptic Curve Diffie–Hellman*), ECDSA (ingl *Elliptic Curve Digital Signature Algorithm*), X25519, Ed25519 | diskreetne logaritm elliptkõveral | võtmevahetus, allkiri; ID-kaart (ID – ingl *identity card*), TLS (ingl *Transport Layer Security*), SSH |
-| ML-KEM (ingl *Module-Lattice-Based Key-Encapsulation Mechanism*), ML-DSA (ingl *Module-Lattice-Based Digital Signature Algorithm*) | võreprobleemid (lattice) | postkvantkrüptograafia (ptk 30) |
+| ECC (*Elliptic Curve Cryptography*): ECDH (*Elliptic Curve Diffie–Hellman*), ECDSA (*Elliptic Curve Digital Signature Algorithm*), X25519, Ed25519 | diskreetne logaritm elliptkõveral | võtmevahetus, allkiri; ID-kaart (ID – *identity card*), TLS (*Transport Layer Security*), SSH |
+| ML-KEM (*Module-Lattice-Based Key-Encapsulation Mechanism*), ML-DSA (*Module-Lattice-Based Digital Signature Algorithm*) | võreprobleemid (lattice) | postkvantkrüptograafia (ptk 30) |
 
 #### Kuidas moodularitmeetikat käsitsi arvutada
 
@@ -91,12 +91,12 @@ Mõlemad said 2, sest (gᵃ)ᵇ = (gᵇ)ᵃ = gᵃᵇ mod p. Pealtkuulaja teab p
 
 Kaks olulist täpsustust:
 
-- **Diffie–Hellman üksi ei autendi.** Kui Mari ei tea, et sai väärtuse B just Jaanilt, võib ründaja Eve teha mõlemaga eraldi võtmevahetuse: Mariga saladuse s₁ ja Jaaniga saladuse s₂. Seejärel dekrüpteerib ta iga Mari sõnumi, loeb seda ja krüpteerib uuesti Jaanile (MITM – ingl *Man-in-the-Middle*, ptk 24.7). Seepärast allkirjastab TLS-server oma võtmevahetuse sertifikaadiga ja SSH-klient kontrollib serveri võtme sõrmejälge.
-- **Ajutised võtmed (ephemeral DH, ECDHE – ingl *Elliptic Curve Diffie–Hellman Ephemeral*)** luuakse iga ühenduse jaoks uuesti ja kustutatakse pärast seda. See annab **edasise salastatuse** (forward secrecy): kui serveri privaatvõti hiljem lekib, ei saa varem salvestatud liiklust dekrüpteerida, sest seansivõtmeid pole enam kusagil. Vanemas TLS-is, kus seansivõti krüpteeriti otse serveri RSA-võtmega, võis aastaid salvestatud liiklust hiljem lugeda. TLS 1.3 kasutab ainult ajutisi võtmevahetusi.
+- **Diffie–Hellman üksi ei autendi.** Kui Mari ei tea, et sai väärtuse B just Jaanilt, võib ründaja Eve teha mõlemaga eraldi võtmevahetuse: Mariga saladuse s₁ ja Jaaniga saladuse s₂. Seejärel dekrüpteerib ta iga Mari sõnumi, loeb seda ja krüpteerib uuesti Jaanile (MITM – *Man-in-the-Middle*, ptk 24.7). Seepärast allkirjastab TLS-server oma võtmevahetuse sertifikaadiga ja SSH-klient kontrollib serveri võtme sõrmejälge.
+- **Ajutised võtmed (ephemeral DH, ECDHE – *Elliptic Curve Diffie–Hellman Ephemeral*)** luuakse iga ühenduse jaoks uuesti ja kustutatakse pärast seda. See annab **edasise salastatuse** (forward secrecy): kui serveri privaatvõti hiljem lekib, ei saa varem salvestatud liiklust dekrüpteerida, sest seansivõtmeid pole enam kusagil. Vanemas TLS-is, kus seansivõti krüpteeriti otse serveri RSA-võtmega, võis aastaid salvestatud liiklust hiljem lugeda. TLS 1.3 kasutab ainult ajutisi võtmevahetusi.
 
 ### 28.3 RSA
 
-**RSA** (Rivest, Shamir, Adleman, 1977) on esimene praktiline avaliku võtme algoritm, millega saab nii krüpteerida kui ka allkirjastada.
+**RSA** (*Rivest, Shamir, Adleman*, 1977) on esimene praktiline avaliku võtme algoritm, millega saab nii krüpteerida kui ka allkirjastada.
 
 ![RSA · väikeste arvudega näide](../pildid/28-c.png)
 
@@ -144,7 +144,7 @@ Dekrüpteerimine 2790²⁷⁵³ mod 3233 käib samamoodi: 2753 = 2048 + 512 + 12
 
 **Miks see turvaline on?** Kes teab p-d ja q-d, saab arvutada φ ja sellest d. Ründaja teab ainult n-i ja peab selle teguriteks lahutama. 3233 puhul on see lihtne, kuid 2048-bitine n on 617 kümnendkohta pikk. Suurim avalikult tegurdatud RSA-arv on 829-bitine RSA-250 (2020), mille jaoks kulus umbes 2700 protsessoriaastat. 2048-bitise arvu tegurdamine on klassikaliste arvutitega miljardeid kordi raskem. Päris RSA-s on n vähemalt 2048, soovitatavalt 3072 bitti.
 
-Päris RSA-s ei krüpteerita kunagi sõnumit otse („textbook RSA“). Ilma täidiseta annab sama sõnum alati sama šifriteksti, nii et ründaja saab võimalikke sõnumeid (nt „jah“ ja „ei“) ise avaliku võtmega krüpteerida ja võrrelda. Seepärast lisatakse enne juhuslik täidis: **OAEP** (ingl *Optimal Asymmetric Encryption Padding*) krüpteerimisel ja **PSS** (ingl *Probabilistic Signature Scheme*) allkirjal. Vana täidis PKCS#1 (PKCS – ingl *Public-Key Cryptography Standards*) v1.5 on haavatav oraaklirünnakutele (Bleichenbacheri rünne 1998, ROBOT (ingl *Return Of Bleichenbacher’s Oracle Threat*) 2017).
+Päris RSA-s ei krüpteerita kunagi sõnumit otse („textbook RSA“). Ilma täidiseta annab sama sõnum alati sama šifriteksti, nii et ründaja saab võimalikke sõnumeid (nt „jah“ ja „ei“) ise avaliku võtmega krüpteerida ja võrrelda. Seepärast lisatakse enne juhuslik täidis: **OAEP** (*Optimal Asymmetric Encryption Padding*) krüpteerimisel ja **PSS** (*Probabilistic Signature Scheme*) allkirjal. Vana täidis PKCS#1 (PKCS – *Public-Key Cryptography Standards*) v1.5 on haavatav oraaklirünnakutele (Bleichenbacheri rünne 1998, ROBOT (*Return Of Bleichenbacher’s Oracle Threat*) 2017).
 
 ### 28.4 Elliptkõverad ja võtmepikkused
 
@@ -156,12 +156,12 @@ Päris RSA-s ei krüpteerita kunagi sõnumit otse („textbook RSA“). Ilma tä
 
 Kuna parim rünne ECC vastu on palju aeglasem kui parim tegurdamismeetod RSA vastu, piisab sama turvalisuse jaoks palju lühemast võtmest. 256-bitine ECC-võti on sama tugev kui 3072-bitine RSA-võti. Lühem võti tähendab kiiremat arvutust, väiksemaid sertifikaate ja väiksemat energiakulu – seetõttu sobib ECC kiipkaartidele ja telefonidele.
 
-Eesti ID-kaart kasutab alates 2018. aastast elliptkõvervõtmeid (P-384), sest varasemate kaartide RSA-võtmete genereerimises leiti 2017. aastal viga (ROCA – ingl *Return of Coppersmith’s Attack*), mille tõttu sai avalikust võtmest privaatvõtme arvutada. Kiibi võtmegeneraator valis algarve liiga kitsast ja ennustatavast hulgast. Ligi 750 000 kaarti tuli uuendada kaugteel.
+Eesti ID-kaart kasutab alates 2018. aastast elliptkõvervõtmeid (P-384), sest varasemate kaartide RSA-võtmete genereerimises leiti 2017. aastal viga (ROCA – *Return of Coppersmith’s Attack*), mille tõttu sai avalikust võtmest privaatvõtme arvutada. Kiibi võtmegeneraator valis algarve liiga kitsast ja ennustatavast hulgast. Ligi 750 000 kaarti tuli uuendada kaugteel.
 
 | Turvatase | Sümmeetriline | RSA, DH | ECC |
 | --- | --- | --- | --- |
 | 112 bitti (kuni 2030) | 3DES | 2048 bitti | 224 bitti |
-| 128 bitti | AES-128 (AES – ingl *Advanced Encryption Standard*) | 3072 bitti | 256 bitti (P-256, X25519) |
+| 128 bitti | AES-128 (AES – *Advanced Encryption Standard*) | 3072 bitti | 256 bitti (P-256, X25519) |
 | 192 bitti | AES-192 | 7680 bitti | 384 bitti (P-384) |
 | 256 bitti | AES-256 | 15 360 bitti | 521 bitti (P-521) |
 
@@ -176,18 +176,18 @@ Joonis: asümmeetriline krüptograafia on sadu kuni tuhandeid kordi aeglasem kui
 Lisaks kiirusele on teinegi põhjus: RSA-ga saab ühe korraga krüpteerida vähem andmeid, kui on mooduli pikkus (3072-bitise võtmega ja OAEP-täidisega umbes 300 baiti). Kui Mari saadab Jaanile 10 MB faili, juhtub see nii:
 
 1. Mari programm loob juhusliku 256-bitise AES-võtme.
-2. Fail krüpteeritakse AES-GCM-iga (GCM – ingl *Galois/Counter Mode*) selle võtmega.
+2. Fail krüpteeritakse AES-GCM-iga (GCM – *Galois/Counter Mode*) selle võtmega.
 3. AES-võti (32 baiti) krüpteeritakse Jaani avaliku võtmega.
 4. Jaanile saadetakse krüpteeritud fail ja krüpteeritud võti.
 5. Jaan dekrüpteerib oma privaatvõtmega AES-võtme ja sellega faili.
 
-Kui fail on vaja saata kolmele inimesele, krüpteeritakse sama AES-võti kolm korda – iga saaja avaliku võtmega – ja fail ise ainult üks kord. Nii töötavad GPG, S/MIME-e-kiri (ingl *Secure/Multipurpose Internet Mail Extensions*), Eesti DigiDoc-i krüpteeritud konteiner (CDOC) ja EFS (ingl *Encrypting File System*). TLS-is ja SSH-s saadakse seansivõti võtme krüpteerimise asemel Diffie–Hellmani võtmevahetusest.
+Kui fail on vaja saata kolmele inimesele, krüpteeritakse sama AES-võti kolm korda – iga saaja avaliku võtmega – ja fail ise ainult üks kord. Nii töötavad GPG, S/MIME-e-kiri (*Secure/Multipurpose Internet Mail Extensions*), Eesti DigiDoc-i krüpteeritud konteiner (CDOC) ja EFS (*Encrypting File System*). TLS-is ja SSH-s saadakse seansivõti võtme krüpteerimise asemel Diffie–Hellmani võtmevahetusest.
 
 ### 28.6 Asümmeetriline krüptograafia igapäevas
 
 | Kus | Mida tehakse | Algoritm |
 | --- | --- | --- |
-| HTTPS (ingl *Hypertext Transfer Protocol Secure*; TLS 1.3) | võtmevahetus, serveri allkiri | X25519 / ML-KEM, ECDSA või RSA |
+| HTTPS (*Hypertext Transfer Protocol Secure*; TLS 1.3) | võtmevahetus, serveri allkiri | X25519 / ML-KEM, ECDSA või RSA |
 | SSH | võtmevahetus, serveri ja kasutaja autentimine | X25519 / ML-KEM, Ed25519 |
 | ID-kaart, Smart-ID | autentimine, digiallkiri | ECDSA P-384 |
 | WhatsApp, Signal | otsast-otsani krüpteerimine | X25519 + ML-KEM |
@@ -235,12 +235,12 @@ Kui klient ühendub serveriga esimest korda, näitab ta hoiatust `The authentici
 
 1. Millise võtmega krüpteeritakse sõnum, mida ainult Jaan peab lugema saama? a) Jaani avaliku võtmega b) Jaani privaatvõtmega c) saatja privaatvõtmega d) ühise AES-võtmega, mis saadetakse e-postiga
 2. Mis on Diffie–Hellmani võtmevahetuse tulemus? a) mõlemad saavad teineteise privaatvõtme b) avalik võti krüpteeritakse c) mõlemad arvutavad sama jagatud saladuse, ilma et see võrgus liiguks d) parool salvestatakse serverisse
-3. Millele põhineb RSA turvalisus? a) räsi kokkupõrgetele b) XOR-tehtele c) elliptkõveratele d) suurte arvude tegurdamise raskusele
+3. Millele põhineb RSA turvalisus? a) räsi kokkupõrgetele b) XOR-tehtele (XOR – *Exclusive OR*) c) elliptkõveratele d) suurte arvude tegurdamise raskusele
 4. Miks kasutatakse praktikas hübriidkrüpteerimist? a) asümmeetriline krüptograafia on kiirem b) asümmeetriline on aeglane, seepärast vahetatakse sellega ainult sümmeetriline seansivõti c) sümmeetriline ei vaja võtit d) see on seadusega kohustuslik
 
 ### Praktiline ülesanne
 
-**Võtmepaarid WSL-is.** Ava WSL Ubuntu: `sudo apt install -y openssl openssh-client gnupg python3`.
+**Võtmepaarid WSL-is (*Windows Subsystem for Linux*).** Ava WSL Ubuntu: `sudo apt install -y openssl openssh-client gnupg python3`.
 
 1. Diffie–Hellman väikeste arvudega Pythonis (kontrolli joonise arvutust ja proovi oma arvudega):
 

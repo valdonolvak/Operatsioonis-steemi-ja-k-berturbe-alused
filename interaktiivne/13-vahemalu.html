@@ -115,7 +115,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/13-vahemalu.md">← Peatükk 13</a> · <a href="13-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Vahemälu – õpileht</h1>
-<p>Vahemälu hoiab lähedal koopiat andmetest, mida tõenäoliselt varsti uuesti vaja läheb. Sellel lehel näed mälutasemete kiiruste erinevust, arvutad keskmise pöördumisaja, võrdled massiivi läbimise viise, proovid kirjutusviise, failide vahemälu ja ettelugemist ning DNS-i (ingl <i>Domain Name System</i>) vahemälu TTL-i (ingl <i>Time To Live</i>).</p>
+<p>Vahemälu hoiab lähedal koopiat andmetest, mida tõenäoliselt varsti uuesti vaja läheb. Sellel lehel näed mälutasemete kiiruste erinevust, arvutad keskmise pöördumisaja, võrdled massiivi läbimise viise, proovid kirjutusviise, failide vahemälu ja ettelugemist ning DNS-i (<i>Domain Name System</i>) vahemälu TTL-i (<i>Time To Live</i>).</p>
 <div class="toc"><a href="#hierarhia">1. Hierarhia ja keskmine aeg</a><a href="#lokaalsus">2. Lokaalsus</a><a href="#kirjutus">3. Läbi- või tagasikirjutus</a><a href="#ettelugemine">4. Failide vahemälu</a><a href="#dns">5. DNS ja TTL</a><a href="#valik">6. Milline kirjutusviis?</a></div>
 
 <!-- 1 -->
@@ -127,7 +127,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <h3 style="margin-top:1.2rem">Keskmise pöördumisaja kalkulaator</h3>
   <div class="slider"><label for="h1">L1 tabamusmäär</label><input type="range" id="h1" min="0" max="100" value="95"><b id="h1v" class="mono"></b></div>
   <div class="slider"><label for="h2">L2 tabamusmäär (L1 möödalaskudest)</label><input type="range" id="h2" min="0" max="100" value="80"><b id="h2v" class="mono"></b></div>
-  <div class="slider"><label for="hr">RAM-i pöördumisaeg</label><input type="range" id="hr" min="50" max="150" step="10" value="100"><b id="hrv" class="mono"></b></div>
+  <div class="slider"><label for="hr">RAM-i (<i>Random-Access Memory</i>) pöördumisaeg</label><input type="range" id="hr" min="50" max="150" step="10" value="100"><b id="hrv" class="mono"></b></div>
   <div class="row" style="margin-top:4px"><label class="tg"><input type="checkbox" id="hl2" checked> <span>L2-vahemälu on olemas (4 ns)</span></label></div>
   <div class="kpis" id="hkpi"></div>
   <div class="info" id="hinfo"></div>
@@ -141,7 +141,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div class="card">
   <div class="row" style="margin-top:0"><span><button class="btn" data-o="row">Ridade kaupa: m[r, c]</button> <button class="btn" data-o="col">Veergude kaupa: m[c, r]</button></span><span>Vahemälu: <select id="lcap"><option value="4">4 rida</option><option value="8">8 rida</option></select></span></div>
   <div class="arr" id="larr" style="margin-top:10px"></div>
-  <div class="hint" style="margin-top:6px">Vahemälus olevad read (LRU – ingl <i>Least Recently Used</i>, vasakul kõige värskem):</div>
+  <div class="hint" style="margin-top:6px">Vahemälus olevad read (LRU – <i>Least Recently Used</i>, vasakul kõige värskem):</div>
   <div class="cl" id="lcache"></div>
   <div class="row"><span><button class="btn primary" id="lrun">▶ Käivita</button> <button class="btn" id="lstep">Üks samm</button> <button class="btn" id="lreset">Lähtesta</button></span><span class="hint" id="lprog"></span></div>
   <div class="kpis" id="lkpi"></div>
@@ -152,7 +152,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <!-- 3 -->
 <section id="kirjutus">
 <h2>3. Läbikirjutus või tagasikirjutus?</h2>
-<p>Failis on neli plokki A–D. Vajuta plokil „Salvesta“ – ploki versioon suureneb. Vaata, millal jõuab muudatus kettale ja mis juhtub voolukatkestusel. Ketta kirjutus võtab selles mudelis 5 ms, RAM-i (ingl <i>Random-Access Memory</i>) kirjutus on peaaegu hetkeline.</p>
+<p>Failis on neli plokki A–D. Vajuta plokil „Salvesta“ – ploki versioon suureneb. Vaata, millal jõuab muudatus kettale ja mis juhtub voolukatkestusel. Ketta kirjutus võtab selles mudelis 5 ms, RAM-i (<i>Random-Access Memory</i>) kirjutus on peaaegu hetkeline.</p>
 <div class="card">
   <div class="row" style="margin-top:0"><span><button class="btn" data-w="wb">Tagasikirjutus (write-back)</button> <button class="btn" data-w="wt">Läbikirjutus (write-through)</button></span><button class="btn" id="wreset">Algseis</button></div>
   <div class="row"><span id="wbtns"></span></div>
@@ -172,7 +172,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <h2>4. Failide vahemälu ja ettelugemine</h2>
 <p>Fail koosneb 24 plokist. Rakendus loeb neid ükshaaval. Kui plokk on vahemälus (roheline), saab rakendus selle kohe; kui ei ole, peab ta ootama ketast (punane). Ettelugemine loeb järjestikuse lugemise märkamisel järgmised plokid taustal ette (sinine).</p>
 <div class="card">
-  <div class="row" style="margin-top:0"><label class="tg"><input type="checkbox" id="rahead" checked> <span>Ettelugemine sees</span></label><span><select id="rdisk"><option value="5">HDD (5 ms ploki kohta)</option><option value="0.1">NVMe-SSD (0,1 ms)</option><option value="30">Võrguketas üle VPN-i (30 ms)</option></select></span></div>
+  <div class="row" style="margin-top:0"><label class="tg"><input type="checkbox" id="rahead" checked> <span>Ettelugemine sees</span></label><span><select id="rdisk"><option value="5">HDD (5 ms ploki kohta)</option><option value="0.1">NVMe-SSD (0,1 ms)</option><option value="30">Võrguketas üle VPN-i (30 ms)</option></select></span><small style="display:block;margin-top:4px;opacity:.8">VPN – <i>Virtual Private Network</i>.</small></div>
   <div class="file" id="rfile"></div>
   <div class="row"><span><button class="btn primary" id="rseq">▶ Loe fail järjest</button> <button class="btn" id="rrand">Loe 8 juhuslikku plokki</button> <button class="btn" id="rboot">↻ Taaskäivita (vahemälu tühjaks)</button></span></div>
   <div class="kpis" id="rkpi"></div>
@@ -191,7 +191,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <div class="dbox"><b>Õpilase arvuti vahemälu</b><b class="ip" id="dcache"></b><span class="hint" id="dcachen"></span><div class="ttlbar"><div id="dttlbar"></div></div></div>
     <div class="dbox"><b>Aeg</b><b class="ip" id="dtime"></b><span class="hint">simulatsiooni algusest</span></div>
   </div>
-  <div class="row"><span><button class="btn primary" id="dask">🌐 Õpilane avab www.kool.ee</button> <button class="btn" id="dchange">🛠 Admin muudab IP uueks</button> <button class="btn" id="d1">+1 min</button> <button class="btn" id="d10">+10 min</button> <button class="btn" id="dflush">ipconfig /flushdns</button></span></div>
+  <div class="row"><span><button class="btn primary" id="dask">🌐 Õpilane avab www.kool.ee</button> <button class="btn" id="dchange">🛠 Admin muudab IP (<i>Internet Protocol</i>) uueks</button> <button class="btn" id="d1">+1 min</button> <button class="btn" id="d10">+10 min</button> <button class="btn" id="dflush">ipconfig /flushdns</button></span></div>
   <div class="info" id="dinfo"></div>
   <div class="log" id="dlog"></div>
 </div>
@@ -216,7 +216,7 @@ const $=id=>document.getElementById(id);
 const fmt=(x,d=1)=>x.toLocaleString('et-EE',{maximumFractionDigits:d});
 
 /* 1. Hierarhia */
-const LV=[['L1-vahemälu',1],['L2-vahemälu',4],['L3-vahemälu',15],['RAM',100],['NVMe-SSD',75000],['Kõvaketas (HDD)',7e6],['Pilv (teine manner)',1e8]];
+const LV=[['L1-vahemälu',1],['L2-vahemälu',4],['L3-vahemälu',15],['RAM',100],['NVMe-SSD',75000],['Kõvaketas (HDD – <i>Hard Disk Drive</i>)',7e6],['Pilv (teine manner)',1e8]];
 function human(s){if(s<60)return s===1?'1 sekund':fmt(s,0)+' sekundit';if(s<3600)return fmt(s/60)+' minutit';if(s<86400)return fmt(s/3600)+' tundi';if(s<86400*60)return fmt(s/86400)+' päeva';if(s<86400*365*2)return fmt(s/86400/30)+' kuud';return fmt(s/86400/365)+' aastat'}
 $('hscale').innerHTML=LV.map(([n,ns])=>`<div class="r"><span>${n}</span><div class="b" style="width:${Math.max(2,Math.log10(ns)/8*100)}%"></div><span>${ns<1000?ns+' ns':ns<1e6?fmt(ns/1000)+' µs':fmt(ns/1e6)+' ms'} → ${human(ns)}</span></div>`).join('');
 function hDraw(){const h1=+$('h1').value/100,h2=+$('h2').value/100,tr=+$('hr').value,l2=$('hl2').checked;
@@ -263,7 +263,7 @@ function wSave(b){if(W.down){W.down=false;W.lost=[]}
 function wLazy(){const d=Object.entries(W.cache).filter(([b,c])=>c.dirty);d.forEach(([b,c])=>{W.disk[b]=c.v;c.dirty=false;W.dw++});
   W.msg=d.length?`Laisk kirjutaja kirjutas kettale ${d.length} muudetud plokki (${d.map(x=>x[0]+' v'+x[1].v).join(', ')}). Kui plokki salvestati vahepeal mitu korda, kirjutati kettale ainult viimane versioon – vahepealseid polnud vaja.`:'Muudetud plokke pole, laisal kirjutajal pole midagi teha.';W.ok=!!d.length;W.bad=false;wDraw()}
 function wPower(){const lost=BL.filter(b=>W.latest[b]!==W.disk[b]);W.lost=lost;W.cache={};W.down=true;
-  W.msg=lost.length?`<b>Voolukatkestus!</b> RAM-i sisu kadus. Kettal on vanad versioonid: ${lost.map(b=>`${b} v${W.disk[b]} (oli v${W.latest[b]})`).join(', ')}. Need muudatused on <b>kadunud</b>. UPS või akutoega kontrolleri vahemälu oleks andnud aega need kettale kirjutada.`:
+  W.msg=lost.length?`<b>Voolukatkestus!</b> RAM-i sisu kadus. Kettal on vanad versioonid: ${lost.map(b=>`${b} v${W.disk[b]} (oli v${W.latest[b]})`).join(', ')}. Need muudatused on <b>kadunud</b>. UPS (<i>Uninterruptible Power Supply</i>) või akutoega kontrolleri vahemälu oleks andnud aega need kettale kirjutada.`:
    `<b>Voolukatkestus!</b> RAM-i sisu kadus, kuid kõik muudatused olid juba kettal – andmeid ei kadunud.`;
   BL.forEach(b=>W.latest[b]=W.disk[b]);W.bad=!!lost.length;W.ok=!lost.length;wDraw()}
 function wDraw(){document.querySelectorAll('#kirjutus [data-w]').forEach(b=>b.classList.toggle('on',b.dataset.w===wm));
@@ -295,7 +295,7 @@ $('rseq').onclick=()=>{const before=R.miss;R.msg='Loen järjest…';rRun([...Arr
    $('rahead').checked?`Rakendus pidi ootama ketast ainult <b>${m}</b> korda. Pärast kahte järjestikust lugemist märkas vahemäluhaldur mustrit ja hakkas plokke ette lugema (sinine) – rakendus leidis need juba RAM-ist. Proovi ettelugemine välja lülitada ja võrdle.`:
    `Ilma ettelugemiseta pidi rakendus ootama ketast <b>iga ploki</b> juures (${m} korda). Lülita ettelugemine sisse, taaskäivita ja võrdle.`})};
 $('rrand').onclick=()=>{const before=R.miss,l=[];while(l.length<8){const x=Math.floor(Math.random()*NB);if(!l.includes(x)&&(l.length===0||Math.abs(x-l[l.length-1])>1))l.push(x)}R.msg='Loen juhuslikest kohtadest…';
-  rRun(l,()=>`Juhuslikul lugemisel järjestikust mustrit pole, nii et ettelugemine ei käivitunud. Ootamisi: ${R.miss-before}. Nii loeb andmebaas – seepärast on tal oma puhver ja ta kasutab kiireid SSD-sid.`)};
+  rRun(l,()=>`Juhuslikul lugemisel järjestikust mustrit pole, nii et ettelugemine ei käivitunud. Ootamisi: ${R.miss-before}. Nii loeb andmebaas – seepärast on tal oma puhver ja ta kasutab kiireid SSD-sid (SSD – <i>Solid-State Drive</i>).`)};
 $('rboot').onclick=()=>{if(rtimer)return;rInit('Arvuti taaskäivitati – RAM-i sisu ja seega failide vahemälu on tühi (külm vahemälu). Esimene lugemine on jälle aeglane.')};
 $('rdisk').onchange=()=>rDraw();$('rahead').onchange=()=>{if(!rtimer)rInit()};rInit();
 
@@ -328,10 +328,10 @@ function quiz(box,score,reset,opts,items,done){let ans={};
 quiz('qtasks','qscore','qreset',['Tagasikirjutus','Läbikirjutus','Vahemälust mööda'],[
  ['Videotöötlusprogramm kirjutab renderdamise ajal palju ajutisi faile, mis kustutatakse lõpus.',0,'Ajutised failid ei ole kriitilised ja neid muudetakse sageli – tagasikirjutus on kiire ja paljud kirjutused ei jõuagi kettale.'],
  ['Panga tehingulogi: klient tohib saada vastuse „makse tehtud“ alles siis, kui kirje on kindlalt kettal.',1,'Tehingulogi peab olema püsisalvestis enne kinnitust. Andmebaasid kasutavad läbikirjutust või FlushFileBuffers-it.'],
- ['SQL Serveri (SQL – ingl Structured Query Language) andmefailid – andmebaasil on oma puhvrikogum, mis teab, milliseid lehti hoida.',2,'Andmebaas avab failid FILE_FLAG_NO_BUFFERING-uga, et samu andmeid ei hoitaks RAM-is kaks korda.'],
- ['USB-mälupulk (USB – ingl Universal Serial Bus), mille kasutaja võib iga hetk välja tõmmata.',1,'Windows kasutab eemaldatavatel ketastel vaikimisi „Kiire eemaldamise“ poliitikat, st kirjutusvahemälu on väljas.'],
- ['Serveri RAID-kontroller (RAID – ingl Redundant Array of Independent Disks), millel on akutoega vahemälu ja server on UPS-i (ingl Uninterruptible Power Supply) taga.',0,'Aku ja UPS kaitsevad vahemälu sisu voolukatkestuse eest, seega saab ohutult kasutada kiiret tagasikirjutust.'],
- ['Õpilase sülearvuti sisemine NVMe-ketas (NVMe – ingl Non-Volatile Memory Express) tavakasutuses (dokumendid, brauser).',0,'Tagasikirjutus on vaikimisi sees, sest see on palju kiirem ja sülearvutil on aku. Laisk kirjutaja viib andmed kettale sekundi jooksul.'],
+ ['SQL Serveri (SQL – <i>Structured Query Language</i>) andmefailid – andmebaasil on oma puhvrikogum, mis teab, milliseid lehti hoida.',2,'Andmebaas avab failid FILE_FLAG_NO_BUFFERING-uga, et samu andmeid ei hoitaks RAM-is kaks korda.'],
+ ['USB-mälupulk (USB – <i>Universal Serial Bus</i>), mille kasutaja võib iga hetk välja tõmmata.',1,'Windows kasutab eemaldatavatel ketastel vaikimisi „Kiire eemaldamise“ poliitikat, st kirjutusvahemälu on väljas.'],
+ ['Serveri RAID-kontroller (RAID – <i>Redundant Array of Independent Disks</i>), millel on akutoega vahemälu ja server on UPS-i (<i>Uninterruptible Power Supply</i>) taga.',0,'Aku ja UPS kaitsevad vahemälu sisu voolukatkestuse eest, seega saab ohutult kasutada kiiret tagasikirjutust.'],
+ ['Õpilase sülearvuti sisemine NVMe-ketas (NVMe – <i>Non-Volatile Memory Express</i>) tavakasutuses (dokumendid, brauser).',0,'Tagasikirjutus on vaikimisi sees, sest see on palju kiirem ja sülearvutil on aku. Laisk kirjutaja viib andmed kettale sekundi jooksul.'],
  ['Varundusprogramm loeb kord ööpäevas 2 TB faile, mida keegi muidu ei kasuta.',2,'Kui varundus loeks kõik läbi vahemälu, tõrjuks ta välja kasutajate tegelikult vajalikud andmed. Varundus- ja kopeerimistööriistad (nt robocopy /J) kasutavad puhverdamata sisend-väljundit.']],
  'Tagasikirjutus on kiire, läbikirjutus kindel. Vahemälust mööda minnakse siis, kui rakendusel on oma puhver või kui andmeid ei loeta uuesti.');
 </script>

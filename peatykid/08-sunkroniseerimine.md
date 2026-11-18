@@ -60,7 +60,7 @@ Joonis: aeg kulgeb ülalt alla. Vasakul loevad mõlemad lõimed vana väärtuse 
 
 **Näide: pangakonto.** Kontol on 100 €. Mari maksab poes kaardiga 30 € ja samal ajal laekub palk 1000 €. Mõlemad tehingud loevad saldo 100. Esimene kirjutab 70, teine 1100. Olenevalt sellest, kumb kirjutas viimasena, on kontol kas 70 € (palk kadus) või 1100 € (ost oli tasuta). Õige oleks 1070 €. Seepärast kasutavad pangad tehinguid (transaction), mis on sisuliselt kriitilised piirkonnad.
 
-**Kontrolli, siis tegutse.** Võidujooks tekib ka siis, kui programm kontrollib midagi ja tegutseb hiljem: „kas koht on vaba? → jah → müü“. Kontrolli ja tegutsemise vahel võib teine lõim olukorra muuta. Turvalisuses nimetatakse seda **TOCTOU-veaks** (time-of-check to time-of-use): programm kontrollib, kas kasutajal on õigus faili avada, kuid enne avamist vahetab ründaja faili lingiga süsteemifailile. Sellised vead on Windowsis ja Linuxis olnud õiguste tõstmise rünnakute aluseks.
+**Kontrolli, siis tegutse.** Võidujooks tekib ka siis, kui programm kontrollib midagi ja tegutseb hiljem: „kas koht on vaba? → jah → müü“. Kontrolli ja tegutsemise vahel võib teine lõim olukorra muuta. Turvalisuses nimetatakse seda **TOCTOU-veaks** (*time-of-check to time-of-use*): programm kontrollib, kas kasutajal on õigus faili avada, kuid enne avamist vahetab ründaja faili lingiga süsteemifailile. Sellised vead on Windowsis ja Linuxis olnud õiguste tõstmise rünnakute aluseks.
 
 ### 8.3 Kriitiline piirkond
 
@@ -98,7 +98,7 @@ Selleks on protsessoris **aatomikäsud**, mida teised tuumad ei saa poole pealt 
 
 - x86/x64 `LOCK CMPXCHG` (võrdle ja vaheta): „kui mälus on 0, kirjuta 1 ja teata õnnestumisest – kõik ühe sammuna“;
 - `LOCK XADD` – suurenda mälus olevat arvu aatomselt;
-- ARM64 (ARM – ingl *Advanced RISC Machines*) LSE-laiendused (LSE – ingl *Large System Extensions*; nt `CAS`, `LDADD`).
+- ARM64 (ARM – *Advanced RISC Machines*) LSE-laiendused (LSE – *Large System Extensions*; nt `CAS`, `LDADD`).
 
 Nende peal on ehitatud kõik kõrgema taseme lukud. Windowsis saab neid kasutada otse `Interlocked`-funktsioonidega, nt `InterlockedIncrement(&x)` teeb `x = x + 1` ühe jagamatu sammuna.
 
@@ -106,10 +106,10 @@ Kui lukk on hõivatud, saab lõim oodata kahel viisil:
 
 | | Aktiivne ootamine (spinlock) | Blokeeriv ootamine |
 | --- | --- | --- |
-| Kuidas | lõim kontrollib tsüklis: „kas juba vaba?“ | lõim pannakse ootele, OS (ingl *Operating System*) äratab ta, kui lukk vabaneb |
+| Kuidas | lõim kontrollib tsüklis: „kas juba vaba?“ | lõim pannakse ootele, OS (*Operating System*) äratab ta, kui lukk vabaneb |
 | Protsessoriaeg | raiskab, sest tuum on hõivatud tühja kontrolliga | ei raiska, sest ootel lõim ei tööta |
 | Kiirus | väga kiire, kui lukk vabaneb mõne mikrosekundi jooksul | aeglasem, sest ootele minek ja äratamine nõuavad kontekstivahetust |
-| Sobib | väga lühikeseks ajaks; tuumas kõrgel IRQL-il (ingl *Interrupt Request Level*), kus ootele minna ei saa (ptk 5) | kõigeks pikemaks, nt faili või võrgu ootamiseks |
+| Sobib | väga lühikeseks ajaks; tuumas kõrgel IRQL-il (*Interrupt Request Level*), kus ootele minna ei saa (ptk 5) | kõigeks pikemaks, nt faili või võrgu ootamiseks |
 
 **Näide.** Spinlukk on nagu ootamine ukse taga ja käepideme pidev katsumine. Kui teine inimene tuleb kohe välja, on see kiire. Kui ta jääb tunniks, raiskasid sa tunni. Blokeeriv ootamine on nagu numbri võtmine ja istumine: sind kutsutakse, kui on sinu kord.
 
@@ -317,7 +317,7 @@ Windowsis on kaks liiki sündmusi:
 | --- | --- | --- | --- |
 | Interlocked-funktsioonid | kasutaja | üks aatomtehe | `InterlockedIncrement` külastajate loenduris |
 | Kriitiline sektsioon (CRITICAL\_SECTION) | kasutaja | kiire lukk ühe protsessi lõimede vahel | logifaili kirjutamine ühes programmis |
-| SRW-lukk (Slim Reader/Writer) | kasutaja | palju lugejaid või üks kirjutaja; väike ja kiire | vahemälu, mida loetakse tihti ja muudetakse harva |
+| SRW-lukk (*Slim Reader/Writer*) | kasutaja | palju lugejaid või üks kirjutaja; väike ja kiire | vahemälu, mida loetakse tihti ja muudetakse harva |
 | Tingimusmuutuja (condition variable) | kasutaja | oota, kuni tingimus kehtib (koos SRW-luku või kriitilise sektsiooniga) | tarbija ootab, kuni järjekorras on andmeid |
 | WaitOnAddress | kasutaja | oota, kuni mäluaadressi väärtus muutub (futexi sarnane) | kerge lipp lõimede vahel |
 | Sündmus (event) | tuumaobjekt | üks lõim teavitab teisi | „allalaadimine on valmis“ |

@@ -8,27 +8,27 @@ Arvutis töötab kahte liiki tarkvara. **Rakendustarkvara** (application softwar
 
 ### 2.1 Arvuti ülesehitusest
 
-Klassikaline von Neumanni arhitektuur koosneb protsessorist (CPU – ingl *Central Processing Unit*), põhimälust (RAM – ingl *Random-Access Memory*), sisend-väljundseadmetest ja neid ühendavatest siinidest. Programmi käsud ja andmed asuvad samas mälus; protsessor loeb käsu, dekodeerib ja täidab selle.
+Klassikaline von Neumanni arhitektuur koosneb protsessorist (CPU – *Central Processing Unit*), põhimälust (RAM – *Random-Access Memory*), sisend-väljundseadmetest ja neid ühendavatest siinidest. Programmi käsud ja andmed asuvad samas mälus; protsessor loeb käsu, dekodeerib ja täidab selle.
 
 Tänapäeva arvuti on keerukam:
 
 - **mitmetuumaline protsessor**, sageli hübriidne: jõudluse tuumad (P-cores) ja säästlikud tuumad (E-cores);
-- **graafikaprotsessor (GPU – ingl *Graphics Processing Unit*)** – graafika ja paralleelarvutuse jaoks;
+- **graafikaprotsessor (GPU – *Graphics Processing Unit*)** – graafika ja paralleelarvutuse jaoks;
 - **neurotöötlusseade (NPU)** – tehisintellekti mudelite säästlikuks käitamiseks (vt ptk 21);
-- **turvaprotsessor** – TPM 2.0 (TPM – ingl *Trusted Platform Module*) või protsessorisse integreeritud Microsoft Pluton;
-- **NVMe-SSD** (NVMe – ingl *Non-Volatile Memory Express*) – kiire salvesti otse PCIe-siinil (PCIe – ingl *Peripheral Component Interconnect Express*);
-- **UEFI (ingl *Unified Extensible Firmware Interface*) püsivara** – asendas BIOS-i (ingl *Basic Input/Output System*), võimaldab Secure Booti.
+- **turvaprotsessor** – TPM 2.0 (TPM – *Trusted Platform Module*) või protsessorisse integreeritud Microsoft Pluton;
+- **NVMe-SSD** (NVMe – *Non-Volatile Memory Express*) – kiire salvesti otse PCIe-siinil (PCIe – *Peripheral Component Interconnect Express*);
+- **UEFI (*Unified Extensible Firmware Interface*) püsivara** – asendas BIOS-i (*Basic Input/Output System*), võimaldab Secure Booti.
 
 ### 2.2 Operatsioonisüsteemi kesksed ülesanded
 
-| Ülesanne | Mida OS (ingl *Operating System*) teeb | Windowsi komponent (näide) |
+| Ülesanne | Mida OS (*Operating System*) teeb | Windowsi komponent (näide) |
 | --- | --- | --- |
 | Protsesside haldus | loob ja lõpetab protsesse, planeerib protsessoriaega | protsessihaldur, planeerija |
 | Mäluhaldus | jagab ja kaitseb mälu, virtuaalmälu | mäluhaldur |
-| Failide ja salvestuse haldus | failisüsteemid, kettad, vahemälu | NTFS (ingl *New Technology File System*), ReFS (ingl *Resilient File System*), vahemäluhaldur |
-| Sisend ja väljund | draiverid, seadmete tuvastus, toide | S/V-haldur, PnP-haldur (PnP – ingl *Plug and Play*), toitehaldur |
-| Võrk | protokollid, võrguteenused | TCP/IP pinu, SMB (ingl *Server Message Block*) |
-| Turvalisus | autentimine, õigused, auditilogid | turvaviitemonitor (SRM – ingl *Security Reference Monitor*), LSASS (ingl *Local Security Authority Subsystem Service*) |
+| Failide ja salvestuse haldus | failisüsteemid, kettad, vahemälu | NTFS (*New Technology File System*), ReFS (*Resilient File System*), vahemäluhaldur |
+| Sisend ja väljund | draiverid, seadmete tuvastus, toide | S/V-haldur (S/V – sisend-väljund, *input/output*), PnP-haldur (PnP – *Plug and Play*), toitehaldur |
+| Võrk | protokollid, võrguteenused | TCP/IP (TCP – *Transmission Control Protocol*; IP – *Internet Protocol*) pinu, SMB (*Server Message Block*) |
+| Turvalisus | autentimine, õigused, auditilogid | turvaviitemonitor (SRM – *Security Reference Monitor*), LSASS (*Local Security Authority Subsystem Service*) |
 | Kasutajaliides | graafiline kest, käsurealõikesüsteem | Explorer, PowerShell, Windows Terminal |
 
 ![arvutisüsteemi kihid · kasutaja, rakendused, OS, riistvara](../pildid/02-a.png)
@@ -37,7 +37,7 @@ Joonis: rakendus ei pöördu kunagi otse riistvara poole – kõik käib OS-i ka
 
 > 🖱️ **Proovi ise:** [interaktiivne leht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/02-os-ulesanded.html#kes). Loe olukordi ja otsusta, millise OS-i ülesandega on tegu. Lehel saad ka tarkvara liigitada ja tänapäeva riistvara komponente nende kirjeldustega kokku viia.
 
-OS-i saab vaadelda kahest küljest. **Laiendatud masinana** peidab ta riistvara keerukuse: rakendus kutsub välja „ava fail“ ega tea, kas fail on SSD-l (ingl *Solid-State Drive*), USB-pulgal (USB – ingl *Universal Serial Bus*) või võrgukettal. **Ressursihaldurina** otsustab ta, kes ja millal ressurssi kasutab, et süsteem oleks õiglane, tõhus ja turvaline.
+OS-i saab vaadelda kahest küljest. **Laiendatud masinana** peidab ta riistvara keerukuse: rakendus kutsub välja „ava fail“ ega tea, kas fail on SSD-l (*Solid-State Drive*), USB-pulgal (USB – *Universal Serial Bus*) või võrgukettal. **Ressursihaldurina** otsustab ta, kes ja millal ressurssi kasutab, et süsteem oleks õiglane, tõhus ja turvaline.
 
 Tänapäeval lisanduvad veel kaks ootust: **töökindlus ja taastumine** (süsteem peab vigadest ise taastuma, vt ptk 19) ning **energiatõhusus** (sülearvutis ja telefonis on aku sama oluline ressurss kui protsessoriaeg).
 
@@ -45,7 +45,7 @@ Tänapäeval lisanduvad veel kaks ootust: **töökindlus ja taastumine** (süste
 
 > 🖱️ **Proovi ise:** [Ctrl+S samm-sammult](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/02-os-ulesanded.html#ctrls). Liigu sammhaaval läbi ja vaata, millises kihis iga samm toimub.
 
-1. **Rakendus** kutsub välja API (ingl *Application Programming Interface*) funktsiooni „kirjuta fail“. Word ei tea, kas fail on SSD-l, USB-pulgal või OneDrive’is.
+1. **Rakendus** kutsub välja API (*Application Programming Interface*) funktsiooni „kirjuta fail“. Word ei tea, kas fail on SSD-l, USB-pulgal või OneDrive’is.
 2. **OS kontrollib õigusi**: kas sul on lubatud sellesse kausta kirjutada?
 3. **Failisüsteem** (NTFS) leiab kettal vaba ruumi ja uuendab oma tabeleid.
 4. **Vahemälu** võtab andmed vastu ja Word saab kohe edasi töötada; kettale kirjutatakse veidi hiljem.
@@ -72,8 +72,8 @@ Samal ajal mängib brauser muusikat ja viirusekaitse kontrollib faili. Igaüks s
 ### Valikküsimused
 
 1. Milline neist on süsteemitarkvara? a) veebibrauser b) seadmedraiver c) tabelarvutus d) mäng
-2. Mis on NPU peamine ülesanne? a) graafika renderdamine b) võrguliikluse krüpteerimine c) AI-mudelite säästlik käitamine d) andmete salvestamine
-3. Mis asendas BIOS-i? a) TPM b) UEFI c) ACPI d) NVMe
+2. Mis on NPU peamine ülesanne? a) graafika renderdamine b) võrguliikluse krüpteerimine c) AI-mudelite (AI – *Artificial Intelligence*) säästlik käitamine d) andmete salvestamine
+3. Mis asendas BIOS-i? a) TPM b) UEFI c) ACPI (*Advanced Configuration and Power Interface*) d) NVMe
 
 ### Praktiline ülesanne
 

@@ -159,12 +159,12 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Suur pilt: kolm küsimust</h4>
 <p>Kogu Windowsi turvamudel vastab kolmele küsimusele:</p>
 <div class="kv">
-<div><b>1. Kes sa oled? (autentimine)</b>Sisselogimisel tõestad oma identiteeti (parool, PIN – ingl <i>Personal Identification Number</i>, nägu, pääsvõti). Windows annab sulle <b>juurdepääsutokeni</b> – „ID-kaardi (ID – ingl <i>identity card</i>)“, millel on sinu <b>SID (ingl <i>Security Identifier</i>)</b>, rühmad, privileegid ja terviklikkuse tase.</div>
-<div><b>2. Mida sa tohid? (autoriseerimine)</b>Igal failil, kaustal ja registrivõtmel on <b>turvakirjeldaja</b> ja selles <b>DACL (ingl <i>Discretionary Access Control List</i>)</b> – loend „kes mida tohib“. Iga kord, kui programm objekti avab, võrdleb tuumas olev <b>SRM (ingl <i>Security Reference Monitor</i>)</b> tokenit DACL-iga.</div>
+<div><b>1. Kes sa oled? (autentimine)</b>Sisselogimisel tõestad oma identiteeti (parool, PIN – <i>Personal Identification Number</i>, nägu, pääsvõti). Windows annab sulle <b>juurdepääsutokeni</b> – „ID-kaardi (ID – <i>identity card</i>)“, millel on sinu <b>SID (<i>Security Identifier</i>)</b>, rühmad, privileegid ja terviklikkuse tase.</div>
+<div><b>2. Mida sa tohid? (autoriseerimine)</b>Igal failil, kaustal ja registrivõtmel on <b>turvakirjeldaja</b> ja selles <b>DACL (<i>Discretionary Access Control List</i>)</b> – loend „kes mida tohib“. Iga kord, kui programm objekti avab, võrdleb tuumas olev <b>SRM (<i>Security Reference Monitor</i>)</b> tokenit DACL-iga.</div>
 <div><b>3. Mida sa tegid? (audit)</b>Olulised sündmused (sisselogimised, ebaõnnestunud katsed, õiguste muutused) kirjutatakse <b>turvalogisse</b>. Ilma logita ei saa rünnakut hiljem uurida.</div>
 </div>
-<p style="margin-top:10px">Nende ümber on <b>kaitsekihid</b>: uuendused, viirusetõrje ja EDR (ingl <i>Endpoint Detection and Response</i>), rakenduste kontroll, tulemüür, krüpteerimine ja riistvaraline usaldusahel. Põhimõte on <b>kaitse sügavuti</b>: kui üks kiht ebaõnnestub, peatab ründaja järgmine.</p>
-<p><b>Õppimise järjekord:</b> 1. CIA (ingl <i>Confidentiality, Integrity, Availability</i>) → 2. SID → 3. token → 4. DACL (kõige olulisem!) → 5. UAC (ingl <i>User Account Control</i>) → 6. autentimine → 7. lunavara ahel → 8. tulemüür → 9. turvalogi.</p>
+<p style="margin-top:10px">Nende ümber on <b>kaitsekihid</b>: uuendused, viirusetõrje ja EDR (<i>Endpoint Detection and Response</i>), rakenduste kontroll, tulemüür, krüpteerimine ja riistvaraline usaldusahel. Põhimõte on <b>kaitse sügavuti</b>: kui üks kiht ebaõnnestub, peatab ründaja järgmine.</p>
+<p><b>Õppimise järjekord:</b> 1. CIA (<i>Confidentiality, Integrity, Availability</i>) → 2. SID → 3. token → 4. DACL (kõige olulisem!) → 5. UAC (<i>User Account Control</i>) → 6. autentimine → 7. lunavara ahel → 8. tulemüür → 9. turvalogi.</p>
 </div>
 <div class="toc"><a href="#cia">1. CIA</a><a href="#sid">2. SID</a><a href="#token">3. Token</a><a href="#acl">4. DACL-i kontroll</a><a href="#uac">5. UAC</a><a href="#auth">6. Autentimine</a><a href="#ahel">7. Lunavara ahel</a><a href="#tulemuur">8. Tulemüür</a><a href="#logi">9. Turvalogi</a></div>
 
@@ -175,9 +175,9 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Miks see oluline on?</h4>
 <p>Infoturbe eesmärgid on <b>CIA-kolmik</b>. Kui oskad iga intsidendi juures öelda, millist neist see rikub, tead ka, milline kaitse oleks aidanud:</p>
 <ul>
-<li><b>Konfidentsiaalsus</b> (C) – andmeid näevad ainult need, kellel on õigus. Rikkumine = <i>leke</i>. Kaitse: õigused, krüpteerimine, MFA (ingl <i>Multi-Factor Authentication</i>).</li>
+<li><b>Konfidentsiaalsus</b> (C) – andmeid näevad ainult need, kellel on õigus. Rikkumine = <i>leke</i>. Kaitse: õigused, krüpteerimine, MFA (<i>Multi-Factor Authentication</i>).</li>
 <li><b>Terviklus</b> (I) – andmeid ei muudeta loata ega märkamatult. Rikkumine = <i>muutmine, võltsimine</i>. Kaitse: õigused, digiallkirjad, kontrollsummad, auditilogi.</li>
-<li><b>Käideldavus</b> (A) – andmed ja teenused on kättesaadavad, kui neid vaja on. Rikkumine = <i>teenus maas, andmed kättesaamatud</i>. Kaitse: varundus, RAID (ingl <i>Redundant Array of Independent Disks</i>), uuendused, DDoS-kaitse (DDoS – ingl <i>Distributed Denial of Service</i>).</li>
+<li><b>Käideldavus</b> (A) – andmed ja teenused on kättesaadavad, kui neid vaja on. Rikkumine = <i>teenus maas, andmed kättesaamatud</i>. Kaitse: varundus, RAID (<i>Redundant Array of Independent Disks</i>), uuendused, DDoS-kaitse (DDoS – <i>Distributed Denial of Service</i>).</li>
 </ul>
 <p><b>Mida teha:</b> vali iga olukorra jaoks peamine rikutud eesmärk. Mõni intsident rikub mitut – vali see, mis on <b>kõige otsesem</b>, ja loe selgitust.</p>
 </div>
@@ -189,8 +189,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>2. SID-i lahtiharutaja</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p><b>SID</b> (Security Identifier) on kasutaja, rühma või arvuti püsiv unikaalne tunnus. Windows salvestab õigustesse <b>SID-i, mitte nime</b>: nime saab muuta, SID jääb samaks. Kui konto kustutada ja luua uuesti sama nimega, saab see uue SID-i ja vanad õigused enam ei kehti – õiguste loendis näed siis tundmatut SID-i <code>S-1-5-21-…-1104</code>.</p>
-<p>SID koosneb osadest: versioon, autoriteet, <b>domeeni või arvuti osa</b> (sama kõigil selle domeeni kontodel) ja lõpus <b>RID (ingl <i>Relative Identifier</i>)</b> – konto järjekorranumber. Mõned RID-id on alati samad: 500 on sisseehitatud Administrator, 512 Domain Admins. Ründajad otsivadki RID 500 kontot, sest seda ei saa lukustada.</p>
+<p><b>SID</b> (<i>Security Identifier</i>) on kasutaja, rühma või arvuti püsiv unikaalne tunnus. Windows salvestab õigustesse <b>SID-i, mitte nime</b>: nime saab muuta, SID jääb samaks. Kui konto kustutada ja luua uuesti sama nimega, saab see uue SID-i ja vanad õigused enam ei kehti – õiguste loendis näed siis tundmatut SID-i <code>S-1-5-21-…-1104</code>.</p>
+<p>SID koosneb osadest: versioon, autoriteet, <b>domeeni või arvuti osa</b> (sama kõigil selle domeeni kontodel) ja lõpus <b>RID (<i>Relative Identifier</i>)</b> – konto järjekorranumber. Mõned RID-id on alati samad: 500 on sisseehitatud Administrator, 512 Domain Admins. Ründajad otsivadki RID 500 kontot, sest seda ei saa lukustada.</p>
 <p><b>Mida teha:</b> sisesta SID või vali näide. Oma SID-i näed käsuga <code>whoami /user</code>.</p>
 </div>
 <div class="card">
@@ -236,10 +236,10 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>See on Windowsi juurdepääsukontrolli <b>süda</b>. Kui saad aru, kuidas SRM otsustab, oskad lahendada enamiku õiguste probleeme („miks Mari ei saa faili muuta?“) ja kujundada õigusi turvaliselt.</p>
-<p>Igal objektil on <b>DACL</b> – loend kirjetest (<b>ACE (ingl <i>Access Control Entry</i>)</b>). Iga ACE ütleb: <i>keda</i> (SID), <i>luba või keela</i>, <i>milliseid õigusi</i>. Lisaks on ACE kas <b>otsene</b> (määratud just sellele failile) või <b>päritud</b> (tuleb ülemkaustast).</p>
+<p>Igal objektil on <b>DACL</b> – loend kirjetest (<b>ACE (<i>Access Control Entry</i>)</b>). Iga ACE ütleb: <i>keda</i> (SID), <i>luba või keela</i>, <i>milliseid õigusi</i>. Lisaks on ACE kas <b>otsene</b> (määratud just sellele failile) või <b>päritud</b> (tuleb ülemkaustast).</p>
 <p><b>SRM-i algoritm:</b></p>
 <ol>
-<li><b>Terviklikkus (MIC – ingl <i>Mandatory Integrity Control</i>):</b> kui tokeni tase on madalam kui objekti oma, ei tohi objekti muuta – olenemata ACL-ist (ingl <i>Access Control List</i>).</li>
+<li><b>Terviklikkus (MIC – <i>Mandatory Integrity Control</i>):</b> kui tokeni tase on madalam kui objekti oma, ei tohi objekti muuta – olenemata ACL-ist (<i>Access Control List</i>).</li>
 <li><b>NULL DACL</b> (DACL puudub) → kõigil kõik õigused.</li>
 <li>ACE-d sorteeritakse: <b>otsesed keelud → otsesed load → päritud keelud → päritud load</b>.</li>
 <li>Iga ACE puhul: kui SID on tokenis ja ACE <b>keelab</b> mõnda soovitud õigust → <b>keelatud kohe</b>. Kui <b>lubab</b> → need õigused kogutakse.</li>
@@ -293,8 +293,8 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>6. Millise ründe vastu milline autentimine aitab?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Üle 80% sissetungidest algab varastatud või nõrgast paroolist. <b>Mitmikautentimine (MFA)</b> nõuab kaht eri tüüpi tõendit: midagi, mida <b>tead</b> (parool, PIN), midagi, mis sul <b>on</b> (telefon, turvavõti, TPM-iga (ingl <i>Trusted Platform Module</i>) arvuti) ja/või midagi, mis sa <b>oled</b> (sõrmejälg, nägu).</p>
-<p>Kuid MFA-meetodid pole võrdsed. Peamine küsimus: <b>kas meetod on seotud õige veebilehega?</b> SMS-koodi (SMS – ingl <i>Short Message Service</i>) saab kasutaja õngitsuslehele sisestada samamoodi nagu parooli. Pääsvõtit ja Windows Hello for Businessi ei saa – need on krüptograafiliselt seotud õige domeeniga ja brauser ei paku neid võltslehele. Seepärast nimetatakse neid <b>õngitsuskindlateks</b>.</p>
+<p>Üle 80% sissetungidest algab varastatud või nõrgast paroolist. <b>Mitmikautentimine (MFA)</b> nõuab kaht eri tüüpi tõendit: midagi, mida <b>tead</b> (parool, PIN), midagi, mis sul <b>on</b> (telefon, turvavõti, TPM-iga (<i>Trusted Platform Module</i>) arvuti) ja/või midagi, mis sa <b>oled</b> (sõrmejälg, nägu).</p>
+<p>Kuid MFA-meetodid pole võrdsed. Peamine küsimus: <b>kas meetod on seotud õige veebilehega?</b> SMS-koodi (SMS – <i>Short Message Service</i>) saab kasutaja õngitsuslehele sisestada samamoodi nagu parooli. Pääsvõtit ja Windows Hello for Businessi ei saa – need on krüptograafiliselt seotud õige domeeniga ja brauser ei paku neid võltslehele. Seepärast nimetatakse neid <b>õngitsuskindlateks</b>.</p>
 <p><b>Mida teha:</b> klõpsa tabeli lahtritel. ✅ = kaitseb, ⚠ = kaitseb osaliselt, ❌ = ei kaitse, — = ei puutu asjasse. Iga lahtri juures on selgitus.</p>
 </div>
 <div class="card">
@@ -306,7 +306,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
   <li><b>Lekkinud parool mujalt</b> – kasutaja kasutab sama parooli mitmes kohas; kui mõni leht lekib, proovivad ründajad seda igal pool (credential stuffing). Kontrolli: haveibeenpwned.com.</li>
   <li><b>Parooli äraarvamine</b> – ründaja proovib levinud paroole paljude kontode peal (password spraying: „Kevad2026!“). Konto lukustus ja MFA aitavad.</li>
   <li><b>MFA-väsimus</b> – ründajal on parool ja ta saadab öösel kümneid kinnituspäringuid, kuni kasutaja vajutab „Kinnita“. Kaitse: numbri sisestamine (number matching).</li>
-  <li><b>SIM-vahetus (SIM – ingl <i>Subscriber Identity Module</i>)</b> – ründaja veenab mobiilioperaatorit andma talle ohvri numbriga uue SIM-kaardi ja saab SMS-koodid.</li>
+  <li><b>SIM-vahetus (SIM – <i>Subscriber Identity Module</i>)</b> – ründaja veenab mobiilioperaatorit andma talle ohvri numbriga uue SIM-kaardi ja saab SMS-koodid.</li>
   <li><b>Varastatud sülearvuti</b> – ründaja hoiab seadet käes. Kaitseb BitLocker + PIN/biomeetria, mida varas ei tea.</li>
   </ul></details>
 </div>
@@ -354,7 +354,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>9. Turvalogi analüüs: mis öösel juhtus?</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Turvalogi on nagu valvekaamera salvestis: see ei takista rünnakut, kuid näitab, mis juhtus. Ründajad püüavad jälgi peita – seepärast saadetakse logid organisatsioonis kohe keskserverisse (SIEM – ingl <i>Security Information and Event Management</i>), kus ründaja neid kustutada ei saa.</p>
+<p>Turvalogi on nagu valvekaamera salvestis: see ei takista rünnakut, kuid näitab, mis juhtus. Ründajad püüavad jälgi peita – seepärast saadetakse logid organisatsioonis kohe keskserverisse (SIEM – <i>Security Information and Event Management</i>), kus ründaja neid kustutada ei saa.</p>
 <p>Olulisemad sündmused: <b>4624</b> edukas sisselogimine (tüüp 2 – klaviatuur, 3 – võrk, 10 – kaugtöölaud), <b>4625</b> ebaõnnestunud, <b>4672</b> administraatori õigused, <b>4688</b> uus protsess, <b>4720</b> kasutaja loodi, <b>4732</b> kasutaja lisati kohalikku rühma, <b>1102</b> turvalogi tühjendati.</p>
 <p><b>Mida teha:</b> loe allolevat logi (server <code>SRV-KOOL01</code>, öö vastu teisipäeva) ja vasta küsimustele. Värvilised read on kahtlased.</p>
 </div>
@@ -384,22 +384,22 @@ function mq(box,score,reset,items){let ans={};
 
 /* 1. CIA */
 quiz('ciat','cias','ciar',['Konfidentsiaalsus','Terviklus','Käideldavus'],[
- ['Õpetaja saatis õpilaste hinnetega Exceli kogemata vale meililisti.',0,'Andmed jõudsid inimesteni, kellel polnud õigust neid näha – <b>leke</b>. Kaitse: tundlikkuse sildid, DLP-reeglid, krüpteeritud saatmine.'],
+ ['Õpetaja saatis õpilaste hinnetega Exceli kogemata vale meililisti.',0,'Andmed jõudsid inimesteni, kellel polnud õigust neid näha – <b>leke</b>. Kaitse: tundlikkuse sildid, DLP-reeglid (DLP – <i>Data Loss Prevention</i>), krüpteeritud saatmine.'],
  ['Lunavara krüpteeris kooli failiserveri – keegi ei saa faile avada.',2,'Andmed on olemas, kuid <b>kättesaamatud</b>. Kaitse: võrguühenduseta varukoopia. (Kui ründaja varastas ka andmed, on rikutud ka konfidentsiaalsus.)'],
  ['Õpilane sai õpetaja parooli ja muutis e-päevikus oma hinnet.',1,'Andmeid <b>muudeti loata</b>. Kaitse: MFA, auditilogi (kes ja millal muutis), vähimad õigused.'],
  ['E-päevik ei avane, sest selle serverit ummistatakse miljonite päringutega (DDoS).',2,'Teenus pole kättesaadav. Kaitse: DDoS-kaitse teenus, koormuse jaotamine.'],
- ['Pahavara asendas süsteemifaili oma versiooniga, et käivituda koos Windowsiga.',1,'Süsteemi <b>terviklus</b> on rikutud. Kaitse: Secure Boot, koodi allkirjastamine, HVCI, failide terviklikkuse kontroll.'],
+ ['Pahavara asendas süsteemifaili oma versiooniga, et käivituda koos Windowsiga.',1,'Süsteemi <b>terviklus</b> on rikutud. Kaitse: Secure Boot, koodi allkirjastamine, HVCI (<i>Hypervisor-protected Code Integrity</i>), failide terviklikkuse kontroll.'],
  ['Varastati krüpteerimata sülearvuti, millel olid töötajate isikukoodid.',0,'Varas saab andmeid lugeda – konfidentsiaalsus. Kaitse: BitLocker. (Omaniku jaoks on andmed ka kadunud – käideldavus –, kuid peamine kahju on leke.)'],
- ['Keegi muutis arve PDF-is (ingl Portable Document Format) pangakonto numbrit enne, kui raamatupidaja selle maksis.',1,'Dokumenti <b>võltsiti</b>. Kaitse: digiallkiri (muudatus muudaks allkirja kehtetuks), kinnitus teise kanali kaudu.'],
+ ['Keegi muutis arve PDF-is (<i>Portable Document Format</i>) pangakonto numbrit enne, kui raamatupidaja selle maksis.',1,'Dokumenti <b>võltsiti</b>. Kaitse: digiallkiri (muudatus muudaks allkirja kehtetuks), kinnitus teise kanali kaudu.'],
  ['Failiserveri ketas läks rikki ja varukoopiat polnud.',2,'Andmed pole enam kättesaadavad. Kaitse: RAID ja varundus.']],
  'Leke → konfidentsiaalsus; muutmine → terviklus; kättesaamatus → käideldavus.');
 
 /* 2. SID */
 const KN={'S-1-1-0':'Everyone – kõik kasutajad','S-1-5-11':'Authenticated Users – kõik sisselogitud','S-1-5-18':'SYSTEM (LocalSystem) – võimsaim konto arvutis','S-1-5-19':'LocalService – piiratud teenusekonto','S-1-5-20':'NetworkService – teenusekonto võrguligipääsuga','S-1-5-32-544':'BUILTIN\\Administrators – kohalikud administraatorid','S-1-5-32-545':'BUILTIN\\Users – kohalikud kasutajad','S-1-5-32-555':'Remote Desktop Users','S-1-16-4096':'terviklikkuse tase Low','S-1-16-8192':'terviklikkuse tase Medium','S-1-16-12288':'terviklikkuse tase High','S-1-16-16384':'terviklikkuse tase System'};
-const RID={500:'sisseehitatud Administrator konto – seda ei saa lukustada, ründajad otsivad just seda; soovitus: nimeta ümber või lülita välja ja kasuta LAPS-i (ingl Local Administrator Password Solution)',501:'Guest (külaline) – peaks olema välja lülitatud',502:'krbtgt – Kerberose piletite allkirjastamise konto domeenis; kui selle räsi lekib, saab ründaja võltsida mis tahes pileteid („Golden Ticket“)',512:'Domain Admins – domeeni administraatorid; liikmeid peaks olema väga vähe',513:'Domain Users – kõik domeeni kasutajad',514:'Domain Guests',515:'Domain Computers – kõik domeeni arvutid',516:'Domain Controllers',519:'Enterprise Admins – kogu metsa administraatorid',544:'Administrators'};
+const RID={500:'sisseehitatud Administrator konto – seda ei saa lukustada, ründajad otsivad just seda; soovitus: nimeta ümber või lülita välja ja kasuta LAPS-i (<i>Local Administrator Password Solution</i>)',501:'Guest (külaline) – peaks olema välja lülitatud',502:'krbtgt – Kerberose piletite allkirjastamise konto domeenis; kui selle räsi lekib, saab ründaja võltsida mis tahes pileteid („Golden Ticket“)',512:'Domain Admins – domeeni administraatorid; liikmeid peaks olema väga vähe',513:'Domain Users – kõik domeeni kasutajad',514:'Domain Guests',515:'Domain Computers – kõik domeeni arvutid',516:'Domain Controllers',519:'Enterprise Admins – kogu metsa administraatorid',544:'Administrators'};
 function sidDraw(){const s=$('sidin').value.trim().toUpperCase(),p=s.split('-');const I=$('sidinfo');
   if(p[0]!=='S'||p.length<3||p.slice(1).some(x=>!/^\d+$/.test(x))){$('sidparts').innerHTML='';I.className='info bad';I.innerHTML='See ei ole SID. SID algab „S-1-“ ja koosneb numbritest, nt <code>S-1-5-21-1111-2222-3333-1001</code>.';return}
-  const C=['#6b6a65','#6b6a65','#0f7b7b','#185fa5','#3b6d11'];let parts=[['S','SID'],[p[1],'versioon'],[p[2],{1:'World',5:'NT Authority',16:'terviklikkuse silt'}[p[2]]||'autoriteet']];
+  const C=['#6b6a65','#6b6a65','#0f7b7b','#185fa5','#3b6d11'];let parts=[['S','SID'],[p[1],'versioon'],[p[2],{1:'World',5:'NT (<i>New Technology</i>) Authority',16:'terviklikkuse silt'}[p[2]]||'autoriteet']];
   const rest=p.slice(3);
   if(p[3]==='21'&&rest.length>=5){parts.push(['21','domeen/arvuti'],[rest.slice(1,4).join('-'),'domeeni või arvuti unikaalne osa'],[rest[4],'RID'])}else rest.forEach((x,i)=>parts.push([x,i===rest.length-1?'alamautoriteet / RID':'alamautoriteet']));
   $('sidparts').innerHTML=parts.map(([v,l],i)=>`<div style="background:${['#f1efe8','#f1efe8','#e1f3f2','#e6f1fb','#e6f1fb','#eaf3de'][Math.min(i,5)]};color:${C[Math.min(i,4)]}">${v}<small>${l}</small></div>`).join('<span style="align-self:center">-</span>');
@@ -420,18 +420,18 @@ const TOK={
  sys:{n:'SYSTEM – teenus',user:'NT AUTHORITY\\SYSTEM',groups:['Everyone','Authenticated Users','BUILTIN\\Administrators'],deny:[],priv:['SeTcbPrivilege','SeDebugPrivilege','SeImpersonatePrivilege','SeCreateTokenPrivilege','SeLoadDriverPrivilege','SeBackupPrivilege','SeRestorePrivilege','SeTakeOwnershipPrivilege'],il:'System'},
  low:{n:'Mari – brauseri vaheleht',user:'KOOL\\mari',groups:['Everyone','Authenticated Users','Domain Users','Õpetajad','Klassijuhatajad','BUILTIN\\Users','AppContainer (piiratud)'],deny:[],priv:['SeChangeNotifyPrivilege'],il:'Low'}};
 const PEX={SeDebugPrivilege:'<b>SeDebugPrivilege</b> – lubab avada ja lugeda <i>mis tahes</i> protsessi mälu, ka süsteemi omi. Silujatel vajalik. <span style="color:var(--bad)">Ohtlik:</span> just sellega loeb Mimikatz lsass-ist parooliräsisid.',
- SeBackupPrivilege:'<b>SeBackupPrivilege</b> – lubab lugeda kõiki faile ACL-ist hoolimata (varundus peab saama kõik kopeerida). <span style="color:var(--bad)">Ohtlik:</span> ründaja saab nii kopeerida SAM-i või NTDS.dit-i (domeeni paroolibaas).',
+ SeBackupPrivilege:'<b>SeBackupPrivilege</b> – lubab lugeda kõiki faile ACL-ist hoolimata (varundus peab saama kõik kopeerida). <span style="color:var(--bad)">Ohtlik:</span> ründaja saab nii kopeerida SAM-i (<i>Security Account Manager</i>) või NTDS.dit-i (domeeni paroolibaas).',
  SeRestorePrivilege:'<b>SeRestorePrivilege</b> – lubab kirjutada kõiki faile ACL-ist hoolimata (taastamiseks). Ohtlik: saab asendada süsteemifaile.',
  SeTakeOwnershipPrivilege:'<b>SeTakeOwnershipPrivilege</b> – lubab võtta mis tahes objekti omanikuks. Omanik saab muuta õigusi – seega sisuliselt kõik.',
- SeLoadDriverPrivilege:'<b>SeLoadDriverPrivilege</b> – lubab laadida tuumadraivereid. Ohtlik: haavatava draiveri kaudu (BYOVD, ptk 14) saab tuuma õigused.',
+ SeLoadDriverPrivilege:'<b>SeLoadDriverPrivilege</b> – lubab laadida tuumadraivereid. Ohtlik: haavatava draiveri kaudu (BYOVD – <i>Bring Your Own Vulnerable Driver</i>, ptk 14) saab tuuma õigused.',
  SeImpersonatePrivilege:'<b>SeImpersonatePrivilege</b> – lubab tegutseda teise kasutaja nimel, kes on ühendunud (nt veebiserver kliendi nimel). Ohtlik: nn „Potato“-rünnetega saab teenusekontolt SYSTEM-õigused.',
  SeTcbPrivilege:'<b>SeTcbPrivilege</b> – „tegutse operatsioonisüsteemi osana“. Ainult SYSTEM-il; võimaldab luua suvalisi tokeneid.',
- SeCreateTokenPrivilege:'<b>SeCreateTokenPrivilege</b> – lubab luua uusi tokeneid. Ainult LSA vajab seda.',
+ SeCreateTokenPrivilege:'<b>SeCreateTokenPrivilege</b> – lubab luua uusi tokeneid. Ainult LSA (<i>Local Security Authority</i>) vajab seda.',
  SeShutdownPrivilege:'<b>SeShutdownPrivilege</b> – lubab arvuti välja lülitada. Tavaline ja ohutu.',
  SeChangeNotifyPrivilege:'<b>SeChangeNotifyPrivilege</b> – „bypass traverse checking“: lubab läbida kaustu, kuhu kasutajal pole õigust, et jõuda alamkausta, kuhu on. Kõigil on see; ohutu.',
  SeIncreaseWorkingSetPrivilege:'<b>SeIncreaseWorkingSetPrivilege</b> – lubab suurendada protsessi tööhulka (ptk 12). Ohutu.',
  SeUndockPrivilege:'<b>SeUndockPrivilege</b> – sülearvuti dokist eemaldamine. Ohutu.'};
-const GEX={'Everyone':'<b>Everyone</b> (S-1-1-0) – iga token sisaldab seda. Õigus „Everyone“ kehtib kõigile.','Authenticated Users':'<b>Authenticated Users</b> (S-1-5-11) – kõik, kes on sisse loginud (mitte anonüümsed).','Domain Users':'<b>Domain Users</b> – kõik domeeni kasutajad. Lisatakse automaatselt.','BUILTIN\\Users':'<b>BUILTIN\\Users</b> – kohalik kasutajate rühm; domeeni kasutajad on selles läbi Domain Users-i (pesastatud rühmad).','BUILTIN\\Administrators':'<b>BUILTIN\\Administrators</b> – kohalik administraatorite rühm.','Õpetajad':'<b>Õpetajad</b> – domeeni rühm, millele kooli administraator on andnud õigusi.','Klassijuhatajad':'<b>Klassijuhatajad</b> – teine rühm. Mari õigused liituvad üle kõigi rühmade.','Õpilased':'<b>Õpilased</b> – domeeni rühm.','IT-tugi':'<b>IT-tugi</b> – rühm, kelle liikmed on arvutite kohalikud administraatorid.','AppContainer (piiratud)':'<b>AppContainer</b> – liivakast: protsess pääseb ainult selgelt lubatud ressurssidele.'};
+const GEX={'Everyone':'<b>Everyone</b> (S-1-1-0) – iga token sisaldab seda. Õigus „Everyone“ kehtib kõigile.','Authenticated Users':'<b>Authenticated Users</b> (S-1-5-11) – kõik, kes on sisse loginud (mitte anonüümsed).','Domain Users':'<b>Domain Users</b> – kõik domeeni kasutajad. Lisatakse automaatselt.','BUILTIN\\Users':'<b>BUILTIN\\Users</b> – kohalik kasutajate rühm; domeeni kasutajad on selles läbi Domain Users-i (pesastatud rühmad).','BUILTIN\\Administrators':'<b>BUILTIN\\Administrators</b> – kohalik administraatorite rühm.','Õpetajad':'<b>Õpetajad</b> – domeeni rühm, millele kooli administraator on andnud õigusi.','Klassijuhatajad':'<b>Klassijuhatajad</b> – teine rühm. Mari õigused liituvad üle kõigi rühmade.','Õpilased':'<b>Õpilased</b> – domeeni rühm.','IT-tugi':'<b>IT-tugi (IT – <i>Information Technology</i>)</b> – rühm, kelle liikmed on arvutite kohalikud administraatorid.','AppContainer (piiratud)':'<b>AppContainer</b> – liivakast: protsess pääseb ainult selgelt lubatud ressurssidele.'};
 const ILX={Low:'<b>Low</b> – liivakast. Brauseri vaheleht ei saa kirjutada sinu dokumentidesse ega registrisse (need on Medium), isegi kui ACL lubaks. Kui pahavara vahelehe üle võtab, on ta „puuris“.',Medium:'<b>Medium</b> – tavaline kasutaja. Kõik igapäevased programmid.',High:'<b>High</b> – tõstetud administraator. Saab muuta süsteemi faile ja seadeid.',System:'<b>System</b> – teenused ja tuum.'};
 let tu='mari';
 $('tusers').innerHTML=Object.entries(TOK).map(([k,v])=>`<button class="btn" data-u="${k}">${v.n}</button>`).join(' ');
@@ -524,7 +524,7 @@ function uDraw(){document.querySelectorAll('#uacts button').forEach(b=>b.classLi
 $('uacc').onchange=uDraw;uDraw();
 
 /* 6. Autentimine */
-const AM=['Ainult parool','Parool + SMS-kood','Parool + rakendus numbriga','Windows Hello (PIN + TPM)','Pääsvõti / FIDO2-võti'];
+const AM=['Ainult parool','Parool + SMS-kood','Parool + rakendus numbriga','Windows Hello (PIN + TPM)','Pääsvõti / FIDO2-võti (FIDO – <i>Fast Identity Online</i>)'];
 const AA=['Õngitsusleht','Lekkinud parool mujalt','Parooli äraarvamine','MFA-väsimus','SIM-vahetus','Varastatud sülearvuti'];
 const AX=[[['r','Kasutaja sisestab parooli võltslehele – ründajal on kõik, mida vaja.'],['r','Kui sama parooli kasutati mujal, pääseb ründaja kohe sisse.'],['y','Kaitseb ainult tugev parool ja konto lukustus pärast valesid katseid.'],['n','Ei puutu asjasse: MFA-d pole, seega pole ka MFA-väsimust. Ründaja ei vajagi seda – parool üksi piisab.'],['n','Ei puutu asjasse: telefoni ei kasutata. Ründajal pole SIM-vahetust vaja, sest parool üksi piisab.'],['y','Kui ketas on krüpteerimata, saab varas andmed ilma paroolita. Kui parool on lihtne, arvab ta selle ära.']],
  [['r','Kaasaegne õngitsusleht küsib ka SMS-koodi ja edastab selle reaalajas päris lehele.'],['g','Lekkinud parool üksi ei piisa – vaja on ka koodi.'],['g','Parooli äraarvamisest üksi ei piisa.'],['g','Kasutaja peab koodi ise sisestama – päringuid ei saa „üle kinnitada“.'],['r','Kui ründaja saab operaatorilt ohvri numbri, saab ta ka SMS-koodid.'],['y','Kui telefon on samas kotis ja lukustamata…']],
@@ -539,7 +539,7 @@ function amDraw(){const s={g:'✅',y:'⚠',r:'❌',n:'—'};
 amDraw();
 
 /* 7. Lunavara ahel */
-const DEF=[['kool','Kasutajate koolitus ja õngitsusharjutused'],['mfa','MFA (õngitsuskindel) VPN-ile ja e-postile'],['asr','ASR-reeglid (Office ei käivita lapsprotsesse)'],['appc','Rakenduste kontroll (Smart App Control / App Control)'],['upd','Uuendused paigaldatud'],['cg','Credential Guard ja LSA kaitse'],['laps','LAPS (erinevad kohalikud admini paroolid)'],['seg','Tulemüür ja võrgu segmentimine'],['priv','Vähimad õigused (adminid eraldi kontod)'],['edr','EDR koos 24/7 jälgimisega'],['cfa','Kontrollitud kaustale juurdepääs'],['bak','Võrguühenduseta / muutumatu varukoopia']];
+const DEF=[['kool','Kasutajate koolitus ja õngitsusharjutused'],['mfa','MFA (õngitsuskindel) VPN-ile (<i>Virtual Private Network</i>) ja e-postile'],['asr','ASR-reeglid (ASR – <i>Attack Surface Reduction</i>; Office ei käivita lapsprotsesse)'],['appc','Rakenduste kontroll (Smart App Control / App Control)'],['upd','Uuendused paigaldatud'],['cg','Credential Guard ja LSA kaitse'],['laps','LAPS (erinevad kohalikud admini paroolid)'],['seg','Tulemüür ja võrgu segmentimine'],['priv','Vähimad õigused (adminid eraldi kontod)'],['edr','EDR koos 24/7 jälgimisega'],['cfa','Kontrollitud kaustale juurdepääs'],['bak','Võrguühenduseta / muutumatu varukoopia']];
 const ST={mail:[['Sissetung','Õpetaja avab e-kirja manuse „Palgaleht.docm“ ja lubab makrod.',['kool']],['Pahavara käivitub','Makro käivitab PowerShelli, mis laadib alla ja käivitab ründaja programmi.',['asr','appc','edr']]],
  vpn:[['Sissetung','Ründaja logib VPN-i sisse parooliga, mis lekkis teisest teenusest.',['mfa']],['Tööriistad käivituvad','Ründaja käivitab kasutaja arvutis oma tööriistad (skännerid, Mimikatz).',['appc','edr']]]};
 const ST2=[['Õiguste tõstmine','Ründaja kasutab uuendamata Windowsi turvaauku, et saada administraatori õigused.',['upd','edr']],['Mandaatide vargus','Ründaja loeb lsass-i mälust administraatori parooliräsi (Mimikatz).',['cg','edr']],['Külgliikumine','Sama kohaliku administraatori räsiga logib ründaja sisse teistesse arvutitesse ja serveritesse (pass-the-hash).',['laps','seg','edr']],['Domeeni haldus ja varukoopiad','Ründaja leiab arvutist, kuhu domeeni admin hiljuti sisse logis, saab tema mandaadid ja kustutab varikoopiad ning võrgus olevad varukoopiad.',['priv','edr']],['Krüpteerimine','Reede öösel krüpteeritakse korraga kõik serverid ja arvutid.',['cfa','edr']]];
@@ -559,13 +559,13 @@ function rDraw(){DEF.forEach(([k])=>$('rl_'+k).classList.toggle('on',sel.has(k))
 rDraw();
 
 /* 8. Tulemüür */
-const FR=[{n:'RDP haldusvõrgust',d:'in',c:'TCP 3389 · allikas 10.10.99.0/24',p:['dom'],a:'allow',m:x=>x.dir==='in'&&x.port===3389&&x.src.startsWith('10.10.99.')},
+const FR=[{n:'RDP (<i>Remote Desktop Protocol</i>) haldusvõrgust',d:'in',c:'TCP (<i>Transmission Control Protocol</i>) 3389 · allikas 10.10.99.0/24',p:['dom'],a:'allow',m:x=>x.dir==='in'&&x.port===3389&&x.src.startsWith('10.10.99.')},
  {n:'Failide ja printerite jagamine',d:'in',c:'TCP 445',p:['dom','prv'],a:'allow',m:x=>x.dir==='in'&&x.port===445},
  {n:'Notepad keelatud',d:'out',c:'programm notepad.exe',p:['dom','prv','pub'],a:'block',m:x=>x.dir==='out'&&x.prog==='notepad.exe'},
  {n:'Brauserid',d:'out',c:'msedge.exe, chrome.exe · TCP 80, 443',p:['dom','prv','pub'],a:'allow',m:x=>x.dir==='out'&&['msedge.exe','chrome.exe'].includes(x.prog)&&[80,443].includes(x.port)},
  {n:'Kahtlased pordid',d:'out',c:'TCP 4444',p:['dom','prv','pub'],a:'block',m:x=>x.dir==='out'&&x.port===4444}];
 const PR={dom:'domeen',prv:'privaatne',pub:'avalik'};
-const PK=[{n:'🌐 Edge → www.ria.ee:443',dir:'out',port:443,prog:'msedge.exe',prof:'dom',src:'192.168.1.57'},{n:'↩ Vastus www.ria.ee-lt',dir:'in',port:52344,prog:'msedge.exe',prof:'dom',src:'185.31.240.10',est:true},{n:'🖥 Internetist RDP 3389 (kohvikus)',dir:'in',port:3389,prof:'pub',src:'45.9.12.66'},{n:'🖥 Haldusvõrgust RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.99.5'},{n:'🖥 Õpilase arvutist RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.20.44'},{n:'📁 Kolleeg SMB 445 (kodus)',dir:'in',port:445,prof:'prv',src:'192.168.1.20'},{n:'📁 Võõras SMB 445 (kohvikus)',dir:'in',port:445,prof:'pub',src:'10.0.0.66'},{n:'📝 Notepad → internet 443',dir:'out',port:443,prog:'notepad.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 4444',dir:'out',port:4444,prog:'svch0st.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 443',dir:'out',port:443,prog:'svch0st.exe',prof:'dom',src:''}];
+const PK=[{n:'🌐 Edge → www.ria.ee:443',dir:'out',port:443,prog:'msedge.exe',prof:'dom',src:'192.168.1.57'},{n:'↩ Vastus www.ria.ee-lt',dir:'in',port:52344,prog:'msedge.exe',prof:'dom',src:'185.31.240.10',est:true},{n:'🖥 Internetist RDP 3389 (kohvikus)',dir:'in',port:3389,prof:'pub',src:'45.9.12.66'},{n:'🖥 Haldusvõrgust RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.99.5'},{n:'🖥 Õpilase arvutist RDP 3389',dir:'in',port:3389,prof:'dom',src:'10.10.20.44'},{n:'📁 Kolleeg SMB 445 (SMB – <i>Server Message Block</i>; kodus)',dir:'in',port:445,prof:'prv',src:'192.168.1.20'},{n:'📁 Võõras SMB 445 (kohvikus)',dir:'in',port:445,prof:'pub',src:'10.0.0.66'},{n:'📝 Notepad → internet 443',dir:'out',port:443,prog:'notepad.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 4444',dir:'out',port:4444,prog:'svch0st.exe',prof:'dom',src:''},{n:'🦠 Pahavara → 443',dir:'out',port:443,prog:'svch0st.exe',prof:'dom',src:''}];
 const fon=FR.map(()=>true);let fpi=0;
 function fwDraw(){const x=PK[fpi];let hit=-1,steps=[],res;
   steps.push(`Ühendus: <b>${x.dir==='in'?'sissetulev':'väljaminev'}</b>, port ${x.port}${x.prog?', programm '+x.prog:''}${x.src&&x.dir==='in'?', allikas '+x.src:''}, profiil <b>${PR[x.prof]}</b>.`);

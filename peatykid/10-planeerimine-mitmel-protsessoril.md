@@ -6,7 +6,7 @@ Peatükis 9 oli meil üks protsessor ja planeerija pidi otsustama ainult, **mill
 
 - **millisel tuumal** lõim töötab;
 - hübriidprotsessoris ka seda, **millist tüüpi** tuumal (kiire või säästlik);
-- serveris ka seda, **millise mälu lähedal** lõim töötab (NUMA – ingl *Non-Uniform Memory Access*).
+- serveris ka seda, **millise mälu lähedal** lõim töötab (NUMA – *Non-Uniform Memory Access*).
 
 Valel tuumal töötav lõim ei tee midagi valesti, kuid töötab aeglasemalt või kulutab rohkem voolu. Seepärast on mitme protsessori planeerimine eelkõige **jõudluse ja energia** küsimus.
 
@@ -21,15 +21,15 @@ Valel tuumal töötav lõim ei tee midagi valesti, kuid töötab aeglasemalt võ
 | L1 | igal tuumal oma | 32–64 KB | ~1 ns |
 | L2 | igal tuumal oma (vahel tuumade rühmal ühine) | 1–3 MB | ~4 ns |
 | L3 | kõigil tuumadel ühine | 8–64 MB | ~15 ns |
-| RAM (ingl *Random-Access Memory*) | kõigil ühine | 8–512 GB | ~80–100 ns |
+| RAM (*Random-Access Memory*) | kõigil ühine | 8–512 GB | ~80–100 ns |
 
 Kui lõime andmed on juba tuuma L1- või L2-vahemälus, töötab ta mitu korda kiiremini, kui siis, kui andmeid tuleb tuua põhimälust. See on oluline põhjus, miks planeerija püüab lõime hoida samal tuumal (afiinsus, ptk 10.5).
 
-**Samaaegne mitmelõimelisus** (SMT – ingl *Simultaneous Multithreading*, Inteli nimetusega Hyper-Threading) laseb ühel füüsilisel tuumal täita kaht lõime korraga. Tuumas on palju täitmisüksusi (liitmine, korrutamine, mälu lugemine) ja üks lõim ei kasuta neid kunagi kõiki korraga. Teine lõim saab kasutada vabu üksusi. OS (ingl *Operating System*) näeb ühte SMT-ga tuuma **kahe loogilise protsessorina**.
+**Samaaegne mitmelõimelisus** (SMT – *Simultaneous Multithreading*, Inteli nimetusega Hyper-Threading) laseb ühel füüsilisel tuumal täita kaht lõime korraga. Tuumas on palju täitmisüksusi (liitmine, korrutamine, mälu lugemine) ja üks lõim ei kasuta neid kunagi kõiki korraga. Teine lõim saab kasutada vabu üksusi. OS (*Operating System*) näeb ühte SMT-ga tuuma **kahe loogilise protsessorina**.
 
 **Näide.** Protsessoril on 8 füüsilist tuuma ja SMT, seega näitab Tegumihaldur 16 loogilist protsessorit. Kaks lõime samal füüsilisel tuumal ei tööta aga kaks korda kiiremini kui üks. Tavaliselt saab SMT-st 10–30% lisa. Seepärast eelistab planeerija panna kaks rasket lõime **eri füüsilistele tuumadele**, mitte sama tuuma kahele loogilisele protsessorile.
 
-**Hübriidprotsessorid.** Alates Intel 12. põlvkonnast (2021) ja ARM-i (ingl *Advanced RISC Machines*) big.LITTLE / DynamIQ lahendustes on kiibis kahte tüüpi tuumi:
+**Hübriidprotsessorid.** Alates Intel 12. põlvkonnast (2021) ja ARM-i (*Advanced RISC Machines*) big.LITTLE / DynamIQ lahendustes on kiibis kahte tüüpi tuumi:
 
 - **P-tuumad** (performance) – suured, kiired ja voolunõudlikud. Sobivad mängudele, kompileerimisele ja aktiivsele aknale;
 - **E-tuumad** (efficiency) – väikesed ja säästlikud. Sobivad taustatööks: sünkroonimine, indekseerimine, uuendused.
@@ -40,18 +40,18 @@ Paljudes protsessorites on ainult P-tuumadel SMT ja E-tuumadel mitte. Uuemates m
 
 Joonis: igal P-tuumal on oma L1 ja L2, E-tuumade klaster jagab ühist L2-te ja kõik tuumad jagavad L3-e. SMT-ga P-tuum paistab OS-ile kahe loogilise protsessorina, nii et 6 tuumast saab 8 loogilist protsessorit.
 
-Lisaks võib kiibis olla GPU (ingl *Graphics Processing Unit*) ja NPU (ingl *Neural Processing Unit*), mida OS haldab eraldi planeerijatega (GPU-planeerimine WDDM-is (ingl *Windows Display Driver Model*), NPU MCDM-draiveri (MCDM – ingl *Microsoft Compute Driver Model*) kaudu).
+Lisaks võib kiibis olla GPU (*Graphics Processing Unit*) ja NPU (*Neural Processing Unit*), mida OS haldab eraldi planeerijatega (GPU-planeerimine WDDM-is (*Windows Display Driver Model*), NPU MCDM-draiveri (MCDM – *Microsoft Compute Driver Model*) kaudu).
 
 ### 10.2 Mitme protsessori organiseerimine
 
 | Mudel | Kirjeldus | Näide |
 | --- | --- | --- |
-| Asümmeetriline (AMP – ingl *Asymmetric Multiprocessing*) | üks protsessor juhib, teised täidavad talle antud töid | vanad mitmeprotsessorilised süsteemid; tänapäeval nt nutikella eraldi säästuprotsessor |
+| Asümmeetriline (AMP – *Asymmetric Multiprocessing*) | üks protsessor juhib, teised täidavad talle antud töid | vanad mitmeprotsessorilised süsteemid; tänapäeval nt nutikella eraldi säästuprotsessor |
 | Sümmeetriline (SMP) | kõik protsessorid on võrdsed ja täidavad nii OS-i kui ka rakenduste koodi | iga tänapäeva Windowsi, Linuxi ja macOS-i arvuti |
 | NUMA | protsessorid on sõlmedes; oma sõlme mälu on kiirem kui teise sõlme oma | kahe- või neljapesaline server |
 | Klaster | mitu arvutit võrgu kaudu, igal oma OS | Hyper-V failover-klaster, superarvuti |
 
-**NUMA** (Non-Uniform Memory Access) on tavaline serverites. Kahepesalises serveris on igal protsessoril oma mälukanalid ja oma mälu. Protsessor saab lugeda ka teise protsessori mälu, kuid see käib kahe protsessori vahelise ühenduse kaudu ja on umbes poolteist kuni kaks korda aeglasem.
+**NUMA** (*Non-Uniform Memory Access*) on tavaline serverites. Kahepesalises serveris on igal protsessoril oma mälukanalid ja oma mälu. Protsessor saab lugeda ka teise protsessori mälu, kuid see käib kahe protsessori vahelise ühenduse kaudu ja on umbes poolteist kuni kaks korda aeglasem.
 
 **Näide.** Lõim töötab sõlme 0 protsessoril, kuid tema andmed on sõlme 1 mälus. Iga mälupöördumine võtab ~150 ns asemel ~90 ns. Andmebaas, mis teeb sekundis miljoneid pöördumisi, on märgatavalt aeglasem. Windows ja Hyper-V püüavad hoida lõime ja tema mälu **samas sõlmes**.
 
@@ -69,7 +69,7 @@ Windows on SMP-süsteem: tuum, draiverid ja rakendused võivad töötada igal pr
 
 **1. Kõik jagatud tuumaandmed peavad olema lukkudega kaitstud.** Kaks tuuma võivad korraga täita sama tuumakoodi, näiteks lisada lõime samasse järjekorda.
 
-**2. Vahemälud peavad olema koherentsed.** Igal tuumal on oma L1 ja L2. Kui tuum 0 muudab muutujat `x` oma vahemälus, peab tuum 1 seda teada saama, muidu loeb ta oma vahemälust vana väärtuse. Riistvara protokoll (nt **MESI** – ingl *Modified, Exclusive, Shared, Invalid*) jälgib iga vahemälurea olekut:
+**2. Vahemälud peavad olema koherentsed.** Igal tuumal on oma L1 ja L2. Kui tuum 0 muudab muutujat `x` oma vahemälus, peab tuum 1 seda teada saama, muidu loeb ta oma vahemälust vana väärtuse. Riistvara protokoll (nt **MESI** – *Modified, Exclusive, Shared, Invalid*) jälgib iga vahemälurea olekut:
 
 | Olek | Tähendus |
 | --- | --- |
@@ -116,7 +116,7 @@ Planeerimise strateegiad:
 
 **Näide: afiinsus.** Lõim on töötanud tuumal 2 ja tema andmed on tuuma 2 L2-vahemälus. Ta läheb hetkeks ootele (loeb faili) ja ärkab. Tuum 2 on hõivatud, tuum 5 on vaba. Mis on parem: oodata mõni mikrosekund tuuma 2 järel või minna kohe tuumale 5 ja laadida andmed uuesti mälust? Sellele pole üht õiget vastust. Windows eelistab lõime **ideaalset** või **viimati kasutatud** protsessorit, kuid võtab vaba tuuma, kui eelistatu on hõivatud.
 
-**Rühmaplaneerimine virtualiseerimises.** Virtuaalmasinal on 4 vCPU-d (ingl *virtual CPU*) ja selle külalis-OS hoiab spinlukku vCPU 1 peal, mida vCPU 2 ootab. Kui hüperviisor peatab vCPU 1, kuid laseb vCPU 2-l töötada, keerleb vCPU 2 tühja. Seepärast püüavad hüperviisorid (VMware, Hyper-V) VM-i (ingl *Virtual Machine*) vCPU-sid käivitada võimalikult koos.
+**Rühmaplaneerimine virtualiseerimises.** Virtuaalmasinal on 4 vCPU-d (*virtual CPU*) ja selle külalis-OS hoiab spinlukku vCPU 1 peal, mida vCPU 2 ootab. Kui hüperviisor peatab vCPU 1, kuid laseb vCPU 2-l töötada, keerleb vCPU 2 tühja. Seepärast püüavad hüperviisorid (VMware, Hyper-V) VM-i (*Virtual Machine*) vCPU-sid käivitada võimalikult koos.
 
 #### Miks 8 tuuma ei ole 8 korda kiirem: Amdahli seadus
 
@@ -147,8 +147,8 @@ Isegi lõpmatu tuumade arvuga ei saa programm kiiremaks kui 10 korda, sest 10% t
 - **Ideaalne protsessor ja afiinsusmask.** Igal lõimel on **ideaalne protsessor** (eelistatud tuum, mille Windows annab lõime loomisel ringiratast, et lõimed jaguneksid ühtlaselt) ja **afiinsusmask** (lubatud protsessorid). Mask on bitimask: väärtus `1` tähendab ainult protsessorit 0, `3` protsessoreid 0 ja 1, `15` protsessoreid 0–3.
 - **Tuuma valik.** Valmis lõime jaoks otsitakse esmalt vaba protsessorit, eelistatult ideaalset või viimati kasutatud. Kui vaba pole, võib lõim tõrjuda madalama prioriteediga lõime mõnel lubatud protsessoril.
 - **Tuumade parkimine** (core parking) lülitab vähese koormusega tuumad süvaunne, et säästa energiat. Kui koormus kasvab, äratatakse need.
-- **Hübriidplaneerimine.** Windows 11 kasutab protsessori vihjeid (Intel Thread Director, AMD (ingl *Advanced Micro Devices*) ja Qualcommi vastavad mehhanismid) ning lõime QoS-taset (QoS – ingl *Quality of Service*, ptk 9.9). Esiplaani ja kõrge QoS-iga lõimed lähevad P-tuumadele, taustatöö ja EcoQoS (ingl *Ecological Quality of Service*) E-tuumadele. Thread Director jälgib riistvaras, milliseid käske lõim täidab, ja annab OS-ile soovituse. Windows 10 hübriidprotsessoritega nii hästi ei toime.
-- **CPU Sets (CPU – ingl *Central Processing Unit*)** on API (ingl *Application Programming Interface*), millega rakendus (nt mäng) saab tuumi reserveerida, et taustatöö neid ei segaks.
+- **Hübriidplaneerimine.** Windows 11 kasutab protsessori vihjeid (Intel Thread Director, AMD (*Advanced Micro Devices*) ja Qualcommi vastavad mehhanismid) ning lõime QoS-taset (QoS – *Quality of Service*, ptk 9.9). Esiplaani ja kõrge QoS-iga lõimed lähevad P-tuumadele, taustatöö ja EcoQoS (*Ecological Quality of Service*) E-tuumadele. Thread Director jälgib riistvaras, milliseid käske lõim täidab, ja annab OS-ile soovituse. Windows 10 hübriidprotsessoritega nii hästi ei toime.
+- **CPU Sets (CPU – *Central Processing Unit*)** on API (*Application Programming Interface*), millega rakendus (nt mäng) saab tuumi reserveerida, et taustatöö neid ei segaks.
 
 **Millal afiinsust käsitsi muuta?** Peaaegu mitte kunagi. Windowsi planeerija teab tuumade koormust, temperatuuri ja tüüpi paremini kui inimene. Käsitsi afiinsus on mõistlik ainult erijuhtudel: vana tarkvara, mis ei tööta mitme tuumaga, litsents, mis on seotud tuumade arvuga, või katse, nagu ptk 9 iseseisvas ülesandes.
 
@@ -156,9 +156,9 @@ Isegi lõpmatu tuumade arvuga ei saa programm kiiremaks kui 10 korda, sest 10% t
 
 **Sülearvuti.** Õpetaja peab akutoitel Teamsi tundi ja OneDrive sünkroonib taustal faile. Teamsi videotöötlus on esiplaanil ja kõrge QoS-iga – see läheb P-tuumadele, tausta hägustamine (Studio Effects) kasutab NPU-d. OneDrive’i sünkroonimine saab EcoQoS-i ja töötab E-tuumadel madala sagedusega. Pilt ei hangu ja aku kestab kauem kui siis, kui kõik töötab P-tuumadel.
 
-**Server (VMware või Hyper-V).** Hostil on kaks 16-tuumalist protsessorit (kaks NUMA-sõlme, kummalgi 256 GB RAM-i). Administraator loob SQL Serveri (SQL – ingl *Structured Query Language*) VM-i 24 vCPU ja 384 GB mäluga – see ei mahu ühte sõlme.
+**Server (VMware või Hyper-V).** Hostil on kaks 16-tuumalist protsessorit (kaks NUMA-sõlme, kummalgi 256 GB RAM-i). Administraator loob SQL Serveri (SQL – *Structured Query Language*) VM-i 24 vCPU ja 384 GB mäluga – see ei mahu ühte sõlme.
 
-- Hüperviisor jagab VM-i kahe sõlme vahel ja esitab külalisele **virtuaalse NUMA** (vNUMA – ingl *virtual NUMA*) topoloogia.
+- Hüperviisor jagab VM-i kahe sõlme vahel ja esitab külalisele **virtuaalse NUMA** (vNUMA – *virtual NUMA*) topoloogia.
 - Kui SQL Server teab topoloogiat, hoiab ta lõimed ja puhvrid samas sõlmes.
 - Kui vNUMA on vale (nt käsitsi valesti seatud „cores per socket“), teevad paljud päringud kaugpöördumisi ja jõudlus langeb märgatavalt.
 

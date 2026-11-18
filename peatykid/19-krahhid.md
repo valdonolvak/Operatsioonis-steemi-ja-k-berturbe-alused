@@ -4,11 +4,11 @@
 
 Kui tuumarežiimis tekib viga, mida ei saa ohutult parandada, peatab Windows kogu süsteemi (**bugcheck**), kuvab veateate, salvestab **mälutõmmise** (crash dump) ja taaskäivitub. Windows 11-s on tuttav sinine ekraan asendunud mustaga ning taastumiseks on lisandunud **kiire masinataaste** (Quick Machine Recovery).
 
-**Kuidas seda peatükki lugeda?** Krahh tundub esmapilgul juhuslik ja hirmutav, kuid tegelikult jätab Windows endast maha palju jälgi: peatuskoodi, mälutõmmise ja logikirjed. IT-spetsialisti (IT – ingl *Information Technology*) töö on need jäljed üles leida ja tõlgendada nagu detektiiv. Peatükk liigub järgmises järjekorras:
+**Kuidas seda peatükki lugeda?** Krahh tundub esmapilgul juhuslik ja hirmutav, kuid tegelikult jätab Windows endast maha palju jälgi: peatuskoodi, mälutõmmise ja logikirjed. IT-spetsialisti (IT – *Information Technology*) töö on need jäljed üles leida ja tõlgendada nagu detektiiv. Peatükk liigub järgmises järjekorras:
 
 1. **mis** on krahh ja miks Windows peatub (19.1);
 2. **miks** krahhid tekivad ja kuidas eristada draiveri- ja riistvaraviga (19.2);
-3. **kuidas taastuda**, kui arvuti enam ei käivitu – Windows RE (ingl *Recovery Environment*), turvarežiim, kiire masinataaste (19.3);
+3. **kuidas taastuda**, kui arvuti enam ei käivitu – Windows RE (*Recovery Environment*), turvarežiim, kiire masinataaste (19.3);
 4. **kuidas uurida**, mis juhtus – mälutõmmised, WinDbg, logid (19.4);
 5. **tõrkeotsingu metoodika** samm-sammult ja võrdlus Linuxi ning macOS-iga (19.5–19.6).
 
@@ -16,7 +16,7 @@ Kui tuumarežiimis tekib viga, mida ei saa ohutult parandada, peatab Windows kog
 
 ### 19.1 Sinisest ekraanist mustani
 
-„Surma sinine ekraan“ (Blue Screen of Death, BSOD) näitas **peatuskoodi** (stop code, nt `IRQL_NOT_LESS_OR_EQUAL`, `PAGE_FAULT_IN_NONPAGED_AREA`), mis selgitab vea liiki. Windows 11 24H2-s võeti 2025. aasta suvel kasutusele lihtsam must ekraan, millel on peamiselt peatuskood ja vea põhjustanud draiver ([Computerworld](https://www.computerworld.com/article/4019000/microsoft-windows-more-resilient.html), [Neowin](https://www.neowin.net/news/windows-11-is-getting-a-redesigned-bsod-and-new-tools-to-help-you-recover-from-outages/)). Taustal toimub sama: tuum kutsub välja `KeBugCheckEx`, salvestab tõmmise ja taaskäivitab arvuti.
+„Surma sinine ekraan“ (*Blue Screen of Death*, BSOD) näitas **peatuskoodi** (stop code, nt `IRQL_NOT_LESS_OR_EQUAL`, `PAGE_FAULT_IN_NONPAGED_AREA`), mis selgitab vea liiki. Windows 11 24H2-s võeti 2025. aasta suvel kasutusele lihtsam must ekraan, millel on peamiselt peatuskood ja vea põhjustanud draiver ([Computerworld](https://www.computerworld.com/article/4019000/microsoft-windows-more-resilient.html), [Neowin](https://www.neowin.net/news/windows-11-is-getting-a-redesigned-bsod-and-new-tools-to-help-you-recover-from-outages/)). Taustal toimub sama: tuum kutsub välja `KeBugCheckEx`, salvestab tõmmise ja taaskäivitab arvuti.
 
 **Miks Windows ei jätka lihtsalt tööd?** Kui tuumamälu või -andmestruktuur on rikutud, võib edasitöö kahjustada kettal olevaid andmeid või avada turvaaugu. Peatamine on väiksem kahju. Kasutajarežiimi rakenduse kokkujooksmine lõpetab ainult selle protsessi (Windows Error Reporting salvestab aruande).
 
@@ -29,7 +29,7 @@ Kui tuumarežiimis tekib viga, mida ei saa ohutult parandada, peatab Windows kog
 | **Rakenduse krahh** | ainult see programm sulgub | Application-logi sündmus **1000** (Application Error), WER-aruanne | Word sulgub ootamatult |
 | **Rakenduse hangumine** | programm ei reageeri („Not Responding“) | Application-logi sündmus **1002** (Application Hang) | brauser hangub suure lehe peal |
 | **Teenuse krahh** | teenus peatub, Windows võib selle taaskäivitada | System-logi **7031/7034** (Service Control Manager) | prindispuuler jookseb kokku |
-| **Graafikadraiveri lähtestamine (TDR – ingl *Timeout Detection and Recovery*)** | ekraan vilgub, töö jätkub | System-logi **4101**, live-tõmmis `C:\Windows\LiveKernelReports` | mängu ajal ekraan läheb hetkeks mustaks |
+| **Graafikadraiveri lähtestamine (TDR – *Timeout Detection and Recovery*)** | ekraan vilgub, töö jätkub | System-logi **4101**, live-tõmmis `C:\Windows\LiveKernelReports` | mängu ajal ekraan läheb hetkeks mustaks |
 | **Süsteemi krahh (bugcheck)** | kogu Windows peatub ja taaskäivitub | **1001** (BugCheck), **41** (Kernel-Power), `MEMORY.DMP` | must/sinine ekraan |
 | **Ootamatu väljalülitus ilma bugcheckita** | arvuti kustub hetkega | ainult **41** ja **6008**, tõmmist pole | toitekatkestus, ülekuumenemine, rikkis toiteplokk |
 
@@ -38,7 +38,7 @@ Viimane rida on tõrkeotsingus väga oluline: **kui on sündmus 41, aga pole tõ
 #### Mis toimub krahhi ajal samm-sammult
 
 1. **Viga avastatakse.** Tuum või draiver avastab olukorra, mida ei saa ohutult jätkata – näiteks draiver pöördub mäluaadressi poole, mida pole olemas, või kriitiline protsess (nt `csrss.exe`) lõpetab töö.
-2. **Kutsutakse `KeBugCheckEx`.** Sellele antakse **peatuskood** (nt `0xD1`) ja **neli parameetrit**, mis kirjeldavad viga täpsemalt (nt millist aadressi pöörduti ja millisel IRQL-il (ingl *Interrupt Request Level*)).
+2. **Kutsutakse `KeBugCheckEx`.** Sellele antakse **peatuskood** (nt `0xD1`) ja **neli parameetrit**, mis kirjeldavad viga täpsemalt (nt millist aadressi pöörduti ja millisel IRQL-il (*Interrupt Request Level*)).
 3. **Teised protsessorid peatatakse.** Mitmetuumalises süsteemis saadetakse kõigile teistele tuumadele katkestus, et keegi ei jätkaks rikutud andmetega tööd (ptk 10).
 4. **Teavitatakse draivereid.** Registreeritud draiverid saavad lisada tõmmisesse oma andmeid (bugcheck callbacks).
 5. **Kuvatakse ekraan** peatuskoodi ja (Windows 11-s) süüdlase draiveri nimega.
@@ -59,21 +59,21 @@ Peatuskood koosneb **numbrist** (nt `0x000000D1`) ja **nimest** (nt `DRIVER_IRQL
 | Kood | Nimi | Mida tähendab lihtsalt | Tüüpiline põhjus |
 | --- | --- | --- | --- |
 | `0x0A` | IRQL_NOT_LESS_OR_EQUAL | tuumakood pöördus vale mälu poole liiga kõrgel prioriteedil | draiver |
-| `0xD1` | DRIVER_IRQL_NOT_LESS_OR_EQUAL | sama, aga süüdlane on kindlasti draiver | võrgu-, Wi-Fi-, USB-draiver (USB – ingl *Universal Serial Bus*) |
-| `0x50` | PAGE_FAULT_IN_NONPAGED_AREA | pöörduti mäluaadressi poole, mida pole olemas | draiver, viirusetõrje, vigane RAM (ingl *Random-Access Memory*) |
+| `0xD1` | DRIVER_IRQL_NOT_LESS_OR_EQUAL | sama, aga süüdlane on kindlasti draiver | võrgu-, Wi-Fi-, USB-draiver (USB – *Universal Serial Bus*) |
+| `0x50` | PAGE_FAULT_IN_NONPAGED_AREA | pöörduti mäluaadressi poole, mida pole olemas | draiver, viirusetõrje, vigane RAM (*Random-Access Memory*) |
 | `0x1A` | MEMORY_MANAGEMENT | mäluhalduri andmestruktuurid on rikutud | sageli vigane RAM |
 | `0x3B` | SYSTEM_SERVICE_EXCEPTION | erind süsteemikutse töötlemisel | draiver, graafikadraiver |
 | `0x7E` | SYSTEM_THREAD_EXCEPTION_NOT_HANDLED | süsteemi lõim tekitas käsitlemata erindi | draiver |
-| `0x7B` | INACCESSIBLE_BOOT_DEVICE | käivitusketast ei leita | kettakontrolleri režiim (AHCI/RAID) muudetud, ketas rikkis |
+| `0x7B` | INACCESSIBLE_BOOT_DEVICE | käivitusketast ei leita | kettakontrolleri režiim (AHCI/RAID (AHCI – *Advanced Host Controller Interface*; RAID – *Redundant Array of Independent Disks*)) muudetud, ketas rikkis |
 | `0x9F` | DRIVER_POWER_STATE_FAILURE | draiver ei vasta unerežiimi minekul/ärkamisel | draiver |
 | `0xC2` | BAD_POOL_CALLER | draiver kasutab tuumamälu (pool) valesti | draiver |
 | `0xEF` | CRITICAL_PROCESS_DIED | kriitiline protsess (csrss, wininit) lõpetas töö | rikutud süsteemifailid, pahavara |
 | `0x124` | WHEA_UNCORRECTABLE_ERROR | riistvara teatas parandamatust veast | **riistvara**: protsessor, RAM, ülekuumenemine, kiirendamine |
-| `0x133` | DPC_WATCHDOG_VIOLATION | draiver hoidis protsessorit liiga kaua kinni | salvestus- (NVMe/SATA) või võrgudraiver |
+| `0x133` | DPC_WATCHDOG_VIOLATION | draiver hoidis protsessorit liiga kaua kinni | salvestus- (NVMe/SATA (NVMe – *Non-Volatile Memory Express*; SATA – *Serial Advanced Technology Attachment*)) või võrgudraiver |
 | `0x139` | KERNEL_SECURITY_CHECK_FAILURE | tuum avastas rikutud andmestruktuuri | draiver, mälu |
 | `0xE2` | MANUALLY_INITIATED_CRASH | krahh tekitati meelega (Ctrl+Scroll Lock) | testimine |
 
-**Mis on IRQL?** IRQL (Interrupt Request Level) on protsessori hetke prioriteeditase (ptk 5). Kõrgel IRQL-il (nt katkestuse töötlemisel) ei tohi kasutada lehefaili – kui kood pöördub sel ajal mälu poole, mis tuleks kettalt laadida, ei saa Windows seda teha ja peatub. Seepärast tähendavad `0x0A` ja `0xD1` peaaegu alati draiveri programmeerimisviga.
+**Mis on IRQL?** IRQL (*Interrupt Request Level*) on protsessori hetke prioriteeditase (ptk 5). Kõrgel IRQL-il (nt katkestuse töötlemisel) ei tohi kasutada lehefaili – kui kood pöördub sel ajal mälu poole, mis tuleks kettalt laadida, ei saa Windows seda teha ja peatub. Seepärast tähendavad `0x0A` ja `0xD1` peaaegu alati draiveri programmeerimisviga.
 
 ### 19.2 Mõned põhjused, miks Windows jookseb kokku
 
@@ -82,9 +82,9 @@ Peatuskood koosneb **numbrist** (nt `0x000000D1`) ja **nimest** (nt `DRIVER_IRQL
 | Vigane draiver | uus graafika- või võrgudraiver | eelmise draiveri taastamine, turvarežiim |
 | Turva- või viirusetõrjetarkvara tuumas | CrowdStrike’i uuendus 2024 | tootja parandus, Windows RE |
 | Mälu riistvaraviga | vigane RAM-moodul | Windowsi mälu diagnostika, MemTest86 |
-| Ketta- või failisüsteemiviga | NVMe (ingl *Non-Volatile Memory Express*) püsivara, rikutud NTFS (ingl *New Technology File System*) | `chkdsk`, püsivara uuendus |
+| Ketta- või failisüsteemiviga | NVMe (*Non-Volatile Memory Express*) püsivara, rikutud NTFS (*New Technology File System*) | `chkdsk`, püsivara uuendus |
 | Ülekuumenemine, toide | tolmune jahutus, nõrk toiteplokk | riistvara kontroll |
-| Püsivara (UEFI/BIOS) | vana mikrokood | püsivara uuendus |
+| Püsivara (UEFI/BIOS (UEFI – *Unified Extensible Firmware Interface*; BIOS – *Basic Input/Output System*)) | vana mikrokood | püsivara uuendus |
 | Kiirendamine (overclocking) | ebastabiilne sagedus | vaikeseaded |
 | Pahavara / juurkomplekt | tuumamuudatus | võrguühenduseta skannimine, uuesti paigaldus |
 
@@ -98,10 +98,10 @@ See on tõrkeotsingu kõige olulisem küsimus, sest lahendused on täiesti erine
 | Süüdlane tõmmises | iga kord **sama** draiver (`IMAGE_NAME`) | iga kord erinev moodul, sageli `ntoskrnl.exe` |
 | Algus | pärast draiveri, uuenduse või programmi paigaldust | ilma nähtava põhjuseta, vahel pärast seadme kukkumist või tolmu kogunemist |
 | Seos tegevusega | konkreetne tegevus (Wi-Fi ühendus, unerežiim, USB-seade) | koormus (mängud, renderdamine) või kuumus |
-| Logid | 1001 koos tõmmisega | WHEA-Logger (WHEA – ingl *Windows Hardware Error Architecture*) sündmused (18, 19, 47), sündmus 41 ilma tõmmiseta |
+| Logid | 1001 koos tõmmisega | WHEA-Logger (WHEA – *Windows Hardware Error Architecture*) sündmused (18, 19, 47), sündmus 41 ilma tõmmiseta |
 | Turvarežiimis | krahhe pole (draiverit ei laadita) | krahhid jätkuvad |
 
-**Kontrollid riistvara jaoks:** Windowsi mälu diagnostika (`mdsched.exe`) või MemTest86 (mitu tsüklit), ketta SMART-andmed (SMART – ingl *Self-Monitoring, Analysis and Reporting Technology*; `Get-PhysicalDisk | Get-StorageReliabilityCounter`), temperatuurid (HWiNFO), toiteplokk ja ühendused, BIOS-i (ingl *Basic Input/Output System*) vaikeseaded (lülita kiirendamine ja XMP (ingl *Extreme Memory Profile*) välja).
+**Kontrollid riistvara jaoks:** Windowsi mälu diagnostika (`mdsched.exe`) või MemTest86 (mitu tsüklit), ketta SMART-andmed (SMART – *Self-Monitoring, Analysis and Reporting Technology*; `Get-PhysicalDisk | Get-StorageReliabilityCounter`), temperatuurid (HWiNFO), toiteplokk ja ühendused, BIOS-i (*Basic Input/Output System*) vaikeseaded (lülita kiirendamine ja XMP (*Extreme Memory Profile*) välja).
 
 **Driver Verifier** (`verifier.exe`) on Windowsi tööriist, mis kontrollib valitud draivereid väga rangelt ja tekitab krahhi kohe, kui draiver teeb midagi valesti. Nii saab „peidetud“ draiveri vea kinni püüda. **Hoiatus:** kasuta ainult kolmanda osapoole draiverite peal ja tea, kuidas see välja lülitada (`verifier /reset` turvarežiimis), sest muidu võib arvuti jääda krahhide tsüklisse.
 
@@ -115,7 +115,7 @@ Joonis: tõrkeotsingu otsustuspuu – kas arvuti käivitub, kas on tõmmis, kas 
 
 **CrowdStrike’i juhtum (19. juuli 2024).** Vigane sisuuuendus turvatarkvara tuumadraiverile jooksutas kokku miljoneid Windowsi arvuteid üle maailma, sh lennujaamade, haiglate ja pankade süsteemid; paljud masinad jäid käivitamisel tsüklisse ([Help Net Security](https://www.helpnetsecurity.com/2024/11/19/windows-kernel-security-vendors/)). Juhtum näitas, et tuumarežiimi kolmanda osapoole kood on üksik rikkepunkt (ptk 4.4).
 
-**Mis täpsemalt juhtus?** CrowdStrike Falcon on EDR-toode (EDR – ingl *Endpoint Detection and Response*, ptk 18), mille tuumadraiver `csagent.sys` laaditakse juba Windowsi käivitamise alguses (**boot-start draiver**), et pahavara ei saaks sellest ette jõuda. Draiver loeb tootja poolt sageli uuendatavaid **sisufaile** (channel file), mis kirjeldavad uusi rünnakuvõtteid. 19. juulil 2024 levis vigane sisufail (`C-00000291*.sys`): draiver ootas faililt 21 välja, kuid kood andis ette ainult 20 – draiver luges mälust väljaspool massiivi piire. Tuumas tähendab see kohest krahhi (`PAGE_FAULT_IN_NONPAGED_AREA`, `0x50`). Microsofti hinnangul jooksis kokku umbes **8,5 miljonit** Windowsi arvutit.
+**Mis täpsemalt juhtus?** CrowdStrike Falcon on EDR-toode (EDR – *Endpoint Detection and Response*, ptk 18), mille tuumadraiver `csagent.sys` laaditakse juba Windowsi käivitamise alguses (**boot-start draiver**), et pahavara ei saaks sellest ette jõuda. Draiver loeb tootja poolt sageli uuendatavaid **sisufaile** (channel file), mis kirjeldavad uusi rünnakuvõtteid. 19. juulil 2024 levis vigane sisufail (`C-00000291*.sys`): draiver ootas faililt 21 välja, kuid kood andis ette ainult 20 – draiver luges mälust väljaspool massiivi piire. Tuumas tähendab see kohest krahhi (`PAGE_FAULT_IN_NONPAGED_AREA`, `0x50`). Microsofti hinnangul jooksis kokku umbes **8,5 miljonit** Windowsi arvutit.
 
 **Miks oli parandamine nii raske?**
 
@@ -130,7 +130,7 @@ Joonis: tõrkeotsingu otsustuspuu – kas arvuti käivitub, kas on tõmmis, kas 
 
 Microsoft vastas **Windowsi töökindluse algatusega** (Windows Resiliency Initiative, november 2024):
 
-- **kiire masinataaste** (Quick Machine Recovery, QMR) – kui arvuti ei käivitu, avab see Windowsi taastekeskkonna (Windows RE), loob võrguühenduse ja laadib Windows Update’ist sihitud paranduse ilma, et IT-tugi peaks füüsiliselt kohal olema. QMR on Home-seadmetes vaikimisi sees; hallatud seadmetes seadistatakse Intune’i või `reagentc.exe` kaudu ([Digitpatrox](https://digitpatrox.com/windows-11-gets-new-black-screen-of-death-auto-recovery-tool/));
+- **kiire masinataaste** (*Quick Machine Recovery*, QMR) – kui arvuti ei käivitu, avab see Windowsi taastekeskkonna (Windows RE), loob võrguühenduse ja laadib Windows Update’ist sihitud paranduse ilma, et IT-tugi peaks füüsiliselt kohal olema. QMR on Home-seadmetes vaikimisi sees; hallatud seadmetes seadistatakse Intune’i või `reagentc.exe` kaudu ([Digitpatrox](https://digitpatrox.com/windows-11-gets-new-black-screen-of-death-auto-recovery-tool/));
 - **viirusetõrje viimine tuumast välja** – Microsoft töötab koos turvatootjatega (Microsoft Virus Initiative), et nende tarkvara saaks töötada kasutajarežiimis ([heise](https://heise.de/-10462904));
 - rangemad nõuded tootjate uuenduste järk-järgulisele levitamisele ja mäluturvalise koodi kasutamine.
 
@@ -140,13 +140,13 @@ Microsoft vastas **Windowsi töökindluse algatusega** (Windows Resiliency Initi
 
 | Windows RE tööriist | Mida teeb | Millal kasutada |
 | --- | --- | --- |
-| **Käivitusparandus** (Startup Repair) | parandab automaatselt käivitusfaile ja BCD-d (ingl *Boot Configuration Data*) | arvuti ei käivitu ja pole selge, miks |
+| **Käivitusparandus** (Startup Repair) | parandab automaatselt käivitusfaile ja BCD-d (*Boot Configuration Data*) | arvuti ei käivitu ja pole selge, miks |
 | **Kiire masinataaste** (QMR) | otsib Windows Update’ist sihitud parandust | laialdane probleem (nagu CrowdStrike) |
 | **Käivitusseaded → turvarežiim** | käivitab Windowsi minimaalsete draiveritega | vigane draiver või programm |
 | **Desinstalli värskendused** | eemaldab viimase kvaliteedi- või funktsiooniuuenduse | probleem algas pärast Windowsi uuendust |
 | **Süsteemitaaste** / **ajapunktitaaste** | viib süsteemi varasemasse olekusse | probleem algas pärast muudatust |
 | **Käsuviip** | käsitsi parandus (faili kustutamine, `bcdboot`, `chkdsk`, `sfc /offline`) | kogenud administraatorile |
-| **UEFI (ingl *Unified Extensible Firmware Interface*) püsivara sätted** | avab BIOS-i/UEFI | käivitusjärjekord, Secure Boot |
+| **UEFI (*Unified Extensible Firmware Interface*) püsivara sätted** | avab BIOS-i/UEFI | käivitusjärjekord, Secure Boot |
 | **Lähtesta see arvuti** | paigaldab Windowsi uuesti (failidega või ilma) | viimane abinõu |
 
 **Turvarežiim** (Safe Mode) laadib ainult Microsofti põhidraiverid ja -teenused. Kui arvuti töötab turvarežiimis stabiilselt, on süüdlane peaaegu kindlasti mõni kolmanda osapoole draiver või programm. **NB!** BitLockeriga kettal küsitakse Windows RE-s ja mõnikord turvarežiimi minnes **taastevõtit** – hoia võtmed Entra ID-s, Active Directorys või Microsofti kontol, mitte samas arvutis.
@@ -177,7 +177,7 @@ Windows salvestab krahhi ajal mälu sisu lehefaili kaudu kettale; järgmisel kä
 | Väike mälutõmmis (minidump) | peatuskood, draiverid, aktiivne lõim; \~256 KB–2 MB | `C:\Windows\Minidump\*.dmp` |
 | Tuuma mälutõmmis | tuumamälu | `C:\Windows\MEMORY.DMP` |
 | Automaatne mälutõmmis (vaikimisi) | nagu tuuma tõmmis, lehefail kohandub | `MEMORY.DMP` |
-| Aktiivne mälutõmmis | tuum + aktiivsed kasutajaprotsessid, ilma külaliste VM-ideta (ingl *Virtual Machine*) | `MEMORY.DMP` |
+| Aktiivne mälutõmmis | tuum + aktiivsed kasutajaprotsessid, ilma külaliste VM-ideta (*Virtual Machine*) | `MEMORY.DMP` |
 | Täielik mälutõmmis | kogu füüsiline mälu | `MEMORY.DMP` |
 
 **Kust seadistada?** *Süsteemi atribuudid* (`sysdm.cpl`) → *Täpsemalt* → *Käivitus ja taaste* → *Sätted*. Seal on ka „Taaskäivita automaatselt“ ja „Kirjuta sündmus süsteemilogisse“. Registris on seade `HKLM\SYSTEM\CurrentControlSet\Control\CrashControl\CrashDumpEnabled`:
@@ -253,11 +253,11 @@ Krahhi uurimine ei tohi olla juhuslik katsetamine („installin kõik draiverid 
 | --- | --- | --- |
 | Krahhid algasid pärast draiveri uuendust | uus draiver | „Taasta draiver“ seadmehalduris |
 | Krahhid algasid pärast Windowsi uuendust | uuendus või ühildumatu draiver | desinstalli uuendus, otsi tootja uuemat draiverit |
-| Krahh ainult mängimisel/koormusel | ülekuumenemine, toide, graafikadraiver | temperatuurid, puhasta jahutus, GPU (ingl *Graphics Processing Unit*) draiver |
+| Krahh ainult mängimisel/koormusel | ülekuumenemine, toide, graafikadraiver | temperatuurid, puhasta jahutus, GPU (*Graphics Processing Unit*) draiver |
 | Erinevad juhuslikud peatuskoodid | RAM | `mdsched.exe` / MemTest86, ühe mooduli kaupa |
 | `0x124` WHEA | riistvara | BIOS vaikeseaded, temperatuurid, protsessor/RAM |
 | Kustub hetkega, tõmmist pole | toide, ülekuumenemine | toiteplokk, juhtmed, temperatuurid |
-| Ei käivitu üldse, `0x7B` | kettakontroller/ketas | BIOS-i SATA (ingl *Serial Advanced Technology Attachment*) režiim, ketta tervis |
+| Ei käivitu üldse, `0x7B` | kettakontroller/ketas | BIOS-i SATA (*Serial Advanced Technology Attachment*) režiim, ketta tervis |
 | Krahhi tsükkel kohe käivitamisel | boot-start draiver, viirusetõrje | Windows RE → turvarežiim / QMR |
 
 ### 19.6 Võrdlus: Linux ja macOS
@@ -271,7 +271,7 @@ Krahh on kõigil operatsioonisüsteemidel – põhimõtted on samad, nimed erine
 | Tõmmis | `MEMORY.DMP`, minidump | **kdump** (kexec käivitab teise tuuma, mis salvestab mälu `/var/crash`) | paanikaaruanne |
 | Logid | sündmusvaatur 41, 1001 | `journalctl -k -b -1` (eelmise käivituse tuumalogi), `dmesg` | *Konsool* → paanikaaruanded (`/Library/Logs/DiagnosticReports/*.panic`) |
 | Analüüs | WinDbg | `crash` tööriist | aruande tekst, Apple’i tugi |
-| Taaste | Windows RE, QMR | GRUB-ist (ingl *GRand Unified Bootloader*) vana tuum, päästerežiim | macOS Recovery (⌘R / toitenupp all hoides) |
+| Taaste | Windows RE, QMR | GRUB-ist (*GRand Unified Bootloader*) vana tuum, päästerežiim | macOS Recovery (⌘R / toitenupp all hoides) |
 
 **Oops vs panic:** Linuxis võib tuumaviga mõnikord lõpetada ainult vigase lõime (**oops**) ja süsteem töötab edasi, kuid ebakindlalt. Serverites seadistatakse sageli `kernel.panic_on_oops=1`, et süsteem peatuks ja taaskäivituks kohe – sama loogika nagu Windowsis: parem peatuda kui jätkata rikutud olekus.
 
@@ -315,7 +315,7 @@ Analüüs:
 
 1. Arvuti käivitub kaks korda ebaõnnestunult → avaneb **Windows RE**.
 2. **Kui QMR on lubatud** ja Microsoft/tootja on avaldanud paranduse, laadib QMR selle ise alla ja arvuti käivitub – IT-tugi ei pea midagi tegema.
-3. **Kui QMR pole lubatud:** *Tõrkeotsing → Täpsemad suvandid → Käivitusseaded → Turvarežiim*. BitLocker küsib taastevõtit → võtme leiab Entra ID-st / AD-st (ingl *Active Directory*) arvuti nime järgi.
+3. **Kui QMR pole lubatud:** *Tõrkeotsing → Täpsemad suvandid → Käivitusseaded → Turvarežiim*. BitLocker küsib taastevõtit → võtme leiab Entra ID-st / AD-st (*Active Directory*) arvuti nime järgi.
 4. Turvarežiimis kustutatakse tootja juhise järgi vigane fail ja arvuti taaskäivitatakse.
 5. **Pärast:** IT-juht vaatab üle, kas viirusetõrje uuendusi saab levitada järk-järgult, ja lubab QMR-i Intune’i kaudu kõigil arvutitel.
 
@@ -374,7 +374,7 @@ Get-WinEvent -FilterHashtable @{LogName='System'; Id=41,1001} -MaxEvents 10 | Fo
 reagentc /info
 ```
 
-**Ainult õppevirtuaalmasinas:** tekita testkrahh ja analüüsi seda. Lisa registris võti `HKLM\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters` (PS/2 klaviatuur) või `…\kbdhid\Parameters` (USB) ja väärtus `CrashOnCtrlScroll` = 1 (DWORD), taaskäivita ja vajuta parempoolset Ctrl-i all hoides kaks korda Scroll Lock. Ava pärast taaskäivitust `MEMORY.DMP` WinDbg-s, käivita `!analyze -v` ja leia peatuskood (`MANUALLY_INITIATED_CRASH`). Ava töökindluse monitor ja leia krahh ajajoonelt. Kustuta lisatud registriväärtus.
+**Ainult õppevirtuaalmasinas:** tekita testkrahh ja analüüsi seda. Lisa registris võti `HKLM\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters` (PS/2 klaviatuur) või `…\kbdhid\Parameters` (USB) ja väärtus `CrashOnCtrlScroll` = 1 (DWORD – *Double Word*), taaskäivita ja vajuta parempoolset Ctrl-i all hoides kaks korda Scroll Lock. Ava pärast taaskäivitust `MEMORY.DMP` WinDbg-s, käivita `!analyze -v` ja leia peatuskood (`MANUALLY_INITIATED_CRASH`). Ava töökindluse monitor ja leia krahh ajajoonelt. Kustuta lisatud registriväärtus.
 
 ### Iseseisvad ülesanded
 

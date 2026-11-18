@@ -2,16 +2,16 @@
 
 ## 20. UUS: Virtualiseerimine, konteinerid ja WSL
 
-Virtualiseerimine laseb ühes füüsilises arvutis töötada mitmel operatsioonisüsteemil korraga; konteinerid isoleerivad rakendusi ühe OS-tuuma (OS – ingl *Operating System*) sees. Windows kasutab hüperviisorit nii serverites (Hyper-V) kui ka kliendi turvalisuses (VBS – ingl *Virtualization-Based Security*, ptk 4), Linuxi käitamiseks (WSL 2) ja turvaliseks testimiseks (Windows Sandbox).
+Virtualiseerimine laseb ühes füüsilises arvutis töötada mitmel operatsioonisüsteemil korraga; konteinerid isoleerivad rakendusi ühe OS-tuuma (OS – *Operating System*) sees. Windows kasutab hüperviisorit nii serverites (Hyper-V) kui ka kliendi turvalisuses (VBS – *Virtualization-Based Security*, ptk 4), Linuxi käitamiseks (WSL 2) ja turvaliseks testimiseks (Windows Sandbox).
 
 ### 20.1 Hüperviisorid
 
 | Tüüp | Kirjeldus | Näited |
 | --- | --- | --- |
-| 1. tüüp (bare-metal) | töötab otse riistvaral, OS-id on selle peal | Hyper-V, VMware ESXi, KVM (ingl *Kernel-based Virtual Machine*), Xen |
+| 1. tüüp (bare-metal) | töötab otse riistvaral, OS-id on selle peal | Hyper-V, VMware ESXi, KVM (*Kernel-based Virtual Machine*), Xen |
 | 2. tüüp (hosted) | töötab tavalise OS-i rakendusena | VMware Workstation, VirtualBox |
 
-Kaasaegsed hüperviisorid kasutavad protsessori virtualiseerimislaiendusi (Intel VT-x (VT – ingl *Virtualization Technology*), AMD-V – ingl *AMD Virtualization*, ARM (ingl *Advanced RISC Machines*) EL2 – ingl *Exception Level 2*) ja teisese taseme aadressitõlget (EPT/NPT), et külalis-OS töötaks peaaegu omakeelse kiirusega.
+Kaasaegsed hüperviisorid kasutavad protsessori virtualiseerimislaiendusi (Intel VT-x (VT – *Virtualization Technology*), AMD-V – *AMD Virtualization*, ARM (*Advanced RISC Machines*) EL2 – *Exception Level 2*) ja teisese taseme aadressitõlget (EPT/NPT (EPT – *Extended Page Tables*; NPT – *Nested Page Tables*)), et külalis-OS töötaks peaaegu omakeelse kiirusega.
 
 ### 20.2 Hyper-V arhitektuur
 
@@ -19,13 +19,13 @@ Hyper-V on 1. tüüpi hüperviisor ka siis, kui see on lubatud Windows 11-s: pä
 
 Olulised võimalused:
 
-- **2. põlvkonna VM** (ingl *Virtual Machine*) – UEFI (ingl *Unified Extensible Firmware Interface*), Secure Boot, virtuaalne TPM (ingl *Trusted Platform Module*); Windows Server 2025 Hyper-V-s vaikimisi ([Petri](https://petri.com/windows-server-2025-public-preview/));
+- **2. põlvkonna VM** (*Virtual Machine*) – UEFI (*Unified Extensible Firmware Interface*), Secure Boot, virtuaalne TPM (*Trusted Platform Module*); Windows Server 2025 Hyper-V-s vaikimisi ([Petri](https://petri.com/windows-server-2025-public-preview/));
 - **pesastatud virtualiseerimine** – VM-is saab käitada omakorda hüperviisorit (õppelaborid!);
 - **dünaamiline mälu, hetktõmmised** (checkpoints), **otseteisaldus** (live migration);
-- **GPU (ingl *Graphics Processing Unit*) jagamine** (GPU-P – ingl *GPU Partitioning*) VM-ide vahel;
+- **GPU (*Graphics Processing Unit*) jagamine** (GPU-P – *GPU Partitioning*) VM-ide vahel;
 - **varjutatud VM-id** (shielded VMs) – kaitse ka hosti administraatori eest.
 
-VMware ja Hyper-V kooseksisteerivad: kui Windowsis on hüperviisor (Hyper-V, VBS, WSL 2) sees, kasutab VMware Workstation Windowsi hüperviisoriplatvormi API-t (ingl *Application Programming Interface*).
+VMware ja Hyper-V kooseksisteerivad: kui Windowsis on hüperviisor (Hyper-V, VBS, WSL 2) sees, kasutab VMware Workstation Windowsi hüperviisoriplatvormi API-t (*Application Programming Interface*).
 
 ### 20.3 Konteinerid
 
@@ -47,7 +47,7 @@ Windowsi konteinerite isolatsiooniviisid:
 - **protsessi isolatsioon** – nagu Linuxi konteinerid; kasutab tööobjekte (ptk 7.4), objektihalduri nimeruume ja failisüsteemi virtualiseerimist;
 - **Hyper-V isolatsioon** – iga konteiner töötab kerges VM-is oma tuumaga; turvalisem.
 
-Konteinereid hallatakse Dockeri või containerd abil ja orkestreeritakse **Kubernetesega** (nt AKS – ingl *Azure Kubernetes Service*). Konteineri tõmmised põhinevad Microsofti alustõmmistel: Nano Server, Server Core, Windows Server.
+Konteinereid hallatakse Dockeri või containerd abil ja orkestreeritakse **Kubernetesega** (nt AKS – *Azure Kubernetes Service*). Konteineri tõmmised põhinevad Microsofti alustõmmistel: Nano Server, Server Core, Windows Server.
 
 ### 20.4 Windows Sandbox
 
@@ -55,13 +55,13 @@ Konteinereid hallatakse Dockeri või containerd abil ja orkestreeritakse **Kuber
 
 ### 20.5 Windowsi alamsüsteem Linuxile (WSL)
 
-**WSL** (Windows Subsystem for Linux) võimaldab käitada Windowsis Linuxi distributsiooni – Ubuntu, Debiani, Kali Linuxi jt – ilma eraldi virtuaalmasinat seadistamata ja ilma arvutit kaheks süsteemiks jagamata (dual boot). Linuxi käsud, `apt`, bash-skriptid, konteinerid ja arendustööriistad töötavad kõrvuti Windowsi programmidega ning mõlemad pooled näevad teineteise faile. IT-õppes (IT – ingl *Information Technology*) on WSL kiireim viis saada Linuxi käsurida igasse klassiarvutisse.
+**WSL** (*Windows Subsystem for Linux*) võimaldab käitada Windowsis Linuxi distributsiooni – Ubuntu, Debiani, Kali Linuxi jt – ilma eraldi virtuaalmasinat seadistamata ja ilma arvutit kaheks süsteemiks jagamata (dual boot). Linuxi käsud, `apt`, bash-skriptid, konteinerid ja arendustööriistad töötavad kõrvuti Windowsi programmidega ning mõlemad pooled näevad teineteise faile. IT-õppes (IT – *Information Technology*) on WSL kiireim viis saada Linuxi käsurida igasse klassiarvutisse.
 
 #### 20.5.1 Versiooniajalugu
 
 ![WSL-i ajajoon · 2016–2026](../pildid/20-b.png)
 
-Joonis: WSL 1 ilmus 2016. aastal tõlkekihina, WSL 2 tõi 2020. aastal päris Linuxi tuuma. Hilisemad muudatused (WSLg – ingl *Windows Subsystem for Linux GUI*, systemd, peegelvõrk, konteinerid) on ehitatud WSL 2 peale ([Wikipedia](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)).
+Joonis: WSL 1 ilmus 2016. aastal tõlkekihina, WSL 2 tõi 2020. aastal päris Linuxi tuuma. Hilisemad muudatused (WSLg – *Windows Subsystem for Linux GUI*, systemd, peegelvõrk, konteinerid) on ehitatud WSL 2 peale ([Wikipedia](https://en.wikipedia.org/wiki/Windows_Subsystem_for_Linux)).
 
 Sõna „versioon“ tähendab WSL-i puhul kaht eri asja:
 
@@ -74,16 +74,16 @@ WSL 3.0.1 (29.09.2026) tõi üldkasutusse **WSL-i konteinerid** ja käsu `wslc`;
 
 ![WSL 1 ja WSL 2 arhitektuur · tõlkekiht ja kerge VM](../pildid/20-c.png)
 
-Joonis: WSL 1-s töötab Linuxi rakendus otse Windowsi tuuma peal ja draiver `lxcore.sys` tõlgib iga Linuxi süsteemikutse NT-tuuma (NT – ingl *New Technology*) kutseks. WSL 2-s töötab Microsofti kohandatud päris Linuxi tuum kerges utiliit-VM-is, mis kasutab sama hüperviisorit nagu Hyper-V ja VBS (ptk 4). Windows ise on juurpartitsioon.
+Joonis: WSL 1-s töötab Linuxi rakendus otse Windowsi tuuma peal ja draiver `lxcore.sys` tõlgib iga Linuxi süsteemikutse NT-tuuma (NT – *New Technology*) kutseks. WSL 2-s töötab Microsofti kohandatud päris Linuxi tuum kerges utiliit-VM-is, mis kasutab sama hüperviisorit nagu Hyper-V ja VBS (ptk 4). Windows ise on juurpartitsioon.
 
 | Omadus | WSL 1 | WSL 2 |
 | --- | --- | --- |
 | Tuum | tõlkekiht `lxcore.sys` NT-tuumas | päris Linuxi tuum kerges VM-is |
 | Süsteemikutsete ühilduvus | osaline | täielik |
 | Docker, systemd, tuumamoodulid | ei toimi | toimivad |
-| Failid Linuxi poolel | NTFS-il (ingl *New Technology File System*), aeglasemad | `ext4.vhdx` virtuaalkettal, kiired |
+| Failid Linuxi poolel | NTFS-il (*New Technology File System*), aeglasemad | `ext4.vhdx` virtuaalkettal, kiired |
 | Windowsi failid (`/mnt/c`) | kiired | aeglasemad, üle VM-i piiri |
-| Võrk | sama IP-aadress (IP – ingl *Internet Protocol*) kui Windowsil | vaikimisi NAT (ingl *Network Address Translation*), soovi korral peegelvõrk (mirrored) |
+| Võrk | sama IP-aadress (IP – *Internet Protocol*) kui Windowsil | vaikimisi NAT (*Network Address Translation*), soovi korral peegelvõrk (mirrored) |
 | Virtualiseerimise tugi | pole vaja | vajalik (VT-x / AMD-V, Virtual Machine Platform) |
 | Graafika ja GPU | ei | WSLg ja GPU-kiirendus |
 
@@ -98,7 +98,7 @@ Joonis: Windows näeb Linuxi faile Exploreris aadressil `\\wsl.localhost\Ubuntu`
 Kasulikud võtted:
 
 - `explorer.exe .` avab Linuxi praeguse kausta Windowsi Exploreris;
-- `code .` avab kausta VS Code’is (VS – ingl *Visual Studio*) (WSL-laiendusega);
+- `code .` avab kausta VS Code’is (VS – *Visual Studio*) (WSL-laiendusega);
 - Windowsi programme saab käivitada Linuxist (`notepad.exe fail.txt`) ja Linuxi käske Windowsist (`wsl ls -la`).
 
 Kogu WSL 2 VM-i seadistab fail `%UserProfile%\.wslconfig`, ühe distributsiooni seadeid fail `/etc/wsl.conf`:
@@ -124,7 +124,7 @@ Muudatused rakenduvad pärast käsku `wsl --shutdown` ja WSL-i uuesti käivitami
 **Eeldused:**
 
 - Windows 11 või Windows 10 versioon 2004 või uuem (järk 19041+);
-- protsessori virtualiseerimine on UEFI-s lubatud. Kontroll: tegumihaldur → *Jõudlus* → *CPU* (ingl *Central Processing Unit*) → *Virtualiseerimine: lubatud*;
+- protsessori virtualiseerimine on UEFI-s lubatud. Kontroll: tegumihaldur → *Jõudlus* → *CPU* (*Central Processing Unit*) → *Virtualiseerimine: lubatud*;
 - kui Windows ise töötab virtuaalmasinas, peab olema sisse lülitatud pesastatud virtualiseerimine (VMware: `vhv.enable = "TRUE"`; Hyper-V: `Set-VMProcessor -VMName <nimi> -ExposeVirtualizationExtensions $true`);
 - administraatoriõigused.
 
@@ -147,7 +147,7 @@ Kindla versiooni paigaldamiseks vaata nimekirja `wsl --list --online` ja vali se
 2. Loo Kali kasutajanimi ja parool.
 3. Uuenda: `sudo apt update && sudo apt full-upgrade -y`.
 4. WSL-i Kali on algul minimaalne, ilma tööriistadeta. Paigalda tavaline komplekt `sudo apt install -y kali-linux-default` või ainult vajalikud tööriistad, nt `sudo apt install -y nmap`.
-5. Graafiline töölaud **Win-KeX**: `sudo apt install -y kali-win-kex`. Käivita aknarežiimis helitoega `kex --win -s`; Windowsi töölauaga ühendatult `kex --sl -s`; RDP (ingl *Remote Desktop Protocol*) kaudu `kex --esm -s`. Aknarežiimist väljud klahviga F8 ([Kali: Win-KeX](https://www.kali.org/docs/wsl/win-kex/)).
+5. Graafiline töölaud **Win-KeX**: `sudo apt install -y kali-win-kex`. Käivita aknarežiimis helitoega `kex --win -s`; Windowsi töölauaga ühendatult `kex --sl -s`; RDP (*Remote Desktop Protocol*) kaudu `kex --esm -s`. Aknarežiimist väljud klahviga F8 ([Kali: Win-KeX](https://www.kali.org/docs/wsl/win-kex/)).
 6. Windowsist saab Kali käivitada ka otse: `wsl -d kali-linux`.
 
 Võrgu eripära: WSL 2 vaikimisi NAT-võrgus on Kali Windowsi taga eraldi alamvõrgus. Kui õppelabori harjutus eeldab, et Kali on samas kohtvõrgus, lülita `.wslconfig`-is sisse `networkingMode=mirrored` või kasuta eraldi virtuaalmasinat.
@@ -189,13 +189,13 @@ Mai 2025 Build-konverentsil avaldas Microsoft suurema osa WSL-i lähtekoodist Gi
 
 ### 20.6 Pilvearvutid
 
-**Windows 365 Cloud PC** (ingl *Personal Computer*) ja **Azure Virtual Desktop** käitavad Windowsi andmekeskuses; kasutaja ühendub brauseri või Windows App’i kaudu. Andmed ei asu lõppseadmes, mis lihtsustab haldust ja vähendab varguse riski. Kaugtöölaua ühendus muutub ise ründepinnaks (tugev autentimine, MFA – ingl *Multi-Factor Authentication*, tingimuslik juurdepääs).
+**Windows 365 Cloud PC** (*Personal Computer*) ja **Azure Virtual Desktop** käitavad Windowsi andmekeskuses; kasutaja ühendub brauseri või Windows App’i kaudu. Andmed ei asu lõppseadmes, mis lihtsustab haldust ja vähendab varguse riski. Kaugtöölaua ühendus muutub ise ründepinnaks (tugev autentimine, MFA – *Multi-Factor Authentication*, tingimuslik juurdepääs).
 
 ### Näide: IT-õppe labor – mida kuhu panna
 
 | Vajadus | Sobiv lahendus | Põhjus |
 | --- | --- | --- |
-| Igal õpilasel oma domeen (DC – ingl *Domain Controller*, DNS – ingl *Domain Name System*, DHCP – ingl *Dynamic Host Configuration Protocol*, klient) | VM-id VMware’is või Hyper-V-s, hetktõmmisega | vaja täisväärtuslikku Windows Serverit ja oma võrku; vea korral taastatakse hetktõmmisest |
+| Igal õpilasel oma domeen (DC – *Domain Controller*, DNS – *Domain Name System*, DHCP – *Dynamic Host Configuration Protocol*, klient) | VM-id VMware’is või Hyper-V-s, hetktõmmisega | vaja täisväärtuslikku Windows Serverit ja oma võrku; vea korral taastatakse hetktõmmisest |
 | Hyper-V harjutused õpilase VM-is | pesastatud virtualiseerimine | hüperviisor hüperviisori sees |
 | Veebirakendus (nt WordPress ja MySQL) | konteinerid Docker Compose’iga | käivitub sekunditega, sama keskkond igal õpilasel |
 | Kahtlane e-kirja manus | Windows Sandbox võrguta | kaob sulgemisel, host jääb puutumata |
@@ -230,7 +230,7 @@ Mai 2025 Build-konverentsil avaldas Microsoft suurema osa WSL-i lähtekoodist Gi
 2. Mis kasutab WSL 2? a) tõlget Windowsi tuumas b) päris Linuxi tuuma kerges VM-is c) Dockerit d) Cygwinit
 3. Mis juhtub Windows Sandboxi andmetega pärast sulgemist? a) salvestatakse OneDrive’i b) kustutatakse c) kopeeritakse hostile d) krüpteeritakse
 4. Mis Windowsi mehhanism on protsessi isolatsiooniga konteineri aluseks? a) tööobjekt b) kiud c) postkastipesa d) register
-5. Kus töötavad Linuxi tööriistad WSL 2-s failidega kõige kiiremini? a) kaustas /mnt/c/Users b) võrgukaustas c) Linuxi kodukaustas /home d) USB-pulgal
+5. Kus töötavad Linuxi tööriistad WSL 2-s failidega kõige kiiremini? a) kaustas /mnt/c/Users b) võrgukaustas c) Linuxi kodukaustas /home d) USB-pulgal (USB – *Universal Serial Bus*)
 6. Milline käsk paigaldab Kali Linuxi WSL-i? a) apt install kali b) winget install wsl c) wsl --set-version kali 2 d) wsl --install -d kali-linux
 
 ### Praktiline ülesanne
@@ -258,9 +258,9 @@ Käivita see ja kontrolli, et võrk puudub ja kaust on kirjutuskaitsega. VMware�
 
 ### Iseseisvad ülesanded
 
-**1. Sama rakendus kolmel moel.** Paigalda lihtne veebiserver (nt IIS või nginx) kolmel viisil: VM-i, Windows Sandboxi ja konteinerisse (`docker run -d -p 8080:80 nginx` WSL 2 või Docker Desktopiga). Mõõda iga variandi käivitusaeg, kettakasutus ja mälukasutus. **Esita:** tabel ja soovitus, millist varianti kasutaksid õppelaboris ja millist tootmises.
+**1. Sama rakendus kolmel moel.** Paigalda lihtne veebiserver (nt IIS (*Internet Information Services*) või nginx) kolmel viisil: VM-i, Windows Sandboxi ja konteinerisse (`docker run -d -p 8080:80 nginx` WSL 2 või Docker Desktopiga). Mõõda iga variandi käivitusaeg, kettakasutus ja mälukasutus. **Esita:** tabel ja soovitus, millist varianti kasutaksid õppelaboris ja millist tootmises.
 
-**2. Hetktõmmise strateegia.** Koosta oma õppelabori VM-idele (DC, failiserver, klient) hetktõmmiste reegel: millal hetktõmmis tehakse, kui kaua seda hoitakse ja millal kustutatakse. Selgita, miks domeenikontrolleri vana hetktõmmise taastamine võib põhjustada probleeme (USN rollback) ja miks hetktõmmis ei ole varukoopia. **Esita:** reeglid tabelina ja lühiselgitus.
+**2. Hetktõmmise strateegia.** Koosta oma õppelabori VM-idele (DC, failiserver, klient) hetktõmmiste reegel: millal hetktõmmis tehakse, kui kaua seda hoitakse ja millal kustutatakse. Selgita, miks domeenikontrolleri vana hetktõmmise taastamine võib põhjustada probleeme (USN (*Update Sequence Number*) rollback) ja miks hetktõmmis ei ole varukoopia. **Esita:** reeglid tabelina ja lühiselgitus.
 
 ### Viited
 

@@ -109,7 +109,7 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/03-pohimoisted.md">← Peatükk 3</a> · <a href="03-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Windowsi põhimõisted – proovi ise</h1>
-<p>Sellel lehel näed põhimõisteid töös: kuidas Windows API (ingl <i>Application Programming Interface</i>) kõne jõuab tuuma, kuidas pidemed ja objektid toimivad, mis töötab millises režiimis, mida tähendab sõna „teenus“ ja kui palju baite võtab üks täht eri kodeeringutes.</p>
+<p>Sellel lehel näed põhimõisteid töös: kuidas Windows API (<i>Application Programming Interface</i>) kõne jõuab tuuma, kuidas pidemed ja objektid toimivad, mis töötab millises režiimis, mida tähendab sõna „teenus“ ja kui palju baite võtab üks täht eri kodeeringutes.</p>
 <div class="toc"><a href="#teekond">1. Faili avamise teekond</a><a href="#pidemed">2. Pidemed ja objektid</a><a href="#reziim">3. Kus see töötab?</a><a href="#teenus">4. Mis liiki „teenus“?</a><a href="#unicode">5. Unicode baitideks</a></div>
 
 <!-- 1 -->
@@ -149,7 +149,7 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <!-- 3 -->
 <section id="reziim">
 <h2>3. Kus see töötab?</h2>
-<p>Vali ülal komponent ja klõpsa kastil, kus see töötab. VTL 1 (VTL – ingl <i>Virtual Trust Level</i>) on hüperviisoriga eraldatud usaldustase, kuhu isegi tavaline tuum ligi ei pääse.</p>
+<p>Vali ülal komponent ja klõpsa kastil, kus see töötab. VTL 1 (VTL – <i>Virtual Trust Level</i>) on hüperviisoriga eraldatud usaldustase, kuhu isegi tavaline tuum ligi ei pääse.</p>
 <div class="pool" id="rpool"></div>
 <div class="buckets">
   <div class="bucket" data-b="um"><h3 style="color:var(--um)">Kasutajarežiim (ring 3)</h3><div class="chips"></div></div>
@@ -170,13 +170,13 @@ textarea{width:100%;font:inherit;font-size:17px;padding:.6rem .8rem;border:1px s
 <!-- 5 -->
 <section id="unicode">
 <h2>5. Unicode baitideks</h2>
-<p>Kirjuta tekst ja vaata, mitu baiti see võtab eri kodeeringutes ja mis juhtub, kui salvestad selle vana ANSI (ingl <i>American National Standards Institute</i>) koodilehega. Eesti Windowsi ANSI koodileht on <strong>Windows-1257</strong> (Balti), mis sisaldab täpitähti, kuid mitte kirillitsat ega emotikone.</p>
+<p>Kirjuta tekst ja vaata, mitu baiti see võtab eri kodeeringutes ja mis juhtub, kui salvestad selle vana ANSI (<i>American National Standards Institute</i>) koodilehega. Eesti Windowsi ANSI koodileht on <strong>Windows-1257</strong> (Balti), mis sisaldab täpitähti, kuid mitte kirillitsat ega emotikone.</p>
 <textarea id="utext" rows="2">Tere, õäöüšž! Привет 😀</textarea>
 <div class="sizes" id="usizes"></div>
 <p class="hint" style="margin:.25rem 0">ANSI-failina salvestamise järel ja uuesti avamisel näed:</p>
 <div class="back" id="uback"></div>
 <p class="hint" style="margin:1rem 0 .25rem">Märk-märgilt:</p>
-<div class="ctab"><table><thead><tr><th>Märk</th><th>Koodipunkt</th><th>UTF-8 (UTF – ingl <i>Unicode Transformation Format</i>) baidid</th><th>UTF-16 LE (ingl <i>Little Endian</i>) baidid</th><th>ANSI (1257)</th></tr></thead><tbody id="utab"></tbody></table></div>
+<div class="ctab"><table><thead><tr><th>Märk</th><th>Koodipunkt</th><th>UTF-8 (UTF – <i>Unicode Transformation Format</i>) baidid</th><th>UTF-16 LE (<i>Little Endian</i>) baidid</th><th>ANSI (1257)</th></tr></thead><tbody id="utab"></tbody></table></div>
 </section>
 <hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
 <div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="03-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 3 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
@@ -193,23 +193,23 @@ const BOXES=[
  ['um','ntdll','<b>ntdll.dll</b> – Native API'],
  ['wall','wall','süsteemikutse (syscall): ring 3 → ring 0'],
  ['km','disp','<b>süsteemiteenuste dispetšer</b>'],
- ['km','om','<b>objektihaldur + SRM</b> – nimi ja õigused'],
- ['km','io','<b>I/O-haldur + ntfs.sys</b> – fail kettal'],
+ ['km','om','<b>objektihaldur + SRM (<i>Security Reference Monitor</i>)</b> – nimi ja õigused'],
+ ['km','io','<b>I/O-haldur (I/O – <i>Input/Output</i>) + ntfs.sys</b> – fail kettal'],
  ['km','ht','<b>Notepadi pidemetabel</b>']
 ];
 const OK=[
  ['notepad','um','Notepad kutsub <code>CreateFileW</code>','Notepad kutsub välja dokumenteeritud Windows API funktsiooni <code>CreateFileW(L"markmed.txt", GENERIC_READ, …)</code>. W tähendab, et failinimi on UTF-16 kujul.'],
- ['k32','um','KernelBase.dll teisendab parameetrid','API-funktsioon asub DLL-is. Ta teisendab failitee NT kujule (<code>\\??\\C:\\…\\markmed.txt</code>) ja kutsub välja <code>ntdll.dll</code>-i funktsiooni <code>NtCreateFile</code>.'],
+ ['k32','um','KernelBase.dll teisendab parameetrid','API-funktsioon asub DLL-is (<i>Dynamic-Link Library</i>). Ta teisendab failitee NT (<i>New Technology</i>) kujule (<code>\\??\\C:\\…\\markmed.txt</code>) ja kutsub välja <code>ntdll.dll</code>-i funktsiooni <code>NtCreateFile</code>.'],
  ['ntdll','um','ntdll.dll täidab käsu <code>syscall</code>','<code>NtCreateFile</code> on Native API funktsioon. Ta paneb süsteemiteenuse numbri registrisse ja täidab protsessori käsu <code>syscall</code>.'],
  ['wall','wall','Režiimivahetus: ring 3 → ring 0','Protsessor lülitub tuumarežiimi ja hüppab kindlasse tuuma sisendpunkti. Rakendus ei saa valida, kuhu tuumas hüpata. Ainult nii pääseb kasutajarežiimist tuuma.'],
  ['disp','km','Dispetšer kontrollib parameetreid','Süsteemiteenuste dispetšer leiab numbri järgi tuumafunktsiooni <code>NtCreateFile</code>. Kõik kasutajarežiimist tulnud aadressid ja väärtused kontrollitakse, sest rakendust ei usaldata.'],
- ['om','km','Objektihaldur leiab nime, SRM (ingl Security Reference Monitor) kontrollib õigusi','Objektihaldur lahendab nime. Turvaviitemonitor (SRM) võrdleb Notepadi protsessi tokenit faili turvakirjeldaja pääsuloendiga (ACL – ingl Access Control List). Lugemisõigus on olemas.'],
- ['io','km','I/O-haldur ja NTFS avavad faili','I/O-haldur saadab päringu failisüsteemi draiverile <code>ntfs.sys</code>, mis leiab faili kettalt. Tuumamällu luuakse <b>failiobjekt</b>.'],
+ ['om','km','Objektihaldur leiab nime, SRM (<i>Security Reference Monitor</i>) kontrollib õigusi','Objektihaldur lahendab nime. Turvaviitemonitor (SRM) võrdleb Notepadi protsessi tokenit faili turvakirjeldaja pääsuloendiga (ACL – <i>Access Control List</i>). Lugemisõigus on olemas.'],
+ ['io','km','I/O-haldur ja NTFS (<i>New Technology File System</i>) avavad faili','I/O-haldur saadab päringu failisüsteemi draiverile <code>ntfs.sys</code>, mis leiab faili kettalt. Tuumamällu luuakse <b>failiobjekt</b>.'],
  ['ht','km','Pidemetabelisse lisatakse kirje <code>0x1A4</code>','Objektihaldur lisab Notepadi pidemetabelisse kirje, mis viitab failiobjektile, ja tagastab selle numbri: <b>pide 0x1A4</b>. Failiobjekti ennast rakendus kunagi ei näe.'],
  ['notepad','um','Notepad saab pideme ja loeb faili','Tagasi kasutajarežiimis. Notepad kutsub <code>ReadFile(0x1A4, …)</code>. Iga kord kontrollib tuum, et pide kuulub sellele protsessile ja lubab lugemist.']
 ];
 const DENY=OK.slice(0,5).concat([
- ['om','km','SRM keeldub: STATUS_ACCESS_DENIED','SRM võrdleb tokenit faili ACL-iga ega leia lugemisõigust. Faili ei avata, failiobjekti ega pidet ei looda. Ketta poole üldse ei pöördutud.','x'],
+ ['om','km','SRM keeldub: STATUS_ACCESS_DENIED','SRM (<i>Security Reference Monitor</i>) võrdleb tokenit faili ACL-iga (<i>Access Control List</i>) ega leia lugemisõigust. Faili ei avata, failiobjekti ega pidet ei looda. Ketta poole üldse ei pöördutud.','x'],
  ['notepad','um','Notepad saab vea 5 – „Juurdepääs keelatud“','<code>CreateFileW</code> tagastab <code>INVALID_HANDLE_VALUE</code> ja <code>GetLastError()</code> annab väärtuse 5 (<code>ERROR_ACCESS_DENIED</code>). Notepad näitab teadet „Juurdepääs on keelatud“. Turvakontroll toimub pideme avamisel.','x']
 ]);
 let pst=0;
@@ -280,7 +280,7 @@ $('reboot').onclick=()=>{$('bsod').classList.remove('on');resetH();info('Arvuti 
 resetH();
 
 /* ---------- 3. režiim ---------- */
-const RM=[['notepad.exe','um','Tavaline rakendus töötab kasutajarežiimis.'],['Word','um','Rakendused töötavad kasutajarežiimis.'],['kernel32.dll','um','API DLL-id (ingl Dynamic-Link Library) laaditakse rakenduse protsessi, seega töötavad kasutajarežiimis.'],['ntdll.dll','um','ntdll.dll on viimane kasutajarežiimi kiht enne süsteemikutset.'],['svchost.exe','um','Teenused on tavalised protsessid kasutajarežiimis, kuigi sageli suuremate õigustega.'],['lsass.exe','um','LSASS (ingl Local Security Authority Subsystem Service) on kasutajarežiimi protsess, mida kaitseb LSA (ingl Local Security Authority) kaitse.'],['ntoskrnl.exe (tuum ja käivitav süsteem)','km','Tuum ja executive töötavad tuumarežiimis.'],['ntfs.sys','km','Failisüsteemi draiver töötab tuumarežiimis.'],['win32k.sys','km','Akende ja graafika tuumaosa töötab tuumarežiimis.'],['Securekernel.exe','v1','Turvatuum töötab VTL 1-s. Tavaline tuum ei näe selle mälu.'],['LsaIso.exe (Credential Guard)','v1','Isoleeritud LSA hoiab paroolide räsisid ja Kerberose pileteid VTL 1-s.']];
+const RM=[['notepad.exe','um','Tavaline rakendus töötab kasutajarežiimis.'],['Word','um','Rakendused töötavad kasutajarežiimis.'],['kernel32.dll','um','API DLL-id (<i>Dynamic-Link Library</i>) laaditakse rakenduse protsessi, seega töötavad kasutajarežiimis.'],['ntdll.dll','um','ntdll.dll on viimane kasutajarežiimi kiht enne süsteemikutset.'],['svchost.exe','um','Teenused on tavalised protsessid kasutajarežiimis, kuigi sageli suuremate õigustega.'],['lsass.exe','um','LSASS (<i>Local Security Authority Subsystem Service</i>) on kasutajarežiimi protsess, mida kaitseb LSA (<i>Local Security Authority</i>) kaitse.'],['ntoskrnl.exe (tuum ja käivitav süsteem)','km','Tuum ja executive töötavad tuumarežiimis.'],['ntfs.sys','km','Failisüsteemi draiver töötab tuumarežiimis.'],['win32k.sys','km','Akende ja graafika tuumaosa töötab tuumarežiimis.'],['Securekernel.exe','v1','Turvatuum töötab VTL 1-s. Tavaline tuum ei näe selle mälu.'],['LsaIso.exe (Credential Guard)','v1','Isoleeritud LSA hoiab paroolide räsisid ja Kerberose pileteid VTL 1-s.']];
 let rset=[],rpl={},rsel=null,rchk=false;
 function newR(){rset=shuffle(RM.map((_,i)=>i)).slice(0,8);if(!rset.some(i=>RM[i][1]==='v1'))rset[7]=9;rset=shuffle(rset);rpl={};rsel=null;rchk=false;$('rres').innerHTML='';drawR()}
 function rchip(i,w){const b=document.createElement('button');let c='chip';if(rsel===i)c+=' sel';if(rchk&&w!=='pool')c+=RM[i][1]===w?' ok':' bad';b.className=c;b.textContent=RM[i][0];
@@ -298,7 +298,7 @@ $('rreset').onclick=newR;newR();
 
 /* ---------- 4. teenus ---------- */
 const TK=['Windowsi teenus','Süsteemiteenus','API-funktsioon','Tuumarutiin'];
-const TQ=[['Windows Update (wuauserv)',0,'Taustaprotsess, mida juhib teenusehaldur (services.exe). Näed seda konsoolis services.msc.'],['DNS-klient (Dnscache)',0,'Windowsi teenus, mis töötab ühes svchost.exe protsessis koos teiste teenustega.'],['Print Spooler',0,'Printerijärjekorda haldav Windowsi teenus. Seda saab peatada käsuga Stop-Service Spooler.'],['NtCreateFile',1,'Tuumafunktsioon, mida kutsutakse süsteemikutse kaudu. Nt-eesliide viitab Native API-le.'],['NtReadFile',1,'Süsteemiteenus: ReadFile jõuab lõpuks selleni.'],['NtAllocateVirtualMemory',1,'Süsteemiteenus, mille VirtualAlloc välja kutsub.'],['CreateFileW',2,'Dokumenteeritud API-funktsioon KernelBase.dll-is. W tähendab Unicode’i (UTF-16) versiooni.'],['CreateProcessW',2,'Dokumenteeritud API-funktsioon, millega programm käivitab teise programmi.'],['VirtualAlloc',2,'Dokumenteeritud API-funktsioon mälu eraldamiseks.'],['ExAllocatePool2',3,'Tuumarutiin, millega draiver eraldab tuumamälu. Rakendus seda välja kutsuda ei saa.'],['IoCreateDevice',3,'Tuumarutiin, millega draiver loob seadmeobjekti.']];
+const TQ=[['Windows Update (wuauserv)',0,'Taustaprotsess, mida juhib teenusehaldur (services.exe). Näed seda konsoolis services.msc.'],['DNS-klient (DNS – <i>Domain Name System</i>; Dnscache)',0,'Windowsi teenus, mis töötab ühes svchost.exe protsessis koos teiste teenustega.'],['Print Spooler',0,'Printerijärjekorda haldav Windowsi teenus. Seda saab peatada käsuga Stop-Service Spooler.'],['NtCreateFile',1,'Tuumafunktsioon, mida kutsutakse süsteemikutse kaudu. Nt-eesliide viitab Native API-le.'],['NtReadFile',1,'Süsteemiteenus: ReadFile jõuab lõpuks selleni.'],['NtAllocateVirtualMemory',1,'Süsteemiteenus, mille VirtualAlloc välja kutsub.'],['CreateFileW',2,'Dokumenteeritud API-funktsioon KernelBase.dll-is. W tähendab Unicode’i (UTF-16) versiooni.'],['CreateProcessW',2,'Dokumenteeritud API-funktsioon, millega programm käivitab teise programmi.'],['VirtualAlloc',2,'Dokumenteeritud API-funktsioon mälu eraldamiseks.'],['ExAllocatePool2',3,'Tuumarutiin, millega draiver eraldab tuumamälu. Rakendus seda välja kutsuda ei saa.'],['IoCreateDevice',3,'Tuumarutiin, millega draiver loob seadmeobjekti.']];
 let tq=shuffle(TQ.map((_,i)=>i)),tp=0,ts={ok:0,n:0},ta=null;
 function drawT(){
   if(tp>=tq.length){$('tcard').innerHTML='<p class="qtext" style="font-family:inherit">Tulemus: '+ts.ok+' / '+ts.n+'</p><p>'+(ts.ok===ts.n?'Suurepärane!':'Vaata peatükk 3.6 üle.')+' Vihje: <code>Nt…</code> = süsteemiteenus, dokumenteeritud nimed (nt <code>CreateFileW</code>) = API, <code>Ex…</code>/<code>Io…</code> = tuumarutiin.</p><div class="row"><span></span><button class="btn primary" id="tag">Alusta uuesti</button></div>';$('tag').onclick=()=>{tq=shuffle(TQ.map((_,i)=>i));tp=0;ts={ok:0,n:0};ta=null;drawT()};return}

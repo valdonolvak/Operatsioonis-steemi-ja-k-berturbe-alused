@@ -60,7 +60,7 @@ a{color:var(--accent)}
 <header>
 <p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
 <h1>RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb</h1>
-<p class="lead">Animatsioon näitab, kuidas kolm levinumat RAID-taset andmed ketastele jaotavad, kuidas RAID 5 arvutab puuduva ploki paarsusest ja miks taastamine on ohtlik hetk.</p>
+<p class="lead">Animatsioon näitab, kuidas kolm levinumat RAID-taset (RAID – <i>Redundant Array of Independent Disks</i>) andmed ketastele jaotavad, kuidas RAID 5 arvutab puuduva ploki paarsusest ja miks taastamine on ohtlik hetk.</p>
 </header>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 538" role="img" aria-label="RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
@@ -177,7 +177,7 @@ a{color:var(--accent)}
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>RAID 0: triibutus ilma varuta</strong><span><strong>RAID 0</strong> (triibutus) jagab andmed plokkidena mitme ketta vahel. Kiirus kasvab, sest kettad töötavad korraga, ja kogu maht on kasutatav. Varu ei ole: ühe ketta rike hävitab kõik andmed, sest igast failist jääb alles ainult osa plokke.</span></span></button></li>
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>RAID 1: peegeldamine</strong><span><strong>RAID 1</strong> (peegeldamine) kirjutab iga ploki kahele kettale. Kasutatav maht on 50%. Ühe ketta rikke korral loetakse andmed teiselt kettalt ja kasutaja ei märka midagi. Rikkis ketas vahetatakse ja sisu kopeeritakse uuele.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>RAID 5: triibutus ja paarsus</strong><span><strong>RAID 5</strong> jagab andmed triipudena ja lisab igale triibule <strong>paarsusploki</strong>, mis on andmeplokkide XOR. Paarsus ei asu ühel kettal, vaid liigub triibult triibule, et koormus jaguneks. Kasutatav maht on (n−1)/n: kolme ketta korral kaks kolmandikku.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>RAID 5: triibutus ja paarsus</strong><span><strong>RAID 5</strong> jagab andmed triipudena ja lisab igale triibule <strong>paarsusploki</strong>, mis on andmeplokkide XOR (<i>Exclusive OR</i>). Paarsus ei asu ühel kettal, vaid liigub triibult triibule, et koormus jaguneks. Kasutatav maht on (n−1)/n: kolme ketta korral kaks kolmandikku.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Üks ketas rikneb: andmed arvutatakse</strong><span>Kui üks ketas rikneb, arvutab RAID-kontroller puuduva ploki ülejäänud plokkide XOR-ina. Massiiv on olekus <em>degraded</em>: andmed on kättesaadavad, kuid iga lugemine nõuab arvutamist ja varu enam ei ole.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Taastamine varukettale</strong><span><strong>Taastamine</strong> (rebuild): varuketas (<em>hot spare</em>) asendab rikkis ketta. Kontroller loeb kõik teised kettad algusest lõpuni läbi ja arvutab iga puuduva ploki. Kogu selle aja töötavad allesjäänud kettad suure koormuse all.</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Miks RAID 5 on suurte ketastega riskantne</strong><span>RAID 5 talub täpselt ühte riket. Mitme terabaidise ketta taastamine kestab kaua ja sama vanusega ketastel on rikke tõenäosus sarnane. Seepärast eelistatakse suurte ketaste puhul <strong>RAID 6</strong> (kaks paarsust, talub kahte riket) või <strong>RAID 10</strong>. RAID kaitseb ainult ketta rikke eest, mitte kustutamise, lunavara ega tulekahju eest.</span></span></button></li>
@@ -191,7 +191,7 @@ a{color:var(--accent)}
 <tr><td><strong>Triibutus</strong> (striping)</td><td>Andmed jagatakse plokkideks ja kirjutatakse vaheldumisi eri ketastele. Üks rida plokke üle kõigi ketaste on triip.</td></tr>
 <tr><td><strong>Peegeldamine</strong> (mirroring)</td><td>Sama plokk kirjutatakse kahele (või kolmele) kettale.</td></tr>
 <tr><td><strong>Paarsus</strong> (parity)</td><td>Lisaplokk, mis on arvutatud triibu andmeplokkidest nii, et ühe ploki kadumisel saab selle teistest tagasi arvutada.</td></tr>
-<tr><td><strong>XOR</strong> (välistav või)</td><td>Bititehe: 0 XOR 0 = 0, 1 XOR 1 = 0, 0 XOR 1 = 1. Omadus: kui A XOR B = P, siis A XOR P = B ja B XOR P = A.</td></tr>
+<tr><td><strong>XOR (<i>Exclusive OR</i>)</strong> (välistav või)</td><td>Bititehe: 0 XOR 0 = 0, 1 XOR 1 = 0, 0 XOR 1 = 1. Omadus: kui A XOR B = P, siis A XOR P = B ja B XOR P = A.</td></tr>
 <tr><td><strong>Degraded</strong></td><td>Massiivi olek pärast ketta riket: andmed on kättesaadavad, kuid varu enam ei ole.</td></tr>
 <tr><td><strong>Taastamine</strong> (rebuild)</td><td>Rikkis ketta sisu arvutamine uuele kettale ülejäänud ketaste põhjal.</td></tr>
 <tr><td><strong>Varuketas</strong> (hot spare)</td><td>Tühi ketas, mis on massiiviga ühendatud ja võetakse rikke korral automaatselt kasutusele.</td></tr>
@@ -223,7 +223,7 @@ $ap = $a1 -bxor $a2
     @{n='Suurus GB'; e={[int]($_.Size / 1GB)}}</pre>
 <ul>
 <li><strong>1. rida:</strong> loetle füüsilised kettad.</li>
-<li><strong>2. rida:</strong> näita nime, tüüpi (SSD või HDD), ühendust (NVMe, SATA, USB) ja tervislikku seisundit.</li>
+<li><strong>2. rida:</strong> näita nime, tüüpi (SSD (<i>Solid-State Drive</i>) või HDD – <i>Hard Disk Drive</i>), ühendust (NVMe – <i>Non-Volatile Memory Express</i>, SATA – <i>Serial Advanced Technology Attachment</i>, USB – <i>Universal Serial Bus</i>) ja tervislikku seisundit.</li>
 <li><strong>3. rida:</strong> arvutatud veerg: suurus baitides jagatud gigabaidiga ja ümardatud täisarvuks.</li>
 </ul>
 <h3>3. Ketta kulumine ja vead</h3>

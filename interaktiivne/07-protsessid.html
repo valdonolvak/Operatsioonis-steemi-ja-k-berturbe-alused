@@ -186,7 +186,7 @@ select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--bo
 <!-- 6 -->
 <section id="puu">
 <h2>6. Protsessipuu detektiiv</h2>
-<p>Sa oled turvaanalüütik ja vaatad EDR-i (ingl <i>Endpoint Detection and Response</i>) konsoolis protsessipuud. Klõpsa protsessidel, mis on kahtlased, ja vajuta „Kontrolli“. Vihje: vaata vanemat, käsurida ja failiteed.</p>
+<p>Sa oled turvaanalüütik ja vaatad EDR-i (<i>Endpoint Detection and Response</i>) konsoolis protsessipuud. Klõpsa protsessidel, mis on kahtlased, ja vajuta „Kontrolli“. Vihje: vaata vanemat, käsurida ja failiteed.</p>
 <div class="card">
   <div class="row" style="margin-top:0"><b id="pttl"></b><span class="hint" id="pnum"></span></div>
   <div class="tree" id="ptree"></div>
@@ -198,15 +198,15 @@ select{font:inherit;font-size:14px;padding:.3rem .5rem;border:1px solid var(--bo
 <script>
 const $=id=>document.getElementById(id);
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/&lt;(\/?)i>/g,'<$1i>');
 
 /* ---------- 1. loomine ---------- */
 const ST=[
- ['EXE-faili avamine ja kontroll','Windows avab <code>C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE</code>. Smart App Control, App Control for Business / AppLocker ja Defender kontrollivad, kas seda tohib käivitada. Kõik on korras.'],
- ['Protsessiobjekt ja aadressiruum','Tuumas luuakse protsessiobjekt (EPROCESS), Word saab PID-i, oma virtuaalse aadressiruumi ja Mari tokeni koopia. <b>Protsessihaldur teavitab draivereid</b> ja EDR näeb uut protsessi.'],
- ['Esimene lõim','Luuakse esimene lõim koos pinude ja TEB-iga (ingl Thread Environment Block). See on peatatud olekus, sest protsess pole veel valmis.'],
+ ['EXE-faili (EXE – <i>Executable</i>) avamine ja kontroll','Windows avab <code>C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE</code>. Smart App Control, App Control for Business / AppLocker ja Defender kontrollivad, kas seda tohib käivitada. Kõik on korras.'],
+ ['Protsessiobjekt ja aadressiruum','Tuumas luuakse protsessiobjekt (EPROCESS), Word saab PID-i (<i>Process Identifier</i>), oma virtuaalse aadressiruumi ja Mari tokeni koopia. <b>Protsessihaldur teavitab draivereid</b> ja EDR näeb uut protsessi.'],
+ ['Esimene lõim','Luuakse esimene lõim koos pinude ja TEB-iga (<i>Thread Environment Block</i>). See on peatatud olekus, sest protsess pole veel valmis.'],
  ['Alamsüsteemi teavitamine','csrss.exe saab teada uuest protsessist ja lõimest.'],
- ['DLL-ide laadimine','Uue protsessi sees laaditakse <code>ntdll.dll</code>, <code>kernel32.dll</code> ja teised teegid. Täidetakse nende algatuskood.'],
+ ['DLL-ide (DLL – <i>Dynamic-Link Library</i>) laadimine','Uue protsessi sees laaditakse <code>ntdll.dll</code>, <code>kernel32.dll</code> ja teised teegid. Täidetakse nende algatuskood.'],
  ['Täitmise algus','Esimene lõim hakkab täitma Wordi koodi. Word loob kohe lisalõimed: kasutajaliides, õigekirjakontroll ja automaatsalvestus. Avaneb Wordi aken.']
 ];
 const PARTS=[['PID',1,'7420'],['Vanem (PPID)',1,'explorer.exe (5128)'],['Aadressiruum',1,'128 TB virtuaalset'],['Token',1,'mari · Medium'],['Pidemetabel',1,'WINWORD.EXE, …'],['Lõimed',2,'1 (peatatud)'],['Laaditud DLL-id',4,'ntdll, kernel32, …'],['Lõimed ',5,'1 → 23 (töötab)']];
@@ -233,7 +233,7 @@ const TR={
  pick:['Planeerija valib lõime','ready','running','Planeerija valis selle lõime ja andis talle tuuma. Lõim täidab nüüd käske.'],
  quant:['Ajakvant sai otsa','running','ready','Ajakvant (mõnikümmend millisekundit) sai otsa ja planeerija andis tuuma teisele lõimele. Meie lõim on endiselt töövalmis, seega läheb tagasi valmis-olekusse.'],
  pre:['Kõrgema prioriteediga lõim ärkas','running','ready','Kõrgema prioriteediga lõim (nt kasutajaliides, sest vajutasid klahvi) sai valmis ja <b>tõrjus</b> meie lõime tuumalt välja. See on eelistav (preemptive) mitmeülesandelisus.'],
- io:['Kutsub WriteFile ja ootab ketast','running','waiting','Lõim kutsus <code>WriteFile</code> ja peab ootama, kuni SSD kirjutamise lõpetab. Ootel lõim <b>ei kasuta protsessoriaega</b>, nii et tuum vabaneb teistele.'],
+ io:['Kutsub WriteFile ja ootab ketast','running','waiting','Lõim kutsus <code>WriteFile</code> ja peab ootama, kuni SSD (<i>Solid-State Drive</i>) kirjutamise lõpetab. Ootel lõim <b>ei kasuta protsessoriaega</b>, nii et tuum vabaneb teistele.'],
  timer:['Ootab automaatsalvestuse taimerit (5 min)','running','waiting','Lõim kutsus <code>WaitForSingleObject(taimer)</code> ja jääb ootele. Viie minuti jooksul ei kuluta ta protsessoriaega.'],
  done:['Ketas/taimer valmis (sündmus saabus)','waiting','ready','Sündmus saabus ja lõim muutub <b>valmis</b>-olekusse, mitte kohe töötavaks. Ta peab ootama, kuni planeerija ta valib, sest tuum võib olla hõivatud.'],
  exit:['Lõim lõpetab (Word suletakse)','running','term','Lõim jõudis oma funktsiooni lõppu või Word suleti. Lõim on lõpetatud ja tema pinud vabastatakse.']
@@ -286,10 +286,10 @@ function drawM(){
 $('cores').onchange=drawM;$('quant').onchange=drawM;drawM();
 
 /* ---------- 4. kellele ---------- */
-const KO=[['Privaatne virtuaalne aadressiruum','p','Aadressiruum kuulub protsessile ja kõik selle lõimed jagavad seda.'],['Pidemetabel','p','Avatud objektid kuuluvad protsessile. Kõik lõimed saavad samu pidemeid kasutada.'],['Juurdepääsutoken','p','Protsessil on token, mis määrab, kelle õigustega ta töötab.'],['PID','p','Protsessi ID. Lõimel on oma TID.'],['PEB','p','Process Environment Block kirjeldab protsessi kasutajarežiimis.'],['Laaditud DLL-id','p','DLL-id laaditakse protsessi aadressiruumi.'],['Registrite olek (käsuloendur)','t','Igal lõimel on oma registrid: kus täitmine parajasti on.'],['Kasutaja- ja tuumapinu','t','Igal lõimel on kaks oma pinu.'],['Prioriteet planeerijale','t','Planeerija planeerib lõimi, seega on prioriteet lõime omadus (protsessil on prioriteediklass).'],['TEB ja lõime lokaalne mälu (TLS)','t','Thread Environment Block ja TLS kuuluvad igale lõimele eraldi.'],['Olek: valmis / töötab / ootel','t','Olek on lõime omadus, sest planeerija liigutab lõimi.'],['Kõigi protsesside ühine mälupiirang','j','Ühine piirang mitmele protsessile on tööobjekti ülesanne.'],['Kõigi protsesside lõpetamine korraga','j','Töö sulgemisel saab lõpetada kõik selle protsessid.'],['Keeld luua uusi lapsprotsesse','j','Tööobjekt saab piirata aktiivsete protsesside arvu.'],['Konteineri ressursipiirangud','j','Windowsi konteinerid ja Windows Sandbox põhinevad tööobjektidel.']];
+const KO=[['Privaatne virtuaalne aadressiruum','p','Aadressiruum kuulub protsessile ja kõik selle lõimed jagavad seda.'],['Pidemetabel','p','Avatud objektid kuuluvad protsessile. Kõik lõimed saavad samu pidemeid kasutada.'],['Juurdepääsutoken','p','Protsessil on token, mis määrab, kelle õigustega ta töötab.'],['PID','p','Protsessi ID (<i>Identifier</i>). Lõimel on oma TID.'],['PEB','p','Process Environment Block kirjeldab protsessi kasutajarežiimis.'],['Laaditud DLL-id','p','DLL-id laaditakse protsessi aadressiruumi.'],['Registrite olek (käsuloendur)','t','Igal lõimel on oma registrid: kus täitmine parajasti on.'],['Kasutaja- ja tuumapinu','t','Igal lõimel on kaks oma pinu.'],['Prioriteet planeerijale','t','Planeerija planeerib lõimi, seega on prioriteet lõime omadus (protsessil on prioriteediklass).'],['TEB ja lõime lokaalne mälu (TLS – <i>Thread Local Storage</i>)','t','Thread Environment Block ja TLS kuuluvad igale lõimele eraldi.'],['Olek: valmis / töötab / ootel','t','Olek on lõime omadus, sest planeerija liigutab lõimi.'],['Kõigi protsesside ühine mälupiirang','j','Ühine piirang mitmele protsessile on tööobjekti ülesanne.'],['Kõigi protsesside lõpetamine korraga','j','Töö sulgemisel saab lõpetada kõik selle protsessid.'],['Keeld luua uusi lapsprotsesse','j','Tööobjekt saab piirata aktiivsete protsesside arvu.'],['Konteineri ressursipiirangud','j','Windowsi konteinerid ja Windows Sandbox põhinevad tööobjektidel.']];
 let kset=[],kpl={},ksel=null,kchk=false;
 function newK(){const by=b=>shuffle(KO.map((_,i)=>i).filter(i=>KO[i][1]===b));kset=shuffle([...by('p').slice(0,3),...by('t').slice(0,3),...by('j').slice(0,3)]);kpl={};ksel=null;kchk=false;$('kres').innerHTML='';drawK()}
-function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KO[i][1]===w?' ok':' bad';b.className=c;b.textContent=KO[i][0];
+function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KO[i][1]===w?' ok':' bad';b.className=c;b.innerHTML=KO[i][0];
   b.onclick=e=>{e.stopPropagation();if(kchk)return;if(w==='pool')ksel=ksel===i?null:i;else{delete kpl[i];ksel=i}drawK()};return b}
 function drawK(){const pool=$('kpool');pool.innerHTML='';kset.filter(i=>!(i in kpl)).forEach(i=>pool.appendChild(kchip(i,'pool')));
   if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
@@ -303,12 +303,12 @@ $('knew').onclick=newK;newK();
 /* ---------- 5. IPC ---------- */
 const IO=['Jagatud mälu','Nimega toru','Anonüümne toru','Pesa (socket)','ALPC','RPC / COM','Lõikelaud'];
 const IQ=[['Videotöötlusprogramm annab 500 MB kaadreid teisele protsessile, mis need kodeerib. Vaja on kõige kiiremat viisi.',0,'Jagatud mälu (memory-mapped file) on kõige kiirem, sest andmeid ei kopeerita: mõlemad protsessid näevad sama mälulehte. Juurdepääsu peab koordineerima (ptk 8).'],
- ['Prindispuuler kuulab klientide päringuid kohaliku nime \\\\.\\pipe\\spoolss kaudu.',1,'Nimega toru on kliendi-serveri suhtlus samas arvutis ja võrgus (SMB kaudu).'],
+ ['Prindispuuler kuulab klientide päringuid kohaliku nime \\\\.\\pipe\\spoolss kaudu.',1,'Nimega toru on kliendi-serveri suhtlus samas arvutis ja võrgus (SMB (<i>Server Message Block</i>) kaudu).'],
  ['PowerShell käivitab ipconfig.exe ja loeb selle väljundi muutujasse.',2,'Anonüümne toru ühendab vanema lapsprotsessi standardväljundiga. Nime pole vaja, sest vanem loob toru ise.'],
- ['Brauser laadib veebilehte serverist teises riigis.',3,'Võrgusuhtlus käib pesade (TCP/UDP) kaudu.'],
- ['Rakendus küsib lsass.exe-lt sisselogimise kontrolli. Windowsi komponendid vajavad omavahel kiiret sõnumivahetust.',4,'ALPC on Windowsi sisemine kiire sõnumivahetus (ptk 4.5).'],
- ['PowerShelli skript avab Exceli, täidab tabeli ja salvestab selle.',5,'COM (ja selle aluseks olev RPC) võimaldab ühel programmil teise programmi objekte juhtida.'],
- ['Kasutaja kopeerib Wordis tabeli ja kleebib selle Excelisse.',6,'Lõikelaud on OS-i hallatav IPC graafilistele rakendustele. Word ja Excel ei suhtle otse.'],
+ ['Brauser laadib veebilehte serverist teises riigis.',3,'Võrgusuhtlus käib pesade (TCP/UDP; TCP – <i>Transmission Control Protocol</i>, UDP – <i>User Datagram Protocol</i>) kaudu.'],
+ ['Rakendus küsib lsass.exe-lt sisselogimise kontrolli. Windowsi komponendid vajavad omavahel kiiret sõnumivahetust.',4,'ALPC (<i>Advanced Local Procedure Call</i>) on Windowsi sisemine kiire sõnumivahetus (ptk 4.5).'],
+ ['PowerShelli skript avab Exceli, täidab tabeli ja salvestab selle.',5,'COM (<i>Component Object Model</i>; ja selle aluseks olev RPC – <i>Remote Procedure Call</i>) võimaldab ühel programmil teise programmi objekte juhtida.'],
+ ['Kasutaja kopeerib Wordis tabeli ja kleebib selle Excelisse.',6,'Lõikelaud on OS-i (<i>Operating System</i>) hallatav IPC (<i>Inter-Process Communication</i>) graafilistele rakendustele. Word ja Excel ei suhtle otse.'],
  ['Docker CLI saadab käsud Docker Engine’ile, mis töötab samas Windowsis eraldi teenusena (\\\\.\\pipe\\docker_engine).',1,'Docker Desktop kasutab Windowsis nimega toru. Linuxis kasutab ta sama rolli jaoks Unixi domeenipesa.'],
  ['Haldustööriist küsib teise serveri teenuste olekut (nt Get-Service -ComputerName SRV01).',5,'Kaughaldus käib RPC kaudu. RPC-liidesed peavad kliendi õigusi kontrollima, sest need on ründepind.']];
 let iq=shuffle(IQ.map((_,i)=>i)),ip=0,is={ok:0,n:0},ia=null;
@@ -327,9 +327,9 @@ drawI();
 const CASES=[
  ['Juhtum 1: Mari tööjaam',[[0,'explorer.exe','',0],[1,'WINWORD.EXE','C:\\Users\\mari\\Downloads\\arve.docm',0],[2,'cmd.exe','/c powershell -w hidden -enc JABjAD0A…',1,'Word käivitab käsuviiba. Tekstitöötlus ei pea seda tegema. Tõenäoliselt makro.'],[3,'powershell.exe','-w hidden -enc JABjAD0A…',1,'Peidetud aken ja Base64-kodeeritud käsk: ründaja peidab, mida skript teeb.'],[4,'rundll32.exe','C:\\Users\\mari\\AppData\\Local\\Temp\\a.dll,Start',1,'DLL käivitatakse Temp-kaustast rundll32 kaudu. See on levinud pahavara laadimise viis.'],[1,'msedge.exe','--type=renderer',0],[1,'Teams.exe','',0]]],
  ['Juhtum 2: süsteemiprotsessid',[[0,'wininit.exe','',0],[1,'services.exe','',0],[2,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k netsvcs -p',0],[2,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k LocalService',0],[1,'lsass.exe','C:\\Windows\\System32\\lsass.exe',0],[0,'explorer.exe','',0],[1,'svchost.exe','C:\\Users\\Public\\svchost.exe',1,'svchost.exe vanem peab olema services.exe ja fail peab asuma kaustas C:\\Windows\\System32. Siin käivitas selle explorer.exe ja fail on Public-kaustas: pahavara matkib süsteemiprotsessi nime.'],[1,'notepad.exe','C:\\Users\\mari\\Desktop\\markmed.txt',0]]],
- ['Juhtum 3: serveri veebiteenus',[[0,'services.exe','',0],[1,'w3wp.exe','-ap "DefaultAppPool"',0],[2,'cmd.exe','/c whoami & net user',1,'IIS-i tööprotsess (w3wp.exe) ei pea käivitama käsuviiba. whoami ja net user on luure: ründaja kontrollib, kelle õigustes ta on. Tõenäoliselt veebikest (web shell).'],[3,'net.exe','user',1,'Kasutajakontode loetlemine pärast veebiserverist käivitamist on ründe jätk.'],[1,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k NetworkService',0],[1,'sqlservr.exe','-sMSSQLSERVER',0]]],
+ ['Juhtum 3: serveri veebiteenus',[[0,'services.exe','',0],[1,'w3wp.exe','-ap "DefaultAppPool"',0],[2,'cmd.exe','/c whoami & net user',1,'IIS-i (<i>Internet Information Services</i>) tööprotsess (w3wp.exe) ei pea käivitama käsuviiba. whoami ja net user on luure: ründaja kontrollib, kelle õigustes ta on. Tõenäoliselt veebikest (web shell).'],[3,'net.exe','user',1,'Kasutajakontode loetlemine pärast veebiserverist käivitamist on ründe jätk.'],[1,'svchost.exe','C:\\Windows\\System32\\svchost.exe -k NetworkService',0],[1,'sqlservr.exe','-sMSSQLSERVER',0]]],
  ['Juhtum 4: tavaline tööpäev',[[0,'explorer.exe','',0],[1,'EXCEL.EXE','C:\\Users\\mari\\Documents\\eelarve.xlsx',0],[1,'msedge.exe','',0],[2,'msedge.exe','--type=renderer',0],[2,'msedge.exe','--type=gpu-process',0],[1,'powershell.exe','',0],[1,'notepad.exe','',0],[1,'Code.exe','C:\\Users\\mari\\projekt',0]]],
- ['Juhtum 5: paroolivargus',[[0,'wininit.exe','',0],[1,'lsass.exe','C:\\Windows\\System32\\lsass.exe',0],[0,'explorer.exe','',0],[1,'cmd.exe','',0],[2,'rundll32.exe','C:\\Windows\\System32\\comsvcs.dll, MiniDump 812 C:\\Temp\\l.dmp full',1,'comsvcs.dll MiniDump teeb protsessist 812 (lsass.exe) mälutõmmise. Ründaja tahab sealt paroolide räsisid. LSA kaitse (PPL) ja Credential Guard takistavad seda.'],[1,'Teams.exe','',0]]]
+ ['Juhtum 5: paroolivargus',[[0,'wininit.exe','',0],[1,'lsass.exe','C:\\Windows\\System32\\lsass.exe',0],[0,'explorer.exe','',0],[1,'cmd.exe','',0],[2,'rundll32.exe','C:\\Windows\\System32\\comsvcs.dll, MiniDump 812 C:\\Temp\\l.dmp full',1,'comsvcs.dll MiniDump teeb protsessist 812 (lsass.exe) mälutõmmise. Ründaja tahab sealt paroolide räsisid. LSA (<i>Local Security Authority</i>) kaitse (PPL – <i>Protected Process Light</i>) ja Credential Guard takistavad seda.'],[1,'Teams.exe','',0]]]
 ];
 let pc=0,pick=new Set(),pchk=false,porder=shuffle(CASES.map((_,i)=>i));
 function drawP(){
@@ -342,7 +342,7 @@ function drawP(){
 $('pcheck').onclick=()=>{pchk=true;drawP();const rows=CASES[porder[pc]][1],bad=rows.map((r,i)=>i).filter(i=>rows[i][3]),miss=bad.filter(i=>!pick.has(i)),fp=[...pick].filter(i=>!rows[i][3]);
   let h='<div class="fb '+(miss.length||fp.length?'bad':'ok')+'"><strong>'+(bad.length===0?(fp.length?'Selles puus pahavara polnud.':'Õige! Selles puus pole midagi kahtlast.'):(miss.length||fp.length?'Leidsid '+(bad.length-miss.length)+' / '+bad.length:'Õige! Leidsid kõik kahtlased protsessid.'))+'</strong>';
   h+=bad.map(i=>'<b>'+esc(rows[i][1])+'</b> – '+esc(rows[i][4])).join('<br>');
-  if(fp.length)h+=(bad.length?'<br>':'')+fp.map(i=>'<b>'+esc(rows[i][1])+'</b> on tavaline: '+(rows[i][1]==='msedge.exe'?'Edge’il on alati mitu protsessi (renderdus, GPU).':rows[i][1]==='powershell.exe'?'kasutaja avas PowerShelli ise Explorerist, käsurida on tavaline.':'vanem ja asukoht on ootuspärased.')).join('<br>');
+  if(fp.length)h+=(bad.length?'<br>':'')+fp.map(i=>'<b>'+esc(rows[i][1])+'</b> on tavaline: '+(rows[i][1]==='msedge.exe'?'Edge’il on alati mitu protsessi (renderdus, GPU – <i>Graphics Processing Unit</i>).':rows[i][1]==='powershell.exe'?'kasutaja avas PowerShelli ise Explorerist, käsurida on tavaline.':'vanem ja asukoht on ootuspärased.')).join('<br>');
   if(!bad.length&&!fp.length)h+='Kõik vanemad ja käsuread on ootuspärased: rakendused käivitab explorer.exe ja Edge’i alamprotsessid käivitab Edge ise.';
   $('pres').innerHTML=h+'</div>'};
 $('pnext').onclick=()=>{pc=(pc+1)%CASES.length;pick=new Set();pchk=false;$('pres').innerHTML='';drawP()};

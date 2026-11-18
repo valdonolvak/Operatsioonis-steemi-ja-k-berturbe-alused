@@ -170,23 +170,23 @@ a{color:var(--accent)}
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Ülesanne: kolm andmeplokki seadmest mällu</strong><span>Seade on protsessorist tuhandeid kordi aeglasem. Operatsioonisüsteem peab otsustama, kuidas protsessor teada saab, et seade on valmis, ja kes andmed mällu kopeerib. Selleks on kolm viisi.</span></span></button></li>
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Küsitlus: protsessor küsib ise ja pidevalt</strong><span><strong>Küsitlus</strong> (polling): protsessor loeb tsüklis seadme olekuregistrit. Enamik küsimisi on asjatud. Kui seade on valmis, loeb protsessor andmed seadmelt ja kirjutab mällu ise. Muu töö seisab. Lihtne teha, kuid aeglase seadme puhul raiskab see peaaegu kogu protsessoriaja.</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Katkestused: seade annab ise märku</strong><span><strong>Katkestus</strong> (interrupt): seade saadab protsessorile signaali, kui tal on midagi öelda. Protsessor salvestab poolelioleva töö oleku, käivitab katkestuse käsitleja, kopeerib andmed ja jätkab. Ootamise ajal saab ta teha muud tööd, kuid iga ploki juures tuleb töö katkestada.</span></span></button></li>
-<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>DMA: kontroller kirjutab otse mällu</strong><span><strong>Otsemälupöördus</strong> (DMA, Direct Memory Access): draiver ütleb kontrollerile, mida lugeda ja kuhu mällu kirjutada. Kontroller teeb ülekande ise, protsessorit vahele võtmata. Protsessor saab ühe katkestuse alles lõpus. Nii töötavad kõik kiired seadmed: kettad, võrgukaardid, graafikakaardid.</span></span></button></li>
+<li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>DMA: kontroller kirjutab otse mällu</strong><span><strong>Otsemälupöördus</strong> (DMA, <i>Direct Memory Access</i>): draiver ütleb kontrollerile, mida lugeda ja kuhu mällu kirjutada. Kontroller teeb ülekande ise, protsessorit vahele võtmata. Protsessor saab ühe katkestuse alles lõpus. Nii töötavad kõik kiired seadmed: kettad, võrgukaardid, graafikakaardid.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Võrdlus</strong><span>Aeglase seadme (klaviatuur) jaoks sobivad katkestused. Suurte andmemahtude jaoks on vaja DMA-d. Väga kiire võrgukaart lülitub suure koormuse all tagasi küsitlusele või koondab katkestusi (üks katkestus mitmekümne paketi kohta), sest iga katkestus maksab: protsessor peab oleku salvestama ja taastama.</span></span></button></li>
-<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>DMA turvarisk ja IOMMU</strong><span>Kuna DMA-seade kirjutab mällu protsessorist mööda, ei kehti talle tuuma tavalised mälukaitsed. Füüsilise ligipääsuga ründaja võib ühendada Thunderbolt- või PCIe-seadme ja lugeda mälust krüptovõtmeid. Kaitse on <strong>IOMMU</strong>: riistvara, mis tõlgib ja piirab seadmete mäluaadresse samamoodi, nagu MMU piirab protsesse. Windowsis kasutab seda Kernel DMA Protection.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>DMA turvarisk ja IOMMU (<i>Input–Output Memory Management Unit</i>)</strong><span>Kuna DMA-seade kirjutab mällu protsessorist mööda, ei kehti talle tuuma tavalised mälukaitsed. Füüsilise ligipääsuga ründaja võib ühendada Thunderbolt- või PCIe-seadme (PCIe – <i>Peripheral Component Interconnect Express</i>) ja lugeda mälust krüptovõtmeid. Kaitse on <strong>IOMMU</strong>: riistvara, mis tõlgib ja piirab seadmete mäluaadresse samamoodi, nagu MMU (<i>Memory Management Unit</i>) piirab protsesse. Windowsis kasutab seda Kernel DMA Protection.</span></span></button></li>
 </ol>
 </section>
 <section class="extra">
 <h2>Mõisted</h2>
 <div class="tablewrap"><table>
 <tr><th>Mõiste</th><th>Selgitus</th></tr>
-<tr><td><strong>Kontroller</strong></td><td>Seadme elektroonika, mis võtab arvutilt vastu käske ja juhib seadet (nt NVMe-kontroller SSD-s, USB-kontroller emaplaadil).</td></tr>
+<tr><td><strong>Kontroller</strong></td><td>Seadme elektroonika, mis võtab arvutilt vastu käske ja juhib seadet (nt NVMe-kontroller (NVMe – <i>Non-Volatile Memory Express</i>) SSD-s (<i>Solid-State Drive</i>), USB-kontroller (USB – <i>Universal Serial Bus</i>) emaplaadil).</td></tr>
 <tr><td><strong>Olekuregister</strong></td><td>Kontrolleri mälupesa, millest protsessor saab lugeda, kas seade on hõivatud, valmis või veas.</td></tr>
 <tr><td><strong>Küsitlus</strong> (polling)</td><td>Protsessor loeb olekuregistrit tsüklis, kuni seade on valmis.</td></tr>
 <tr><td><strong>Katkestus</strong> (interrupt)</td><td>Seadme signaal protsessorile. Protsessor peatab jooksva töö, käivitab katkestuse käsitleja ja jätkab seejärel sealt, kus pooleli jäi.</td></tr>
-<tr><td><strong>MSI-X</strong></td><td>Tänapäevane katkestuste viis: seade saadab katkestuse sõnumina ja võib kasutada mitut eraldi katkestust, igaüks eri protsessorituumale.</td></tr>
+<tr><td><strong>MSI-X (<i>Message Signaled Interrupts eXtended</i>)</strong></td><td>Tänapäevane katkestuste viis: seade saadab katkestuse sõnumina ja võib kasutada mitut eraldi katkestust, igaüks eri protsessorituumale.</td></tr>
 <tr><td><strong>Katkestuste koondamine</strong></td><td>Seade ei saada katkestust iga paketi kohta, vaid kogub neid ja saadab ühe katkestuse mitme kohta (interrupt moderation).</td></tr>
-<tr><td><strong>DMA</strong></td><td>Otsemälupöördus: kontroller loeb ja kirjutab arvuti mälu ise, protsessorit vahele võtmata.</td></tr>
-<tr><td><strong>IOMMU</strong></td><td>Riistvara (Intel VT-d, AMD-Vi), mis piirab, millist mälu iga seade DMA-ga puudutada tohib.</td></tr>
+<tr><td><strong>DMA (<i>Direct Memory Access</i>)</strong></td><td>Otsemälupöördus: kontroller loeb ja kirjutab arvuti mälu ise, protsessorit vahele võtmata.</td></tr>
+<tr><td><strong>IOMMU (<i>Input–Output Memory Management Unit</i>)</strong></td><td>Riistvara (Intel VT-d (<i>Virtualization Technology</i>), AMD-Vi (AMD – <i>Advanced Micro Devices</i>)), mis piirab, millist mälu iga seade DMA-ga puudutada tohib.</td></tr>
 <tr><td><strong>Kernel DMA Protection</strong></td><td>Windowsi funktsioon, mis kasutab IOMMU-d, et töötamise ajal ühendatud välisseadmed (Thunderbolt, USB4) ei pääseks ligi kogu mälule.</td></tr>
 </table></div>
 </section>
@@ -199,7 +199,7 @@ a{color:var(--accent)}
 <ul>
 <li><strong>1. rida:</strong> <code>Interrupts/sec</code> näitab, mitu katkestust protsessor sekundis saab. Ka jõude seisvas arvutis on neid tuhandeid (taimer, hiir, võrk).</li>
 <li><strong>2. rida:</strong> <code>% Interrupt Time</code> on protsessoriaja osa, mis kulub katkestuste käsitlejatele.</li>
-<li><strong>3. rida:</strong> <code>% DPC Time</code> on aeg, mis kulub katkestuste järeltööle (DPC). <code>-SampleInterval 2 -MaxSamples 5</code> võtab viis mõõtmist kahesekundilise vahega.</li>
+<li><strong>3. rida:</strong> <code>% DPC Time</code> on aeg, mis kulub katkestuste järeltööle (DPC – <i>Deferred Procedure Call</i>). <code>-SampleInterval 2 -MaxSamples 5</code> võtab viis mõõtmist kahesekundilise vahega.</li>
 </ul>
 <p>Liiguta hiirt kiiresti või laadi alla suurt faili ja käivita käsk uuesti: katkestuste arv kasvab. Kui <code>% Interrupt Time</code> või <code>% DPC Time</code> on püsivalt üle mõne protsendi, on tavaliselt süüdi vigane draiver või seade.</p>
 <h3>2. Võrgukaardi katkestuste koondamine</h3>

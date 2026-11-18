@@ -60,7 +60,7 @@ a{color:var(--accent)}
 <header>
 <p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
 <h1>PXE: kuidas arvuti võrgust käivitub</h1>
-<p class="lead">Animatsioon näitab sõnumite kaupa, kuidas tühja kettaga arvuti saab võrgust IP-aadressi, alglaaduri ja alglaadimistõmmise.</p>
+<p class="lead">Animatsioon näitab sõnumite kaupa, kuidas tühja kettaga arvuti saab võrgust IP-aadressi (IP – <i>Internet Protocol</i>), alglaaduri ja alglaadimistõmmise.</p>
 </header>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 508" role="img" aria-label="PXE: kuidas arvuti võrgust käivitub" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
@@ -131,14 +131,14 @@ a{color:var(--accent)}
 <section aria-label="Sammud">
 <h2>Sammud</h2>
 <ol class="steps">
-<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Tühi arvuti ja kaks serverit</strong><span><strong>PXE</strong> (Preboot Execution Environment) on UEFI püsivara oskus käivitada arvuti võrgust ilma ketta, USB-pulga või operatsioonisüsteemita. Püsivaras on selleks väike võrgupinu: DHCP- ja TFTP-klient. Võrgukäivituse valib kasutaja alglaadimismenüüst (sageli F12) või on see alglaadimisjärjekorras esimene.</span></span></button></li>
-<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>DHCPDISCOVER: klient küsib aadressi ja ütleb, et on PXE-klient</strong><span><strong>Leviedastus</strong> jõuab ainult sama kohtvõrgu (VLAN-i) seadmeteni. Kui serverid on teises võrgus, peab ruuter päringu edasi andma (DHCP-relee ehk IP helper). <strong>Valik 93</strong> on oluline: selle järgi otsustab server, kas anda BIOS-i või UEFI jaoks mõeldud alglaadur.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Kaks vastust: aadress ja alglaadimisserver</strong><span>Nii ei pea DHCP-serverit muutma. Teine võimalus on panna alglaadimisinfo DHCP-serverisse endasse: <strong>valik 66</strong> (alglaadimisserveri aadress) ja <strong>valik 67</strong> (alglaadimisfaili nimi). Siis teist pakkumist ei ole. Kui WDS ja DHCP on samas serveris, kasutatakse samuti seda teed.</span></span></button></li>
+<li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Tühi arvuti ja kaks serverit</strong><span><strong>PXE</strong> (<i>Preboot Execution Environment</i>) on UEFI (<i>Unified Extensible Firmware Interface</i>) püsivara oskus käivitada arvuti võrgust ilma ketta, USB-pulga (USB – <i>Universal Serial Bus</i>) või operatsioonisüsteemita. Püsivaras on selleks väike võrgupinu: DHCP- ja TFTP-klient (TFTP – <i>Trivial File Transfer Protocol</i>). Võrgukäivituse valib kasutaja alglaadimismenüüst (sageli F12) või on see alglaadimisjärjekorras esimene.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>DHCPDISCOVER: klient küsib aadressi ja ütleb, et on PXE-klient</strong><span><strong>Leviedastus</strong> jõuab ainult sama kohtvõrgu (VLAN-i (<i>Virtual Local Area Network</i>)) seadmeteni. Kui serverid on teises võrgus, peab ruuter päringu edasi andma (DHCP-relee ehk IP helper; DHCP – <i>Dynamic Host Configuration Protocol</i>). <strong>Valik 93</strong> on oluline: selle järgi otsustab server, kas anda BIOS-i (<i>Basic Input/Output System</i>) või UEFI jaoks mõeldud alglaadur.</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Kaks vastust: aadress ja alglaadimisserver</strong><span>Nii ei pea DHCP-serverit muutma. Teine võimalus on panna alglaadimisinfo DHCP-serverisse endasse: <strong>valik 66</strong> (alglaadimisserveri aadress) ja <strong>valik 67</strong> (alglaadimisfaili nimi). Siis teist pakkumist ei ole. Kui WDS (<i>Windows Deployment Services</i>) ja DHCP on samas serveris, kasutatakse samuti seda teed.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Aadress kinnitatakse</strong><span>See on tavaline DHCP nelja sammu vahetus (Discover, Offer, Request, Ack), sama mis iga arvuti võrku ühendamisel. PXE lisab sellele ainult alglaadimisinfo.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Millist faili laadida?</strong><span>Seda faili nimetatakse <strong>NBP</strong>-ks (Network Bootstrap Program, võrgu-alglaadur). Vana BIOS-i jaoks oleks see <code>pxelinux.0</code> või <code>wdsnbp.com</code>, UEFI jaoks <code>.efi</code>-fail. Vale arhitektuuri fail on sage põhjus, miks PXE ei tööta.</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>TFTP: võrgu-alglaadur laaditakse alla ja käivitatakse</strong><span><strong>TFTP</strong> on väga lihtne failiedastusprotokoll: autentimist ega krüpteerimist ei ole, on ainult „anna fail“. See mahub püsivarasse, kuid on aeglane. <strong>Secure Boot</strong> kehtib ka võrgust käivitamisel: allkirjastamata alglaadurit ei käivitata.</span></span></button></li>
-<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Alglaadur loeb seadistuse</strong><span>Sellest hetkest ei juhi tööd enam püsivara, vaid alglaadur. <strong>BCD</strong> ja <strong>grub.cfg</strong> on samad seadistused, mida alglaadur kasutaks kettalt käivitamisel (ptk 4.12), ainult et nüüd tulevad need võrgust.</span></span></button></li>
-<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Alglaadimistõmmis laaditakse põhimällu</strong><span><strong>boot.wim</strong> sisaldab WinPE-d ehk kärbitud Windowsi, mis töötab täielikult põhimälus. Linuxis teeb sama töö <strong>tuum + initrd</strong>. GRUB ja uuemad püsivarad oskavad seda faili laadida ka HTTP-ga, mis on TFTP-st palju kiirem.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>Alglaadur loeb seadistuse</strong><span>Sellest hetkest ei juhi tööd enam püsivara, vaid alglaadur. <strong>BCD (<i>Boot Configuration Data</i>)</strong> ja <strong>grub.cfg</strong> on samad seadistused, mida alglaadur kasutaks kettalt käivitamisel (ptk 4.12), ainult et nüüd tulevad need võrgust.</span></span></button></li>
+<li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>Alglaadimistõmmis laaditakse põhimällu</strong><span><strong>boot.wim</strong> sisaldab WinPE-d ehk kärbitud Windowsi, mis töötab täielikult põhimälus. Linuxis teeb sama töö <strong>tuum + initrd</strong>. GRUB (<i>GRand Unified Bootloader</i>) ja uuemad püsivarad oskavad seda faili laadida ka HTTP-ga (<i>Hypertext Transfer Protocol</i>), mis on TFTP-st palju kiirem.</span></span></button></li>
 <li><button type="button" class="step" data-i="8"><span class="num">9</span><span class="body"><strong>Arvuti töötab võrgust laaditud süsteemiga</strong><span>PXE ülesanne on ainult <strong>käivitada</strong> arvuti võrgust. Mida käivitatud süsteem edasi teeb (paigaldab Windowsi või Linuxi, teeb kettast tõmmise, käivitab mälutesti), sõltub juba sellest, mis tõmmis laaditi.</span></span></button></li>
 </ol>
 </section>
@@ -146,23 +146,23 @@ a{color:var(--accent)}
 <h2>Mõisted</h2>
 <div class="tablewrap"><table>
 <tr><th>Mõiste</th><th>Selgitus</th></tr>
-<tr><td><strong>PXE</strong> (Preboot Execution Environment)</td><td>Standard, mille järgi arvuti püsivara käivitab operatsioonisüsteemi võrgust. Hääldatakse „piksi“.</td></tr>
-<tr><td><strong>Püsivara võrgupinu</strong></td><td>UEFI-s olev väike DHCP- ja TFTP-klient, mis töötab enne operatsioonisüsteemi.</td></tr>
-<tr><td><strong>DHCP</strong></td><td>Protokoll, mis annab arvutile IP-aadressi, maski ja lüüsi. Server kuulab UDP porti 67, klient porti 68.</td></tr>
+<tr><td><strong>PXE</strong> (<i>Preboot Execution Environment</i>)</td><td>Standard, mille järgi arvuti püsivara käivitab operatsioonisüsteemi võrgust. Hääldatakse „piksi“.</td></tr>
+<tr><td><strong>Püsivara võrgupinu</strong></td><td>UEFI-s (<i>Unified Extensible Firmware Interface</i>) olev väike DHCP- ja TFTP-klient (TFTP – <i>Trivial File Transfer Protocol</i>), mis töötab enne operatsioonisüsteemi.</td></tr>
+<tr><td><strong>DHCP (<i>Dynamic Host Configuration Protocol</i>)</strong></td><td>Protokoll, mis annab arvutile IP-aadressi, maski ja lüüsi. Server kuulab UDP (<i>User Datagram Protocol</i>) porti 67, klient porti 68.</td></tr>
 <tr><td><strong>Leviedastus</strong> (broadcast)</td><td>Sõnum, mis saadetakse kõigile sama kohtvõrgu seadmetele. Ruuter seda edasi ei saada.</td></tr>
 <tr><td><strong>DHCP-relee</strong> (IP helper)</td><td>Ruuteri või kommutaatori seadistus, mis edastab DHCP leviedastuse teises võrgus olevale serverile.</td></tr>
 <tr><td><strong>DHCP valik 60</strong></td><td>Kliendi tüüp. PXE-klient saadab siin teksti „PXEClient“.</td></tr>
-<tr><td><strong>DHCP valik 93</strong></td><td>Kliendi arhitektuur: 0 = BIOS, 7 = x64 UEFI, 11 = ARM64 UEFI.</td></tr>
+<tr><td><strong>DHCP valik 93</strong></td><td>Kliendi arhitektuur: 0 = BIOS (<i>Basic Input/Output System</i>), 7 = x64 UEFI, 11 = ARM64 (ARM – <i>Advanced RISC Machines</i>) UEFI.</td></tr>
 <tr><td><strong>DHCP valikud 66 ja 67</strong></td><td>Alglaadimisserveri aadress ja alglaadimisfaili nimi, kui need annab DHCP-server ise.</td></tr>
 <tr><td><strong>ProxyDHCP</strong></td><td>PXE-server vastab DHCP päringule ainult alglaadimisinfoga ja aadressi ei jaga. Kasutab UDP porti 4011.</td></tr>
 <tr><td><strong>TFTP</strong></td><td>Lihtne failiedastusprotokoll UDP pordil 69, ilma autentimise ja krüpteerimiseta.</td></tr>
-<tr><td><strong>NBP</strong> (võrgu-alglaadur)</td><td>Esimene fail, mille klient alla laadib ja käivitab: <code>wdsmgfw.efi</code> (WDS), <code>shimx64.efi</code> ja <code>grubx64.efi</code> (Linux).</td></tr>
-<tr><td><strong>shim</strong></td><td>Väike Microsofti võtmega allkirjastatud alglaadur, mis lubab turvalise alglaadimisega käivitada GRUB-i.</td></tr>
-<tr><td><strong>BCD, grub.cfg</strong></td><td>Windowsi ja GRUB-i alglaaduri seadistus: mida ja milliste parameetritega käivitada.</td></tr>
+<tr><td><strong>NBP</strong> (võrgu-alglaadur)</td><td>Esimene fail, mille klient alla laadib ja käivitab: <code>wdsmgfw.efi</code> (WDS – <i>Windows Deployment Services</i>), <code>shimx64.efi</code> ja <code>grubx64.efi</code> (Linux).</td></tr>
+<tr><td><strong>shim</strong></td><td>Väike Microsofti võtmega allkirjastatud alglaadur, mis lubab turvalise alglaadimisega käivitada GRUB-i (<i>GRand Unified Bootloader</i>).</td></tr>
+<tr><td><strong>BCD (<i>Boot Configuration Data</i>), grub.cfg</strong></td><td>Windowsi ja GRUB-i alglaaduri seadistus: mida ja milliste parameetritega käivitada.</td></tr>
 <tr><td><strong>Alglaadimistõmmis</strong> (boot.wim)</td><td>Tõmmisfail, milles on WinPE. Laaditakse tervikuna põhimällu.</td></tr>
 <tr><td><strong>WinPE</strong></td><td>Kärbitud Windows paigalduse ja taaste jaoks. Töötab põhimälus, ketast ei vaja.</td></tr>
 <tr><td><strong>vmlinuz, initrd</strong></td><td>Linuxi tuum ja algne mälus töötav failisüsteem, milles on paigaldaja.</td></tr>
-<tr><td><strong>HTTP Boot</strong></td><td>UEFI uuem võimalus laadida alglaadur HTTP(S)-ga TFTP asemel.</td></tr>
+<tr><td><strong>HTTP (<i>Hypertext Transfer Protocol</i>) Boot</strong></td><td>UEFI uuem võimalus laadida alglaadur HTTP(S)-ga TFTP asemel.</td></tr>
 </table></div>
 <h2>Pordid, mis peavad tulemüürist läbi pääsema</h2>
 <div class="tablewrap"><table>
@@ -170,13 +170,13 @@ a{color:var(--accent)}
 <tr><td>UDP 67, 68</td><td>DHCP</td><td>aadressi küsimine ja andmine</td></tr>
 <tr><td>UDP 4011</td><td>ProxyDHCP</td><td>alglaadimisfaili nime küsimine PXE-serverilt</td></tr>
 <tr><td>UDP 69 ja juhuslikud kõrged UDP pordid</td><td>TFTP</td><td>alglaaduri ja tõmmise allalaadimine</td></tr>
-<tr><td>TCP 80 või 443</td><td>HTTP(S)</td><td>Linuxi tuum, vastusfail ja paketid; HTTP Boot</td></tr>
-<tr><td>TCP 445, 135 ja RPC pordid</td><td>SMB, RPC</td><td>WDS-i paigaldustõmmised ja kliendi suhtlus serveriga</td></tr>
+<tr><td>TCP (<i>Transmission Control Protocol</i>) 80 või 443</td><td>HTTP(S)</td><td>Linuxi tuum, vastusfail ja paketid; HTTP Boot</td></tr>
+<tr><td>TCP 445, 135 ja RPC (<i>Remote Procedure Call</i>) pordid</td><td>SMB (<i>Server Message Block</i>), RPC</td><td>WDS-i paigaldustõmmised ja kliendi suhtlus serveriga</td></tr>
 </table></div>
 <h2>Kui PXE ei tööta</h2>
 <div class="tablewrap"><table>
 <tr><th>Mida näed</th><th>Tõenäoline põhjus</th></tr>
-<tr><td>Klient ei saa IP-aadressi</td><td>DHCP-server ei ole samas võrgus ja relee puudub; võrgukaabel või VLAN on vale.</td></tr>
+<tr><td>Klient ei saa IP-aadressi</td><td>DHCP-server ei ole samas võrgus ja relee puudub; võrgukaabel või VLAN (<i>Virtual Local Area Network</i>) on vale.</td></tr>
 <tr><td>Aadress tuleb, kuid „No boot filename received“ (BIOS-is PXE-E53)</td><td>PXE-server ei vasta: teenus ei tööta, on teises võrgus või ei vasta tundmatutele klientidele.</td></tr>
 <tr><td>„TFTP open timeout“ (BIOS-is PXE-E32)</td><td>Tulemüür blokeerib UDP 69 või TFTP-teenus ei tööta.</td></tr>
 <tr><td>Fail laaditakse, kuid ei käivitu</td><td>Vale arhitektuur (BIOS-i fail UEFI-kliendile) või turvaline alglaadimine lükkab allkirjastamata faili tagasi.</td></tr>
@@ -192,10 +192,10 @@ Get-DhcpServerv4OptionValue -ScopeId 192.168.10.0
 Get-NetUDPEndpoint -LocalPort 67,69,4011 | Select-Object LocalAddress, LocalPort, OwningProcess
 Get-DhcpServerv4Lease -ScopeId 192.168.10.0 | Sort-Object LeaseExpiryTime -Descending | Select-Object -First 5</pre>
 <ul>
-<li><strong>1. rida:</strong> näita DHCP-serveri aadressivahemikke. Asenda järgmistes käskudes <code>192.168.10.0</code> oma vahemiku ID-ga.</li>
+<li><strong>1. rida:</strong> näita DHCP-serveri aadressivahemikke. Asenda järgmistes käskudes <code>192.168.10.0</code> oma vahemiku ID-ga (<i>Identifier</i>).</li>
 <li><strong>2. rida:</strong> näita vahemiku valikuid. Otsi valikuid 66 ja 67: kui need on olemas, annab alglaadimisinfo DHCP-server ise.</li>
 <li><strong>3. rida:</strong> näita, millised protsessid kuulavad DHCP, TFTP ja ProxyDHCP porte. Protsessi nime annab <code>Get-Process -Id &lt;number&gt;</code>.</li>
-<li><strong>4. rida:</strong> näita viit kõige värskemat aadressirenti. Pärast kliendi PXE-käivitust on siin tema MAC-aadress.</li>
+<li><strong>4. rida:</strong> näita viit kõige värskemat aadressirenti. Pärast kliendi PXE-käivitust on siin tema MAC-aadress (MAC – <i>Media Access Control</i>).</li>
 </ul>
 <p>Mida otsida: kui kolmas käsk ei näita porti 69, siis TFTP-teenus (WDS) ei tööta ja klient jääb alglaaduri allalaadimisel ootele.</p>
 <h3>Linuxi serveris (terminal)</h3>

@@ -2,16 +2,16 @@
 
 ## 25. UUS: Krüptograafia ajalugu ja põhimõisted
 
-**Krüptograafia** (kreeka *kryptos* – peidetud, *graphein* – kirjutama) on teadus andmete kaitsmisest matemaatiliste meetoditega. Tema abil saavutatakse konfidentsiaalsus, terviklus, autentsus ja mittesalgamine (ptk 24.2). Windowsis kasutavad krüptograafiat BitLocker (ptk 16), Kerberos (ptk 17), Secure Boot ja draiverite allkirjad (ptk 18) ning iga HTTPS-ühendus (HTTPS – ingl *Hypertext Transfer Protocol Secure*).
+**Krüptograafia** (kreeka *kryptos* – peidetud, *graphein* – kirjutama) on teadus andmete kaitsmisest matemaatiliste meetoditega. Tema abil saavutatakse konfidentsiaalsus, terviklus, autentsus ja mittesalgamine (ptk 24.2). Windowsis kasutavad krüptograafiat BitLocker (ptk 16), Kerberos (ptk 17), Secure Boot ja draiverite allkirjad (ptk 18) ning iga HTTPS-ühendus (HTTPS – *Hypertext Transfer Protocol Secure*).
 
-Selles peatükis vaatame, kuidas inimesed on kahe ja poole tuhande aasta jooksul sõnumeid peitnud ja kuidas neid peidetud sõnumeid on murtud. Ajalugu ei ole siin eesmärk omaette: iga murtud šiffer õpetas midagi, millele kaasaegne krüptograafia toetub. Kui mõistad, miks Caesari šiffer, Vigenère ja Enigma murti, mõistad ka, miks AES (ingl *Advanced Encryption Standard*) on ehitatud nii, nagu ta on.
+Selles peatükis vaatame, kuidas inimesed on kahe ja poole tuhande aasta jooksul sõnumeid peitnud ja kuidas neid peidetud sõnumeid on murtud. Ajalugu ei ole siin eesmärk omaette: iga murtud šiffer õpetas midagi, millele kaasaegne krüptograafia toetub. Kui mõistad, miks Caesari šiffer, Vigenère ja Enigma murti, mõistad ka, miks AES (*Advanced Encryption Standard*) on ehitatud nii, nagu ta on.
 
 **Pärast peatüki läbimist õppija:**
 
 - kasutab õigesti mõisteid avatekst, šifritekst, algoritm, võti ja võtmeruum;
 - selgitab Kerckhoffsi printsiipi ja seda, miks salajane algoritm ei ole turvaline;
 - krüpteerib ja murrab Caesari ning Vigenère’i šifri ning selgitab sagedusanalüüsi;
-- selgitab ühekordse ploki ja XOR-tehte (XOR – ingl *Exclusive OR*) põhimõtet;
+- selgitab ühekordse ploki ja XOR-tehte (XOR – *Exclusive OR*) põhimõtet;
 - kirjeldab Enigma tööpõhimõtet ja murdmise põhjusi;
 - eristab kodeerimist, krüpteerimist ja steganograafiat ning selgitab juhuslikkuse tähtsust.
 
@@ -31,9 +31,9 @@ Joonis: krüpteerimise üldmudel. Saatja (traditsiooniliselt *Alice*) krüpteeri
 | Toore jõu rünne (brute force) | kõigi võimalike võtmete läbiproovimine |
 | Võtmeruum | kõigi võimalike võtmete hulk, nt 128-bitisel võtmel 2¹²⁸ |
 
-**Kui suur on 2¹²⁸?** See on umbes 3,4 × 10³⁸. Kui miljard arvutit proovivad igaüks miljard võtit sekundis, kulub kõigi võtmete läbimiseks umbes 10¹³ aastat – ligikaudu tuhat korda kauem, kui universum on olemas olnud. Iga lisabitt kahekordistab võtmeruumi: 56-bitine DES-võti (DES – ingl *Data Encryption Standard*) on 2⁷² korda „väiksem“ kui 128-bitine AES-võti. Seetõttu ei murta kaasaegseid šifreid toore jõuga, vaid otsitakse vigu nende kasutamises.
+**Kui suur on 2¹²⁸?** See on umbes 3,4 × 10³⁸. Kui miljard arvutit proovivad igaüks miljard võtit sekundis, kulub kõigi võtmete läbimiseks umbes 10¹³ aastat – ligikaudu tuhat korda kauem, kui universum on olemas olnud. Iga lisabitt kahekordistab võtmeruumi: 56-bitine DES-võti (DES – *Data Encryption Standard*) on 2⁷² korda „väiksem“ kui 128-bitine AES-võti. Seetõttu ei murta kaasaegseid šifreid toore jõuga, vaid otsitakse vigu nende kasutamises.
 
-**Kodeerimine ei ole krüpteerimine.** Base64, URL-kodeering (URL – ingl *Uniform Resource Locator*) ja heksakuju muudavad andmete esitusviisi, kuid neil puudub võti: igaüks saab need tagasi muuta. **Steganograafia** peidab sõnumi olemasolu (nt tõmmisfaili pikslitesse), krüptograafia peidab sõnumi sisu. Neid võib kombineerida: krüpteeritud sõnum peidetakse tõmmisesse.
+**Kodeerimine ei ole krüpteerimine.** Base64, URL-kodeering (URL – *Uniform Resource Locator*) ja heksakuju muudavad andmete esitusviisi, kuid neil puudub võti: igaüks saab need tagasi muuta. **Steganograafia** peidab sõnumi olemasolu (nt tõmmisfaili pikslitesse), krüptograafia peidab sõnumi sisu. Neid võib kombineerida: krüpteeritud sõnum peidetakse tõmmisesse.
 
 ### 25.2 Kerckhoffsi printsiip
 
@@ -44,8 +44,8 @@ Miks see nii on? Algoritmi on raske saladuses hoida: see on igas seadmes, igas t
 Näited salajastest algoritmidest, mis murti kohe pärast avalikuks tulekut:
 
 - **MIFARE Classic** kiipkaartide (ühistranspordi- ja uksekaardid) algoritm Crypto-1 murti 2008. aastal pärast seda, kui teadlased kiibi kihtide kaupa pildistasid ja algoritmi taastasid;
-- **DVD-de (ingl *Digital Versatile Disc*) CSS**-kaitse (CSS – ingl *Content Scramble System*) murti 1999. aastal ja selle 40-bitine võti oli toore jõuga leitav;
-- **GSM-i (ingl *Global System for Mobile Communications*) A5/1** mobiilsidekrüpto leiti ja murti, kuigi seda hoiti aastaid saladuses.
+- **DVD-de (*Digital Versatile Disc*) CSS**-kaitse (CSS – *Content Scramble System*) murti 1999. aastal ja selle 40-bitine võti oli toore jõuga leitav;
+- **GSM-i (*Global System for Mobile Communications*) A5/1** mobiilsidekrüpto leiti ja murti, kuigi seda hoiti aastaid saladuses.
 
 ### 25.3 Ajalugu
 
@@ -102,7 +102,7 @@ Nõrkus on aga võtme kordumine. Kui võti on 4 tähte pikk, on šifritekst tege
 
 #### Ühekordne plokk ja XOR
 
-Vigenère’i nõrkus on võtme kordumine. Mis juhtub, kui võti on sama pikk kui sõnum, täiesti juhuslik ja seda kasutatakse **ainult üks kord**? Siis saame **ühekordse ploki** (one-time pad, OTP). Claude Shannon tõestas 1949. aastal, et see on **täiuslikult turvaline**: šifritekst ei anna avateksti kohta mingit infot, sest iga sama pikk avatekst on võrdselt võimalik. Šifritekst `XQZB` võib olla nii `TERE` kui ka `KASS` – sõltub ainult võtmest.
+Vigenère’i nõrkus on võtme kordumine. Mis juhtub, kui võti on sama pikk kui sõnum, täiesti juhuslik ja seda kasutatakse **ainult üks kord**? Siis saame **ühekordse ploki** (*one-time pad*, OTP). Claude Shannon tõestas 1949. aastal, et see on **täiuslikult turvaline**: šifritekst ei anna avateksti kohta mingit infot, sest iga sama pikk avatekst on võrdselt võimalik. Šifritekst `XQZB` võib olla nii `TERE` kui ka `KASS` – sõltub ainult võtmest.
 
 Arvutis tehakse ühekordset plokki **XOR**-tehtega (välistav või, tähis ⊕). XOR võrdleb bitte: kui bitid on erinevad, on tulemus 1, kui samad, siis 0.
 
@@ -113,7 +113,7 @@ Arvutis tehakse ühekordset plokki **XOR**-tehtega (välistav või, tähis ⊕).
 | 1 | 0 | 1 |
 | 1 | 1 | 0 |
 
-Näide: täht *T* on ASCII-s (ingl *American Standard Code for Information Interchange*) `01010100`. Võtmebait on `01011010`. XOR annab `00001110`. Kui teeme sama võtmega uuesti XOR-i, saame tagasi `01010100`, ehk *T*. XOR-i omadus **(P ⊕ K) ⊕ K = P** tähendab, et krüpteerimine ja dekrüpteerimine on sama tehe. Sõna `TERE` (heksas `54 45 52 45`) XOR võti `5a 13 c4 7e` annab šifriteksti `0e 56 96 3b`.
+Näide: täht *T* on ASCII-s (*American Standard Code for Information Interchange*) `01010100`. Võtmebait on `01011010`. XOR annab `00001110`. Kui teeme sama võtmega uuesti XOR-i, saame tagasi `01010100`, ehk *T*. XOR-i omadus **(P ⊕ K) ⊕ K = P** tähendab, et krüpteerimine ja dekrüpteerimine on sama tehe. Sõna `TERE` (heksas `54 45 52 45`) XOR võti `5a 13 c4 7e` annab šifriteksti `0e 56 96 3b`.
 
 Miks siis kõiki sõnumeid nii ei krüpteerita?
 
@@ -160,7 +160,7 @@ Saksa kõrgem juhtkond kasutas teletaipi šifreerivat **Lorenzi masinat**, mis t
 
 Caesar ja asendusšiffer ei hajuta üldse (üks täht muudab ühe tähe), seetõttu töötab sagedusanalüüs. AES teeb mõlemat kümme korda järjest (ptk 26).
 
-Avalikud standardid tekkisid 20. sajandi 70ndatel. **DES** (1977) oli esimene avalik plokkšiffer, kuid selle 56-bitine võti murti 1998. aastal eriehitusega masinaga „Deep Crack“ umbes kahe päevaga ja 1999. aastal koostöös internetiga alla ööpäevaga. Whitfield Diffie ja Martin Hellman avaldasid 1976. aastal **avaliku võtme krüptograafia** idee ja Rivest, Shamir ja Adleman 1977. aastal **RSA** (ptk 28). **AES** valiti 2001. aastal avaliku rahvusvahelise konkursi tulemusel: võitis Belgia teadlaste Joan Daemeni ja Vincent Rijmeni algoritm **Rijndael**. 2024. aastal avaldas NIST (ingl *National Institute of Standards and Technology*) esimesed **postkvantstandardid** (ptk 30).
+Avalikud standardid tekkisid 20. sajandi 70ndatel. **DES** (1977) oli esimene avalik plokkšiffer, kuid selle 56-bitine võti murti 1998. aastal eriehitusega masinaga „Deep Crack“ umbes kahe päevaga ja 1999. aastal koostöös internetiga alla ööpäevaga. Whitfield Diffie ja Martin Hellman avaldasid 1976. aastal **avaliku võtme krüptograafia** idee ja Rivest, Shamir ja Adleman 1977. aastal **RSA** (ptk 28). **AES** valiti 2001. aastal avaliku rahvusvahelise konkursi tulemusel: võitis Belgia teadlaste Joan Daemeni ja Vincent Rijmeni algoritm **Rijndael**. 2024. aastal avaldas NIST (*National Institute of Standards and Technology*) esimesed **postkvantstandardid** (ptk 30).
 
 ### 25.4 Kaasaegse krüptograafia kaart
 
@@ -171,8 +171,8 @@ Joonis: kaasaegse krüptograafia kolm ehitusplokki ja peatükid, kus neid käsit
 | Ehitusplokk | Mida teeb | Võti | Tuntud algoritmid | Peatükk |
 | --- | --- | --- | --- | --- |
 | Sümmeetriline krüpteerimine | kaitseb konfidentsiaalsust kiiresti ja suurte andmemahtude puhul | sama salajane võti mõlemal poolel | AES, ChaCha20 | 26 |
-| Räsifunktsioon | annab andmetele lihtsalt kontrollitava „sõrmejälje“ | võtit pole (HMAC-il (ingl *Hash-based Message Authentication Code*) on) | SHA-256 (SHA – ingl *Secure Hash Algorithm*), SHA-3, Argon2 | 27 |
-| Asümmeetriline krüptograafia | võtmevahetus ja digiallkiri võõraste vahel | avalik ja privaatvõti | RSA, ECDH (ingl *Elliptic Curve Diffie–Hellman*), ECDSA (ingl *Elliptic Curve Digital Signature Algorithm*), ML-KEM (ingl *Module-Lattice-Based Key-Encapsulation Mechanism*) | 28–30 |
+| Räsifunktsioon | annab andmetele lihtsalt kontrollitava „sõrmejälje“ | võtit pole (HMAC-il (*Hash-based Message Authentication Code*) on) | SHA-256 (SHA – *Secure Hash Algorithm*), SHA-3, Argon2 | 27 |
+| Asümmeetriline krüptograafia | võtmevahetus ja digiallkiri võõraste vahel | avalik ja privaatvõti | RSA, ECDH (*Elliptic Curve Diffie–Hellman*), ECDSA (*Elliptic Curve Digital Signature Algorithm*), ML-KEM (*Module-Lattice-Based Key-Encapsulation Mechanism*) | 28–30 |
 
 Näiteks HTTPS-ühenduses (ptk 29) leppivad brauser ja server asümmeetrilise krüptograafiaga kokku ühises võtmes, serveri identiteeti kontrollitakse digiallkirjaga ja sertifikaadiga ning andmed liiguvad AES-i või ChaCha20-ga krüpteeritult. Iga krüpteeritud sõnumi terviklust kontrollitakse autentimiskoodiga.
 
@@ -180,11 +180,11 @@ Näiteks HTTPS-ühenduses (ptk 29) leppivad brauser ja server asümmeetrilise kr
 
 Iga võti peab olema **ettearvamatu**. Kui ründaja suudab võtme ette arvata, pole tähtis, kui tugev on algoritm. Arvuti on aga deterministlik masin: sama sisend annab alati sama väljundi. Kust tuleb siis juhuslikkus?
 
-- **Entroopia allikad** – operatsioonisüsteem kogub ettearvamatuid sündmusi: klahvivajutuste ja hiireliigutuste täpseid ajastusi, katkestuste aegu, võrgupakettide saabumist ning protsessori riistvaralist juhuarvugeneraatorit (Intel `RDRAND`, TPM-kiip (TPM – ingl *Trusted Platform Module*)).
-- **Krüptograafiliselt turvaline pseudojuhuarvude generaator** (CSPRNG – ingl *Cryptographically Secure Pseudorandom Number Generator*) laiendab seda entroopiat pikaks juhuslikuna näivaks jadaks, millest ei saa eelmisi ega järgmisi väärtusi ennustada. Linuxis on selleks `/dev/urandom` ja `getrandom()`, Windowsis `BCryptGenRandom` ning Pythonis moodul `secrets`.
+- **Entroopia allikad** – operatsioonisüsteem kogub ettearvamatuid sündmusi: klahvivajutuste ja hiireliigutuste täpseid ajastusi, katkestuste aegu, võrgupakettide saabumist ning protsessori riistvaralist juhuarvugeneraatorit (Intel `RDRAND`, TPM-kiip (TPM – *Trusted Platform Module*)).
+- **Krüptograafiliselt turvaline pseudojuhuarvude generaator** (CSPRNG – *Cryptographically Secure Pseudorandom Number Generator*) laiendab seda entroopiat pikaks juhuslikuna näivaks jadaks, millest ei saa eelmisi ega järgmisi väärtusi ennustada. Linuxis on selleks `/dev/urandom` ja `getrandom()`, Windowsis `BCryptGenRandom` ning Pythonis moodul `secrets`.
 - **Tavaline juhuarvugeneraator** (Pythoni `random`, C `rand()`, JavaScripti `Math.random()`) on mõeldud simulatsioonideks ja mängudeks. Selle sisemise oleku saab väljundi põhjal taastada. Paroolide, võtmete ja seansitunnuste loomiseks ei tohi seda **kunagi** kasutada.
 
-**Näide: Debiani OpenSSL-i viga (2008).** 2006. aastal eemaldas Debiani arendaja OpenSSL-i koodist kaks rida, mille peale hoiatas mälukontrolli tööriist. Need read lisasid juhuslikkuse kogumisse entroopiat. Pärast muudatust sõltus genereeritud võti peaaegu ainult protsessi numbrist (PID – ingl *Process Identifier*), mida oli kuni 32 768 võimalust. Kahe aasta jooksul loodud Debiani ja Ubuntu SSH- ja TLS-võtmeid (SSH – ingl *Secure Shell*; TLS – ingl *Transport Layer Security*) oli seega iga tüübi ja pikkuse kohta vaid kuni 32 768 – ründaja genereeris need kõik läbi ja leidis õige võtme minutitega. Algoritm (RSA) oli korras, võtme pikkus oli korras, kuid juhuslikkus puudus. Sama klassi vigu on leitud ka hiljem, näiteks Eesti ID-kaardi (ID – ingl *identity card*) kiibi võtmegeneraatoris 2017. aastal (ROCA – ingl *Return of Coppersmith’s Attack*, ptk 29).
+**Näide: Debiani OpenSSL-i viga (2008).** 2006. aastal eemaldas Debiani arendaja OpenSSL-i koodist kaks rida, mille peale hoiatas mälukontrolli tööriist. Need read lisasid juhuslikkuse kogumisse entroopiat. Pärast muudatust sõltus genereeritud võti peaaegu ainult protsessi numbrist (PID – *Process Identifier*), mida oli kuni 32 768 võimalust. Kahe aasta jooksul loodud Debiani ja Ubuntu SSH- ja TLS-võtmeid (SSH – *Secure Shell*; TLS – *Transport Layer Security*) oli seega iga tüübi ja pikkuse kohta vaid kuni 32 768 – ründaja genereeris need kõik läbi ja leidis õige võtme minutitega. Algoritm (RSA) oli korras, võtme pikkus oli korras, kuid juhuslikkus puudus. Sama klassi vigu on leitud ka hiljem, näiteks Eesti ID-kaardi (ID – *identity card*) kiibi võtmegeneraatoris 2017. aastal (ROCA – *Return of Coppersmith’s Attack*, ptk 29).
 
 ### 25.6 Mida krüptograafia ei lahenda
 
@@ -193,12 +193,12 @@ Krüptograafia on tugevaim lüli turvaahelas, kuid ahel on sama tugev kui nõrgi
 - **nakatunud seadmes**, kus pahavara loeb andmeid enne krüpteerimist või pärast dekrüpteerimist, salvestab klahvivajutusi või varastab avatud seansi;
 - **halva võtmehalduse** korral: võti on samas kaustas mis krüpteeritud fail, parool on skripti sisse kirjutatud, BitLockeri taastevõti on märkmepaberil või privaatvõti on Giti repositooriumis;
 - **teostusvigade** korral: Heartbleedi viga (2014) OpenSSL-is lekitas serveri mälu koos privaatvõtmetega, kuigi algoritmid olid korras;
-- **kasutusvigade** korral: vale režiim (ECB – ingl *Electronic Codebook*, ptk 26), korduv nonss, aegunud algoritm (MD5 – ingl *Message Digest 5*, SHA-1, DES);
+- **kasutusvigade** korral: vale režiim (ECB – *Electronic Codebook*, ptk 26), korduv nonss, aegunud algoritm (MD5 – *Message Digest 5*, SHA-1, DES);
 - **kõrvalkanalite** eest: ründaja võib võtme taastada arvutusaja, voolutarbimise või elektromagnetkiirguse mõõtmisest;
 - **inimese petmisel**: õngitsusleht saab TLS-sertifikaadi samamoodi nagu päris pank, lukk aadressiribal tähendab ainult seda, et ühendus on krüpteeritud, mitte seda, et sait on aus;
 - **metaandmeid**: krüpteeritud ühendusest on näha, kes kellega, millal ja kui palju suhtleb.
 
-Seepärast kehtib reegel: **ära kirjuta oma krüptograafiat**. Kasuta testitud teeke (OpenSSL, Windows CNG – ingl *Cryptography API: Next Generation*, libsodium, Pythoni `cryptography`) ja nende vaikeseadeid.
+Seepärast kehtib reegel: **ära kirjuta oma krüptograafiat**. Kasuta testitud teeke (OpenSSL, Windows CNG – *Cryptography API: Next Generation*, libsodium, Pythoni `cryptography`) ja nende vaikeseadeid.
 
 ### Näide: Base64 „parool“ seadistusfailis
 
@@ -240,13 +240,13 @@ Base64 tunneb sageli ära: ainult tähed, numbrid, `+` ja `/`, pikkus jagub nelj
 ### Valikküsimused
 
 1. Mida väidab Kerckhoffsi printsiip? a) algoritm peab olema salajane b) võti peab olema lühike c) süsteem peab olema turvaline ka siis, kui kõik peale võtme on avalik d) šifrit ei tohi kunagi muuta
-2. Milline meetod murrab lihtsa asendusšifri? a) sagedusanalüüs b) DNS-päring c) räsimine d) digiallkiri
+2. Milline meetod murrab lihtsa asendusšifri? a) sagedusanalüüs b) DNS-päring (DNS – *Domain Name System*) c) räsimine d) digiallkiri
 3. Mis on Base64? a) sümmeetriline šiffer b) räsifunktsioon c) asümmeetriline šiffer d) kodeering, mitte krüpteerimine
 4. Mitu võimalikku võtit on Caesari šifril 26-tähelises ladina tähestikus? a) 2 b) 25 c) 1000 d) 2¹²⁸
 
 ### Praktiline ülesanne
 
-**Ajaloolised šifrid ja XOR WSL-is.** Ava WSL Ubuntu (ptk 20.5) ja loo töökaust: `mkdir -p ~/krypto && cd ~/krypto`.
+**Ajaloolised šifrid ja XOR WSL-is (*Windows Subsystem for Linux*).** Ava WSL Ubuntu (ptk 20.5) ja loo töökaust: `mkdir -p ~/krypto && cd ~/krypto`.
 
 1. Caesari šiffer käsuga `tr`:
 

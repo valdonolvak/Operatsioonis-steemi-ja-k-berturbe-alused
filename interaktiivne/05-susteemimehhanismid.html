@@ -99,13 +99,13 @@ label.tg{display:inline-flex;gap:8px;align-items:center;font-size:15px;cursor:po
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/05-susteemimehhanismid.md">← Peatükk 5</a> · <a href="05-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">Test →</a></nav>
 <h1>Süsteemimehhanismid – proovi ise</h1>
-<p>Süsteemimehhanismid on tuuma üldised tööriistad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras, WoW64 (ingl <i>Windows 32-bit on Windows 64-bit</i>) ja Prism lasevad käitada vanu ja teise arhitektuuri programme.</p>
+<p>Süsteemimehhanismid on tuuma üldised tööriistad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras, WoW64 (<i>Windows 32-bit on Windows 64-bit</i>) ja Prism lasevad käitada vanu ja teise arhitektuuri programme.</p>
 <div class="toc"><a href="#irql">1. Katkestused ja IRQL</a><a href="#ke">2. Katkestus või erind?</a><a href="#erind">3. Nulliga jagamine</a><a href="#nimeruum">4. Objektihalduri nimeruum</a><a href="#wow">5. Kas see programm käivitub?</a></div>
 
 <!-- 1 -->
 <section id="irql">
 <h2>1. Katkestused ja IRQL</h2>
-<p>Protsessoril töötab tavaline lõim (PASSIVE_LEVEL). Saada seadmetelt katkestusi ja liigu sammhaaval edasi. Vaata, kuidas kõrgema IRQL-iga (ingl <i>Interrupt Request Level</i>) katkestus katkestab madalama, kuidas madalam peab ootama ja kuidas ISR (ingl <i>Interrupt Service Routine</i>) lükkab töö DPC-sse (ingl <i>Deferred Procedure Call</i>).</p>
+<p>Protsessoril töötab tavaline lõim (PASSIVE_LEVEL). Saada seadmetelt katkestusi ja liigu sammhaaval edasi. Vaata, kuidas kõrgema IRQL-iga (<i>Interrupt Request Level</i>) katkestus katkestab madalama, kuidas madalam peab ootama ja kuidas ISR (<i>Interrupt Service Routine</i>) lükkab töö DPC-sse (<i>Deferred Procedure Call</i>).</p>
 <div class="card">
   <div class="devs" id="devs"></div>
   <div class="irq">
@@ -173,7 +173,7 @@ const $=id=>document.getElementById(id);
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 /* ---------- 1. IRQL ---------- */
-const LV=[[15,'HIGH_LEVEL','c'],[14,'IPI_LEVEL','c'],[13,'CLOCK_LEVEL','c'],[12,'',''],[11,'',''],[10,'',''],[9,'DIRQL · NVMe-SSD','i'],[8,'',''],[7,'DIRQL · võrgukaart','i'],[6,'',''],[5,'DIRQL · klaviatuur','i'],[4,'',''],[3,'',''],[2,'DISPATCH_LEVEL','d'],[1,'APC_LEVEL','d'],[0,'PASSIVE_LEVEL','p']];
+const LV=[[15,'HIGH_LEVEL','c'],[14,'IPI_LEVEL','c'],[13,'CLOCK_LEVEL','c'],[12,'',''],[11,'',''],[10,'',''],[9,'DIRQL · NVMe-SSD (NVMe – <i>Non-Volatile Memory Express</i>)','i'],[8,'',''],[7,'DIRQL · võrgukaart','i'],[6,'',''],[5,'DIRQL · klaviatuur','i'],[4,'',''],[3,'',''],[2,'DISPATCH_LEVEL','d'],[1,'APC_LEVEL','d'],[0,'PASSIVE_LEVEL','p']];
 const DEV={kbd:['⌨️ Klaviatuur',5,'klahvivajutus',2,'Lõim „Word“ saab tähe'],nic:['🌐 Võrgukaart',7,'võrgupakett',3,'Lõim „brauser“ saab andmed'],ssd:['💾 NVMe-SSD',9,'lugemine valmis',2,'Lõim „Explorer“ saab faili'],clk:['⏱️ Taimer',13,'taimeri tiks',1,'Planeerija kontrollib ajakvanti']};
 let st,pend,dpcq,ilog,timer=null,t=0;
 function cls(l){return l>=13?'c':l>=3?'i':l>=1?'d':'p'}
@@ -214,14 +214,14 @@ function drawI(){
 function stopAuto(){if(timer){clearInterval(timer);timer=null;$('auto').textContent='▶ Automaatselt'}}
 $('auto').onclick=()=>{if(timer)return stopAuto();timer=setInterval(step,1100);$('auto').textContent='⏸ Peata'};
 $('step').onclick=step;$('ireset').onclick=iReset;
-$('scen').onclick=()=>{iReset();fire('nic');step();fire('ssd');fire('kbd');iInfo('Näidis: võrgukaardi ISR-i ajal saabusid SSD (ingl Solid-State Drive; IRQL 9) ja klaviatuuri (IRQL 5) katkestused. Vajuta „Samm“ ja jälgi: SSD katkestab võrgukaardi töö kohe, klaviatuur peab ootama, kuni IRQL langeb alla 5.')};
+$('scen').onclick=()=>{iReset();fire('nic');step();fire('ssd');fire('kbd');iInfo('Näidis: võrgukaardi ISR-i ajal saabusid SSD (<i>Solid-State Drive</i>; IRQL 9) ja klaviatuuri (IRQL 5) katkestused. Vajuta „Samm“ ja jälgi: SSD katkestab võrgukaardi töö kohe, klaviatuur peab ootama, kuni IRQL langeb alla 5.')};
 iReset();
 
 /* ---------- 2. katkestus/erind ---------- */
-const KE=[['Kasutaja vajutas klahvi','k','Klaviatuur annab märku väljastpoolt.'],['Võrgupakett saabus','k','Võrgukaart teatab uuest paketist.'],['Taimer tiksus (ajakvant läbi)','k','Taimer on väline seade.'],['NVMe-SSD lõpetas lugemise','k','Seade teatab töö lõpust MSI-X (ingl Message Signaled Interrupts eXtended) katkestusega.'],['Hiirt liigutati','k','Sisendseade annab märku.'],['USB-pulk ühendati','k','Kontroller teatab uuest seadmest.'],['Programm jagas nulliga','e','Käsk ise põhjustab erindi EXCEPTION_INT_DIVIDE_BY_ZERO.'],['Programm luges keelatud mäluaadressi','e','Juurdepääsurikkumine (access violation, 0xc0000005) tuleb täidetavast käsust.'],['Leheviga: vajalik mäluleht on saalefailis','e','Leheviga (page fault) on erind, mille mäluhaldur tavaliselt lahendab ja programm jätkab.'],['Silur jõudis katkestuspunktini (breakpoint)','e','Käsk int 3 tekitab erindi.'],['Protsessor kohtas tundmatut käsku','e','Keelatud käsk (illegal instruction) on erind.'],['Programm üritas tavaõigustes täita privilegeeritud käsku','e','Privilegeeritud käsu proovimine kasutajarežiimis on erind.']];
+const KE=[['Kasutaja vajutas klahvi','k','Klaviatuur annab märku väljastpoolt.'],['Võrgupakett saabus','k','Võrgukaart teatab uuest paketist.'],['Taimer tiksus (ajakvant läbi)','k','Taimer on väline seade.'],['NVMe-SSD lõpetas lugemise','k','Seade teatab töö lõpust MSI-X (<i>Message Signaled Interrupts eXtended</i>) katkestusega.'],['Hiirt liigutati','k','Sisendseade annab märku.'],['USB-pulk (USB – <i>Universal Serial Bus</i>) ühendati','k','Kontroller teatab uuest seadmest.'],['Programm jagas nulliga','e','Käsk ise põhjustab erindi EXCEPTION_INT_DIVIDE_BY_ZERO.'],['Programm luges keelatud mäluaadressi','e','Juurdepääsurikkumine (access violation, 0xc0000005) tuleb täidetavast käsust.'],['Leheviga: vajalik mäluleht on saalefailis','e','Leheviga (page fault) on erind, mille mäluhaldur tavaliselt lahendab ja programm jätkab.'],['Silur jõudis katkestuspunktini (breakpoint)','e','Käsk int 3 tekitab erindi.'],['Protsessor kohtas tundmatut käsku','e','Keelatud käsk (illegal instruction) on erind.'],['Programm üritas tavaõigustes täita privilegeeritud käsku','e','Privilegeeritud käsu proovimine kasutajarežiimis on erind.']];
 let kset=[],kpl={},ksel=null,kchk=false;
 function newK(){kset=shuffle([...shuffle(KE.filter(x=>x[1]==='k')).slice(0,4),...shuffle(KE.filter(x=>x[1]==='e')).slice(0,4)].map(x=>KE.indexOf(x)));kpl={};ksel=null;kchk=false;$('kres').innerHTML='';drawK()}
-function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KE[i][1]===w?' ok':' bad';b.className=c;b.textContent=KE[i][0];
+function kchip(i,w){const b=document.createElement('button');let c='chip';if(ksel===i)c+=' sel';if(kchk&&w!=='pool')c+=KE[i][1]===w?' ok':' bad';b.className=c;b.innerHTML=KE[i][0];
   b.onclick=e=>{e.stopPropagation();if(kchk)return;if(w==='pool')ksel=ksel===i?null:i;else{delete kpl[i];ksel=i}drawK()};return b}
 function drawK(){const pool=$('kpool');pool.innerHTML='';kset.filter(i=>!(i in kpl)).forEach(i=>pool.appendChild(kchip(i,'pool')));
   if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
@@ -241,7 +241,7 @@ $('run').onclick=()=>{
   if(g.some(x=>!Number.isInteger(x))){$('eout').innerHTML='<div class="info bad">Sisesta täisarvulised hinded, nt 5, 4, 3.</div>';return}
   const s=g.reduce((a,b)=>a+b,0),n=g.length,c=$('catch').checked,now=new Date().toLocaleString('et-EE');
   if(n>0){$('eout').innerHTML='<div class="dlg">summa = '+s+', hinnete_arv = '+n+'<br><b>Keskmine: '+(Math.floor(s*100/n)/100)+'</b></div><div class="info ok">Jagaja ei ole 0, erindit ei teki. Proovi nüüd tühja väljaga.</div>';return}
-  if(c){$('eout').innerHTML='<div class="dlg">summa = 0, hinnete_arv = 0<br>Protsessor tekitas erindi <code>EXCEPTION_INT_DIVIDE_BY_ZERO</code>.<br><b>catch-plokk püüdis selle:</b> „Hindeid pole, keskmist ei saa arvutada.“</div><div class="info ok">Programm <b>käsitles</b> erindit ja töötab edasi. Windows ei pidanud sekkuma. See on struktureeritud erinditetöötlus (SEH, C-s <code>__try/__except</code>).</div>';return}
+  if(c){$('eout').innerHTML='<div class="dlg">summa = 0, hinnete_arv = 0<br>Protsessor tekitas erindi <code>EXCEPTION_INT_DIVIDE_BY_ZERO</code>.<br><b>catch-plokk püüdis selle:</b> „Hindeid pole, keskmist ei saa arvutada.“</div><div class="info ok">Programm <b>käsitles</b> erindit ja töötab edasi. Windows ei pidanud sekkuma. See on struktureeritud erinditetöötlus (SEH – <i>Structured Exception Handling</i>, C-s <code>__try/__except</code>).</div>';return}
   $('eout').innerHTML='<div class="dlg err"><b>hinded.exe on lakanud töötamast.</b><br>Probleem põhjustas programmi töö lõpetamise.</div>'+
    '<p class="hint" style="margin:.75rem 0 0">Sündmusvaatur → Windowsi logid → Rakendus:</p><div class="evt">Tase:        Viga\nAllikas:     Application Error\nSündmuse ID: 1000\nKuupäev:     '+now+'\nVigane rakendus:  hinded.exe\nErindikood:       0xc0000094\nVea nihe:         0x0000000000001a2f</div>'+
    '<div class="info bad">Keegi ei püüdnud erindit. Windows <b>lõpetas protsessi</b> ja Windows Error Reporting salvestas krahhiaruande. Kood <code>0xc0000094</code> = STATUS_INTEGER_DIVIDE_BY_ZERO. Teised programmid töötavad edasi, sest viga oli kasutajarežiimis. Tuumarežiimis oleks töötlemata erind peatanud kogu süsteemi.</div>';
@@ -250,12 +250,12 @@ $('run').onclick=()=>{
 /* ---------- 4. nimeruum ---------- */
 const NS={
  '\\':[['Device','Directory'],['GLOBAL??','Directory'],['BaseNamedObjects','Directory'],['KnownDlls','Directory'],['Sessions','Directory'],['Driver','Directory'],['ObjectTypes','Directory']],
- '\\Device':[['HarddiskVolume1','Device','EFI süsteemipartitsioon'],['HarddiskVolume3','Device','Windowsi partitsioon (C:)'],['HarddiskVolume4','Device','Andmepartitsioon (D:)'],['Harddisk0','Directory','Füüsiline ketas 0'],['Tcp','Device','TCP draiveri seadmeobjekt'],['Afd','Device','Soklite tugi (Winsock)'],['KeyboardClass0','Device','Klaviatuur'],['NamedPipe','Device','Nimega torud']],
+ '\\Device':[['HarddiskVolume1','Device','EFI (<i>Extensible Firmware Interface</i>) süsteemipartitsioon'],['HarddiskVolume3','Device','Windowsi partitsioon (C:)'],['HarddiskVolume4','Device','Andmepartitsioon (D:)'],['Harddisk0','Directory','Füüsiline ketas 0'],['Tcp','Device','TCP (<i>Transmission Control Protocol</i>) draiveri seadmeobjekt'],['Afd','Device','Soklite tugi (Winsock)'],['KeyboardClass0','Device','Klaviatuur'],['NamedPipe','Device','Nimega torud']],
  '\\GLOBAL??':[['C:','SymbolicLink','\\Device\\HarddiskVolume3'],['D:','SymbolicLink','\\Device\\HarddiskVolume4'],['PhysicalDrive0','SymbolicLink','\\Device\\Harddisk0\\DR0'],['NUL','SymbolicLink','\\Device\\Null'],['COM1','SymbolicLink','\\Device\\Serial0'],['PIPE','SymbolicLink','\\Device\\NamedPipe']],
  '\\BaseNamedObjects':[['MinuSündmus','Event','Rakenduse loodud nimega sündmus. Teine protsess saab selle samal nimel avada.'],['Global_Lukk','Mutant','Mutex, millega kaks protsessi tagavad, et korraga töötab ainult üks.'],['ÜhineMälu','Section','Jagatud mälu kahe protsessi vahel.']],
- '\\KnownDlls':[['kernel32.dll','Section','Eellaaditud süsteemi-DLL. Programmid kasutavad seda, mitte samanimelist faili enda kaustas.'],['ntdll.dll','Section','Eellaaditud Native API DLL.'],['user32.dll','Section','Eellaaditud süsteemi-DLL.']],
+ '\\KnownDlls':[['kernel32.dll','Section','Eellaaditud süsteemi-DLL. Programmid kasutavad seda, mitte samanimelist faili enda kaustas.'],['ntdll.dll','Section','Eellaaditud Native API (<i>Application Programming Interface</i>) DLL (<i>Dynamic-Link Library</i>).'],['user32.dll','Section','Eellaaditud süsteemi-DLL.']],
  '\\Sessions':[['0','Directory','Seanss 0: teenused'],['1','Directory','Seanss 1: sisseloginud kasutaja']],
- '\\Driver':[['Ntfs','Driver','NTFS failisüsteemi draiveri objekt'],['Tcpip','Driver','TCP/IP draiver'],['kbdclass','Driver','Klaviatuuri klassidraiver']],
+ '\\Driver':[['Ntfs','Driver','NTFS (<i>New Technology File System</i>) failisüsteemi draiveri objekt'],['Tcpip','Driver','TCP/IP (IP – <i>Internet Protocol</i>) draiver'],['kbdclass','Driver','Klaviatuuri klassidraiver']],
  '\\ObjectTypes':[['Process','Type','Objekti tüüp'],['Thread','Type','Objekti tüüp'],['File','Type','Objekti tüüp'],['Event','Type','Objekti tüüp'],['Key','Type','Objekti tüüp'],['Token','Type','Objekti tüüp'],['SymbolicLink','Type','Objekti tüüp']]
 };
 let ndir='\\',nsel=null,found=false;
@@ -263,7 +263,7 @@ function drawNS(){
   $('dirs').innerHTML=Object.keys(NS).map(d=>'<button class="'+(d===ndir?'sel':'')+'" data-d="'+d+'">'+(d==='\\'?'\\':'  '+d)+'</button>').join('');
   const rows=NS[ndir].map(([n,ty,ex],i)=>'<tr class="'+(nsel===i?'sel':'')+'" data-i="'+i+'"><td>'+(ty==='Directory'?'📁 ':ty==='SymbolicLink'?'↪ ':'')+n+'</td><td>'+ty+'</td><td>'+(ty==='SymbolicLink'?ex:'')+'</td></tr>').join('');
   $('objs').innerHTML='<div class="hint" style="padding:2px 6px">'+ndir+'</div><table><tr><td class="hint">Nimi</td><td class="hint">Tüüp</td><td class="hint">Sihtmärk</td></tr>'+rows+'</table>';
-  document.querySelectorAll('#dirs button').forEach(b=>b.onclick=()=>{ndir=b.dataset.d;nsel=null;drawNS();$('ninfo').innerHTML='Kaust <code>'+ndir+'</code>'+({'\\GLOBAL??':' – siin on ketta tähed ja muud DOS-i nimed. Need on sümbolviited seadmeobjektidele.','\\Device':' – seadmeobjektid, mille draiverid on loonud.','\\BaseNamedObjects':' – rakenduste loodud nimega objektid (sündmused, mutexid, jagatud mälu).','\\KnownDlls':' – eellaaditud süsteemi-DLL-id. See takistab ka DLL-i võltsimist rakenduse kaustas.','\\ObjectTypes':' – kõik objektitüübid, mida objektihaldur tunneb.'}[ndir]||'.')});
+  document.querySelectorAll('#dirs button').forEach(b=>b.onclick=()=>{ndir=b.dataset.d;nsel=null;drawNS();$('ninfo').innerHTML='Kaust <code>'+ndir+'</code>'+({'\\GLOBAL??':' – siin on ketta tähed ja muud DOS-i (<i>Disk Operating System</i>) nimed. Need on sümbolviited seadmeobjektidele.','\\Device':' – seadmeobjektid, mille draiverid on loonud.','\\BaseNamedObjects':' – rakenduste loodud nimega objektid (sündmused, mutexid, jagatud mälu).','\\KnownDlls':' – eellaaditud süsteemi-DLL-id. See takistab ka DLL-i võltsimist rakenduse kaustas.','\\ObjectTypes':' – kõik objektitüübid, mida objektihaldur tunneb.'}[ndir]||'.')});
   document.querySelectorAll('#objs tr[data-i]').forEach(r=>r.onclick=()=>{nsel=+r.dataset.i;const [n,ty,ex]=NS[ndir][nsel];
     if(ty==='Directory'){const p=(ndir==='\\'?'\\':ndir+'\\')+n;if(NS[p]){ndir=p;nsel=null;drawNS();return}}
     drawNS();
@@ -276,11 +276,11 @@ $('resolve').onclick=()=>{
   let p=$('path').value.trim();const m=p.match(/^([A-Za-z]):\\?(.*)$/);
   if(!m){$('resol').innerHTML='<li>Sisesta tee kujul <code>C:\\kaust\\fail.txt</code>.</li>';return}
   const L=m[1].toUpperCase(),rest=m[2],link=(NS['\\GLOBAL??'].find(x=>x[0]===L+':')||[])[2];
-  let h='<li>Rakendus kutsub <code>CreateFileW(L"'+p+'")</code>.</li><li>ntdll.dll teisendab tee NT kujule: <code>\\??\\'+L+':\\'+rest+'</code>. <code>\\??</code> tähendab kasutaja seansi DOS-nimesid, mis lõpuks viivad kausta <code>\\GLOBAL??</code>.</li>';
+  let h='<li>Rakendus kutsub <code>CreateFileW(L"'+p+'")</code>.</li><li>ntdll.dll teisendab tee NT (<i>New Technology</i>) kujule: <code>\\??\\'+L+':\\'+rest+'</code>. <code>\\??</code> tähendab kasutaja seansi DOS-nimesid, mis lõpuks viivad kausta <code>\\GLOBAL??</code>.</li>';
   if(!link){$('resol').innerHTML=h+'<li>Objektihaldur otsib <code>\\GLOBAL??\\'+L+':</code> ega leia seda. Tulemus: <code>STATUS_OBJECT_PATH_NOT_FOUND</code> – „Süsteem ei leia määratud teed“.</li>';return}
   h+='<li>Objektihaldur leiab <code>\\GLOBAL??\\'+L+':</code>. See on <b>sümbolviide</b> → <code>'+link+'</code>.</li>';
   h+='<li>Tee muutub kujule <code>'+link+'\\'+rest+'</code>. Objektihaldur jõuab seadmeobjektini <code>'+link+'</code>.</li>';
-  h+='<li>Ülejäänud osa <code>\\'+rest+'</code> antakse selle seadme failisüsteemi draiverile (NTFS), mis leiab faili. SRM kontrollib õigusi ja protsess saab pideme.</li>';
+  h+='<li>Ülejäänud osa <code>\\'+rest+'</code> antakse selle seadme failisüsteemi draiverile (NTFS), mis leiab faili. SRM (<i>Security Reference Monitor</i>) kontrollib õigusi ja protsess saab pideme.</li>';
   $('resol').innerHTML=h;
 };
 $('resolve').click();
@@ -288,13 +288,13 @@ $('resolve').click();
 /* ---------- 5. WoW64 / ARM64 ---------- */
 const WO=['Omakeelselt','WoW64 kaudu','Prism emuleerib','Ei käivitu'];
 const WS=[
- ['32-bitine x86 programm (nt vana installer)','64-bitine Windows 11, Intel/AMD protsessor',1,'WoW64 tõlgib 32-bitise programmi süsteemikutsed 64-bitistele ja kasutab DLL-e (ingl Dynamic-Link Library) kaustast SysWOW64.'],
+ ['32-bitine x86 programm (nt vana installer)','64-bitine Windows 11, Intel/AMD protsessor',1,'WoW64 tõlgib 32-bitise programmi süsteemikutsed 64-bitistele ja kasutab DLL-e (<i>Dynamic-Link Library</i>) kaustast SysWOW64.'],
  ['64-bitine x64 programm','64-bitine Windows 11, Intel/AMD protsessor',0,'64-bitine programm 64-bitises süsteemis töötab otse, ilma tõlketa.'],
  ['16-bitine DOS-i õppeprogramm','64-bitine Windows 11, Intel/AMD protsessor',3,'64-bitine Windows ei käita 16-bitist koodi. Lahendus on emulaator (nt DOSBox) või võrgust eraldatud virtuaalmasin.'],
  ['Windows 3.1 programm (16-bitine)','64-bitine Windows 10',3,'16-bitine NTVDM kadus 64-bitisest Windowsist juba ammu.'],
- ['x64 programm (nt vana raamatupidamistarkvara)','Snapdragon X sülearvuti, Windows 11 ARM64 (ARM – ingl Advanced RISC Machines)',2,'Prism tõlgib x64 käsud jooksvalt ARM64 käskudeks. Töötab, kuid võib olla aeglasem kui omakeelne versioon.'],
- ['ARM64 programm (nt Edge)','Snapdragon X sülearvuti, Windows 11 ARM64',0,'ARM64 programm töötab ARM64 protsessoril omakeelselt ja kõige kiiremini.'],
- ['x64 tuumadraiver (nt vana VPN-klient)','Snapdragon X sülearvuti, Windows 11 ARM64',3,'Emulatsioon ei toimi tuumadraiveritega. Seadmel peab olema ARM64 draiver.'],
+ ['x64 programm (nt vana raamatupidamistarkvara)','Snapdragon X sülearvuti, Windows 11 ARM64 (ARM – <i>Advanced RISC Machines</i>)',2,'Prism tõlgib x64 käsud jooksvalt ARM64 (ARM – <i>Advanced RISC Machines</i>) käskudeks. Töötab, kuid võib olla aeglasem kui omakeelne versioon.'],
+ ['ARM64 programm (nt Edge)','Snapdragon X sülearvuti, Windows 11 ARM64 (ARM – <i>Advanced RISC Machines</i>)',0,'ARM64 programm töötab ARM64 protsessoril omakeelselt ja kõige kiiremini.'],
+ ['x64 tuumadraiver (nt vana VPN-klient; VPN – <i>Virtual Private Network</i>)','Snapdragon X sülearvuti, Windows 11 ARM64',3,'Emulatsioon ei toimi tuumadraiveritega. Seadmel peab olema ARM64 draiver.'],
  ['32-bitine x86 programm','Snapdragon X sülearvuti, Windows 11 ARM64',2,'ARM64 Windowsis emuleerib Prism ka 32-bitiseid x86 programme.'],
  ['ARM64 programm','64-bitine Windows 11, Intel/AMD protsessor',3,'x64 protsessor ei mõista ARM64 käske ja vastupidist emulaatorit Windowsis pole.']
 ];

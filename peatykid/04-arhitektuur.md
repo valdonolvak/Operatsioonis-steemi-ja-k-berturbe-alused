@@ -2,15 +2,15 @@
 
 ## 4. Windowsi arhitektuur
 
-Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused, teenused ja süsteemiprotsessid; tuumarežiimis käivitav süsteem (executive), tuum, draiverid ja riistvara abstraktsioonikiht (HAL – ingl *Hardware Abstraction Layer*). Tänapäeva Windowsis on selle all veel hüperviisor, mis eraldab turvatuuma tavalisest tuumast.
+Windows on kihiline süsteem: kasutajarežiimis töötavad rakendused, teenused ja süsteemiprotsessid; tuumarežiimis käivitav süsteem (executive), tuum, draiverid ja riistvara abstraktsioonikiht (HAL – *Hardware Abstraction Layer*). Tänapäeva Windowsis on selle all veel hüperviisor, mis eraldab turvatuuma tavalisest tuumast.
 
 ### 4.1 Windows NT disainieesmärgid
 
 - **laiendatavus** – koodi saab muuta ja lisada ilma kogu süsteemi ümber kirjutamata;
-- **kaasaskantavus** – suurem osa koodist on C-s, riistvarast sõltuv osa on eraldatud (HAL); täna toetatakse x64 ja ARM64 (ARM – ingl *Advanced RISC Machines*) arhitektuuri;
+- **kaasaskantavus** – suurem osa koodist on C-s, riistvarast sõltuv osa on eraldatud (HAL); täna toetatakse x64 ja ARM64 (ARM – *Advanced RISC Machines*) arhitektuuri;
 - **töökindlus ja robustsus** – mälukaitse, struktureeritud erinditetöötlus;
 - **ühilduvus** – vanad rakendused peavad edasi töötama;
-- **jõudlus** – mitmeprotsessoriline tugi, asünkroonne S/V;
+- **jõudlus** – mitmeprotsessoriline tugi, asünkroonne S/V (sisend-väljund, *input/output*);
 - **turvalisus** – algselt USA kaitseministeeriumi C2-taseme nõuete järgi.
 
 ### 4.2 Windowsi ülesehitus
@@ -19,7 +19,7 @@ Kihid ülalt alla:
 
 ![Windowsi arhitektuur · VTL 0 ja VTL 1, hüperviisor, riistvara](../pildid/04-a.png)
 
-Joonis: tavaline Windows (vasakul) ja turvaline maailm (paremal) töötavad hüperviisori peal; isegi tuumarežiimi pahavara ei näe VTL 1 (VTL – ingl *Virtual Trust Level*) mälu. Sama sisu on all tabelina.
+Joonis: tavaline Windows (vasakul) ja turvaline maailm (paremal) töötavad hüperviisori peal; isegi tuumarežiimi pahavara ei näe VTL 1 (VTL – *Virtual Trust Level*) mälu. Sama sisu on all tabelina.
 
 > 🖱️ **Proovi ise:** [klõpsatav arhitektuuri kaart](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#kaart). Iga komponendi juures näed selle rolli ja režiimi. Seejärel [pane kihid õigesse järjekorda](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/04-arhitektuur.html#kihid).
 
@@ -27,16 +27,16 @@ Joonis: tavaline Windows (vasakul) ja turvaline maailm (paremal) töötavad hüp
 | Kiht | Režiim | Näited |
 | --- | --- | --- |
 | Kasutajarakendused | kasutaja | Edge, Office, PowerShell |
-| Alamsüsteemi DLL-id (ingl *Dynamic-Link Library*) | kasutaja | kernel32.dll, user32.dll, ntdll.dll |
+| Alamsüsteemi DLL-id (*Dynamic-Link Library*) | kasutaja | kernel32.dll, user32.dll, ntdll.dll |
 | Teenused ja süsteemiprotsessid | kasutaja | services.exe, svchost.exe, lsass.exe, smss.exe, csrss.exe |
-| Isoleeritud kasutajarežiim (IUM – ingl *Isolated User Mode*) | kasutaja, VTL 1 | LsaIso.exe (Credential Guard) |
-| Käivitav süsteem (executive) | tuum | protsessi-, mälu-, S/V-, objektihaldur, SRM (ingl *Security Reference Monitor*) |
+| Isoleeritud kasutajarežiim (IUM – *Isolated User Mode*) | kasutaja, VTL 1 | LsaIso.exe (Credential Guard) |
+| Käivitav süsteem (executive) | tuum | protsessi-, mälu-, S/V-, objektihaldur, SRM (*Security Reference Monitor*) |
 | Tuum (kernel) | tuum | planeerija, katkestused, sünkroniseerimine |
 | Draiverid | tuum | failisüsteemid, võrk, seadmed, win32k.sys |
 | HAL | tuum | hal.dll |
 | Turvatuum (Secure Kernel) | tuum, VTL 1 | securekernel.exe |
 | Hüperviisor | hüperviisor | hvix64.exe / hvax64.exe |
-| Riistvara ja püsivara | – | CPU (ingl *Central Processing Unit*), UEFI (ingl *Unified Extensible Firmware Interface*), TPM (ingl *Trusted Platform Module*), Pluton |
+| Riistvara ja püsivara | – | CPU (*Central Processing Unit*), UEFI (*Unified Extensible Firmware Interface*), TPM (*Trusted Platform Module*), Pluton |
 
 Tuumarežiimi põhikomponendid asuvad failis `ntoskrnl.exe`.
 
@@ -57,7 +57,7 @@ Tuumarežiimis jagavad kõik komponendid ühte aadressiruumi. Eelis on kiirus (p
 
 ![Animatsioon: kasutajarežiim ja tuumarežiim, süsteemikutse teekond](../animatsioonid/kasutaja-ja-tuumareziim.svg)
 
-**Animatsioon:** [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) näitab kaheksa sammuga, kuidas Notepadi palve „ava fail“ liigub Windows API (ingl *Application Programming Interface*) ja teegi ntdll.dll kaudu süsteemikutsena tuuma, läbib draiverid ja tuleb pidemena tagasi. Kaks viimast sammu näitavad, miks viga rakenduses lõpetab ainult ühe protsessi, aga viga draiveris seiskab kogu süsteemi. Lehel on lahti seletatud ka mõisted ja praktilised käsud.
+**Animatsioon:** [Kasutajarežiim ja tuumarežiim: kuidas rakendus tuumalt teenust küsib](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/kasutaja-ja-tuumareziim.html) näitab kaheksa sammuga, kuidas Notepadi palve „ava fail“ liigub Windows API (*Application Programming Interface*) ja teegi ntdll.dll kaudu süsteemikutsena tuuma, läbib draiverid ja tuleb pidemena tagasi. Kaks viimast sammu näitavad, miks viga rakenduses lõpetab ainult ühe protsessi, aga viga draiveris seiskab kogu süsteemi. Lehel on lahti seletatud ka mõisted ja praktilised käsud.
 
 **Režiimivahetus ei ole kontekstivahetus.** Süsteemikutse ajal jätkab sama lõim: muutub ainult protsessori õiguste tase ja kasutatav pinu. Kontekstivahetuse korral hakkab protsessor täitma teist lõime (ptk 9). Protsessor läheb tuumarežiimi kolmel põhjusel: **süsteemikutse** (rakendus palub teenust), **katkestus** (seade annab märku, nt klahvivajutus või taimer) ja **erind** (käsk ei õnnestunud, nt leheviga).
 
@@ -67,12 +67,12 @@ Käivitav süsteem (Windows Executive) sisaldab haldureid:
 
 - **protsessihaldur** – protsessid ja lõimed (ptk 7);
 - **mäluhaldur** – virtuaalmälu (ptk 12);
-- **S/V-haldur, PnP-haldur (PnP – ingl *Plug and Play*), toitehaldur** (ptk 14);
+- **S/V-haldur, PnP-haldur (PnP – *Plug and Play*), toitehaldur** (ptk 14);
 - **vahemäluhaldur** (ptk 13);
 - **objektihaldur** (ptk 5);
 - **konfiguratsioonihaldur** – register (ptk 6);
 - **turvaviitemonitor (SRM)** – õiguste kontroll (ptk 18);
-- **ALPC** (ingl *Advanced Local Procedure Call*) – kiire protsessidevaheline sõnumivahetus (ptk 7).
+- **ALPC** (*Advanced Local Procedure Call*) – kiire protsessidevaheline sõnumivahetus (ptk 7).
 
 ### 4.6 Tuum
 
@@ -83,11 +83,11 @@ Kitsamas mõttes tuum (kernel) teeb madala taseme tööd: lõimede planeerimine 
 
 ### 4.7 Riistvara abstraktsioonikiht (HAL)
 
-HAL peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu HAL-ile ei pea tuum teadma iga kiibistiku eripära. Tänapäeval on suur osa sellest tööst standardiseeritud (ACPI – ingl *Advanced Configuration and Power Interface*, UEFI) ja HAL on väiksem kui 1990. aastatel.
+HAL peidab emaplaadi erinevused: katkestuskontrollerid, taimerid, protsessoritevahelised katkestused. Tänu HAL-ile ei pea tuum teadma iga kiibistiku eripära. Tänapäeval on suur osa sellest tööst standardiseeritud (ACPI – *Advanced Configuration and Power Interface*, UEFI) ja HAL on väiksem kui 1990. aastatel.
 
 ### 4.8 Draiverid
 
-Draiver on tuumamoodul (`.sys`), mis suhtleb seadmega või lisab funktsionaalsust. Liigid: seadmedraiverid, failisüsteemi draiverid, filtridraiverid (nt viirusetõrje), võrgudraiverid. Draiveriarendus käib raamistikega **KMDF** (ingl *Kernel-Mode Driver Framework*; tuumarežiim) ja **UMDF** (ingl *User-Mode Driver Framework*; kasutajarežiim – turvalisem, sest vigane draiver ei jooksuta süsteemi kokku). Microsoft julgustab ka draivereid Rustis kirjutama (ptk 22).
+Draiver on tuumamoodul (`.sys`), mis suhtleb seadmega või lisab funktsionaalsust. Liigid: seadmedraiverid, failisüsteemi draiverid, filtridraiverid (nt viirusetõrje), võrgudraiverid. Draiveriarendus käib raamistikega **KMDF** (*Kernel-Mode Driver Framework*; tuumarežiim) ja **UMDF** (*User-Mode Driver Framework*; kasutajarežiim – turvalisem, sest vigane draiver ei jooksuta süsteemi kokku). Microsoft julgustab ka draivereid Rustis kirjutama (ptk 22).
 
 ### 4.9 Akna- ja graafikasüsteem
 
@@ -97,14 +97,14 @@ Graafiline alamsüsteem on `win32k.sys` (tuumarežiim) ja kasutajarežiimi teegi
 
 | Protsess | Ülesanne |
 | --- | --- |
-| System (PID 4; PID – ingl *Process Identifier*) | tuumalõimede konteiner |
+| System (PID 4; PID – *Process Identifier*) | tuumalõimede konteiner |
 | Registry | registri andmed mälus |
 | smss.exe | seansihaldur, käivitab seansid |
 | csrss.exe | Windowsi alamsüsteemi serverprotsess |
 | wininit.exe | käivitab services.exe ja lsass.exe |
-| services.exe | teenusehaldur (SCM – ingl *Service Control Manager*) |
+| services.exe | teenusehaldur (SCM – *Service Control Manager*) |
 | lsass.exe | autentimine, turvapoliitika |
-| LsaIso.exe | Credential Guardi isoleeritud LSA (ingl *Local Security Authority*; VTL 1) |
+| LsaIso.exe | Credential Guardi isoleeritud LSA (*Local Security Authority*; VTL 1) |
 | winlogon.exe | sisse- ja väljalogimine, Ctrl+Alt+Del |
 | explorer.exe | kasutaja graafiline kest |
 
@@ -113,9 +113,9 @@ Graafiline alamsüsteem on `win32k.sys` (tuumarežiim) ja kasutajarežiimi teegi
 
 ### 4.11 Virtualiseerimispõhine turve (VBS)
 
-VBS (ingl *Virtualization-Based Security*) kasutab hüperviisorit, et luua mälupiirkond, kuhu tavaline tuum ligi ei pääse. Selle peal töötavad:
+VBS (*Virtualization-Based Security*) kasutab hüperviisorit, et luua mälupiirkond, kuhu tavaline tuum ligi ei pääse. Selle peal töötavad:
 
-- **mälu terviklikkus (HVCI – ingl *Hypervisor-protected Code Integrity*)** – kontrollib, et tuumas käivitatakse ainult allkirjastatud koodi;
+- **mälu terviklikkus (HVCI – *Hypervisor-protected Code Integrity*)** – kontrollib, et tuumas käivitatakse ainult allkirjastatud koodi;
 - **Credential Guard** – hoiab parooliräsid ja Kerberose võtmeid VTL 1-s;
 - **VBS-enklaavid** – rakenduse saladuste kaitse (nt Recall, ptk 21).
 
@@ -135,10 +135,10 @@ Joonis: alglaadimise kaheksa etappi. Neli esimest toimuvad enne tuuma käivitumi
 
 | Etapp | Komponent | Kus asub | Mida teeb |
 | --- | --- | --- | --- |
-| 1 | UEFI püsivara | emaplaadi mälukiip | riistvara enesetest (POST – ingl *Power-On Self-Test*), seadmete leidmine, alglaadimisseadme valik NVRAM-i (ingl *Non-Volatile Random-Access Memory*) järjekorra järgi |
+| 1 | UEFI püsivara | emaplaadi mälukiip | riistvara enesetest (POST – *Power-On Self-Test*), seadmete leidmine, alglaadimisseadme valik NVRAM-i (*Non-Volatile Random-Access Memory*) järjekorra järgi |
 | 2 | Secure Boot, TPM | püsivara ja turvakiip | kontrollib alglaaduri digiallkirja; TPM salvestab iga komponendi räsi |
-| 3 | Windows Boot Manager `bootmgfw.efi` | EFI (ingl *Extensible Firmware Interface*) süsteemisektsioon (ESP) | loeb seadistuste andmebaasi BCD (ingl *Boot Configuration Data*), valib operatsioonisüsteemi, avab BitLockeriga kaitstud ketta |
-| 4 | OS-i (ingl *Operating System*) laadur `winload.efi` | `C:\Windows\System32` | laadib mällu tuuma, HAL-i, registri SYSTEM-taru ja alglaadimisdraiverid; käivitab vajadusel hüperviisori |
+| 3 | Windows Boot Manager `bootmgfw.efi` | EFI (*Extensible Firmware Interface*) süsteemisektsioon (ESP) | loeb seadistuste andmebaasi BCD (*Boot Configuration Data*), valib operatsioonisüsteemi, avab BitLockeriga kaitstud ketta |
+| 4 | OS-i (*Operating System*) laadur `winload.efi` | `C:\Windows\System32` | laadib mällu tuuma, HAL-i, registri SYSTEM-taru ja alglaadimisdraiverid; käivitab vajadusel hüperviisori |
 | 5 | Tuum `ntoskrnl.exe` | `C:\Windows\System32` | initsialiseerib käivitava süsteemi komponendid ja draiverid, loob protsessi System |
 | 6 | Seansihaldur `smss.exe` | kasutajarežiim | loob lehefaili, laadib registritarud, käivitab seansid 0 ja 1 |
 | 7 | `wininit.exe`, `services.exe`, `lsass.exe` | seanss 0 | käivitab teenused ja turvasüsteemi |
@@ -146,7 +146,7 @@ Joonis: alglaadimise kaheksa etappi. Neli esimest toimuvad enne tuuma käivitumi
 
 #### Püsivara: BIOS ja UEFI
 
-Vanemates arvutites käivitas arvuti **BIOS** (ingl *Basic Input/Output System*), mis luges ketta esimesest sektorist (MBR – ingl *Master Boot Record*) 512 baiti koodi ja andis sellele juhtimise. **UEFI** on selle tänapäevane asendaja: see tunneb GPT-kettaid (GPT – ingl *GUID Partition Table*) ja FAT32-failisüsteemi (FAT – ingl *File Allocation Table*) ning käivitab alglaaduri tavalise failina **EFI süsteemisektsioonilt** (ESP). ESP on väike (tavaliselt 100–260 MB) FAT32-sektsioon, millel ei ole draivitähte. Windows 11 nõuab UEFI-t ja GPT-ketast (ptk 16).
+Vanemates arvutites käivitas arvuti **BIOS** (*Basic Input/Output System*), mis luges ketta esimesest sektorist (MBR – *Master Boot Record*) 512 baiti koodi ja andis sellele juhtimise. **UEFI** on selle tänapäevane asendaja: see tunneb GPT-kettaid (GPT – *GUID Partition Table*) ja FAT32-failisüsteemi (FAT – *File Allocation Table*) ning käivitab alglaaduri tavalise failina **EFI süsteemisektsioonilt** (ESP). ESP on väike (tavaliselt 100–260 MB) FAT32-sektsioon, millel ei ole draivitähte. Windows 11 nõuab UEFI-t ja GPT-ketast (ptk 16).
 
 #### Turvaline alglaadimine
 
@@ -154,20 +154,20 @@ Pahavara, mis käivitub enne operatsioonisüsteemi (bootkit), on viirusetõrjele
 
 - **Secure Boot** – püsivara käivitab ainult alglaaduri, mille digiallkiri vastab püsivaras hoitavatele sertifikaatidele (ptk 18 ja 29);
 - **Trusted Boot** – Boot Manager kontrollib winloadi, winload kontrollib tuuma ja draiverite allkirju;
-- **ELAM** (Early Launch Anti-Malware) – viirusetõrje draiver laaditakse esimesena ja hindab teisi alglaadimisdraivereid;
-- **Measured Boot** – TPM salvestab iga laaditud komponendi räsi PCR-registritesse (PCR – ingl *Platform Configuration Register*). Kui mõõtmised erinevad tavalisest, ei anna TPM välja BitLockeri võtit ja Windows küsib taasteparooli (ptk 26.6).
+- **ELAM** (*Early Launch Anti-Malware*) – viirusetõrje draiver laaditakse esimesena ja hindab teisi alglaadimisdraivereid;
+- **Measured Boot** – TPM salvestab iga laaditud komponendi räsi PCR-registritesse (PCR – *Platform Configuration Register*). Kui mõõtmised erinevad tavalisest, ei anna TPM välja BitLockeri võtit ja Windows küsib taasteparooli (ptk 26.6).
 
 #### TPM, PCR-registrid ja BitLockeri võti
 
-**TPM** (Trusted Platform Module) on turvakiip emaplaadil või protsessori sees (fTPM). See hoiab krüptovõtmeid nii, et neid ei saa kiibist välja lugeda, ja peab arvet selle üle, mis tarkvara arvutis käivitus. Windows 11 nõuab TPM 2.0 olemasolu.
+**TPM** (*Trusted Platform Module*) on turvakiip emaplaadil või protsessori sees (fTPM). See hoiab krüptovõtmeid nii, et neid ei saa kiibist välja lugeda, ja peab arvet selle üle, mis tarkvara arvutis käivitus. Windows 11 nõuab TPM 2.0 olemasolu.
 
-**PCR** (Platform Configuration Register) on TPM-i sees olev register, kuhu kogutakse käivitunud tarkvara räsid. TPM 2.0-s on neid 24 (PCR 0–23). Arvuti sisselülitamisel on kõik registrid nullis. Registrit ei saa üle kirjutada, seda saab ainult **laiendada**.
+**PCR** (*Platform Configuration Register*) on TPM-i sees olev register, kuhu kogutakse käivitunud tarkvara räsid. TPM 2.0-s on neid 24 (PCR 0–23). Arvuti sisselülitamisel on kõik registrid nullis. Registrit ei saa üle kirjutada, seda saab ainult **laiendada**.
 
 Kuidas TPM otsustab, kas anda BitLockeri võti välja:
 
-1. **Mõõtmine.** TPM ise faile ei loe. Räsi arvutab alati eelmine lüli: UEFI püsivara arvutab Boot Manageri faili SHA-256 (SHA – ingl *Secure Hash Algorithm*) räsi ja saadab selle TPM-ile, alles siis käivitab Boot Manageri. Boot Manager teeb sama winloadiga. Nii ei saa ükski programm oma mõõtmist ise võltsida, sest see mõõdeti enne, kui ta tööle hakkas.
+1. **Mõõtmine.** TPM ise faile ei loe. Räsi arvutab alati eelmine lüli: UEFI püsivara arvutab Boot Manageri faili SHA-256 (SHA – *Secure Hash Algorithm*) räsi ja saadab selle TPM-ile, alles siis käivitab Boot Manageri. Boot Manager teeb sama winloadiga. Nii ei saa ükski programm oma mõõtmist ise võltsida, sest see mõõdeti enne, kui ta tööle hakkas.
 2. **Laiendamine.** TPM arvutab registri uue väärtuse vana väärtuse ja uue räsi põhjal: PCR uus = SHA-256(PCR vana ‖ komponendi räsi). Lõppväärtus sõltub kõigist mõõdetud komponentidest ja nende järjekorrast. Kui ahelas muutub kas või üks bait, on lõppväärtus täiesti teine.
-3. **Pitseerimine** (sealing). Kui BitLocker sisse lülitatakse, annab Windows köite põhivõtme (VMK – ingl *Volume Master Key*, ptk 26.6) TPM-ile tingimusega: anna see tagasi ainult siis, kui valitud PCR-registrites on täpselt samad väärtused nagu praegu.
+3. **Pitseerimine** (sealing). Kui BitLocker sisse lülitatakse, annab Windows köite põhivõtme (VMK – *Volume Master Key*, ptk 26.6) TPM-ile tingimusega: anna see tagasi ainult siis, kui valitud PCR-registrites on täpselt samad väärtused nagu praegu.
 4. **Avamine.** Igal käivitusel küsib Boot Manager TPM-ilt võtit. Kui registrite väärtused klapivad pitseerimise ajal kehtinutega, annab TPM võtme välja ja ketas avaneb märkamatult. Kui ei klapi, keeldub TPM ja Windows küsib 48-kohalist taasteparooli.
 
 | Register | Mida mõõdetakse |
@@ -187,7 +187,7 @@ Kui Secure Boot on sees, seob Windows võtme vaikimisi registritega **PCR 7 ja 1
 | --- | --- | --- |
 | UEFI püsivara uuendus | PCR 0, vahel ka PCR 7 (kui uuendus muudab Secure Booti sertifikaate) | jah, kui võti on seotud PCR 0-ga või kui muutus PCR 7 |
 | Secure Booti väljalülitamine | PCR 7 | jah |
-| Alglaadimine USB-pulgalt (USB – ingl *Universal Serial Bus*), muudetud alglaadimisjärjekord | PCR 1 ja 4 | sõltub seadistusest, sageli jah |
+| Alglaadimine USB-pulgalt (USB – *Universal Serial Bus*), muudetud alglaadimisjärjekord | PCR 1 ja 4 | sõltub seadistusest, sageli jah |
 | Ketta tõstmine teise arvutisse, emaplaadi vahetus, TPM-i tühjendamine | teine või tühi TPM, võtit ei ole | alati |
 | Windowsi tavaline uuendus | Windows peatab kaitse ise ja pitseerib võtme uuesti | ei |
 
@@ -197,7 +197,7 @@ Taasteparooli saab organisatsiooni arvutil Entra ID-st või Active Directoryst, 
 
 #### BCD
 
-**BCD** (Boot Configuration Data) on ESP-l asuv andmebaas, mis asendas vana `boot.ini` faili. Seal on kirje Boot Manageri enda kohta ja üks kirje iga paigaldatud operatsioonisüsteemi kohta: millisel kettal see asub, milline on laaduri tee ja millised on käivitusvalikud (turvarežiim, silumine, hüperviisori käivitamine). BCD-d vaadatakse ja muudetakse käsuga `bcdedit`.
+**BCD** (*Boot Configuration Data*) on ESP-l asuv andmebaas, mis asendas vana `boot.ini` faili. Seal on kirje Boot Manageri enda kohta ja üks kirje iga paigaldatud operatsioonisüsteemi kohta: millisel kettal see asub, milline on laaduri tee ja millised on käivitusvalikud (turvarežiim, silumine, hüperviisori käivitamine). BCD-d vaadatakse ja muudetakse käsuga `bcdedit`.
 
 #### Kiirkäivitus, uni ja talveuni
 
@@ -224,15 +224,15 @@ Veateade näitab, millises etapis ahel katkes.
 | Logo ja lõputu pöörlev ring | 5–7 | vigane draiver või teenus: turvarežiim, viimase uuenduse eemaldamine |
 | Must ekraan pärast sisselogimist | 8 | `explorer.exe`, graafikadraiver, kasutajaprofiil |
 
-Kui Windows ei käivitu kaks korda järjest, avaneb automaatselt **taastekeskkond** (WinRE – ingl *Windows Recovery Environment*), mis asub eraldi sektsioonil. Seal saab kasutada käivitusparandust, süsteemitaastet, uuenduste eemaldamist, turvarežiimi ja käsurida. **Turvarežiim** (Safe Mode) laadib ainult hädavajalikud draiverid ja teenused, seega käivitub ka siis, kui probleemi põhjustab kolmanda osapoole draiver.
+Kui Windows ei käivitu kaks korda järjest, avaneb automaatselt **taastekeskkond** (WinRE – *Windows Recovery Environment*), mis asub eraldi sektsioonil. Seal saab kasutada käivitusparandust, süsteemitaastet, uuenduste eemaldamist, turvarežiimi ja käsurida. **Turvarežiim** (Safe Mode) laadib ainult hädavajalikud draiverid ja teenused, seega käivitub ka siis, kui probleemi põhjustab kolmanda osapoole draiver.
 
 #### Võrdlus Linuxiga
 
-Linuxis on ahel sama kujuga: UEFI → alglaadur **GRUB** (ingl *GRand Unified Bootloader*; või systemd-boot) → tuum `vmlinuz` koos ajutise juurfailisüsteemiga **initramfs**, milles on kettadraiverid → esimene protsess **systemd** (PID 1), mis käivitab teenused → sisselogimine. Secure Booti jaoks kasutab enamik distributsioone Microsofti allkirjastatud vahelaadurit *shim*.
+Linuxis on ahel sama kujuga: UEFI → alglaadur **GRUB** (*GRand Unified Bootloader*; või systemd-boot) → tuum `vmlinuz` koos ajutise juurfailisüsteemiga **initramfs**, milles on kettadraiverid → esimene protsess **systemd** (PID 1), mis käivitab teenused → sisselogimine. Secure Booti jaoks kasutab enamik distributsioone Microsofti allkirjastatud vahelaadurit *shim*.
 
 #### Alglaadimine võrgust (PXE)
 
-Arvuti ei pea käivituma kettalt. **PXE** (Preboot Execution Environment) abil küsib UEFI püsivara võrgust IP-aadressi (IP – ingl *Internet Protocol*; DHCP – ingl *Dynamic Host Configuration Protocol*), laadib alglaaduri ja alglaadimistõmmise alla (TFTP – ingl *Trivial File Transfer Protocol*) ning käivitab need põhimälust. Nii paigaldatakse operatsioonisüsteem tühja kettaga arvutitesse: Windowsis pakub seda teenust WDS (ingl *Windows Deployment Services*), Linuxis näiteks dnsmasq. Turvaline alglaadimine kehtib ka võrgust käivitamisel.
+Arvuti ei pea käivituma kettalt. **PXE** (*Preboot Execution Environment*) abil küsib UEFI püsivara võrgust IP-aadressi (IP – *Internet Protocol*; DHCP – *Dynamic Host Configuration Protocol*), laadib alglaaduri ja alglaadimistõmmise alla (TFTP – *Trivial File Transfer Protocol*) ning käivitab need põhimälust. Nii paigaldatakse operatsioonisüsteem tühja kettaga arvutitesse: Windowsis pakub seda teenust WDS (*Windows Deployment Services*), Linuxis näiteks dnsmasq. Turvaline alglaadimine kehtib ka võrgust käivitamisel.
 
 ![Animatsioon: PXE-alglaadimine võrgust](../animatsioonid/pxe-alglaadimine.svg)
 
@@ -262,15 +262,15 @@ Vasta: mitu kirjet on sinu BCD-s ja milline on vaikimisi? Kas kiirkäivitus on l
 
 ### Võrdlus: Linux ja macOS
 
-Kõik kolm süsteemi eraldavad kasutaja- ja tuumarežiimi, kuid tuum on ehitatud eri moodi. Linux on **monoliitne** tuum laaditavate moodulitega, macOS-i XNU (ingl *X is Not Unix*) on **hübriid** Machi mikrotuumast ja BSD-st (ingl *Berkeley Software Distribution*), Windows NT (ingl *New Technology*) on samuti hübriid (ptk 4.2).
+Kõik kolm süsteemi eraldavad kasutaja- ja tuumarežiimi, kuid tuum on ehitatud eri moodi. Linux on **monoliitne** tuum laaditavate moodulitega, macOS-i XNU (*X is Not Unix*) on **hübriid** Machi mikrotuumast ja BSD-st (*Berkeley Software Distribution*), Windows NT (*New Technology*) on samuti hübriid (ptk 4.2).
 
 |  | Windows | Linux | macOS |
 | --- | --- | --- | --- |
-| Tuuma tüüp | hübriid: NT executive + tuum | monoliitne, laaditavad moodulid | hübriid XNU: Mach + BSD + I/O Kit |
+| Tuuma tüüp | hübriid: NT executive + tuum | monoliitne, laaditavad moodulid | hübriid XNU: Mach + BSD + I/O (*Input/Output*) Kit |
 | Draiverid | `.sys`, Microsofti allkiri, KMDF/UMDF | tuumamoodulid `.ko`, enamasti tuuma lähtekoodis | DriverKit kasutajaruumis; tuumalaiendused (kext) on aegunud |
-| Graafika | win32k.sys + DWM (ingl *Desktop Window Manager*) | X11 või Wayland kasutajaruumis | WindowServer kasutajaruumis |
+| Graafika | win32k.sys + DWM (*Desktop Window Manager*) | X11 või Wayland kasutajaruumis | WindowServer kasutajaruumis |
 | Riistvara abstraktsioon | HAL | arhitektuuripõhine kood tuumas | Apple’i enda riistvara, I/O Kit |
-| Lähtekood | suletud | avatud (GPL – ingl *GNU General Public License*) | tuum (Darwin/XNU) osaliselt avatud |
+| Lähtekood | suletud | avatud (GPL – *GNU General Public License*) | tuum (Darwin/XNU) osaliselt avatud |
 
 **Mida sellest õppida:** monoliitne tuum on kiire, kuid vigane moodul jooksutab kogu süsteemi kokku (*kernel panic*, Windowsi bugchecki vaste). macOS on viinud draiverid suures osas kasutajaruumi – sama suund on Windowsil UMDF-iga ja viirusetõrje tuumast väljaviimisega (ptk 19.3).
 
@@ -316,7 +316,7 @@ Kõik kolm süsteemi eraldavad kasutaja- ja tuumarežiimi, kuid tuum on ehitatud
 1. Millises failis on Windowsi tuum ja käivitav süsteem? a) hal.dll b) ntoskrnl.exe c) win32k.sys d) csrss.exe
 2. Milline protsess vastutab autentimise eest? a) smss.exe b) lsass.exe c) dwm.exe d) explorer.exe
 3. Mis on HVCI? a) hüperviisoriga kaitstud koodi terviklikkus b) Hyper-V võrguliides c) kõvaketta krüpteering d) graafikadraiver
-4. Mis kaitseb tuuma jooksva muutmise eest? a) UAC b) PatchGuard c) SmartScreen d) BitLocker
+4. Mis kaitseb tuuma jooksva muutmise eest? a) UAC (*User Account Control*) b) PatchGuard c) SmartScreen d) BitLocker
 
 ### Praktiline ülesanne
 

@@ -60,7 +60,7 @@ a{color:var(--accent)}
 <header>
 <p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
 <h1>Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine</h1>
-<p class="lead">Animatsioon võrdleb, kuidas NTFS ja ext4 (logi) ning APFS, Btrfs ja ReFS (kirjutamisel kopeerimine) jäävad terveks, kui toide katkeb poole muudatuse pealt.</p>
+<p class="lead">Animatsioon võrdleb, kuidas NTFS (<i>New Technology File System</i>) ja ext4 (logi) ning APFS (<i>Apple File System</i>), Btrfs ja ReFS (<i>Resilient File System</i>; kirjutamisel kopeerimine) jäävad terveks, kui toide katkeb poole muudatuse pealt.</p>
 </header>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 518" role="img" aria-label="Toitekatkestus keset muudatust: logi ja kirjutamisel kopeerimine" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
@@ -147,7 +147,7 @@ a{color:var(--accent)}
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Fail kasvab ühe ploki võrra</strong><span>Faili kasvamisel tuleb teha mitu eraldi kirjutust: märkida plokk hõivatuks ja lisada see faili kirjesse. Ketas ei oska kahte kohta korraga muuta, nii et nende vahele võib jääda toitekatkestus. Failisüsteem peab tagama, et pärast seda ei oleks struktuur vigane.</span></span></button></li>
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Ettevalmistus</strong><span><strong>Logi:</strong> kogu tehing kirjutatakse enne logisse ja märgitakse kinnitatuks. Alles siis hakatakse muutma päris struktuure. <strong>Kirjutamisel kopeerimine:</strong> olemasolevat kirjet ei muudeta, selle kõrvale kirjutatakse uus versioon.</span></span></button></li>
-<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Toide katkeb poole pealt</strong><span>See on halvim hetk: osa kirjutusi on tehtud, osa mitte. Ilma kaitseta failisüsteemis (FAT) jääks plokk „kadunuks“ ja selle leidmiseks tuleks kogu ketas läbi kontrollida (<code>chkdsk</code>, <code>fsck</code>).</span></span></button></li>
+<li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Toide katkeb poole pealt</strong><span>See on halvim hetk: osa kirjutusi on tehtud, osa mitte. Ilma kaitseta failisüsteemis (FAT – <i>File Allocation Table</i>) jääks plokk „kadunuks“ ja selle leidmiseks tuleks kogu ketas läbi kontrollida (<code>chkdsk</code>, <code>fsck</code>).</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Taaskäivitus</strong><span><strong>Logi taasesitus</strong> võtab sekundeid, sest läbi tuleb vaadata ainult logi, mitte kogu ketas. Kinnitatud tehing viiakse lõpule, kinnitamata tehing visatakse ära. <strong>Kopeerivas failisüsteemis</strong> on pärast katkestust alles kas vana või uus olek, mitte kunagi pool kummastki.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Kopeerimisel on kinnitamine üks kirjutus</strong><span>Juurviida lülitamine on <strong>aatomiline</strong>: üks kirjutus ühte kohta. Enne seda kehtib vana olek, pärast seda uus. Seepärast ei ole APFS-il, Btrfs-il ega ReFS-il logi vaja.</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Mis kumbki maksab ja mida annab</strong><span>Logi kaitseb failisüsteemi <strong>struktuuri</strong>, mitte tingimata faili sisu: pooleli jäänud salvestuse eest kaitseb rakendus ise, kirjutades uue versiooni ajutisse faili ja nimetades selle ümber. Kopeeriv failisüsteem saab <strong>hetktõmmised ja kloonid</strong> peaaegu tasuta, sest vanad plokid on niikuinii alles.</span></span></button></li>
@@ -172,9 +172,9 @@ a{color:var(--accent)}
 <h2>Kes mida kasutab</h2>
 <div class="tablewrap"><table>
 <tr><th>Failisüsteem</th><th>Kaitse</th><th>Hetktõmmised</th></tr>
-<tr><td>FAT32, exFAT</td><td>puudub</td><td>ei</td></tr>
-<tr><td>NTFS</td><td>metaandmete logi</td><td>eraldi teenus (varikoopiad, VSS)</td></tr>
-<tr><td>ext4</td><td>logi (vaikimisi metaandmed; sisu kirjutatakse enne tehingu kinnitamist)</td><td>ainult LVM-i abil</td></tr>
+<tr><td>FAT32 (FAT – <i>File Allocation Table</i>), exFAT (<i>Extended File Allocation Table</i>)</td><td>puudub</td><td>ei</td></tr>
+<tr><td>NTFS</td><td>metaandmete logi</td><td>eraldi teenus (varikoopiad, VSS – <i>Volume Shadow Copy Service</i>)</td></tr>
+<tr><td>ext4</td><td>logi (vaikimisi metaandmed; sisu kirjutatakse enne tehingu kinnitamist)</td><td>ainult LVM-i (<i>Logical Volume Manager</i>) abil</td></tr>
 <tr><td>XFS</td><td>metaandmete logi</td><td>ei, kuid kloonid on (reflink)</td></tr>
 <tr><td>APFS, Btrfs, ReFS</td><td>kirjutamisel kopeerimine</td><td>jah, sisseehitatud</td></tr>
 </table></div>
@@ -188,8 +188,8 @@ fsutil usn queryjournal C:
 chkdsk C: /scan</pre>
 <ul>
 <li><strong>1. rida:</strong> küsi, kas köide on märgitud „mustaks“ (dirty). Must köide tähendab, et Windows kahtlustab vastuolu ja kontrollib köidet järgmisel käivitusel.</li>
-<li><strong>2. rida:</strong> näita NTFS-i üldandmeid: klastri suurus, MFT asukoht ja suurus.</li>
-<li><strong>3. rida:</strong> näita muudatuste päeviku (USN Journal) olekut. See ei ole sama mis <code>$LogFile</code>: USN-päevik ütleb programmidele, millised failid muutusid.</li>
+<li><strong>2. rida:</strong> näita NTFS-i üldandmeid: klastri suurus, MFT (<i>Master File Table</i>) asukoht ja suurus.</li>
+<li><strong>3. rida:</strong> näita muudatuste päeviku (USN Journal (USN – <i>Update Sequence Number</i>)) olekut. See ei ole sama mis <code>$LogFile</code>: USN-päevik ütleb programmidele, millised failid muutusid.</li>
 <li><strong>4. rida:</strong> kontrolli köite kooskõla töö ajal, midagi parandamata.</li>
 </ul>
 <p>Mida otsida: tavaolukorras vastab esimene käsk „Volume – C: is NOT Dirty“ ja <code>chkdsk</code> ei leia vigu, sest logi hoiab struktuuri korras ka pärast ootamatut väljalülitamist.</p>

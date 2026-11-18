@@ -172,7 +172,7 @@ a{color:var(--accent)}
 <li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>Täisvarundus iga päev</strong><span><strong>Täisvarundus</strong> kopeerib iga kord kõik andmed. See on kõige aeglasem ja ruuminõudlikum, kuid taastamiseks on vaja ainult ühte koopiat.</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>Inkrementaalne varundus</strong><span><strong>Inkrementaalne varundus</strong> kopeerib muutused <em>eelmisest varundusest</em> (ükskõik millisest). Varundus on kiire ja väike. Taastamiseks on vaja esmaspäevast täisvarundust ja kõiki järgnevaid koopiaid. Kui üks lüli ahelast on rikutud, ei saa sellest hilisemaid päevi taastada.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>Diferentsiaalne varundus</strong><span><strong>Diferentsiaalne varundus</strong> kopeerib muutused <em>viimasest täisvarundusest</em>. Iga päeva koopia on eelmisest suurem. Taastamiseks on vaja ainult kahte koopiat: täisvarundust ja kõige viimast diferentsiaalset.</span></span></button></li>
-<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Server rikneb reede hommikul: mida on taastamiseks vaja?</strong><span>Server rikneb reede hommikul. Taastada saab neljapäeva õhtu seisu. Vajalike koopiate arv: täis 1, inkrementaalne 4, diferentsiaalne 2. Pärast viimast varundust tehtud töö on kadunud: see ajavahemik on <strong>RPO</strong>. Aeg, mis kulub taastamiseks, on <strong>RTO</strong>.</span></span></button></li>
+<li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>Server rikneb reede hommikul: mida on taastamiseks vaja?</strong><span>Server rikneb reede hommikul. Taastada saab neljapäeva õhtu seisu. Vajalike koopiate arv: täis 1, inkrementaalne 4, diferentsiaalne 2. Pärast viimast varundust tehtud töö on kadunud: see ajavahemik on <strong>RPO (<i>Recovery Point Objective</i>)</strong>. Aeg, mis kulub taastamiseks, on <strong>RTO (<i>Recovery Time Objective</i>)</strong>.</span></span></button></li>
 <li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>Lunavara ja reegel 3-2-1-1-0</strong><span>Varukoopia, kuhu server saab vabalt kirjutada, krüpteeritakse koos serveriga. Reegel <strong>3-2-1-1-0</strong>: 3 koopiat, 2 eri kandjal, 1 väljaspool asutust, 1 võrguühenduseta või muutumatu, 0 viga taastetestis. Viimane number tähendab, et taastamist tuleb päriselt proovida.</span></span></button></li>
 </ol>
 </section>
@@ -183,11 +183,11 @@ a{color:var(--accent)}
 <tr><td><strong>Täisvarundus</strong></td><td>Koopia kõigist andmetest.</td></tr>
 <tr><td><strong>Inkrementaalne varundus</strong></td><td>Koopia sellest, mis on muutunud pärast eelmist varundust (täis- või inkrementaalset).</td></tr>
 <tr><td><strong>Diferentsiaalne varundus</strong></td><td>Koopia sellest, mis on muutunud pärast viimast täisvarundust.</td></tr>
-<tr><td><strong>RPO</strong> (Recovery Point Objective)</td><td>Kui palju andmeid tohib kaduda, mõõdetuna ajas. Kui varundus on kord ööpäevas, on RPO kuni 24 tundi.</td></tr>
-<tr><td><strong>RTO</strong> (Recovery Time Objective)</td><td>Kui kiiresti peab teenus pärast riket jälle töötama.</td></tr>
+<tr><td><strong>RPO</strong> (<i>Recovery Point Objective</i>)</td><td>Kui palju andmeid tohib kaduda, mõõdetuna ajas. Kui varundus on kord ööpäevas, on RPO kuni 24 tundi.</td></tr>
+<tr><td><strong>RTO</strong> (<i>Recovery Time Objective</i>)</td><td>Kui kiiresti peab teenus pärast riket jälle töötama.</td></tr>
 <tr><td><strong>Muutumatu koopia</strong> (immutable)</td><td>Koopia, mida ei saa määratud aja jooksul muuta ega kustutada, ka administraatori õigustega mitte.</td></tr>
 <tr><td><strong>Võrguühenduseta koopia</strong> (offline, air gap)</td><td>Koopia kandjal, mis ei ole arvuti ega võrguga ühendatud: lint või lahtiühendatud ketas.</td></tr>
-<tr><td><strong>Varikoopia</strong> (VSS) ja <strong>hetktõmmis</strong></td><td>Sama ketta peal hoitav varasem seis. Kiire taastamiseks, kuid kaob koos kettaga ja lunavara kustutab selle esimesena. Ei ole varukoopia.</td></tr>
+<tr><td><strong>Varikoopia</strong> (VSS – <i>Volume Shadow Copy Service</i>) ja <strong>hetktõmmis</strong></td><td>Sama ketta peal hoitav varasem seis. Kiire taastamiseks, kuid kaob koos kettaga ja lunavara kustutab selle esimesena. Ei ole varukoopia.</td></tr>
 <tr><td><strong>Taastetest</strong></td><td>Varukoopiast päriselt taastamine ja tulemuse kontrollimine. Testimata varukoopia on lootus, mitte varukoopia.</td></tr>
 </table></div>
 <h2>Võrdlus ühe pilguga</h2>
@@ -211,7 +211,7 @@ Get-FileHash C:\Labor\Andmed\tunniplaan.txt, C:\Labor\Varu\tunniplaan.txt | Sele
 <li><strong>1. rida:</strong> loo kaks kausta. <code>-Force</code> ei anna viga, kui kaust on juba olemas; <code>Out-Null</code> peidab väljundi.</li>
 <li><strong>2. rida:</strong> kirjuta faili üks tekstirida.</li>
 <li><strong>3. rida:</strong> <code>robocopy</code> kopeerib kausta. <code>/E</code> võtab kaasa alamkaustad, <code>/R:1 /W:1</code> tähendab, et lukus faili proovitakse uuesti üks kord ühesekundilise ootega (vaikimisi proovib robocopy miljon korda).</li>
-<li><strong>4. rida:</strong> arvuta mõlema faili SHA-256 räsi. Kui räsid on samad, on koopia originaaliga identne. See on kõige lihtsam taastetest.</li>
+<li><strong>4. rida:</strong> arvuta mõlema faili SHA-256 (SHA – <i>Secure Hash Algorithm</i>) räsi. Kui räsid on samad, on koopia originaaliga identne. See on kõige lihtsam taastetest.</li>
 </ul>
 <h3>2. Inkrementaalne samm</h3>
 <pre>'teine versioon' | Set-Content C:\Labor\Andmed\tunniplaan.txt
@@ -227,7 +227,7 @@ Get-ChildItem C:\Labor\Varu</pre>
 <li><strong>2. rida:</strong> <code>/MIR</code> teeb sihtkaustast täpse peegli, mis tähendab, et sihtkohast <strong>kustutatakse</strong> kõik, mida lähtekaustas enam ei ole.</li>
 <li><strong>3. rida:</strong> vaata varukausta: <code>hinded.txt</code> on ka sealt kadunud.</li>
 </ul>
-<p>Sama juhtub RAID 1 ja pilvesünkroonimisega: kustutamine ja lunavara krüpteering peegelduvad kohe. Päris varundus hoiab alles ka varasemaid versioone. Lõpuks korista: <code>Remove-Item C:\Labor -Recurse</code>.</p>
+<p>Sama juhtub RAID 1 (RAID – <i>Redundant Array of Independent Disks</i>) ja pilvesünkroonimisega: kustutamine ja lunavara krüpteering peegelduvad kohe. Päris varundus hoiab alles ka varasemaid versioone. Lõpuks korista: <code>Remove-Item C:\Labor -Recurse</code>.</p>
 <h3>4. Varikoopiad sinu arvutis</h3>
 <pre>vssadmin list shadows
 vssadmin list shadowstorage</pre>

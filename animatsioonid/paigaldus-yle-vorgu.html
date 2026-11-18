@@ -60,7 +60,7 @@ a{color:var(--accent)}
 <header>
 <p class="eyebrow">Operatsioonisüsteemide ja küberturbe alused · animatsioon</p>
 <h1>Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti</h1>
-<p class="lead">Animatsioon võrdleb seitsme sammu kaupa, kuidas võrgust käivitatud arvutisse paigaldatakse automaatselt Windows (WDS) ja Linux (Debiani võrgupaigaldus).</p>
+<p class="lead">Animatsioon võrdleb seitsme sammu kaupa, kuidas võrgust käivitatud arvutisse paigaldatakse automaatselt Windows (WDS – <i>Windows Deployment Services</i>) ja Linux (Debiani võrgupaigaldus).</p>
 </header>
 <figure>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 524" role="img" aria-label="Paigaldus üle võrgu: Windowsi WDS ja Linux kõrvuti" font-family="'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" id="anim">
@@ -173,12 +173,12 @@ a{color:var(--accent)}
 <h2>Sammud</h2>
 <ol class="steps">
 <li><button type="button" class="step" data-i="0"><span class="num">1</span><span class="body"><strong>Sama eesmärk, kaks teed</strong><span>Mõlemal juhul on sammud samad: alglaadur, seadistus, mälus töötav paigalduskeskkond, vastusfail, ketta jaotamine, süsteemi kopeerimine ja esimene käivitus. Erinevad on failid, protokollid ja see, <em>kuidas</em> süsteem kettale jõuab.</span></span></button></li>
-<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>1. Võrgu-alglaadur</strong><span><code>wdsmgfw.efi</code> on WDS-i enda alglaadur, mis oskab serveriga rääkida ja oodata kasutaja kinnitust. Linuxi <strong>shim</strong> on vajalik turvalise alglaadimise jaoks: püsivara usaldab shimi, shim usaldab distributsiooni GRUB-i.</span></span></button></li>
+<li><button type="button" class="step" data-i="1"><span class="num">2</span><span class="body"><strong>1. Võrgu-alglaadur</strong><span><code>wdsmgfw.efi</code> on WDS-i enda alglaadur, mis oskab serveriga rääkida ja oodata kasutaja kinnitust. Linuxi <strong>shim</strong> on vajalik turvalise alglaadimise jaoks: püsivara usaldab shimi, shim usaldab distributsiooni GRUB-i (<i>GRand Unified Bootloader</i>).</span></span></button></li>
 <li><button type="button" class="step" data-i="2"><span class="num">3</span><span class="body"><strong>2. Seadistus ja menüü</strong><span>GRUB-i menüükirje parameetritega antakse paigaldajale kaasa kogu juhis, näiteks <code>auto=true url=http://192.168.10.1/preseed.cfg</code>. WDS-is valib tõmmise administraator serveri seadetes või kasutaja menüüst.</span></span></button></li>
 <li><button type="button" class="step" data-i="3"><span class="num">4</span><span class="body"><strong>3. Paigalduskeskkond laaditakse põhimällu</strong><span>Paigaldaja peab töötama mälus, sest ketas on kohe jaotamisel ja vormindamisel. WinPE vajab selleks umbes 2 GB mälu, Debiani võrgupaigaldaja vähem.</span></span></button></li>
 <li><button type="button" class="step" data-i="4"><span class="num">5</span><span class="body"><strong>4. Vastusfail asendab inimese</strong><span><strong>Vastusfail</strong> sisaldab kõike, mida paigaldaja muidu küsiks. Windowsis on neid kaks: WDS-kliendi vastusfail (keel, sisselogimine serverisse, ketas, tõmmise valik) ja tõmmise vastusfail (specialize ja OOBE). Teistes Linuxites on sama asja nimi teine: Ubuntus <em>autoinstall</em>, Red Hatis <em>kickstart</em>.</span></span></button></li>
-<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>5. Ketas jaotatakse ja vormindatakse</strong><span>See on pöördumatu samm. Seepärast on oluline, et arvuti ei käivituks kogemata võrgust automaatpaigaldusse: tootmisvõrgus piiratakse PXE vastamist tuntud klientidele või nõutakse kinnitust.</span></span></button></li>
-<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>6. Süsteem kettale: tõmmis või paketid</strong><span><strong>Tõmmisepõhine paigaldus</strong>: süsteem on ette valmis tehtud ja kopeeritakse kettale. <strong>Paketipõhine paigaldus</strong>: süsteem pannakse kokku kohapeal. Paigaldustõmmise saab WDS-ist SMB kaudu või multisaatega mitmele arvutile korraga. Ubuntu Server kasutab segavarianti: laotab baastõmmise ja lisab paketid.</span></span></button></li>
+<li><button type="button" class="step" data-i="5"><span class="num">6</span><span class="body"><strong>5. Ketas jaotatakse ja vormindatakse</strong><span>See on pöördumatu samm. Seepärast on oluline, et arvuti ei käivituks kogemata võrgust automaatpaigaldusse: tootmisvõrgus piiratakse PXE (<i>Preboot Execution Environment</i>) vastamist tuntud klientidele või nõutakse kinnitust.</span></span></button></li>
+<li><button type="button" class="step" data-i="6"><span class="num">7</span><span class="body"><strong>6. Süsteem kettale: tõmmis või paketid</strong><span><strong>Tõmmisepõhine paigaldus</strong>: süsteem on ette valmis tehtud ja kopeeritakse kettale. <strong>Paketipõhine paigaldus</strong>: süsteem pannakse kokku kohapeal. Paigaldustõmmise saab WDS-ist SMB (<i>Server Message Block</i>) kaudu või multisaatega mitmele arvutile korraga. Ubuntu Server kasutab segavarianti: laotab baastõmmise ja lisab paketid.</span></span></button></li>
 <li><button type="button" class="step" data-i="7"><span class="num">8</span><span class="body"><strong>7. Esimene käivitus kettalt</strong><span>Alglaadimisjärjekorras peab nüüd ketas olema võrgust eespool või peab PXE-server sellele kliendile enam mitte vastama, muidu algab paigaldus uuesti. Edasi võtab seadistamise üle haldustööriist: rühmapoliitika või Intune Windowsis, Ansible Linuxis.</span></span></button></li>
 </ol>
 </section>
@@ -186,7 +186,7 @@ a{color:var(--accent)}
 <h2>Mõisted</h2>
 <div class="tablewrap"><table>
 <tr><th>Mõiste</th><th>Selgitus</th></tr>
-<tr><td><strong>WDS</strong> (Windows Deployment Services)</td><td>Windows Serveri roll, mis pakub PXE-serverit, TFTP-d ja Windowsi tõmmiste jagamist.</td></tr>
+<tr><td><strong>WDS</strong> (<i>Windows Deployment Services</i>)</td><td>Windows Serveri roll, mis pakub PXE-serverit (PXE – <i>Preboot Execution Environment</i>), TFTP-d (<i>Trivial File Transfer Protocol</i>) ja Windowsi tõmmiste jagamist.</td></tr>
 <tr><td><strong>Alglaadimistõmmis</strong> (boot.wim)</td><td>Tõmmisfail WinPE ja paigaldusprogrammiga. Sellega arvuti käivitub.</td></tr>
 <tr><td><strong>Paigaldustõmmis</strong> (install.wim)</td><td>Tõmmisfail valmis Windowsiga, mis laotatakse kettale. Ühes failis võib olla mitu väljaannet.</td></tr>
 <tr><td><strong>WIM</strong></td><td>Windowsi failipõhine tõmmisevorming: failide kogum, mitte ketta sektorite koopia.</td></tr>
@@ -199,19 +199,19 @@ a{color:var(--accent)}
 <tr><td><strong>autoinstall</strong></td><td>Ubuntu vastusfail YAML-vormingus, mille paigaldaja saab cloud-initi kaudu.</td></tr>
 <tr><td><strong>kickstart</strong></td><td>Red Hati, Fedora ja nende sugulaste vastusfail.</td></tr>
 <tr><td><strong>Peegel</strong> (mirror)</td><td>Server, kust paigaldaja laadib paketid. Võib olla internetis või kohtvõrgus.</td></tr>
-<tr><td><strong>late_command</strong></td><td>preseed-faili käsk, mis käivitatakse paigalduse lõpus: näiteks SSH-võtme lisamine.</td></tr>
+<tr><td><strong>late_command</strong></td><td>preseed-faili käsk, mis käivitatakse paigalduse lõpus: näiteks SSH-võtme (SSH – <i>Secure Shell</i>) lisamine.</td></tr>
 <tr><td><strong>Multisaade</strong> (multicast)</td><td>Ühe tõmmise saatmine korraga mitmele arvutile, näiteks terve arvutiklassi paigaldamisel.</td></tr>
 </table></div>
 <h2>Kaks lähenemist kõrvuti</h2>
 <div class="tablewrap"><table>
 <tr><th></th><th>Windows (WDS)</th><th>Linux (Debian)</th></tr>
-<tr><td>PXE- ja TFTP-server</td><td>WDS-i roll</td><td>dnsmasq või ISC DHCP + tftpd-hpa</td></tr>
+<tr><td>PXE- ja TFTP-server</td><td>WDS-i roll</td><td>dnsmasq või ISC DHCP (<i>Dynamic Host Configuration Protocol</i>) + tftpd-hpa</td></tr>
 <tr><td>Võrgu-alglaadur</td><td><code>wdsmgfw.efi</code></td><td><code>shimx64.efi</code> → <code>grubx64.efi</code></td></tr>
-<tr><td>Seadistus</td><td>BCD</td><td><code>grub.cfg</code></td></tr>
+<tr><td>Seadistus</td><td>BCD (<i>Boot Configuration Data</i>)</td><td><code>grub.cfg</code></td></tr>
 <tr><td>Paigalduskeskkond</td><td><code>boot.wim</code> (WinPE)</td><td><code>vmlinuz</code> + <code>initrd.gz</code></td></tr>
 <tr><td>Vastusfail</td><td><code>unattend.xml</code></td><td><code>preseed.cfg</code> (Ubuntus autoinstall, Red Hatis kickstart)</td></tr>
 <tr><td>Kust süsteem tuleb</td><td>paigaldustõmmis <code>install.wim</code></td><td>paketid peeglist</td></tr>
-<tr><td>Protokoll süsteemi jaoks</td><td>SMB või multisaade</td><td>HTTP</td></tr>
+<tr><td>Protokoll süsteemi jaoks</td><td>SMB (<i>Server Message Block</i>) või multisaade</td><td>HTTP (<i>Hypertext Transfer Protocol</i>)</td></tr>
 <tr><td>Uuendatud süsteem pärast paigaldust</td><td>ainult siis, kui tõmmist on uuendatud</td><td>jah, peeglis on värsked paketid</td></tr>
 <tr><td>Järelseadistus</td><td>rühmapoliitika, Intune</td><td>late_command, Ansible, cloud-init</td></tr>
 </table></div>
@@ -253,11 +253,11 @@ dhcp-boot=tag:!efi64,pxelinux.0</pre>
 <li><strong>1. rida:</strong> teeninda ainult seda võrguliidest (labori sisevõrk).</li>
 <li><strong>2. rida:</strong> jaga aadresse vahemikust .100 kuni .200, rendiaeg 12 tundi.</li>
 <li><strong>3.–4. rida:</strong> lülita sisse dnsmasqi enda TFTP-server ja määra kaust, kust faile jagatakse.</li>
-<li><strong>5. rida:</strong> kui klient saadab valikus 93 väärtuse 7 (x64 UEFI), anna talle silt <code>efi64</code>.</li>
+<li><strong>5. rida:</strong> kui klient saadab valikus 93 väärtuse 7 (x64 UEFI – <i>Unified Extensible Firmware Interface</i>), anna talle silt <code>efi64</code>.</li>
 <li><strong>6. rida:</strong> sildiga <code>efi64</code> klient saab alglaaduriks <code>shimx64.efi</code>.</li>
-<li><strong>7. rida:</strong> kõik teised (vana BIOS) saavad <code>pxelinux.0</code>.</li>
+<li><strong>7. rida:</strong> kõik teised (vana BIOS – <i>Basic Input/Output System</i>) saavad <code>pxelinux.0</code>.</li>
 </ul>
-<p>Selles näites jagab dnsmasq ka IP-aadresse. Ära käivita seda võrgus, kus on juba teine DHCP-server.</p>
+<p>Selles näites jagab dnsmasq ka IP-aadresse (IP – <i>Internet Protocol</i>). Ära käivita seda võrgus, kus on juba teine DHCP-server.</p>
 <p>Menüükirje failis <code>/srv/tftp/grub/grub.cfg</code>:</p>
 <pre>menuentry 'Debian: automaatne paigaldus' {
     linux  /debian-installer/amd64/linux auto=true priority=critical url=http://192.168.10.1/preseed.cfg

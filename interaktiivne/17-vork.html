@@ -135,10 +135,10 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Suur pilt: neli küsimust iga ühenduse juures</h4>
 <p>Kui avad brauseris <code>https://www.ria.ee</code>, vastab arvuti järjest neljale küsimusele:</p>
 <ol>
-<li><b>Kes ma olen?</b> – arvuti vajab IP-aadressi (IP – ingl <i>Internet Protocol</i>). Selle annab <b>DHCP (ingl <i>Dynamic Host Configuration Protocol</i>)</b>.</li>
-<li><b>Kus server on?</b> – nimi tuleb tõlkida IP-aadressiks. Seda teeb <b>DNS (ingl <i>Domain Name System</i>)</b>.</li>
-<li><b>Kuidas sinna jõuda?</b> – pakett läheb <b>vaikelüüsi</b> (ruuterisse) ja sealt edasi; <b>TCP (ingl <i>Transmission Control Protocol</i>)</b> loob ühenduse serveri pordiga 443.</li>
-<li><b>Kas mind usaldatakse?</b> – TLS (ingl <i>Transport Layer Security</i>) kontrollib serverit; domeenis tõestab kasutaja end <b>Kerberosega</b>.</li>
+<li><b>Kes ma olen?</b> – arvuti vajab IP-aadressi (IP – <i>Internet Protocol</i>). Selle annab <b>DHCP (<i>Dynamic Host Configuration Protocol</i>)</b>.</li>
+<li><b>Kus server on?</b> – nimi tuleb tõlkida IP-aadressiks. Seda teeb <b>DNS (<i>Domain Name System</i>)</b>.</li>
+<li><b>Kuidas sinna jõuda?</b> – pakett läheb <b>vaikelüüsi</b> (ruuterisse) ja sealt edasi; <b>TCP (<i>Transmission Control Protocol</i>)</b> loob ühenduse serveri pordiga 443.</li>
+<li><b>Kas mind usaldatakse?</b> – TLS (<i>Transport Layer Security</i>) kontrollib serverit; domeenis tõestab kasutaja end <b>Kerberosega</b>.</li>
 </ol>
 <p>Kui „internet ei tööta“, katkeb ahel ühes neist kohtadest. Harjutused käivad samas järjekorras ja viimane on tõrkeotsingu mäng, kus kõik see tuleb kokku.</p>
 </div>
@@ -150,7 +150,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <div class="why">
 <h4>Miks see oluline on?</h4>
 <p>Võrguside on jaotatud <b>kihtideks</b>. Iga kiht lisab andmetele oma päise – nagu kiri pannakse ümbrikusse, ümbrik postikotti ja postikott autosse. Vastuvõtja teeb sama vastupidi: iga kiht võtab oma ümbriku ära.</p>
-<p>See seletab, <b>kes mida näeb</b>: ruuter loeb ainult IP-päist (kuhu saata), tulemüür ka porti (kas lubada), veebiserver alles HTTP-päringut (HTTP – ingl <i>Hypertext Transfer Protocol</i>). Kui leht on HTTPS-iga (ingl <i>Hypertext Transfer Protocol Secure</i>) krüpteeritud, ei näe sisu keegi teel olev.</p>
+<p>See seletab, <b>kes mida näeb</b>: ruuter loeb ainult IP-päist (kuhu saata), tulemüür ka porti (kas lubada), veebiserver alles HTTP-päringut (HTTP – <i>Hypertext Transfer Protocol</i>). Kui leht on HTTPS-iga (<i>Hypertext Transfer Protocol Secure</i>) krüpteeritud, ei näe sisu keegi teel olev.</p>
 <p><b>Mida teha:</b> vajuta „Järgmine kiht“ ja vaata, kuidas pakett saatmisel kasvab. Siis vali, kelle vaatenurgast vaadata, ja lülita HTTPS välja – mida näeb nüüd kohviku Wi-Fi naaber?</p>
 </div>
 <div class="card">
@@ -186,7 +186,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>3. DHCP ja DNS samm-sammult</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p><b>DHCP</b> annab arvutile automaatselt IP-aadressi, maski, lüüsi ja DNS-serveri. Ilma selleta peaks iga arvuti käsitsi seadistama. Protsessil on neli sammu – <b>DORA (ingl <i>Discover, Offer, Request, Acknowledge</i>)</b>: Discover, Offer, Request, Acknowledge.</p>
+<p><b>DHCP</b> annab arvutile automaatselt IP-aadressi, maski, lüüsi ja DNS-serveri. Ilma selleta peaks iga arvuti käsitsi seadistama. Protsessil on neli sammu – <b>DORA (<i>Discover, Offer, Request, Acknowledge</i>)</b>: Discover, Offer, Request, Acknowledge.</p>
 <p><b>DNS</b> on interneti telefoniraamat: inimene mäletab nime <code>www.ria.ee</code>, arvuti vajab aadressi. Windows otsib vastust kõigepealt oma vahemälust, siis <code>hosts</code>-failist ja alles siis DNS-serverilt, kes vajadusel küsib edasi juurserverilt ja tippdomeeni serverilt.</p>
 <p><b>Mida teha:</b> käi mõlemad protsessid sammhaaval läbi. Siis proovi vigu: lülita DHCP-server välja ja vaata, mis aadressi arvuti saab. DNS-is proovi vahemälu ja pahavara poolt muudetud <code>hosts</code>-faili.</p>
 </div>
@@ -207,9 +207,9 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>4. TCP ühendus ja pordi olek</h2>
 <div class="why">
 <h4>Miks see oluline on?</h4>
-<p>Enne kui brauser saab veebilehte küsida, loob TCP serveriga ühenduse <b>kolmesammulise käepigistusega</b>: SYN (ingl <i>Synchronize</i>; „tahan rääkida“), SYN-ACK („olen valmis“), ACK (ingl <i>Acknowledgement</i>; „alustame“). <b>Port</b> ütleb, millise programmiga serveris räägitakse: 443 = veebiserver, 3389 = kaugtöölaud.</p>
+<p>Enne kui brauser saab veebilehte küsida, loob TCP serveriga ühenduse <b>kolmesammulise käepigistusega</b>: SYN (<i>Synchronize</i>; „tahan rääkida“), SYN-ACK („olen valmis“), ACK (<i>Acknowledgement</i>; „alustame“). <b>Port</b> ütleb, millise programmiga serveris räägitakse: 443 = veebiserver, 3389 = kaugtöölaud.</p>
 <p>Käepigistuse tulemusest saab tõrkeotsingul palju teada:</p>
-<ul><li><b>SYN-ACK</b> – port on <b>avatud</b>, teenus töötab;</li><li><b>RST (ingl <i>Reset</i>)</b> – port on <b>suletud</b>, server on olemas, kuid teenus ei tööta;</li><li><b>vastust pole</b> – tõenäoliselt viskab <b>tulemüür</b> paketid vaikselt ära (või server on maas).</li></ul>
+<ul><li><b>SYN-ACK</b> – port on <b>avatud</b>, teenus töötab;</li><li><b>RST (<i>Reset</i>)</b> – port on <b>suletud</b>, server on olemas, kuid teenus ei tööta;</li><li><b>vastust pole</b> – tõenäoliselt viskab <b>tulemüür</b> paketid vaikselt ära (või server on maas).</li></ul>
 <p><b>Mida teha:</b> vali olukord ja käi ühendus läbi. Vaata, mida näitaks <code>Test-NetConnection</code>.</p>
 </div>
 <div class="card">
@@ -228,10 +228,10 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h4>Miks see oluline on?</h4>
 <p>Domeenis peab kasutaja failiserverile tõestama, kes ta on – parooli võrgus saatmata. Selleks on kaks protokolli:</p>
 <ul>
-<li><b>Kerberos</b> – nagu festivali käepael. Sisselogimisel saab kasutaja domeenikontrollerilt (KDC – ingl <i>Key Distribution Center</i>) <b>TGT (ingl <i>Ticket-Granting Ticket</i>)</b>-pileti. Iga teenuse jaoks vahetab ta selle <b>teenusepileti</b> vastu, mis kehtib <b>ainult sellele serverile</b> ja piiratud aja.</li>
-<li><b>NTLM (ingl <i>NT LAN Manager</i>)</b> – vanem meetod. Server saadab juhusliku arvu (väljakutse), klient arvutab parooli räsi abil vastuse. Vastus ei ole seotud kindla serveriga – vahel olev ründaja saab selle <b>edasi anda</b> (relee) teisele serverile ja logida sisse kasutaja nimel.</li>
+<li><b>Kerberos</b> – nagu festivali käepael. Sisselogimisel saab kasutaja domeenikontrollerilt (KDC – <i>Key Distribution Center</i>) <b>TGT (<i>Ticket-Granting Ticket</i>)</b>-pileti. Iga teenuse jaoks vahetab ta selle <b>teenusepileti</b> vastu, mis kehtib <b>ainult sellele serverile</b> ja piiratud aja.</li>
+<li><b>NTLM (<i>NT LAN Manager</i>)</b> – vanem meetod. Server saadab juhusliku arvu (väljakutse), klient arvutab parooli räsi abil vastuse. Vastus ei ole seotud kindla serveriga – vahel olev ründaja saab selle <b>edasi anda</b> (relee) teisele serverile ja logida sisse kasutaja nimel.</li>
 </ul>
-<p>Seepärast loobub Microsoft NTLM-ist ja soovitab domeenis lülitada välja LLMNR-i (ingl <i>Link-Local Multicast Name Resolution</i>) ja NetBIOS-i (ingl <i>Network Basic Input/Output System</i>), mille kaudu ründaja end vahele saab.</p>
+<p>Seepärast loobub Microsoft NTLM-ist ja soovitab domeenis lülitada välja LLMNR-i (<i>Link-Local Multicast Name Resolution</i>) ja NetBIOS-i (<i>Network Basic Input/Output System</i>), mille kaudu ründaja end vahele saab.</p>
 <p><b>Mida teha:</b> käi mõlemad protokollid läbi tavaolukorras. Siis lülita sisse „Ründaja on võrgus“ (kasutaja trükkis serveri nime valesti ja ründaja vastas LLMNR-päringule) ja vaata, kumb protokoll on haavatav.</p>
 </div>
 <div class="card">
@@ -266,7 +266,7 @@ ol.steps.long{max-height:260px;overflow:auto;background:var(--bg);border-radius:
 <h2>7. Milline port?</h2>
 <div class="why">
 <h4>Kordame</h4>
-<p>Tulemüüri reeglite koostamisel ja liikluse analüüsil tuleb teada, milline teenus millist porti kasutab. Pea meeles: porte <b>445</b> (SMB – ingl <i>Server Message Block</i>) ja <b>3389</b> (RDP – ingl <i>Remote Desktop Protocol</i>) ei tohi kunagi otse internetti avada – just neid otsivad ründajad kõige rohkem.</p>
+<p>Tulemüüri reeglite koostamisel ja liikluse analüüsil tuleb teada, milline teenus millist porti kasutab. Pea meeles: porte <b>445</b> (SMB – <i>Server Message Block</i>) ja <b>3389</b> (RDP – <i>Remote Desktop Protocol</i>) ei tohi kunagi otse internetti avada – just neid otsivad ründajad kõige rohkem.</p>
 </div>
 <div class="card">
   <div class="tasks" id="qtasks"></div>
@@ -297,10 +297,10 @@ function seq(el,actors,steps,k){const n=actors.length,cols=`repeat(${n},1fr)`;
 
 /* 1. Kapseldamine */
 const EL=[['L7','HTTP-päring (kiht 7)','GET /teenused HTTP/1.1 · Host: www.ria.ee · küpsis: sessioon=8f3a…','Rakendus (brauser) koostab HTTP-päringu: millist lehte ta tahab ja tema sessiooniküpsis.'],
- ['L5','TLS (krüpteering)','TLS 1.3 · server: www.ria.ee (SNI – ingl Server Name Indication) · sisu krüpteeritud','TLS krüpteerib HTTP-päringu. Väljapoole jääb nähtavaks ainult serveri nimi (SNI), mitte leht ega küpsis.'],
+ ['L5','TLS (krüpteering)','TLS 1.3 · server: www.ria.ee (SNI – <i>Server Name Indication</i>) · sisu krüpteeritud','TLS krüpteerib HTTP-päringu. Väljapoole jääb nähtavaks ainult serveri nimi (SNI), mitte leht ega küpsis.'],
  ['L4','TCP-segment (kiht 4)','lähteport 52344 (juhuslik) → sihtport 443 · järjekorranumber 1001','TCP lisab pordid: sihtport 443 ütleb, et pakett on mõeldud veebiserverile. Järjekorranumbrid tagavad, et andmed pannakse õiges järjekorras kokku.'],
- ['L3','IP-pakett (kiht 3)','192.168.1.57 → 185.31.240.10 · TTL 128','IP lisab lähte- ja sihtaadressi. Ruuterid vaatavad ainult seda päist, et otsustada, kuhu pakett edasi saata. TTL (ingl Time To Live) väheneb igas ruuteris (tsüklite vältimiseks).'],
- ['L2','Ethernet-kaader (kiht 2)','arvuti MAC (ingl Media Access Control) 3c:52:… → ruuteri MAC a4:91:…','Ethernet lisab MAC-aadressid. Sihtkoht on ruuter (vaikelüüs), sest server on teises võrgus. MAC-aadressid muutuvad iga teelõigu järel, IP-aadressid jäävad samaks (v.a NAT – ingl Network Address Translation).']];
+ ['L3','IP-pakett (kiht 3)','192.168.1.57 → 185.31.240.10 · TTL (<i>Time To Live</i>) 128','IP lisab lähte- ja sihtaadressi. Ruuterid vaatavad ainult seda päist, et otsustada, kuhu pakett edasi saata. TTL (<i>Time To Live</i>) väheneb igas ruuteris (tsüklite vältimiseks).'],
+ ['L2','Ethernet-kaader (kiht 2)','arvuti MAC (<i>Media Access Control</i>) 3c:52:… → ruuteri MAC a4:91:…','Ethernet lisab MAC-aadressid. Sihtkoht on ruuter (vaikelüüs), sest server on teises võrgus. MAC-aadressid muutuvad iga teelõigu järel, IP-aadressid jäävad samaks (v.a NAT – <i>Network Address Translation</i>).']];
 let ek=0,ewho='wifi';
 const WHO={wifi:['📶 Kohviku Wi-Fi naaber',[2]],router:['🔀 Ruuter',[2,3]],isp:['🌐 Internetiteenuse pakkuja',[3,4]],fw:['🧱 Tulemüür',[3,4]],srv:['🖥 Veebiserver',[2,3,4,5,7]]};
 function eDraw(){const tls=$('etls').checked,vis=WHO[ewho][1],lay=EL.filter(x=>tls||x[0]!=='L5');
@@ -328,7 +328,7 @@ const toI=s=>{const m=s.trim().match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}
 const toS=n=>[n>>>24,(n>>>16)&255,(n>>>8)&255,n&255].join('.');
 function kind(n){const a=n>>>24,b=(n>>>16)&255;if(a===127)return['loopback','arvuti ise (localhost) – pakett ei lähe võrku'];if(a===169&&b===254)return['APIPA','DHCP ei vastanud – Windows andis endale ajutise aadressi; internet ei tööta'];if(a===10||(a===172&&b>=16&&b<=31)||(a===192&&b===168))return['privaatne','kodu- või asutusevõrk; internetti minnes asendab ruuter selle avalikuga (NAT)'];if(a>=224&&a<=239)return['multicast','grupisaade'];if(a===0||a>=240)return['eriotstarbeline',''];return['avalik','internetis unikaalne aadress']}
 function ipDraw(){const a=toI($('ipa').value),p=+$('ipp').value,b=toI($('ipb').value);
-  if(a===null){$('ipinfo').className='info bad';$('ipinfo').innerHTML='Sisesta IPv4-aadress kujul a.b.c.d (iga osa 0–255).';$('ipout').innerHTML='';$('ipbits').innerHTML='';return}
+  if(a===null){$('ipinfo').className='info bad';$('ipinfo').innerHTML='Sisesta IPv4-aadress (IPv4 – <i>Internet Protocol version 4</i>) kujul a.b.c.d (iga osa 0–255).';$('ipout').innerHTML='';$('ipbits').innerHTML='';return}
   const mask=p===0?0:(0xFFFFFFFF<<(32-p))>>>0,net=(a&mask)>>>0,bc=(net|(~mask>>>0))>>>0,hosts=Math.max(0,2**(32-p)-2);
   const bin=(a>>>0).toString(2).padStart(32,'0');
   $('ipbits').innerHTML='Kahendkujul: '+[...bin].map((c,i)=>`<span class="${i<p?'n':'h'}">${c}</span>${i%8===7&&i<31?' . ':''}`).join('')+`<br><span class="hint">sinine = võrgu osa (${p} bitti), roheline = arvuti osa (${32-p} bitti)</span>`;
@@ -344,7 +344,7 @@ $('ippres').querySelectorAll('button').forEach(b=>b.onclick=()=>{const [a,p,c]=b
 
 /* 3. DHCP & DNS */
 let dk=0;
-function dSteps(){if($('ddown').checked)return [[0,1,'DHCPDISCOVER (leviaadressile)','bad','Arvuti saadab kogu võrku: „Kas siin on DHCP-server?“ Tal endal pole veel aadressi, seepärast on lähteaadress 0.0.0.0 ja siht 255.255.255.255.'],[0,1,'DHCPDISCOVER (kordus)','bad','Vastust ei tule. Arvuti kordab päringut mitu korda.'],[0,0,'võtab 169.254.33.7','bad','<b>Ükski server ei vastanud.</b> Windows annab endale <b>APIPA</b>-aadressi 169.254.x.x. Sellega saab suhelda ainult teiste sama olukorraga arvutitega – lüüsi ja DNS-i pole, internet ei tööta. Kontrolli kaablit, VLAN-i ja DHCP-serveri teenust.']];
+function dSteps(){if($('ddown').checked)return [[0,1,'DHCPDISCOVER (leviaadressile)','bad','Arvuti saadab kogu võrku: „Kas siin on DHCP-server?“ Tal endal pole veel aadressi, seepärast on lähteaadress 0.0.0.0 ja siht 255.255.255.255.'],[0,1,'DHCPDISCOVER (kordus)','bad','Vastust ei tule. Arvuti kordab päringut mitu korda.'],[0,0,'võtab 169.254.33.7','bad','<b>Ükski server ei vastanud.</b> Windows annab endale <b>APIPA (<i>Automatic Private IP Addressing</i>)</b>-aadressi 169.254.x.x. Sellega saab suhelda ainult teiste sama olukorraga arvutitega – lüüsi ja DNS-i pole, internet ei tööta. Kontrolli kaablit, VLAN-i (<i>Virtual Local Area Network</i>) ja DHCP-serveri teenust.']];
   return [[0,1,'DHCPDISCOVER','','<b>Discover</b>: arvuti saadab kogu võrku (leviaadressile 255.255.255.255): „Kas siin on DHCP-server?“ Tal pole veel aadressi.'],[1,0,'DHCPOFFER 192.168.1.57','','<b>Offer</b>: server pakub vaba aadressi koos seadetega: mask 255.255.255.0, lüüs 192.168.1.1, DNS 192.168.1.10, rendiaeg 8 päeva.'],[0,1,'DHCPREQUEST 192.168.1.57','','<b>Request</b>: arvuti teatab (jälle kõigile), et võtab just selle serveri pakkumise. Kui võrgus oli mitu serverit, teavad teised, et nende pakkumist ei võetud.'],[1,0,'DHCPACK','','<b>Acknowledge</b>: server kinnitab. Arvuti seadistab aadressi ja saab võrgus töötada. Rendiaja poole pealt uuendab ta renti ise. Vaata: <code>ipconfig /all</code> → „Lease Obtained / Expires“.']]}
 function dDraw(){const S=dSteps();seq('dseq',['Arvuti','DHCP-server'],S,dk);$('dnext').disabled=dk>=S.length;
   $('dinfo').className='info'+($('ddown').checked&&dk===S.length?' bad':'');$('dinfo').innerHTML=dk?S[dk-1][4]:'Arvuti ühendati võrku. Vajuta „Järgmine samm“.'}
@@ -359,7 +359,7 @@ $('nnext').onclick=()=>{nk++;nDraw()};$('nreset').onclick=()=>{nk=0;nDraw()};['n
 
 /* 4. TCP */
 const TS={open:['Port avatud',[[0,2,'SYN (port 443)','','Klient saadab <b>SYN</b>: „Tahan alustada ühendust, minu järjekorranumber on 1000.“'],[2,0,'SYN-ACK','','Server vastab <b>SYN-ACK</b>: „Olen valmis, sinu 1000 on kätte saadud, minu number on 5000.“ Port on <b>avatud</b> – veebiserver kuulab.'],[0,2,'ACK','','Klient kinnitab <b>ACK</b>. Ühendus on loodud (kolmesammuline käepigistus). Nüüd algab TLS ja siis HTTP.'],[0,2,'TLS ClientHello + HTTP…','','Andmed liiguvad. Iga segmendi kättesaamist kinnitatakse; kadunud segment saadetakse uuesti.'],[0,2,'FIN','','Lõpus suletakse ühendus FIN-pakettidega.']],'ComputerName     : www.ria.ee\nRemoteAddress    : 185.31.240.10\nRemotePort       : 443\nTcpTestSucceeded : <span class="ok">True</span>'],
- closed:['Port suletud',[[0,2,'SYN (port 8080)','','Klient proovib ühendust pordiga 8080.'],[2,0,'RST','bad','Server vastab <b>RST</b> (reset): „Selles pordis ei kuula keegi.“ Server on olemas ja võrk töötab, kuid <b>teenus ei tööta</b> või kuulab teises pordis. Kontrolli serveris: <code>Get-NetTCPConnection -State Listen</code>, kas teenus on käivitatud.']],'ComputerName     : server01\nRemotePort       : 8080\n<span class="er">WARNING: TCP connect to (10.0.0.5 : 8080) failed</span>\nPingSucceeded    : True\nTcpTestSucceeded : <span class="er">False</span>'],
+ closed:['Port suletud',[[0,2,'SYN (port 8080)','','Klient proovib ühendust pordiga 8080.'],[2,0,'RST','bad','Server vastab <b>RST</b> (<i>reset</i>): „Selles pordis ei kuula keegi.“ Server on olemas ja võrk töötab, kuid <b>teenus ei tööta</b> või kuulab teises pordis. Kontrolli serveris: <code>Get-NetTCPConnection -State Listen</code>, kas teenus on käivitatud.']],'ComputerName     : server01\nRemotePort       : 8080\n<span class="er">WARNING: TCP connect to (10.0.0.5 : 8080) failed</span>\nPingSucceeded    : True\nTcpTestSucceeded : <span class="er">False</span>'],
  fw:['Tulemüür blokeerib',[[0,1,'SYN (port 3389)','','Klient proovib ühendust kaugtöölauaga (port 3389).'],[1,1,'reegel: keela → viska ära','bad','<b>Tulemüür</b> leiab, et port 3389 pole lubatud, ja viskab paketi <b>vaikselt</b> ära – vastust ei saadeta, et ründaja ei saaks isegi teada, kas server on olemas.'],[0,1,'SYN (kordus)','bad','Klient ootab ja kordab mitu korda…'],[0,0,'aegumine (timeout)','bad','Mõnekümne sekundi pärast annab klient alla. <b>Vahet:</b> RST tähendab „suletud“ ja tuleb kohe; vaikus tähendab „filtreeritud“ (tulemüür) või server on maas.']],'ComputerName     : server01\nRemotePort       : 3389\n<span class="er">WARNING: TCP connect to (10.0.0.5 : 3389) failed</span>\n<span class="er">WARNING: Ping to 10.0.0.5 failed with status: TimedOut</span>\nTcpTestSucceeded : <span class="er">False</span>']};
 let ts='open',tk=0;
 $('tsc').innerHTML=Object.entries(TS).map(([k,v])=>`<button class="btn" data-t="${k}">${v[0]}</button>`).join(' ');
@@ -376,7 +376,7 @@ function kSteps(){const ev=$('kevil').checked;
   if(km==='kerb'){const A=['Kasutaja','DC (KDC)','Ründaja','Failiserver'];
     const S=[[0,1,'AS-REQ (tõend parooli räsist)','','<b>Sisselogimisel</b> tõestab kasutaja domeenikontrollerile, et teab parooli (krüpteerib ajatempli parooli räsiga). Parooli ennast võrgus ei saadeta.'],[1,0,'TGT (kehtib 10 h)','','KDC annab <b>TGT</b>-pileti – „festivali käepaela“. Seda ei saa kasutaja ise muuta, sest see on krüpteeritud KDC võtmega.'],[0,1,'TGS-REQ: cifs/fs01.kool.local','','Kasutaja avab <code>\\\\fs01\\jagatud</code>. Ta näitab KDC-le TGT-d ja küsib piletit <b>just sellele teenusele</b>.'],[1,0,'teenusepilet (fs01 jaoks)','','KDC annab teenusepileti, mis on krüpteeritud <b>failiserveri võtmega</b>. Ainult fs01 saab seda lugeda.']];
     if(ev)S.push([0,2,'AP-REQ (pilet fs01 jaoks)','evil','Ründaja on end LLMNR-i mürgitamisega vahele pannud ja saab kasutaja pileti.'],[2,3,'edastab pileti teisele serverile','evil','Ründaja proovib piletit kasutada teise serveri juures.'],[3,3,'pilet pole minu jaoks – keeldub','','<b>Rünne ebaõnnestus.</b> Pilet on krüpteeritud fs01 võtmega ja sisaldab teenuse nime – teine server ei saa seda lugeda ega aktsepteerida. Pilet kehtib ka ainult piiratud aja. Kerberos on seotud kindla teenusega. (Kerberosel on oma rünnakud, nt Kerberoasting – ptk 22.)']);
-    else S.push([0,3,'AP-REQ (teenusepilet)','','Kasutaja esitab pileti failiserverile.'],[3,3,'dekrüpteerib oma võtmega ✓','','Failiserver avab pileti oma võtmega ja näeb, kes kasutaja on ja millistesse gruppidesse ta kuulub. DC-lt ei pea uuesti küsima. <b>Juurdepääs antud.</b>']);
+    else S.push([0,3,'AP-REQ (teenusepilet)','','Kasutaja esitab pileti failiserverile.'],[3,3,'dekrüpteerib oma võtmega ✓','','Failiserver avab pileti oma võtmega ja näeb, kes kasutaja on ja millistesse gruppidesse ta kuulub. DC-lt (<i>Domain Controller</i>) ei pea uuesti küsima. <b>Juurdepääs antud.</b>']);
     return [A,S]}
   const A=['Kasutaja','Ründaja','Failiserver'];
   if(!ev)return [A,[[0,2,'NEGOTIATE','','Kasutaja tahab failiserveriga ühendust ja teatab, et kasutab NTLM-i (nt kui serverile pöörduti IP-aadressi järgi või Kerberos pole võimalik).'],[2,0,'CHALLENGE (juhuslik arv)','','Server saadab <b>väljakutse</b> – juhusliku arvu.'],[0,2,'AUTHENTICATE (vastus räsist)','','Klient arvutab väljakutsest ja oma parooli <b>räsist</b> vastuse ja saadab selle. Parooli ennast ei saadeta.'],[2,2,'kontrollib DC kaudu ✓','','Server kontrollib vastust domeenikontrolleri abil. <b>Juurdepääs antud.</b> Probleem: vastuses pole midagi, mis seoks selle just selle serveriga.']]];
@@ -410,7 +410,7 @@ const EXP={cable:'Võrgukaart on <b>Disconnected</b> – kaabel tuli koristamise
  dhcp:'Aadress <b>169.254.x.x</b> (APIPA) tähendab, et DHCP-server ei vastanud – lüüsi ega DNS-i pole. Põhjus: võrgupesa on vales VLAN-is, pesa pole ühendatud või DHCP-teenus ei tööta. Esimene asi, mida kontrollida, on <code>Get-NetIPConfiguration</code>.',
  gw:'IP-aadress on olemas, kuid <b>vaikelüüs (192.168.10.1) on teises võrgus</b> kui arvuti (192.168.1.57/24) ja ei vasta. Kohalikus võrgus (kolleegi arvuti) side töötab, internetti mitte. Keegi on seadistanud aadressi käsitsi vale lüüsiga.',
  dns:'Kõik töötab IP-aadresside järgi (lüüs ja 1.1.1.1 vastavad), kuid <b>nimed ei lahene</b>. Teams jätkas, sest ühendus oli juba loodud ja nimi vahemälus. Probleem on DNS-serveris 192.168.1.10 – nt DNS-teenus seiskus.',
- fw:'Võrk, DNS ja internet töötavad, server vastab pingile, kuid <b>port 1433 ei vasta</b>. Server on olemas, aga pordile ei pääse – tõenäoliselt blokeerib serveri tulemüür (või SQL Server ei kuula). Lahendus: lisa serveri tulemüüri reegel pordile 1433 ainult raamatupidaja arvutile.'};
+ fw:'Võrk, DNS ja internet töötavad, server vastab pingile, kuid <b>port 1433 ei vasta</b>. Server on olemas, aga pordile ei pääse – tõenäoliselt blokeerib serveri tulemüür (või SQL Server ei kuula; SQL – <i>Structured Query Language</i>). Lahendus: lisa serveri tulemüüri reegel pordile 1433 ainult raamatupidaja arvutile.'};
 function gStart(){const v=$('gsel').value;gi=v==='rand'?Math.floor(Math.random()*GS.length):+v;G=GS[gi];gn=0;
   $('gterm').innerHTML=`<span class="c"># ${G.txt}</span>\n# Vali käsk ülal.`;$('gans').value='';$('ginfo').className='info';$('ginfo').innerHTML='Käivita käske ja vaata tulemusi. Alusta alumisest kihist.';$('gcount').textContent=''}
 $('gcmds').innerHTML=CMD.map((c,i)=>`<button class="btn" data-i="${i}">${c.replace('<','&lt;').replace('>','&gt;')}</button>`).join('');
@@ -421,12 +421,12 @@ gStart();
 
 /* 7. Pordid */
 quiz('qtasks','qscore','qreset',['53','88','443','445','3389','5985'],[
- ['Brauser avab HTTPS-veebilehe.',2,'HTTPS kasutab TCP porti 443 (HTTP/3 puhul UDP 443).'],
+ ['Brauser avab HTTPS-veebilehe.',2,'HTTPS kasutab TCP porti 443 (HTTP/3 puhul UDP (<i>User Datagram Protocol</i>) 443).'],
  ['Arvuti küsib, mis on www.ria.ee IP-aadress.',0,'DNS kasutab porti 53 (tavaliselt UDP, suurte vastuste korral TCP).'],
  ['Õpetaja avab võrgukausta \\\\fs01\\jagatud.',3,'SMB failijagamine kasutab TCP porti 445. Seda ei tohi internetti avada (WannaCry).'],
- ['Administraator ühendub serverisse kaugtöölauaga.',4,'RDP kasutab porti 3389. Internetist tohib sellele pääseda ainult VPN-i või RD Gateway kaudu.'],
+ ['Administraator ühendub serverisse kaugtöölauaga.',4,'RDP kasutab porti 3389. Internetist tohib sellele pääseda ainult VPN-i (<i>Virtual Private Network</i>) või RD Gateway kaudu.'],
  ['Kasutaja küsib domeenikontrollerilt Kerberose piletit.',1,'Kerberos kasutab porti 88.'],
- ['Administraator käivitab Enter-PSSession server01.',5,'WinRM (PowerShelli kaugjuhtimine) kasutab HTTP puhul porti 5985 ja HTTPS puhul 5986.']],
+ ['Administraator käivitab Enter-PSSession server01.',5,'WinRM (<i>Windows Remote Management</i>; PowerShelli kaugjuhtimine) kasutab HTTP puhul porti 5985 ja HTTPS puhul 5986.']],
  'Tulemüüri reeglid tehakse portide kaupa – ja internetti avatakse ainult see, mis on hädavajalik.');
 </script>
 </body>

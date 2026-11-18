@@ -2,33 +2,33 @@
 
 ## 22. UUS: Küberturve tänapäeva Windowsis
 
-Windowsi turvamehhanismid (ptk 18) on tööriistad; küberturve on nende õige kasutamine konkreetsete ohtude vastu. Selles peatükis seome OS-i (ingl *Operating System*) teadmised rünnete, karmistamise, logimise, intsidendile reageerimise ja Eesti nõuetega (E-ITS – Eesti infoturbestandard).
+Windowsi turvamehhanismid (ptk 18) on tööriistad; küberturve on nende õige kasutamine konkreetsete ohtude vastu. Selles peatükis seome OS-i (*Operating System*) teadmised rünnete, karmistamise, logimise, intsidendile reageerimise ja Eesti nõuetega (E-ITS – Eesti infoturbestandard).
 
 ### 22.1 Ohumaastik
 
 | Oht | Kuidas töötab | Windowsi kaitse |
 | --- | --- | --- |
-| Õngitsus ja identiteedivargus | võltslehed, MFA-väsimus (MFA – ingl *Multi-Factor Authentication*), vahendajarünne (AiTM), seansiküpsiste vargus | Hello, pääsvõtmed, SmartScreen, tingimuslik juurdepääs |
-| Lunavara | krüpteerib andmed ja varastab need (topeltväljapressimine) | Defender, ASR (ingl *Attack Surface Reduction*), kontrollitud kaustad, varundus 3-2-1-1-0 |
-| „Living off the land“ | ründaja kasutab PowerShelli, WMI-d (ingl *Windows Management Instrumentation*), certutil-i jms | AMSI (ingl *Antimalware Scan Interface*), App Control, PowerShelli logimine |
-| Haavatava draiveri toomine (BYOVD – ingl *Bring Your Own Vulnerable Driver*) | allkirjastatud, kuid vigane draiver annab tuumaõigused | haavatavate draiverite blokeerimisloend, HVCI (ingl *Hypervisor-protected Code Integrity*) |
-| Parooliräside vargus | Mimikatz loeb lsass.exe mälu | Credential Guard, LSA (ingl *Local Security Authority*) kaitse |
+| Õngitsus ja identiteedivargus | võltslehed, MFA-väsimus (MFA – *Multi-Factor Authentication*), vahendajarünne (AiTM), seansiküpsiste vargus | Hello, pääsvõtmed, SmartScreen, tingimuslik juurdepääs |
+| Lunavara | krüpteerib andmed ja varastab need (topeltväljapressimine) | Defender, ASR (*Attack Surface Reduction*), kontrollitud kaustad, varundus 3-2-1-1-0 |
+| „Living off the land“ | ründaja kasutab PowerShelli, WMI-d (*Windows Management Instrumentation*), certutil-i jms | AMSI (*Antimalware Scan Interface*), App Control, PowerShelli logimine |
+| Haavatava draiveri toomine (BYOVD – *Bring Your Own Vulnerable Driver*) | allkirjastatud, kuid vigane draiver annab tuumaõigused | haavatavate draiverite blokeerimisloend, HVCI (*Hypervisor-protected Code Integrity*) |
+| Parooliräside vargus | Mimikatz loeb lsass.exe mälu | Credential Guard, LSA (*Local Security Authority*) kaitse |
 | Tarneahel | pahatahtlik uuendus või komponent | allkirjastamine, App Control, tarnijate hindamine |
 | Haavatavused | paikamata tarkvara | Windows Update, Autopatch, hotpatch |
-| AI-ga (ingl *Artificial Intelligence*) toetatud ründed | veenvamad õngituskirjad, hääle- ja videovõltsingud | koolitus, protsessid (kinnitus teise kanali kaudu) |
-| AI-agentide kuritarvitamine | kaudne viipesüst (XPIA – ingl *Cross-Prompt Injection Attack*, ptk 21) | agendi isolatsioon, vähimad õigused |
+| AI-ga (*Artificial Intelligence*) toetatud ründed | veenvamad õngituskirjad, hääle- ja videovõltsingud | koolitus, protsessid (kinnitus teise kanali kaudu) |
+| AI-agentide kuritarvitamine | kaudne viipesüst (XPIA – *Cross-Prompt Injection Attack*, ptk 21) | agendi isolatsioon, vähimad õigused |
 
-Eesti kontekstis on RIA (Riigi Infosüsteemi Amet) küberintsidentide käsitlemise osakond (CERT-EE – ingl *Computer Emergency Response Team*, Eesti) korduvalt rõhutanud, et kõige sagedasemad ohud on sisselogimisandmete vargus ja pahavara ([ERR](https://www.err.ee/988704/algteadmised-kuberturvalisusest-hoiaks-ara-95-protsenti-onnetusest-internetis)). Seetõttu annab kasutaja identiteedi kaitse kõige suurema kasu.
+Eesti kontekstis on RIA (Riigi Infosüsteemi Amet) küberintsidentide käsitlemise osakond (CERT-EE – *Computer Emergency Response Team*, Eesti) korduvalt rõhutanud, et kõige sagedasemad ohud on sisselogimisandmete vargus ja pahavara ([ERR](https://www.err.ee/988704/algteadmised-kuberturvalisusest-hoiaks-ara-95-protsenti-onnetusest-internetis)). Seetõttu annab kasutaja identiteedi kaitse kõige suurema kasu.
 
 ### 22.2 Null-usaldus
 
 **Null-usaldus** (zero trust) tähendab, et ühtegi kasutajat, seadet ega võrku ei usaldata ainult asukoha tõttu. Kolm põhimõtet:
 
 1. **kontrolli selgesõnaliselt** – iga päring autenditakse ja autoriseeritakse (identiteet, seadme seisund, asukoht, risk);
-2. **vähimad õigused** – õigused ainult vajalikuks ajaks ja ulatuses (administraatori kaitse, JIT-ligipääs (JIT – ingl *Just-In-Time*));
+2. **vähimad õigused** – õigused ainult vajalikuks ajaks ja ulatuses (administraatori kaitse, JIT-ligipääs (JIT – *Just-In-Time*));
 3. **eelda rünnet** – segmenteeri, krüpteeri, logi ja tuvasta.
 
-Windowsi null-usalduse ehituskivid: TPM (ingl *Trusted Platform Module*) ja Pluton (seadme identiteet), Secure Boot ja kaugkinnitus (seadme seisund), Windows Hello (kasutaja identiteet), BitLocker (andmed), VBS (ingl *Virtualization-Based Security*; isolatsioon), Intune’i vastavuspoliitika (tingimuslik juurdepääs).
+Windowsi null-usalduse ehituskivid: TPM (*Trusted Platform Module*) ja Pluton (seadme identiteet), Secure Boot ja kaugkinnitus (seadme seisund), Windows Hello (kasutaja identiteet), BitLocker (andmed), VBS (*Virtualization-Based Security*; isolatsioon), Intune’i vastavuspoliitika (tingimuslik juurdepääs).
 
 ![null-usalduse otsus · signaalid, poliitika ja tulemused](../pildid/22-a.png)
 
@@ -42,29 +42,29 @@ Joonis: sama kasutaja võib saada eri tulemuse: kooli hallatud sülearvutist tä
 
 Karmistamise (hardening) baasnimekiri tööjaamale:
 
-- [ ] Windows 11 toetatud versioon, iga kuu uuendused; Windows 10 masinad välja vahetatud või ESU (ingl *Extended Security Updates*) all
+- [ ] Windows 11 toetatud versioon, iga kuu uuendused; Windows 10 masinad välja vahetatud või ESU (*Extended Security Updates*) all
 - [ ] Secure Boot sees ja 2023. aasta sertifikaadid paigaldatud (ptk 18)
 - [ ] TPM 2.0, BitLocker sees, taastevõtmed keskselt hoiul
 - [ ] Igapäevatöö tavakasutajana; administraatori kaitse või eraldi adminikonto
-- [ ] Windows LAPS (ingl *Local Administrator Password Solution*) kohalikele administraatoritele
+- [ ] Windows LAPS (*Local Administrator Password Solution*) kohalikele administraatoritele
 - [ ] Windows Hello for Business / MFA, paroolipoliitika
 - [ ] VBS, mälu terviklikkus (HVCI), Credential Guard, LSA kaitse sees
 - [ ] Defender: reaalajakaitse, pilvekaitse, Tamper Protection, ASR-reeglid, kontrollitud kaustad
 - [ ] Smart App Control või App Control for Business / AppLocker
 - [ ] Tulemüür kõigis profiilides sees, sissetulev vaikimisi keelatud
-- [ ] SMB 1.0 (SMB – ingl *Server Message Block*), LLMNR (ingl *Link-Local Multicast Name Resolution*), NetBIOS (ingl *Network Basic Input/Output System*) üle TCP/IP, NTLMv1 (ingl *NT LAN Manager version 1*) keelatud; NTLM-i (ingl *NT LAN Manager*) kasutuse audit
+- [ ] SMB 1.0 (SMB – *Server Message Block*), LLMNR (*Link-Local Multicast Name Resolution*), NetBIOS (*Network Basic Input/Output System*) üle TCP/IP (TCP – *Transmission Control Protocol*; IP – *Internet Protocol*), NTLMv1 (*NT LAN Manager version 1*) keelatud; NTLM-i (*NT LAN Manager*) kasutuse audit
 - [ ] PowerShelli skriptiplokkide logimine ja transkriptsioon; PowerShell 2.0 eemaldatud
 - [ ] Office’i makrod internetist tulnud failides blokeeritud
-- [ ] USB-salvestite (USB – ingl *Universal Serial Bus*) poliitika vastavalt vajadusele
+- [ ] USB-salvestite (USB – *Universal Serial Bus*) poliitika vastavalt vajadusele
 - [ ] Varundus testitud, üks koopia võrguühenduseta või muutumatu
 
-Aluseks on **turvabaasjooned**: Microsoft Security Baselines (Security Compliance Toolkit), CIS Benchmarks (CIS – ingl *Center for Internet Security*) ja Eestis **E-ITS**-i moodulid, nt **SYS.2.2.3 „Windows 10 ja Windows 11“** ning **SYS.1.2.3 „Windows Server“**, mille elutsükli kirjeldusi uuendati 2025. aastal ([E-ITS muutmise seletuskiri](https://adr-docs.karlerss.com/OjT8fCp4mJdi4CBjUBks9bkhZ6kyRbUj/20250730_SK%20E-ITS%20muutmine.pdf)). E-ITS-i portaal: [eits.ria.ee](https://eits.ria.ee/).
+Aluseks on **turvabaasjooned**: Microsoft Security Baselines (Security Compliance Toolkit), CIS Benchmarks (CIS – *Center for Internet Security*) ja Eestis **E-ITS**-i moodulid, nt **SYS.2.2.3 „Windows 10 ja Windows 11“** ning **SYS.1.2.3 „Windows Server“**, mille elutsükli kirjeldusi uuendati 2025. aastal ([E-ITS muutmise seletuskiri](https://adr-docs.karlerss.com/OjT8fCp4mJdi4CBjUBks9bkhZ6kyRbUj/20250730_SK%20E-ITS%20muutmine.pdf)). E-ITS-i portaal: [eits.ria.ee](https://eits.ria.ee/).
 
 ### 22.4 Logid ja tuvastamine
 
 Olulised turvasündmused:
 
-| Sündmuse ID (ingl *Identifier*) | Logi | Tähendus |
+| Sündmuse ID (*Identifier*) | Logi | Tähendus |
 | --- | --- | --- |
 | 4624 / 4625 | Security | edukas / ebaõnnestunud sisselogimine |
 | 4672 | Security | erioõigustega sisselogimine (admin) |
@@ -81,14 +81,14 @@ Täiendavad vahendid:
 
 - **Sysmon** (Sysinternals) – detailne protsesside, võrguühenduste ja failimuudatuste logimine;
 - **Windows Event Forwarding** – logide kogumine kesksesse serverisse;
-- **SIEM** (ingl *Security Information and Event Management*; nt Microsoft Sentinel, Wazuh, Elastic) ja **seire** (nt Zabbix Windowsi agendiga sündmuslogide jälgimiseks);
-- **EDR** (ingl *Endpoint Detection and Response*) – Defender for Endpoint või muu.
+- **SIEM** (*Security Information and Event Management*; nt Microsoft Sentinel, Wazuh, Elastic) ja **seire** (nt Zabbix Windowsi agendiga sündmuslogide jälgimiseks);
+- **EDR** (*Endpoint Detection and Response*) – Defender for Endpoint või muu.
 
 Logi on kasulik ainult siis, kui seda keegi vaatab: määra häirereeglid (nt 4625 > 20 korda 5 minutiga, 1102 alati, 4732 Domain Admins rühma).
 
 ### 22.5 Intsidendile reageerimine
 
-Etapid NIST-i (ingl *National Institute of Standards and Technology*) raamistiku järgi:
+Etapid NIST-i (*National Institute of Standards and Technology*) raamistiku järgi:
 
 1. **ettevalmistus** – plaan, kontaktid, logid, varukoopiad, harjutused;
 2. **tuvastamine ja analüüs** – mis juhtus, millal, milline ulatus;
@@ -100,11 +100,11 @@ Etapid NIST-i (ingl *National Institute of Standards and Technology*) raamistiku
 
 Joonis: järeltegevuse õppetunnid parandavad ettevalmistust – iga lahendatud intsident peaks muutma järgmise tuvastamise kiiremaks.
 
-**Tõendite säilitamine:** ära lülita arvutit kohe välja – mälu sisu kaob. Tee esmalt mälutõmmis (nt Magnet RAM Capture (RAM – ingl *Random-Access Memory*), WinPmem) ja ketta tõmmis, kogu logid. Eestis teavita olulisest intsidendist **CERT-EE**-d (cert@cert.ee) ja vajadusel politseid; isikuandmete lekke korral Andmekaitse Inspektsiooni 72 tunni jooksul.
+**Tõendite säilitamine:** ära lülita arvutit kohe välja – mälu sisu kaob. Tee esmalt mälutõmmis (nt Magnet RAM Capture (RAM – *Random-Access Memory*), WinPmem) ja ketta tõmmis, kogu logid. Eestis teavita olulisest intsidendist **CERT-EE**-d (cert@cert.ee) ja vajadusel politseid; isikuandmete lekke korral Andmekaitse Inspektsiooni 72 tunni jooksul.
 
 ### 22.6 AI küberturbes – mõlemal pool
 
-**Ründajad** kasutavad AI-d veenvate õngituskirjade (ka eesti keeles), hääle- ja videovõltsingute, luure ja pahavara kirjutamise kiirendamiseks. **Kaitsjad** kasutavad AI-d anomaaliate tuvastamiseks (Defenderi pilvekaitse, Smart App Control), logide kokkuvõtteks ja intsidentide analüüsiks. **AI ise on ründepind**: viipesüst, mudeli andmete mürgitamine, tundlike andmete lekkimine vestlustesse, liiga laiade õigustega agendid (ptk 21.5). OWASP-i (ingl *Open Worldwide Application Security Project*) LLM-rakenduste (LLM – ingl *Large Language Model*) top 10 nimetab viipesüsti esimese riskina.
+**Ründajad** kasutavad AI-d veenvate õngituskirjade (ka eesti keeles), hääle- ja videovõltsingute, luure ja pahavara kirjutamise kiirendamiseks. **Kaitsjad** kasutavad AI-d anomaaliate tuvastamiseks (Defenderi pilvekaitse, Smart App Control), logide kokkuvõtteks ja intsidentide analüüsiks. **AI ise on ründepind**: viipesüst, mudeli andmete mürgitamine, tundlike andmete lekkimine vestlustesse, liiga laiade õigustega agendid (ptk 21.5). OWASP-i (*Open Worldwide Application Security Project*) LLM-rakenduste (LLM – *Large Language Model*) top 10 nimetab viipesüsti esimese riskina.
 
 Praktilised reeglid organisatsioonile:
 
@@ -115,7 +115,7 @@ Praktilised reeglid organisatsioonile:
 
 ### 22.7 Eesti nõuded
 
-- **Küberturvalisuse seadus** (KüTS) ja EL-i (Euroopa Liit) **NIS2 (ingl *Network and Information Security Directive 2*) direktiiv** – kohustused olulistele ja elutähtsatele teenuseosutajatele ning avalikule sektorile.
+- **Küberturvalisuse seadus** (KüTS) ja EL-i (Euroopa Liit) **NIS2 (*Network and Information Security Directive 2*) direktiiv** – kohustused olulistele ja elutähtsatele teenuseosutajatele ning avalikule sektorile.
 - **E-ITS** – avaliku sektori kohustuslik infoturbestandard; auditeerimise kohustus iga kolme aasta järel, esmakordne täht hiljemalt 16.12.2025 ([RIA](https://ria.ee/sites/default/files/documents/2024-10/Kuberturvalisus-haridusasutustes-august2024.pdf)). Haridusasutustele on koostatud eraldi profiil.
 - **RIA** ja **CERT-EE** – hoiatused, juhendid, intsidentide käsitlus; [Digiriigi Akadeemia](https://www.digiriigiakadeemia.ee/) koolitused.
 
@@ -125,7 +125,7 @@ SIEM saadab laupäeva hommikul häire. Administraator koostab sündmustest ajajo
 
 | Aeg | Sündmus | Mida see näitab |
 | --- | --- | --- |
-| 02:10–02:31 | 4625 × 1400, konto `admin` ja `opetaja1`, üks väline IP (ingl *Internet Protocol*) | paroolide äraarvamine RDP (ingl *Remote Desktop Protocol*) kaudu |
+| 02:10–02:31 | 4625 × 1400, konto `admin` ja `opetaja1`, üks väline IP (*Internet Protocol*) | paroolide äraarvamine RDP (*Remote Desktop Protocol*) kaudu |
 | 02:32 | 4624, LogonType 10, `opetaja1` | sisselogimine õnnestus (nõrk parool, MFA puudus) |
 | 02:35 | 4688 `powershell.exe -enc …` | kodeeritud skript – „living off the land“ |
 | 02:37 | 4104 skriptiplokk: allalaadimine | PowerShelli logimine näitab skripti sisu |
@@ -133,7 +133,7 @@ SIEM saadab laupäeva hommikul häire. Administraator koostab sündmustest ajajo
 | 02:44 | 7045 uus teenus | püsivus (ptk 6) |
 | 02:47 | 1102 | ründaja kustutas turvalogi – kuid koopia oli juba SIEM-is |
 
-**Reageerimine etappide kaupa:** server isoleeritakse võrgust (ohjeldamine); konto `opetaja1` blokeeritakse ja paroolid vahetatakse; uus konto ja teenus eemaldatakse, server taastatakse puhtast varukoopiast (likvideerimine ja taastamine); RDP suletakse internetist ning lubatakse ainult VPN-i (ingl *Virtual Private Network*) ja MFA-ga, lisatakse häire „4625 üle 20 korra 5 minutiga“ (järeltegevus). Intsidendist teavitatakse CERT-EE-d.
+**Reageerimine etappide kaupa:** server isoleeritakse võrgust (ohjeldamine); konto `opetaja1` blokeeritakse ja paroolid vahetatakse; uus konto ja teenus eemaldatakse, server taastatakse puhtast varukoopiast (likvideerimine ja taastamine); RDP suletakse internetist ning lubatakse ainult VPN-i (*Virtual Private Network*) ja MFA-ga, lisatakse häire „4625 üle 20 korra 5 minutiga“ (järeltegevus). Intsidendist teavitatakse CERT-EE-d.
 
 **Õppetund:** kesksesse kohta saadetud logid päästsid uurimise – kohalik logi oli kustutatud.
 
@@ -165,7 +165,7 @@ SIEM saadab laupäeva hommikul häire. Administraator koostab sündmustest ajajo
 ### Valikküsimused
 
 1. Mida tähendab sündmus 1102? a) edukas sisselogimine b) turvalogi kustutati c) uus teenus d) konto lukustus
-2. Mis kaitseb lsass.exe mälust parooliräside varastamise eest? a) SmartScreen b) Credential Guard c) WinRM d) Storage Spaces
+2. Mis kaitseb lsass.exe mälust parooliräside varastamise eest? a) SmartScreen b) Credential Guard c) WinRM (*Windows Remote Management*) d) Storage Spaces
 3. Milline ei ole null-usalduse põhimõte? a) kontrolli selgesõnaliselt b) vähimad õigused c) usalda sisevõrku d) eelda rünnet
 4. Mis tööriist logib detailselt protsesse ja võrguühendusi? a) Sysmon b) WinObj c) RAMMap d) Autoruns
 5. Kui kiiresti tuleb isikuandmete lekkest teavitada Andmekaitse Inspektsiooni? a) 24 h b) 72 h c) 7 päeva d) 30 päeva
@@ -194,13 +194,13 @@ Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4625} -MaxEvents 10 |
 
 Lülita sisse PowerShelli skriptiplokkide logimine (`gpedit.msc` → Computer Configuration → Administrative Templates → Windows Components → Windows PowerShell → Turn on PowerShell Script Block Logging), käivita mõni käsk ja leia see sündmusest 4104.
 
-**Osa C – laudõppus (rühmatöö).** Stsenaarium: raamatupidaja saab e-kirja „juhilt“, kus palutakse kiiresti tasuda arve; manuses on ISO-tõmmis. Paar tundi hiljem on failiserveris failidel uus laiend. Kirjeldage iga intsidendile reageerimise etapi tegevused, vastutajad ja kasutatavad Windowsi tööriistad. Millised ptk 22.3 meetmed oleksid ründe peatanud?
+**Osa C – laudõppus (rühmatöö).** Stsenaarium: raamatupidaja saab e-kirja „juhilt“, kus palutakse kiiresti tasuda arve; manuses on ISO-tõmmis (ISO – *International Organization for Standardization*). Paar tundi hiljem on failiserveris failidel uus laiend. Kirjeldage iga intsidendile reageerimise etapi tegevused, vastutajad ja kasutatavad Windowsi tööriistad. Millised ptk 22.3 meetmed oleksid ründe peatanud?
 
 ### Iseseisvad ülesanded
 
-**1. Karmistamise projekt.** Võta õppe-VM vaikimisi Windows 11 paigaldusega. Mõõda algseis (ptk 22 osa A), rakenda vähemalt 10 punkti ptk 22.3 nimekirjast ja mõõda uuesti. Kontrolli, et tavakasutaja saab ikka töötada (brauser, Office, printimine). **Esita:** „enne ja pärast“ tabel, iga muudatuse rakendamise viis (GPO, PowerShell, Seaded) ning üks muudatus, mis tekitas kasutajale probleemi, ja kuidas sa selle lahendasid.
+**1. Karmistamise projekt.** Võta õppe-VM vaikimisi Windows 11 paigaldusega. Mõõda algseis (ptk 22 osa A), rakenda vähemalt 10 punkti ptk 22.3 nimekirjast ja mõõda uuesti. Kontrolli, et tavakasutaja saab ikka töötada (brauser, Office, printimine). **Esita:** „enne ja pärast“ tabel, iga muudatuse rakendamise viis (GPO – *Group Policy Object*, PowerShell, Seaded) ning üks muudatus, mis tekitas kasutajale probleemi, ja kuidas sa selle lahendasid.
 
-**2. Õngituskirja analüüs.** Leia oma postkastist, rämpspostist või RIA/CERT-EE hoiatustest üks päris õngituskiri (ära klõpsa linke ega ava manuseid!). Analüüsi kirja päiseid (saatja domeen, SPF/DKIM/DMARC tulemus), linkide tegelikku sihtkohta (hiirega peale liikudes) ja psühholoogilisi võtteid (kiirustamine, hirm, autoriteet). **Esita:** anonüümitud ekraanipilt, tunnuste loetelu ja vastus: millised Windowsi või Microsoft 365 kaitsed (SmartScreen, Mark of the Web, Defender, MFA) oleksid rünnet erinevates etappides peatanud?
+**2. Õngituskirja analüüs.** Leia oma postkastist, rämpspostist või RIA/CERT-EE hoiatustest üks päris õngituskiri (ära klõpsa linke ega ava manuseid!). Analüüsi kirja päiseid (saatja domeen, SPF/DKIM/DMARC (SPF – *Sender Policy Framework*; DKIM – *DomainKeys Identified Mail*; DMARC – *Domain-based Message Authentication, Reporting and Conformance*) tulemus), linkide tegelikku sihtkohta (hiirega peale liikudes) ja psühholoogilisi võtteid (kiirustamine, hirm, autoriteet). **Esita:** anonüümitud ekraanipilt, tunnuste loetelu ja vastus: millised Windowsi või Microsoft 365 kaitsed (SmartScreen, Mark of the Web, Defender, MFA) oleksid rünnet erinevates etappides peatanud?
 
 ### Viited
 

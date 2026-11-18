@@ -2,23 +2,23 @@
 
 ## 16. Salvestushaldus
 
-Salvestushaldus otsustab, kuidas füüsilised kettad jagatakse partitsioonideks ja köideteks, kuidas andmeid kaitstakse riketest (peegeldamine, paarsus) ja varguse eest (krüpteerimine) ning kuidas serverid salvestusruumi jagavad. Windowsis on selleks kettahaldus, Storage Spaces, BitLocker ja SMB-failiteenus (SMB – ingl *Server Message Block*).
+Salvestushaldus otsustab, kuidas füüsilised kettad jagatakse partitsioonideks ja köideteks, kuidas andmeid kaitstakse riketest (peegeldamine, paarsus) ja varguse eest (krüpteerimine) ning kuidas serverid salvestusruumi jagavad. Windowsis on selleks kettahaldus, Storage Spaces, BitLocker ja SMB-failiteenus (SMB – *Server Message Block*).
 
 **Miks see oluline on?** Andmed on organisatsiooni kõige väärtuslikum osa: arvuti saab poest uue osta, aga kaotatud hinnetabelit, raamatupidamist või lõputööd mitte. Salvestushaldus vastab kolmele küsimusele:
 
 1. **Kuidas ketas on jaotatud?** – partitsioonid ja köited;
-2. **Mis juhtub, kui ketas läheb rikki?** – RAID (ingl *Redundant Array of Independent Disks*) ja Storage Spaces;
+2. **Mis juhtub, kui ketas läheb rikki?** – RAID (*Redundant Array of Independent Disks*) ja Storage Spaces;
 3. **Mis juhtub, kui andmed kustutatakse, krüpteeritakse lunavaraga või varastatakse?** – varundus ja BitLocker.
 
 Igal ohul on oma kaitse ja **ükski meede ei kaitse kõige eest**. See on peatüki kõige olulisem mõte.
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/16-salvestushaldus.html). Lehel on HDD (ingl *Hard Disk Drive*) ja SSD (ingl *Solid-State Drive*) kiiruste kalkulaator, partitsioonide uurija, RAID-simulaator koos paarsuse arvutamisega, BitLockeri olukordade simulaator, varundusplaani koostaja ja harjutus „milline kaitse aitab?“.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/16-salvestushaldus.html). Lehel on HDD (*Hard Disk Drive*) ja SSD (*Solid-State Drive*) kiiruste kalkulaator, partitsioonide uurija, RAID-simulaator koos paarsuse arvutamisega, BitLockeri olukordade simulaator, varundusplaani koostaja ja harjutus „milline kaitse aitab?“.
 
 ### 16.1 Salvestamine kettal
 
-HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koosneb otsinguajast ja pöördeviitest. SSD salvestab andmeid NAND-välkmällu (NAND – ingl *NOT AND*); kirjutada saab ainult kustutatud plokki, mistõttu SSD kontroller teeb kulumise ühtlustamist ja prügikoristust. NVMe-SSD (NVMe – ingl *Non-Volatile Memory Express*) ühendub otse PCIe-siiniga (PCIe – ingl *Peripheral Component Interconnect Express*) ja on SATA-SSD-st (SATA – ingl *Serial Advanced Technology Attachment*) mitu korda kiirem.
+HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koosneb otsinguajast ja pöördeviitest. SSD salvestab andmeid NAND-välkmällu (NAND – *NOT AND*); kirjutada saab ainult kustutatud plokki, mistõttu SSD kontroller teeb kulumise ühtlustamist ja prügikoristust. NVMe-SSD (NVMe – *Non-Volatile Memory Express*) ühendub otse PCIe-siiniga (PCIe – *Peripheral Component Interconnect Express*) ja on SATA-SSD-st (SATA – *Serial Advanced Technology Attachment*) mitu korda kiirem.
 
-**Miks on HDD juhuslikul lugemisel nii aeglane?** Iga lugemise jaoks peab lugemispea liikuma õigele rajale (**otsinguaeg**, ~4–9 ms) ja ootama, kuni õige sektor pea alt läbi pöörleb (**pöördeviide**). 7200 p/min ketas teeb ühe pöörde 8,3 ms-ga, keskmiselt tuleb oodata pool pööret ehk ~4,2 ms. Kokku ~12 ms ühe juhusliku lugemise kohta – ainult umbes **80–120 lugemist sekundis** (IOPS – ingl *Input/Output Operations Per Second*). NVMe-SSD-l pole liikuvaid osi ja ta teeb **sadu tuhandeid** juhuslikke lugemisi sekundis. Seepärast muutub vana arvuti pärast HDD vahetamist SSD vastu märgatavalt kiiremaks: Windowsi käivitamine koosneb tuhandetest väikestest juhuslikest lugemistest.
+**Miks on HDD juhuslikul lugemisel nii aeglane?** Iga lugemise jaoks peab lugemispea liikuma õigele rajale (**otsinguaeg**, ~4–9 ms) ja ootama, kuni õige sektor pea alt läbi pöörleb (**pöördeviide**). 7200 p/min ketas teeb ühe pöörde 8,3 ms-ga, keskmiselt tuleb oodata pool pööret ehk ~4,2 ms. Kokku ~12 ms ühe juhusliku lugemise kohta – ainult umbes **80–120 lugemist sekundis** (IOPS – *Input/Output Operations Per Second*). NVMe-SSD-l pole liikuvaid osi ja ta teeb **sadu tuhandeid** juhuslikke lugemisi sekundis. Seepärast muutub vana arvuti pärast HDD vahetamist SSD vastu märgatavalt kiiremaks: Windowsi käivitamine koosneb tuhandetest väikestest juhuslikest lugemistest.
 
 | | HDD | SATA SSD | NVMe SSD |
 | --- | --- | --- | --- |
@@ -26,9 +26,9 @@ HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koos
 | Järjestikune kiirus | ~200 MB/s | ~550 MB/s | ~3 000–14 000 MB/s |
 | Liikuvad osad | jah – kardab põrutust | ei | ei |
 | Hind GB kohta | madalaim | keskmine | keskmine |
-| Kasutus | arhiiv, varundus, NAS (ingl *Network Attached Storage*) | vanemad arvutid | süsteemiketas, serverid |
+| Kasutus | arhiiv, varundus, NAS (*Network Attached Storage*) | vanemad arvutid | süsteemiketas, serverid |
 
-**SSD kulumine.** Välkmälu rakku saab kirjutada piiratud arv kordi. SSD kirjutab andmed **lehtedena** (mõni KB), kuid kustutada saab ainult terve **ploki** (sadu lehti). Kui fail muutub, kirjutab kontroller uue versiooni uude kohta ja märgib vana kehtetuks; hiljem korjab **prügikoristus** kehtivad lehed kokku ja kustutab ploki. **Kulumise ühtlustamine** (wear leveling) jaotab kirjutused kõigile rakkudele. Tootja annab vastupidavuse **TBW**-na (terabytes written), nt 600 TBW 1 TB kettal – tavakasutajal kulub selleks üle kümne aasta. Kulumist näeb käsuga `Get-StorageReliabilityCounter` (veerg *Wear*) või SMART-andmetest (SMART – ingl *Self-Monitoring, Analysis and Reporting Technology*).
+**SSD kulumine.** Välkmälu rakku saab kirjutada piiratud arv kordi. SSD kirjutab andmed **lehtedena** (mõni KB), kuid kustutada saab ainult terve **ploki** (sadu lehti). Kui fail muutub, kirjutab kontroller uue versiooni uude kohta ja märgib vana kehtetuks; hiljem korjab **prügikoristus** kehtivad lehed kokku ja kustutab ploki. **Kulumise ühtlustamine** (wear leveling) jaotab kirjutused kõigile rakkudele. Tootja annab vastupidavuse **TBW**-na (*terabytes written*), nt 600 TBW 1 TB kettal – tavakasutajal kulub selleks üle kümne aasta. Kulumist näeb käsuga `Get-StorageReliabilityCounter` (veerg *Wear*) või SMART-andmetest (SMART – *Self-Monitoring, Analysis and Reporting Technology*).
 
 > 🖱️ **Proovi ise:** [HDD ja SSD kiiruse kalkulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/16-salvestushaldus.html#ketas)
 
@@ -36,22 +36,22 @@ HDD salvestab andmeid magnetiliselt pöörlevatel plaatidel; pöördumisaeg koos
 
 **Partitsioonitabelid:**
 
-|  | MBR (ingl *Master Boot Record*) | GPT (ingl *GUID Partition Table*) |
+|  | MBR (*Master Boot Record*) | GPT (*GUID Partition Table*) |
 | --- | --- | --- |
-| Aasta | 1983 | 2000ndad (UEFI (ingl *Unified Extensible Firmware Interface*) osa) |
+| Aasta | 1983 | 2000ndad (UEFI (*Unified Extensible Firmware Interface*) osa) |
 | Max ketta suurus | 2 TB | praktiliselt piiramatu (9,4 ZB) |
 | Partitsioone | 4 primaarset (või laiendatud) | 128 (Windowsis) |
-| Varukoopia | puudub | päise koopia ketta lõpus, CRC (ingl *Cyclic Redundancy Check*) |
-| Käivitus | BIOS (ingl *Basic Input/Output System*) | UEFI (nõutud Windows 11-l) |
+| Varukoopia | puudub | päise koopia ketta lõpus, CRC (*Cyclic Redundancy Check*) |
+| Käivitus | BIOS (*Basic Input/Output System*) | UEFI (nõutud Windows 11-l) |
 
-**Tavaline Windows 11 ketas (GPT):** EFI (ingl *Extensible Firmware Interface*) süsteemipartitsioon (FAT32 (FAT – ingl *File Allocation Table*), \~100–260 MB), Microsofti reserveeritud partitsioon (MSR – ingl *Microsoft Reserved Partition*, 16 MB), Windowsi partitsioon (NTFS – ingl *New Technology File System*) ja taastepartitsioon (Windows RE – ingl *Recovery Environment*).
+**Tavaline Windows 11 ketas (GPT):** EFI (*Extensible Firmware Interface*) süsteemipartitsioon (FAT32 (FAT – *File Allocation Table*), \~100–260 MB), Microsofti reserveeritud partitsioon (MSR – *Microsoft Reserved Partition*, 16 MB), Windowsi partitsioon (NTFS – *New Technology File System*) ja taastepartitsioon (Windows RE – *Recovery Environment*).
 
 | Partitsioon | Milleks | Mis juhtub, kui see kustutada? |
 | --- | --- | --- |
-| **EFI** (ESP – ingl *EFI System Partition*) | UEFI püsivara loeb siit alglaaduri `bootmgfw.efi` | Windows ei käivitu; parandamine `bcdboot` käsuga |
+| **EFI** (ESP – *EFI System Partition*) | UEFI püsivara loeb siit alglaaduri `bootmgfw.efi` | Windows ei käivitu; parandamine `bcdboot` käsuga |
 | **MSR** | Windowsi sisemiseks kasutuseks, failisüsteemi pole | probleemid kettahalduse toimingutel |
-| **Windows** (C:) | OS (ingl *Operating System*), programmid, kasutajate failid | kõik andmed kaovad |
-| **Taaste** (WinRE – ingl *Windows Recovery Environment*) | taastekeskkond: lähtestamine, käsuviip, süsteemitaaste | arvuti käivitub, kuid tõrkeotsing on raskem |
+| **Windows** (C:) | OS (*Operating System*), programmid, kasutajate failid | kõik andmed kaovad |
+| **Taaste** (WinRE – *Windows Recovery Environment*) | taastekeskkond: lähtestamine, käsuviip, süsteemitaaste | arvuti käivitub, kuid tõrkeotsing on raskem |
 
 **Miks MBR asendus GPT-ga?** MBR salvestab partitsiooni suuruse 32-bitise sektorite arvuna: 2³² × 512 baiti = 2 TB. Lisaks on MBR-is ainult üks partitsioonitabeli koopia ketta alguses – kui see rikneb, kaovad kõik partitsioonid. GPT-l on päisest koopia ketta lõpus ja kontrollsumma (CRC), nii et viga tuvastatakse ja parandatakse. Vana MBR-ketta saab ilma andmeid kaotamata teisendada käsuga `mbr2gpt /convert` (seejärel tuleb püsivaras lülitada UEFI-režiimile).
 
@@ -79,7 +79,7 @@ Joonis: RAID 1 hoiab igast plokist kahte koopiat; RAID 5 jaotab andmed ja paarsu
 
 **Animatsioon:** [RAID 0, 1 ja 5: mis juhtub, kui ketas rikneb](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/animatsioonid/raid.html) näitab, kuidas iga tase plokid ketastele jaotab, kuidas RAID 5 arvutab puuduva ploki paarsusest, kuidas käib taastamine varukettale ja miks teine rike taastamise ajal on saatuslik. Lehel on lahti seletatud mõisted ja praktilised käsud.
 
-**Kuidas paarsus töötab?** Paarsus arvutatakse tehtega **XOR** (ingl *Exclusive OR*; välistav või): kui bitid on samad, on tulemus 0, kui erinevad, siis 1. XOR-il on kasulik omadus – kui teada kõiki osi peale ühe, saab puuduva välja arvutada.
+**Kuidas paarsus töötab?** Paarsus arvutatakse tehtega **XOR** (*Exclusive OR*; välistav või): kui bitid on samad, on tulemus 0, kui erinevad, siis 1. XOR-il on kasulik omadus – kui teada kõiki osi peale ühe, saab puuduva välja arvutada.
 
 ```
 Ketas 1 (A1):   1 0 1 1
@@ -116,23 +116,23 @@ A2 = A1 XOR Ap: 0 1 1 0     ← andmed taastatud!
 
 Erinevalt klassikalisest RAID-ist võivad Storage Spaces’i kettad olla **eri suurusega** ja kogumisse saab hiljem kettaid lisada. **Õhuke eraldus** (thin provisioning) lubab luua virtuaalketta, mis on suurem kui olemasolev ruum – kettaid lisatakse siis, kui ruum hakkab otsa saama. **Kihid** (tiering) hoiavad sagedamini kasutatud andmeid SSD-l ja harvemini kasutatuid HDD-l. **Storage Spaces Direct** (S2D) teeb sama klastri serverite lokaalsete ketastega (hüperkonvergentne taristu).
 
-**BitLocker** krüpteerib terve köite (XTS-AES (XTS – ingl *XEX-based Tweaked-codebook mode with ciphertext Stealing*; AES – ingl *Advanced Encryption Standard*)). Võti on kaitstud TPM-iga (ingl *Trusted Platform Module*), soovi korral lisaks PIN-iga (ingl *Personal Identification Number*). Taastevõti tuleb hoida turvaliselt (Entra ID, Active Directory, Microsofti konto). Uutel Windows 11 seadmetel lülitub **seadme krüpteerimine** sageli automaatselt sisse – administraator peab teadma, kus taastevõtmed asuvad, enne kui ketast või emaplaati vahetatakse.
+**BitLocker** krüpteerib terve köite (XTS-AES (XTS – *XEX-based Tweaked-codebook mode with ciphertext Stealing*; AES – *Advanced Encryption Standard*)). Võti on kaitstud TPM-iga (*Trusted Platform Module*), soovi korral lisaks PIN-iga (*Personal Identification Number*). Taastevõti tuleb hoida turvaliselt (Entra ID, Active Directory, Microsofti konto). Uutel Windows 11 seadmetel lülitub **seadme krüpteerimine** sageli automaatselt sisse – administraator peab teadma, kus taastevõtmed asuvad, enne kui ketast või emaplaati vahetatakse.
 
 **Mille eest BitLocker kaitseb?** Varastatud sülearvuti puhul saab varas ketta välja võtta ja teise arvutisse ühendada – ilma krüpteerimiseta loeks ta kõiki faile, ka Windowsi parooli teadmata. BitLockeriga näeb ta ainult juhuslikke baite. **BitLocker ei kaitse** töötava arvuti puhul: kui kasutaja on sisse loginud, on andmed avatud ka pahavarale.
 
-**Kuidas võtmed töötavad?** Andmed on krüpteeritud võtmega **FVEK** (ingl *Full Volume Encryption Key*). See on omakorda krüpteeritud **köite põhivõtmega (VMK – ingl *Volume Master Key*)**, mida saab avada mitu **kaitsjat** (protectors):
+**Kuidas võtmed töötavad?** Andmed on krüpteeritud võtmega **FVEK** (*Full Volume Encryption Key*). See on omakorda krüpteeritud **köite põhivõtmega (VMK – *Volume Master Key*)**, mida saab avada mitu **kaitsjat** (protectors):
 
 ![BitLockeri võtmete ahel · kaitsjad, VMK, FVEK ja andmed](../pildid/16-b.png)
 
 Joonis: TPM, PIN, taastevõti või käivitusvõti avavad sama VMK, VMK avab FVEK-i ja FVEK krüpteerib andmeid. Kaitsjat vahetades ei pea ketast uuesti krüpteerima.
 
-**TPM** annab VMK välja ainult siis, kui arvuti käivitusahel (püsivara, Secure Boot, alglaadur) on täpselt sama nagu krüpteerimisel. TPM mõõdab käivitust registritesse (PCR – ingl *Platform Configuration Register*). Kui midagi muutub – BIOS-i uuendus, Secure Boot välja lülitatud, ketas teises arvutis, emaplaat vahetatud –, keeldub TPM võtit andmast ja arvuti küsib **48-kohalist taastevõtit**.
+**TPM** annab VMK välja ainult siis, kui arvuti käivitusahel (püsivara, Secure Boot, alglaadur) on täpselt sama nagu krüpteerimisel. TPM mõõdab käivitust registritesse (PCR – *Platform Configuration Register*). Kui midagi muutub – BIOS-i uuendus, Secure Boot välja lülitatud, ketas teises arvutis, emaplaat vahetatud –, keeldub TPM võtit andmast ja arvuti küsib **48-kohalist taastevõtit**.
 
 | Olukord | Mis juhtub |
 | --- | --- |
 | Tavaline käivitus | TPM annab võtme, kasutaja ei märka midagi |
 | Ketas varastati ja ühendati teise arvutisse | teises arvutis pole õiget TPM-i – andmed on loetamatud |
-| Ründaja käivitab arvuti Linuxi USB-pulgalt (USB – ingl *Universal Serial Bus*) | käivitusahel on muutunud – TPM võtit ei anna |
+| Ründaja käivitab arvuti Linuxi USB-pulgalt (USB – *Universal Serial Bus*) | käivitusahel on muutunud – TPM võtit ei anna |
 | BIOS-i uuendus või emaplaadi vahetus | arvuti küsib taastevõtit (BIOS-i uuendamisel peata BitLocker ajutiselt: `Suspend-BitLocker`) |
 | Varastatakse sisselülitatud, kuid lukustatud sülearvuti | TPM-üksi režiimis on võti mälus; tugevamaks kaitseks kasuta **TPM + PIN** |
 
@@ -144,19 +144,19 @@ Joonis: TPM, PIN, taastevõti või käivitusvõti avavad sama VMK, VMK avab FVEK
 
 | Lahendus | Kirjeldus | Näide |
 | --- | --- | --- |
-| DAS (Direct Attached Storage) | kettad otse serveris | serveri NVMe-kettad |
-| NAS (Network Attached Storage) | failitaseme jagamine võrgus | SMB- või NFS-ketas (NFS – ingl *Network File System*) |
-| SAN (Storage Area Network) | plokitaseme salvestusvõrk | iSCSI (ingl *Internet Small Computer Systems Interface*), Fibre Channel, NVMe-oF (ingl *NVMe over Fabrics*) |
+| DAS (*Direct Attached Storage*) | kettad otse serveris | serveri NVMe-kettad |
+| NAS (*Network Attached Storage*) | failitaseme jagamine võrgus | SMB- või NFS-ketas (NFS – *Network File System*) |
+| SAN (*Storage Area Network*) | plokitaseme salvestusvõrk | iSCSI (*Internet Small Computer Systems Interface*), Fibre Channel, NVMe-oF (*NVMe over Fabrics*) |
 | Hüperkonvergentne | arvutus ja salvestus samades sõlmedes | S2D, Azure Local, vSAN |
 | Pilvesalvestus | teenusena | Azure Files, OneDrive, SharePoint |
 
-**DAS, NAS või SAN?** Lihtne vahe: **NAS** jagab **faile** (arvuti näeb võrgukausta `\\server\jagatud`), **SAN** jagab **plokke** (arvuti näeb tavalist ketast, mille ise vormindab). SAN-i kasutavad virtualiseerimisklastrid ja andmebaasid, sest neile on vaja kiiret plokitaseme ligipääsu. **iSCSI**-s nimetatakse ketast kasutavat arvutit **initsiaatoriks** (initiator), ketast pakkuvat seadet **sihtmärgiks** (target) ja jagatud ketast **LUN**-iks (ingl *Logical Unit Number*).
+**DAS, NAS või SAN?** Lihtne vahe: **NAS** jagab **faile** (arvuti näeb võrgukausta `\\server\jagatud`), **SAN** jagab **plokke** (arvuti näeb tavalist ketast, mille ise vormindab). SAN-i kasutavad virtualiseerimisklastrid ja andmebaasid, sest neile on vaja kiiret plokitaseme ligipääsu. **iSCSI**-s nimetatakse ketast kasutavat arvutit **initsiaatoriks** (initiator), ketast pakkuvat seadet **sihtmärgiks** (target) ja jagatud ketast **LUN**-iks (*Logical Unit Number*).
 
 **Jagatud kausta õigused.** Windowsi failiserveris kehtivad korraga **jagamise õigused** (share permissions) ja **NTFS-õigused**. Võrgu kaudu ligi pääsedes kehtib neist **rangem**. Näiteks kui jagamisel on „Kõik: täielik juurdepääs“, kuid NTFS-is on õpilastel ainult „Lugemine“, saavad õpilased ainult lugeda. Tavaline praktika: jagamise õigused laiad (Autenditud kasutajad: muutmine) ja täpsed piirangud NTFS-is.
 
 **SMB 1.0** on vana ja ohtlik – selle haavatavust kasutas 2017. aastal lunavara WannaCry. Alates Windows 10 versioonist 1709 pole SMB1 vaikimisi paigaldatud; serverites kontrolli `Get-SmbServerConfiguration | Select EnableSMB1Protocol`.
 
-**SMB 3.x** failiteenus pakub krüpteerimist, allkirjastamist, mitmekanalit (multichannel) ja RDMA-d (ingl *Remote Direct Memory Access*). Windows Server 2025 toob **SMB over QUIC**-i (ingl *Quick UDP Internet Connections*, algne tähendus; praegu lihtsalt nimi) kõigisse väljaannetesse: failijagamine üle interneti ilma VPN-ita (ingl *Virtual Private Network*), TLS 1.3 (TLS – ingl *Transport Layer Security*) krüpteeringuga ([Petri](https://petri.com/windows-server-2025-public-preview/)). **Storage Replica** dubleerib köiteid teise serverisse või saidile.
+**SMB 3.x** failiteenus pakub krüpteerimist, allkirjastamist, mitmekanalit (multichannel) ja RDMA-d (*Remote Direct Memory Access*). Windows Server 2025 toob **SMB over QUIC**-i (*Quick UDP Internet Connections*, algne tähendus; praegu lihtsalt nimi) kõigisse väljaannetesse: failijagamine üle interneti ilma VPN-ita (*Virtual Private Network*), TLS 1.3 (TLS – *Transport Layer Security*) krüpteeringuga ([Petri](https://petri.com/windows-server-2025-public-preview/)). **Storage Replica** dubleerib köiteid teise serverisse või saidile.
 
 ### 16.4 Varundus
 
@@ -188,10 +188,10 @@ Joonis: täisvarundus kopeerib iga kord kõik; inkrementaalne ainult eelmise pä
 
 **RPO ja RTO** – kaks numbrit, millega varundusplaani hinnatakse:
 
-- **RPO** (Recovery Point Objective) – **kui palju andmeid võib kaduda**. Kui varundus tehakse kord ööpäevas kell 22, ja server läheb rikki järgmisel päeval kell 21, kaob peaaegu ööpäeva töö: RPO = 24 h.
-- **RTO** (Recovery Time Objective) – **kui kiiresti peab töö taastuma**. Kui 2 TB taastamine pilvest võtab 2 päeva, kuid kool vajab e-päevikut tunni jooksul, plaan ei tööta.
+- **RPO** (*Recovery Point Objective*) – **kui palju andmeid võib kaduda**. Kui varundus tehakse kord ööpäevas kell 22, ja server läheb rikki järgmisel päeval kell 21, kaob peaaegu ööpäeva töö: RPO = 24 h.
+- **RTO** (*Recovery Time Objective*) – **kui kiiresti peab töö taastuma**. Kui 2 TB taastamine pilvest võtab 2 päeva, kuid kool vajab e-päevikut tunni jooksul, plaan ei tööta.
 
-**Varikoopia (VSS – ingl *Volume Shadow Copy Service*) ja hetktõmmis ei ole varukoopia.** Need asuvad samal kettal: kui ketas läheb rikki või lunavara kustutab varikoopiad (`vssadmin delete shadows`), kaovad ka need. Need sobivad kiireks taastamiseks („Eelmised versioonid“), mitte ainsaks kaitseks.
+**Varikoopia (VSS – *Volume Shadow Copy Service*) ja hetktõmmis ei ole varukoopia.** Need asuvad samal kettal: kui ketas läheb rikki või lunavara kustutab varikoopiad (`vssadmin delete shadows`), kaovad ka need. Need sobivad kiireks taastamiseks („Eelmised versioonid“), mitte ainsaks kaitseks.
 
 > 🖱️ **Proovi ise:** [varundusplaani koostaja](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/16-salvestushaldus.html#varundus) ja [milline kaitse aitab?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/16-salvestushaldus.html#kaitse)
 
@@ -200,13 +200,13 @@ Joonis: täisvarundus kopeerib iga kord kõik; inkrementaalne ainult eelmise pä
 | | Windows | Linux | macOS |
 | --- | --- | --- | --- |
 | Kettad ja partitsioonid | Kettahaldus, `diskpart`, `Get-Disk` | `lsblk`, `fdisk`, `parted` | Kettautiliit, `diskutil list` |
-| Paindlikud köited | Storage Spaces | **LVM** (ingl *Logical Volume Manager*; loogilised köited, mida saab suurendada) | APFS-i konteiner (köited jagavad ruumi) |
-| Tarkvaraline RAID | Storage Spaces | `mdadm`, ZFS (ingl *Zettabyte File System*, algne nimi), Btrfs | AppleRAID (`diskutil appleRAID`) |
-| Ketta krüpteerimine | BitLocker | LUKS (ingl *Linux Unified Key Setup*; `cryptsetup`) | FileVault |
+| Paindlikud köited | Storage Spaces | **LVM** (*Logical Volume Manager*; loogilised köited, mida saab suurendada) | APFS-i konteiner (köited jagavad ruumi) |
+| Tarkvaraline RAID | Storage Spaces | `mdadm`, ZFS (*Zettabyte File System*, algne nimi), Btrfs | AppleRAID (`diskutil appleRAID`) |
+| Ketta krüpteerimine | BitLocker | LUKS (*Linux Unified Key Setup*; `cryptsetup`) | FileVault |
 | Varundus | Windows Server Backup, failiajalugu | `rsync`, Borg, restic, Timeshift | Time Machine |
 | Hetktõmmised | VSS | LVM, Btrfs, ZFS | APFS-i hetktõmmised |
 
-**ZFS** (Linuxis ja FreeBSD-s) ühendab failisüsteemi ja RAID-i ühte: kontrollsummad tuvastavad vaikse riknemise ja hetktõmmised on hetkelised – sarnaselt ReFS-i (ingl *Resilient File System*) ja Storage Spaces’i kombinatsiooniga.
+**ZFS** (Linuxis ja FreeBSD-s) ühendab failisüsteemi ja RAID-i ühte: kontrollsummad tuvastavad vaikse riknemise ja hetktõmmised on hetkelised – sarnaselt ReFS-i (*Resilient File System*) ja Storage Spaces’i kombinatsiooniga.
 
 ### Näide: kooli failiserveri kolm halba päeva
 
@@ -214,7 +214,7 @@ Failiserveris on neli 4 TB ketast Storage Spaces’i kahesuunalises peeglis (kas
 
 1. **Esmaspäev – ketas rikkis.** `Get-PhysicalDisk` näitab üht ketast olekus *Lost Communication*, virtuaalketas on *Degraded*, kuid kasutajad töötavad edasi. Administraator vahetab ketta ja Storage Spaces taastab peegli. **RAID töötas.**
 2. **Kolmapäev – lunavara.** Õpetaja arvutist käivitatud pahavara krüpteerib võrguketta failid. Peegel kirjutas krüpteeritud failid hetkega mõlemale kettale ja ka öine NAS-i koopia võib olla rikutud. Taastatakse võrguühenduseta kettalt eelmise nädala seisu ja varikoopiatest. **Aitas ainult 3-2-1-1-0.**
-3. **Reede – emaplaadi vahetus.** Pärast hooldust küsib arvuti BitLockeri taastevõtit, sest TPM on uus. Võti leitakse Entra ID-st (või AD-st (ingl *Active Directory*)). Kui seda poleks salvestatud, oleksid andmed kadunud ka omanikule.
+3. **Reede – emaplaadi vahetus.** Pärast hooldust küsib arvuti BitLockeri taastevõtit, sest TPM on uus. Võti leitakse Entra ID-st (või AD-st (*Active Directory*)). Kui seda poleks salvestatud, oleksid andmed kadunud ka omanikule.
 
 **Õppetund:** iga kaitsemeede kaitseb kindla ohu eest – RAID riistvararikke, varundus kustutamise ja lunavara, BitLocker varguse eest.
 
@@ -253,7 +253,7 @@ Failiserveris on neli 4 TB ketast Storage Spaces’i kahesuunalises peeglis (kas
 
 1. Mis on MBR-ketta maksimaalne suurus? a) 2 TB b) 16 TB c) 256 TB d) piiramatu
 2. Milline RAID-tase ei talu ühtegi ketta riket? a) RAID 0 b) RAID 1 c) RAID 5 d) RAID 6
-3. Mis protokoll võimaldab SMB-failijagamist üle interneti ilma VPN-ita? a) NFS b) iSCSI c) SMB over QUIC d) FTP
+3. Mis protokoll võimaldab SMB-failijagamist üle interneti ilma VPN-ita? a) NFS b) iSCSI c) SMB over QUIC d) FTP (*File Transfer Protocol*)
 4. Mis kaitseb BitLockeri võtit vaikimisi? a) parool b) TPM c) USB-võti d) Secure Boot
 5. Mitu 4 TB ketast on vaja RAID 6 jaoks, et kasutatav maht oleks 8 TB? a) 2 b) 3 c) 4 d) 6
 6. Milline varundus kopeerib muutused alates viimasest täisvarundusest? a) täis b) inkrementaalne c) diferentsiaalne d) peegeldus

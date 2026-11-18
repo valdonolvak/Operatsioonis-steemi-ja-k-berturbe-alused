@@ -2,36 +2,36 @@
 
 ## 18. Windowsi turvalisus
 
-Windowsi turvamudel põhineb kolmel sambal: **identiteet** (kes sa oled – SID (ingl *Security Identifier*) ja token), **juurdepääsukontroll** (mida sa tohid – turvakirjeldaja ja ACL – ingl *Access Control List*) ning **audit** (mida sa tegid – turvalogi). 2026. aasta Windows lisab neile riistvaralise usaldusahela (TPM – ingl *Trusted Platform Module*, Pluton, Secure Boot), paroolivaba autentimise ja rakenduste kontrolli.
+Windowsi turvamudel põhineb kolmel sambal: **identiteet** (kes sa oled – SID (*Security Identifier*) ja token), **juurdepääsukontroll** (mida sa tohid – turvakirjeldaja ja ACL – *Access Control List*) ning **audit** (mida sa tegid – turvalogi). 2026. aasta Windows lisab neile riistvaralise usaldusahela (TPM – *Trusted Platform Module*, Pluton, Secure Boot), paroolivaba autentimise ja rakenduste kontrolli.
 
 **Kuidas seda peatükki lugeda?** Turvalisus on lai teema ja koosneb paljudest mõistetest. Need on tegelikult seotud ühe lihtsa küsimusega: **kes tohib mida teha ja kuidas me seda kontrollime?** Peatükk liigub järgmises järjekorras:
 
 1. miks turvalisust vaja on ja millised on põhimõtted (18.1);
 2. millised Windowsi osad turvalisuse eest vastutavad (18.2);
-3. kuidas Windows teab, **kes** sa oled (SID, token, autentimine) ja **mida** sa tohid (ACL, UAC – ingl *User Account Control*) (18.3);
+3. kuidas Windows teab, **kes** sa oled (SID, token, autentimine) ja **mida** sa tohid (ACL, UAC – *User Account Control*) (18.3);
 4. kuidas kaitsta pahavara eest (18.4–18.5);
 5. kuidas kaitsta võrgust tulevate rünnete eest (18.6);
 6. miks uuendused on kõige olulisem kaitse (18.7).
 
-> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html). Lehel on CIA-harjutus (CIA – ingl *Confidentiality, Integrity, Availability*), SID-i lahtiharutaja, juurdepääsutokeni uurija, DACL-i (ingl *Discretionary Access Control List*) kontrolli simulaator samm-sammult, UAC-i ja administraatori kaitse võrdlus, autentimismeetodite ja rünnete maatriks, lunavararünnaku ahel koos kaitsekihtidega, tulemüürireeglite simulaator ja turvalogi analüüs.
+> 🖱️ **Proovi ise:** [interaktiivne õpileht](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html). Lehel on CIA-harjutus (CIA – *Confidentiality, Integrity, Availability*), SID-i lahtiharutaja, juurdepääsutokeni uurija, DACL-i (*Discretionary Access Control List*) kontrolli simulaator samm-sammult, UAC-i ja administraatori kaitse võrdlus, autentimismeetodite ja rünnete maatriks, lunavararünnaku ahel koos kaitsekihtidega, tulemüürireeglite simulaator ja turvalogi analüüs.
 
 ### 18.1 Turvalisus arvutisüsteemides
 
-Infoturbe eesmärgid on **konfidentsiaalsus**, **terviklus** ja **käideldavus** (CIA). OS (ingl *Operating System*) peab kaitsma andmeid teiste kasutajate, pahavara ja füüsilise varguse eest. Iga OS-i turvamehhanism vastab küsimusele: kes, mida, millise objektiga ja kas see logitakse.
+Infoturbe eesmärgid on **konfidentsiaalsus**, **terviklus** ja **käideldavus** (CIA). OS (*Operating System*) peab kaitsma andmeid teiste kasutajate, pahavara ja füüsilise varguse eest. Iga OS-i turvamehhanism vastab küsimusele: kes, mida, millise objektiga ja kas see logitakse.
 
 **CIA-kolmik koolinäidetega:**
 
 | Eesmärk | Tähendus | Mis juhtub, kui see rikutakse? | Kaitse |
 | --- | --- | --- | --- |
-| **Konfidentsiaalsus** (confidentiality) | andmeid näevad ainult need, kellel on õigus | õpilaste hinded või terviseandmed lekivad internetti | õigused (ACL), krüpteerimine, MFA (ingl *Multi-Factor Authentication*) |
+| **Konfidentsiaalsus** (confidentiality) | andmeid näevad ainult need, kellel on õigus | õpilaste hinded või terviseandmed lekivad internetti | õigused (ACL), krüpteerimine, MFA (*Multi-Factor Authentication*) |
 | **Terviklus** (integrity) | andmeid ei muudeta loata ega märkamatult | õpilane muudab e-päevikus oma hinnet; pahavara muudab süsteemifaili | õigused, digiallkirjad, auditilogi, Secure Boot |
-| **Käideldavus** (availability) | andmed ja teenused on vajadusel kättesaadavad | lunavara krüpteerib failiserveri; e-päevik on rünnaku tõttu maas | varundus, RAID (ingl *Redundant Array of Independent Disks*), uuendused, DDoS-kaitse (DDoS – ingl *Distributed Denial of Service*) |
+| **Käideldavus** (availability) | andmed ja teenused on vajadusel kättesaadavad | lunavara krüpteerib failiserveri; e-päevik on rünnaku tõttu maas | varundus, RAID (*Redundant Array of Independent Disks*), uuendused, DDoS-kaitse (DDoS – *Distributed Denial of Service*) |
 
 Sageli lisatakse veel **autentsus** (kas teade on tõesti saatjalt) ja **mittesalgamine** (saatja ei saa hiljem eitada, et saatis – digiallkiri).
 
 **Kolm „A“-d** – juurdepääsukontrolli etapid:
 
-1. **Autentimine** (authentication) – *kes sa oled?* Kasutaja tõestab oma identiteeti: parool, PIN (ingl *Personal Identification Number*), sõrmejälg, pääsvõti.
+1. **Autentimine** (authentication) – *kes sa oled?* Kasutaja tõestab oma identiteeti: parool, PIN (*Personal Identification Number*), sõrmejälg, pääsvõti.
 2. **Autoriseerimine** (authorization) – *mida sa tohid?* Süsteem kontrollib õigusi: kas Mari tohib faili muuta?
 3. **Arvestus / audit** (accounting) – *mida sa tegid?* Tegevused logitakse, et hiljem saaks uurida.
 
@@ -53,16 +53,16 @@ Joonis: turvalisus koosneb kihtidest – inimestest riistvarani. Õngitsuskirjag
 
 ### 18.2 Turvalisus Windows NT-s
 
-NT (ingl *New Technology*) turvakomponendid:
+NT (*New Technology*) turvakomponendid:
 
 | Komponent | Roll |
 | --- | --- |
-| SRM (Security Reference Monitor) | tuumas: kontrollib iga objekti avamist, loob auditikirjeid |
-| LSA (ingl *Local Security Authority*; `lsass.exe`) | autentimine, turvapoliitika, tokenite loomine |
-| SAM (ingl *Security Account Manager*) | kohalike kontode andmebaas (registrisse peidetud) |
+| SRM (*Security Reference Monitor*) | tuumas: kontrollib iga objekti avamist, loob auditikirjeid |
+| LSA (*Local Security Authority*; `lsass.exe`) | autentimine, turvapoliitika, tokenite loomine |
+| SAM (*Security Account Manager*) | kohalike kontode andmebaas (registrisse peidetud) |
 | Active Directory / Entra ID | domeeni- ja pilvekontod |
 | Winlogon ja LogonUI | sisselogimise kasutajaliides |
-| Credential Guard (`LsaIso.exe`) | parooliräsid ja Kerberose piletid VTL 1-s (VTL – ingl *Virtual Trust Level*) |
+| Credential Guard (`LsaIso.exe`) | parooliräsid ja Kerberose piletid VTL 1-s (VTL – *Virtual Trust Level*) |
 
 **Mis toimub sisselogimisel?** See protsess seob kõik komponendid kokku:
 
@@ -77,7 +77,7 @@ NT (ingl *New Technology*) turvakomponendid:
 
 ### 18.3 Turvamehhanismid Windowsis
 
-**SID** (Security Identifier) on kasutaja, rühma või arvuti unikaalne tunnus, nt `S-1-5-21-…-1001`. Tuntud SID-id: `S-1-5-18` (LocalSystem), `S-1-5-32-544` (Administrators).
+**SID** (*Security Identifier*) on kasutaja, rühma või arvuti unikaalne tunnus, nt `S-1-5-21-…-1001`. Tuntud SID-id: `S-1-5-18` (LocalSystem), `S-1-5-32-544` (Administrators).
 
 **Miks SID, mitte nimi?** Nime saab muuta (Mari abiellub ja temast saab Mari Tamm), kuid kõik õigused peavad alles jääma. Seepärast salvestatakse ACL-idesse SID, mitte nimi. Kui konto kustutada ja luua uuesti sama nimega, saab see **uue SID-i** – vanad õigused enam ei kehti. (Seepärast näeb vahel õiguste loendis tundmatut SID-i: konto on kustutatud.)
 
@@ -91,7 +91,7 @@ S - 1 - 5 - 21-3623811015-3361044348-30300820 - 1013
 └ „SID“
 ```
 
-**RID** (Relative ID) on viimane number. Mõned on alati samad: **500** – sisseehitatud Administrator, **501** – Guest, **512** – Domain Admins, **513** – Domain Users; tavakasutajad alates **1000** (domeenis tavaliselt 1100+).
+**RID** (*Relative Identifier*) on viimane number. Mõned on alati samad: **500** – sisseehitatud Administrator, **501** – Guest, **512** – Domain Admins, **513** – Domain Users; tavakasutajad alates **1000** (domeenis tavaliselt 1100+).
 
 | Tuntud SID | Kes see on |
 | --- | --- |
@@ -107,7 +107,7 @@ S - 1 - 5 - 21-3623811015-3361044348-30300820 - 1013
 
 **Juurdepääsutoken** (access token) luuakse sisselogimisel ja kinnitatakse iga protsessi külge. Sisaldab kasutaja SID-i, rühmade SID-e, privileege (nt `SeDebugPrivilege`, `SeBackupPrivilege`) ja **terviklikkuse taset** (Low, Medium, High, System).
 
-**Võrdlus:** token on nagu töötaja **ID-kaart**, mida ta kogu päeva kaasas kannab. Kaardil on nimi (kasutaja SID), osakonnad (rühmade SID-id), erioskused (privileegid) ja turvatase (terviklikkus). Iga ukse juures (objekti avamisel) näitab ta kaarti ja uks (SRM) otsustab, kas lasta sisse. Kaarti ei uuendata päeva jooksul – **kui administraator lisab kasutaja rühma, kehtib see alles pärast uut sisselogimist**, sest token luuakse sisselogimisel. See on tõrkeotsingus väga sage põhjus, miks „õigused ei hakka tööle“.
+**Võrdlus:** token on nagu töötaja **ID-kaart** (ID – *identity card*), mida ta kogu päeva kaasas kannab. Kaardil on nimi (kasutaja SID), osakonnad (rühmade SID-id), erioskused (privileegid) ja turvatase (terviklikkus). Iga ukse juures (objekti avamisel) näitab ta kaarti ja uks (SRM) otsustab, kas lasta sisse. Kaarti ei uuendata päeva jooksul – **kui administraator lisab kasutaja rühma, kehtib see alles pärast uut sisselogimist**, sest token luuakse sisselogimisel. See on tõrkeotsingus väga sage põhjus, miks „õigused ei hakka tööle“.
 
 **Privileegid** on õigused teha **süsteemi tasemel** toiminguid (mitte konkreetse failiga):
 
@@ -120,7 +120,7 @@ S - 1 - 5 - 21-3623811015-3361044348-30300820 - 1013
 | `SeImpersonatePrivilege` | tegutseda teise kasutaja nimel | teenustel vajalik, kuid „Potato“-rünnetega saab SYSTEM-õigused |
 | `SeShutdownPrivilege` | arvuti välja lülitada | tavaline, ohutu |
 
-**Terviklikkuse tasemed** (Mandatory Integrity Control, MIC) lisavad õigustele veel ühe kontrolli: **madalama tasemega protsess ei tohi kirjutada kõrgema tasemega objekti** – isegi kui ACL lubaks.
+**Terviklikkuse tasemed** (*Mandatory Integrity Control*, MIC) lisavad õigustele veel ühe kontrolli: **madalama tasemega protsess ei tohi kirjutada kõrgema tasemega objekti** – isegi kui ACL lubaks.
 
 | Tase | Kes | Näide |
 | --- | --- | --- |
@@ -133,7 +133,7 @@ S - 1 - 5 - 21-3623811015-3361044348-30300820 - 1013
 
 > 🖱️ **Proovi ise:** [juurdepääsutokeni uurija](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html#token)
 
-**Turvakirjeldaja** (security descriptor) on igal objektil: omanik, **DACL** (kes mida tohib – ACE-de (ingl *Access Control Entry*) loend „luba“/„keela“) ja **SACL** (ingl *System Access Control List*; mida auditeerida). Juurdepääsu kontrollil võrdleb SRM tokenit DACL-iga; esimene sobiv keelav ACE võidab.
+**Turvakirjeldaja** (security descriptor) on igal objektil: omanik, **DACL** (kes mida tohib – ACE-de (*Access Control Entry*) loend „luba“/„keela“) ja **SACL** (*System Access Control List*; mida auditeerida). Juurdepääsu kontrollil võrdleb SRM tokenit DACL-iga; esimene sobiv keelav ACE võidab.
 
 ![juurdepääsu kontroll · token, turvakirjeldaja, SRM, tulemus ja audit](../pildid/18-a.png)
 
@@ -176,7 +176,7 @@ D:\Hinded KOOL\Õpetajad:(OI)(CI)(M)
 
 | Sündmus | Tähendus | Millele viitab |
 | --- | --- | --- |
-| **4624** | edukas sisselogimine (tüüp 2 – klaviatuur, 3 – võrk, 10 – RDP – ingl *Remote Desktop Protocol*) | kes ja kust sisse logis |
+| **4624** | edukas sisselogimine (tüüp 2 – klaviatuur, 3 – võrk, 10 – RDP – *Remote Desktop Protocol*) | kes ja kust sisse logis |
 | **4625** | ebaõnnestunud sisselogimine | paljud järjest → parooli äraarvamine |
 | **4740** | konto lukustati | ründe või unustatud parooli tunnus |
 | **4672** | sisselogimisel anti eriõigused (admin) | administraatori tegevus |
@@ -187,9 +187,9 @@ D:\Hinded KOOL\Õpetajad:(OI)(CI)(M)
 
 > 🖱️ **Proovi ise:** [DACL-i kontrolli simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html#acl) ja [turvalogi analüüs](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html#logi)
 
-**UAC** (User Account Control): administraator töötab vaikimisi kahe tokeniga – tavalisega ja täieliku administraatori omaga, mida kasutatakse ainult kinnituse järel.
+**UAC** (*User Account Control*): administraator töötab vaikimisi kahe tokeniga – tavalisega ja täieliku administraatori omaga, mida kasutatakse ainult kinnituse järel.
 
-**Miks UAC loodi?** Windows XP (ingl *eXPerience*) ajal töötasid peaaegu kõik kasutajad administraatoritena. Iga programm – ka pahavara – sai kohe täielikud õigused. Windows Vista (2007) tõi UAC-i: administraator logib sisse **jagatud tokeniga** (split token). Igapäevased programmid töötavad tavakasutaja tokeniga (Medium). Kui programm vajab administraatori õigusi, kuvatakse **turvalisel töölaual** (ekraan tumeneb, teised programmid ei saa nuppu vajutada) küsimus „Kas lubate…?“. Alles siis kasutatakse täielikku tokenit (High).
+**Miks UAC loodi?** Windows XP (*eXPerience*) ajal töötasid peaaegu kõik kasutajad administraatoritena. Iga programm – ka pahavara – sai kohe täielikud õigused. Windows Vista (2007) tõi UAC-i: administraator logib sisse **jagatud tokeniga** (split token). Igapäevased programmid töötavad tavakasutaja tokeniga (Medium). Kui programm vajab administraatori õigusi, kuvatakse **turvalisel töölaual** (ekraan tumeneb, teised programmid ei saa nuppu vajutada) küsimus „Kas lubate…?“. Alles siis kasutatakse täielikku tokenit (High).
 
 **UAC-i piirangud:** Microsoft ise ütleb, et UAC **ei ole turvapiir** – see on mugavusfunktsioon, mis vähendab vahingut. Kasutajad harjuvad „Jah“ vajutama ja on teada palju viise, kuidas pahavara saab UAC-st mööda hiilida (UAC bypass), sest tavaline ja administraatori token kuuluvad samale kontole ja jagavad sama profiili. **Administraatori kaitse** (Administrator protection) on UAC-i järglane: kasutajal pole püsivaid administraatoriõigusi, vaid iga tõstmise jaoks luuakse Windows Helloga kinnitatud ajutine eraldi konto token. Funktsioon jõudis Windows 11-sse 2026. aasta augusti lõpus vaikimisi väljalülitatuna ([Itelio / Microsoft Message Center](https://www.itelio.com/en/microsoft-message-center/mc1444375)), ja oktoobri 2026 turvauuendusest on see Windows 11 turvabaasjoontes vaikimisi sisse lülitatud ([Pupuweb / MC1506291](https://pupuweb.com/mc1506291-manage-administrator-protection-within-windows-11-security-baseline/)).
 
@@ -201,25 +201,25 @@ D:\Hinded KOOL\Õpetajad:(OI)(CI)(M)
 | midagi, mis sul **on** | telefon, turvavõti, TPM-iga arvuti, ID-kaart |
 | midagi, mis sa **oled** | sõrmejälg, nägu |
 
-Kõik MFA-meetodid pole võrdsed. SMS-koodi (SMS – ingl *Short Message Service*) saab õngitsuslehele sisestada samamoodi nagu parooli ja ründaja võib telefoninumbri üle võtta (SIM-vahetus (SIM – ingl *Subscriber Identity Module*)). Rakenduse teavituse puhul saadab ründaja vahel kümneid päringuid, kuni kasutaja tüdineb ja vajutab „Kinnita“ (*MFA fatigue*) – seepärast küsib Microsoft Authenticator numbrit, mis on ekraanil. **Õngitsuskindlad** on ainult meetodid, mis on seotud õige veebilehe aadressiga: pääsvõtmed, FIDO2-turvavõtmed (FIDO – ingl *Fast Identity Online*), Windows Hello for Business, ID-kaart.
+Kõik MFA-meetodid pole võrdsed. SMS-koodi (SMS – *Short Message Service*) saab õngitsuslehele sisestada samamoodi nagu parooli ja ründaja võib telefoninumbri üle võtta (SIM-vahetus (SIM – *Subscriber Identity Module*)). Rakenduse teavituse puhul saadab ründaja vahel kümneid päringuid, kuni kasutaja tüdineb ja vajutab „Kinnita“ (*MFA fatigue*) – seepärast küsib Microsoft Authenticator numbrit, mis on ekraanil. **Õngitsuskindlad** on ainult meetodid, mis on seotud õige veebilehe aadressiga: pääsvõtmed, FIDO2-turvavõtmed (FIDO – *Fast Identity Online*), Windows Hello for Business, ID-kaart.
 
 
 - **Windows Hello / Windows Hello for Business** – PIN, näo- või sõrmejäljetuvastus; võti on seotud TPM-iga, parool võrgus ei liigu;
 - **pääsvõtmed** (passkeys, FIDO2) – paroolivaba ja õngitsuskindel veebiautentimine;
-- **LAPS** (ingl *Local Administrator Password Solution*) – iga arvuti kohaliku administraatori parool on erinev ja vahetub automaatselt (Windows LAPS on OS-i sisse ehitatud);
-- **LSA kaitse** – lsass.exe töötab kaitstud protsessina (PPL – ingl *Protected Process Light*), mis takistab paroolide varastamist mälust.
+- **LAPS** (*Local Administrator Password Solution*) – iga arvuti kohaliku administraatori parool on erinev ja vahetub automaatselt (Windows LAPS on OS-i sisse ehitatud);
+- **LSA kaitse** – lsass.exe töötab kaitstud protsessina (PPL – *Protected Process Light*), mis takistab paroolide varastamist mälust.
 
 **Miks on Windows Hello PIN turvalisem kui parool?** Tundub vastupidi – 6-kohaline PIN on lühem. Kuid PIN on **seotud selle arvuti TPM-iga** ja kehtib ainult selles seadmes. Parooli saab ründaja kasutada kõikjal maailmas; PIN-i saab kasutada ainult siis, kui ründaja istub sinu arvuti taga. TPM kaitseb ka äraarvamise eest: pärast mitut valet katset lukustub ta ajutiselt.
 
 **Miks on pääsvõti õngitsuskindel?** Pääsvõti on krüptograafiline võtmepaar: privaatvõti jääb seadmesse, avalik võti on teenuse juures. Pääsvõti on **seotud domeeniga** (nt `login.microsoftonline.com`). Kui õngitsusleht on `login-microsoft0nline.com`, ei paku brauser sellele pääsvõtit üldse – kasutaja ei saa seda kogemata ründajale anda, isegi kui leht näeb täpselt sama välja.
 
-**Miks LAPS?** Kui kõigil kooli 200 arvutil on sama kohaliku administraatori parool ja ründaja saab selle ühest arvutist (nt räsi Mimikatziga), pääseb ta kohe kõigisse 200 arvutisse (**külgliikumine**). LAPS teeb iga arvuti parooli erinevaks ja vahetab seda regulaarselt; parooli näevad AD-s (ingl *Active Directory*) või Entra ID-s ainult volitatud administraatorid.
+**Miks LAPS?** Kui kõigil kooli 200 arvutil on sama kohaliku administraatori parool ja ründaja saab selle ühest arvutist (nt räsi Mimikatziga), pääseb ta kohe kõigisse 200 arvutisse (**külgliikumine**). LAPS teeb iga arvuti parooli erinevaks ja vahetab seda regulaarselt; parooli näevad AD-s (*Active Directory*) või Entra ID-s ainult volitatud administraatorid.
 
 > 🖱️ **Proovi ise:** [UAC ja administraatori kaitse](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html#uac) ning [millise ründe vastu milline autentimine aitab?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/18-turvalisus.html#auth)
 
 **Riistvaraline usaldusahel:**
 
-- **UEFI Secure Boot** – käivitatakse ainult allkirjastatud alglaadur;
+- **UEFI Secure Boot (UEFI – *Unified Extensible Firmware Interface*)** – käivitatakse ainult allkirjastatud alglaadur;
 - **Measured Boot ja TPM** – käivitusahela mõõtmised salvestatakse TPM-i, BitLocker ja kaugkinnitus (attestation) kasutavad neid;
 - **Microsoft Pluton** – protsessorisse integreeritud turvaprotsessor, mille püsivara uuendatakse Windows Update’i kaudu ([Redmond Magazine](https://redmondmag.com/articles/2022/04/07/microsoft-outlines-new-security-protections-coming-to--windows-11.aspx)).
 
@@ -227,7 +227,7 @@ Kõik MFA-meetodid pole võrdsed. SMS-koodi (SMS – ingl *Short Message Service
 
 Joonis: Secure Boot peatab allkirjata koodi, Measured Boot salvestab iga sammu räsi TPM-i. Kui keegi muudab alglaadurit, ei klapi mõõtmised – BitLocker küsib taastevõtit ja Intune märgib seadme mitteühilduvaks.
 
-**Tähelepanu 2026: Secure Booti sertifikaatide vahetus.** 2011. aastal väljastatud Microsofti Secure Booti sertifikaadid aeguvad: KEK (ingl *Key Exchange Key*) CA (ingl *Certificate Authority*) 2011 24. juunil, UEFI (ingl *Unified Extensible Firmware Interface*) CA 2011 27. juunil ja Windows Production PCA 2011 19. oktoobril 2026; asemele tulevad 2023. aasta sertifikaadid ([Microsoft Support](https://support.microsoft.com/help/5062710), [UW–Madison KB](https://kb.wisc.edu/159935)). Seade, mis uusi sertifikaate ei saa, ei saa enam Secure Booti ja alglaaduri turvaparandusi. Kontroll PowerShellis on praktilises ülesandes.
+**Tähelepanu 2026: Secure Booti sertifikaatide vahetus.** 2011. aastal väljastatud Microsofti Secure Booti sertifikaadid aeguvad: KEK (*Key Exchange Key*) CA (*Certificate Authority*) 2011 24. juunil, UEFI (*Unified Extensible Firmware Interface*) CA 2011 27. juunil ja Windows Production PCA 2011 19. oktoobril 2026; asemele tulevad 2023. aasta sertifikaadid ([Microsoft Support](https://support.microsoft.com/help/5062710), [UW–Madison KB](https://kb.wisc.edu/159935)). Seade, mis uusi sertifikaate ei saa, ei saa enam Secure Booti ja alglaaduri turvaparandusi. Kontroll PowerShellis on praktilises ülesandes.
 
 ### 18.4 Kaitse nuhkvara ja pahavara eest
 
@@ -235,40 +235,40 @@ Algse õpiku Windows Defender on nüüd **Microsoft Defender Antivirus**, mis ka
 
 - allkirju ja heuristikat;
 - **pilvekaitset** ja masinõpet – tundmatu fail saadetakse sekunditega pilve analüüsiks;
-- **käitumisjälgimist** ja **AMSI**-t (Antimalware Scan Interface) – skriptid (PowerShell, VBA – ingl *Visual Basic for Applications*, JavaScript) kontrollitakse enne käivitamist ka siis, kui need on hajutatud;
-- **ründepinna vähendamise reegleid** (ASR – ingl *Attack Surface Reduction*) – nt keelab Office’il lapsprotsesside loomise;
+- **käitumisjälgimist** ja **AMSI**-t (*Antimalware Scan Interface*) – skriptid (PowerShell, VBA – *Visual Basic for Applications*, JavaScript) kontrollitakse enne käivitamist ka siis, kui need on hajutatud;
+- **ründepinna vähendamise reegleid** (ASR – *Attack Surface Reduction*) – nt keelab Office’il lapsprotsesside loomise;
 - **kontrollitud kaustale juurdepääsu** – lunavarakaitse;
 - **rikkumiskaitset** (Tamper Protection) – pahavara ei saa Defenderit välja lülitada.
 
 Organisatsioonides lisandub **EDR** (nt Microsoft Defender for Endpoint), mis kogub telemeetriat ja võimaldab intsidendile reageerida.
 
-**Viirusetõrje vs EDR.** Klassikaline viirusetõrje küsib: „Kas see fail on pahavara?“ – ja vastab allkirjade ning heuristika põhjal. Kaasaegne ründaja kasutab aga sageli täiesti legaalseid tööriistu (PowerShell, RDP, varundustarkvara), mida viirusetõrje ei saa blokeerida. **EDR** (Endpoint Detection and Response) kogub kõigi arvutite tegevuste kohta andmeid (protsessid, võrguühendused, sisselogimised) ja otsib **käitumismustreid**: „Word käivitas PowerShelli, mis laadis internetist faili ja proovis lugeda lsass-i mälu“. Iga samm eraldi võib olla süütu, koos on see rünnak. EDR võimaldab ka arvuti võrgust eraldada ühe klõpsuga.
+**Viirusetõrje vs EDR.** Klassikaline viirusetõrje küsib: „Kas see fail on pahavara?“ – ja vastab allkirjade ning heuristika põhjal. Kaasaegne ründaja kasutab aga sageli täiesti legaalseid tööriistu (PowerShell, RDP, varundustarkvara), mida viirusetõrje ei saa blokeerida. **EDR** (*Endpoint Detection and Response*) kogub kõigi arvutite tegevuste kohta andmeid (protsessid, võrguühendused, sisselogimised) ja otsib **käitumismustreid**: „Word käivitas PowerShelli, mis laadis internetist faili ja proovis lugeda lsass-i mälu“. Iga samm eraldi võib olla süütu, koos on see rünnak. EDR võimaldab ka arvuti võrgust eraldada ühe klõpsuga.
 
 **ASR-reeglite näited** (ründepinna vähendamine):
 
 - Office’i rakendused ei tohi luua lapsprotsesse (makro ei saa käivitada PowerShelli);
 - e-posti klient ei tohi käivitada käivitatavaid faile;
 - keela lsass-ist mandaatide varastamine;
-- keela allkirjastamata protsessid USB-lt (ingl *Universal Serial Bus*);
+- keela allkirjastamata protsessid USB-lt (*Universal Serial Bus*);
 - keela haavatavate allkirjastatud draiverite kasutamine.
 
 **Kontrollitud kaustale juurdepääs** lubab kaustu `Dokumendid`, `Pildid` jne muuta ainult usaldusväärsetel programmidel. Kui tundmatu programm (nt lunavara) proovib faile krüpteerida, keelatakse see.
 
 **Rakenduste kontroll:**
 
-- **Smart App Control** – lubab käivitada ainult allkirjastatud või pilve AI-mudeli (AI – ingl *Artificial Intelligence*) järgi usaldusväärseid rakendusi ning blokeerib internetist tulnud skriptid; saadaval puhtal paigaldusel ([Dark Reading](https://www.darkreading.com/remote-workforce/microsoft-details-new-security-features-for-windows-11), [Petri](https://petri.com/windows-11-2022-update-security-features/));
-- **App Control for Business** (endine WDAC – ingl *Windows Defender Application Control*) ja **AppLocker** – organisatsiooni lubatud rakenduste poliitika;
+- **Smart App Control** – lubab käivitada ainult allkirjastatud või pilve AI-mudeli (AI – *Artificial Intelligence*) järgi usaldusväärseid rakendusi ning blokeerib internetist tulnud skriptid; saadaval puhtal paigaldusel ([Dark Reading](https://www.darkreading.com/remote-workforce/microsoft-details-new-security-features-for-windows-11), [Petri](https://petri.com/windows-11-2022-update-security-features/));
+- **App Control for Business** (endine WDAC – *Windows Defender Application Control*) ja **AppLocker** – organisatsiooni lubatud rakenduste poliitika;
 - **haavatavate draiverite blokeerimisloend** – vaikimisi sees;
 - **SmartScreen** – hoiatab tundmatute allalaadimiste ja õngitsuslehtede eest.
 
 ### 18.5 Viirusekaitse
 
-Pahavara liigid: viirus (nakatab faile), uss (levib ise võrgus), troojalane (maskeerub kasulikuks), lunavara (krüpteerib ja väljapressib), nuhkvara, juurkomplekt (rootkit, peidab end tuumas), botid. Kaasaegne pahavara on sageli **failivaba**: kasutab PowerShelli, WMI-d (ingl *Windows Management Instrumentation*) ja teisi süsteemi enda tööriistu („living off the land“).
+Pahavara liigid: viirus (nakatab faile), uss (levib ise võrgus), troojalane (maskeerub kasulikuks), lunavara (krüpteerib ja väljapressib), nuhkvara, juurkomplekt (rootkit, peidab end tuumas), botid. Kaasaegne pahavara on sageli **failivaba**: kasutab PowerShelli, WMI-d (*Windows Management Instrumentation*) ja teisi süsteemi enda tööriistu („living off the land“).
 
 | Liik | Kuidas levib / töötab | Tuntud näide |
 | --- | --- | --- |
 | **Viirus** | nakatab teisi faile, vajab käivitamist | Brain (1986) |
-| **Uss** | levib ise võrgus, kasutades turvaauku | WannaCry (2017) – SMB1 (SMB – ingl *Server Message Block*) kaudu |
+| **Uss** | levib ise võrgus, kasutades turvaauku | WannaCry (2017) – SMB1 (SMB – *Server Message Block*) kaudu |
 | **Troojalane** | maskeerub kasulikuks programmiks | Emotet – Wordi makro kaudu |
 | **Lunavara** | krüpteerib failid, nõuab lunaraha; sageli ka varastab andmed ja ähvardab need avaldada (*topeltväljapressimine*) | LockBit, Conti |
 | **Nuhkvara / infovaras** | varastab paroole, küpsiseid, krüptorahakotte | RedLine, Lumma |
@@ -285,7 +285,7 @@ Pahavara liigid: viirus (nakatab faile), uss (levib ise võrgus), troojalane (ma
 
 **Lunavararünnaku tüüpilised etapid** – iga etapp on võimalus rünnak peatada:
 
-1. **Sissetung** – õngitsuskiri, varastatud parool (VPN – ingl *Virtual Private Network*, RDP), turvaauk avalikus serveris;
+1. **Sissetung** – õngitsuskiri, varastatud parool (VPN – *Virtual Private Network*, RDP), turvaauk avalikus serveris;
 2. **Kinnistumine** – pahavara jääb käivituma ka pärast taaskäivitust (ajastatud ülesanne, teenus);
 3. **Õiguste tõstmine** – mandaatide varastamine lsass-ist, haavatav draiver;
 4. **Külgliikumine** – sama administraatori parooliga teistesse arvutitesse, domeeni administraatori õigused;
@@ -299,11 +299,11 @@ Kasutaja saab skannida Windowsi turbe rakenduses (kiir-, täis-, kohandatud ja *
 
 ### 18.6 Windowsi tulemüür
 
-**Windows Defender Firewall** on olekupõhine (stateful) hostitulemüür, mis töötab WFP (ingl *Windows Filtering Platform*) peal. Omadused:
+**Windows Defender Firewall** on olekupõhine (stateful) hostitulemüür, mis töötab WFP (*Windows Filtering Platform*) peal. Omadused:
 
 - profiilid **domeen**, **privaatne**, **avalik** – eri reeglid eri võrkudes;
 - sissetulev liiklus vaikimisi keelatud, väljaminev lubatud;
-- reeglid programmi, pordi, protokolli, IP-aadressi (IP – ingl *Internet Protocol*), teenuse ja kasutaja järgi;
+- reeglid programmi, pordi, protokolli, IP-aadressi (IP – *Internet Protocol*), teenuse ja kasutaja järgi;
 - **IPsec-ühenduse turvareeglid**;
 - logimine faili `pfirewall.log`.
 
@@ -342,13 +342,13 @@ Windows saab:
 - **draiveri- ja püsivarauuendusi**, Defenderi allkirju mitu korda päevas;
 - **hotpatch** – Windows 11 Enterprise 24H2+ x64 seadmetel alates aprillist 2025 turvauuendused ilma taaskäivituseta, kvartaalse tsükliga (baaskuu taaskäivitusega, kaks hotpatch-kuud) Autopatchi kaudu ([Microsoft Tech Community](https://techcommunity.microsoft.com/blog/windows-itpro-blog/hotpatch-for-client-frequently-asked-questions/4413582)).
 
-Haldusvahendid: **Windows Autopatch** ja **Intune** (pilv), **WSUS** (ingl *Windows Server Update Services*; aegunud, kuid veel olemas), **Configuration Manager**. **Kohaletoimetamise optimeerimine** (Delivery Optimization) jagab uuendusi arvutite vahel.
+Haldusvahendid: **Windows Autopatch** ja **Intune** (pilv), **WSUS** (*Windows Server Update Services*; aegunud, kuid veel olemas), **Configuration Manager**. **Kohaletoimetamise optimeerimine** (Delivery Optimization) jagab uuendusi arvutite vahel.
 
 **Miks on uuendused kõige olulisem kaitse?** Kui Microsoft avaldab paranduse, saavad ründajad uuendust analüüsida ja leida, millist viga see parandab. Sageli ilmub töötav ründekood mõne päeva jooksul. Iga uuendamata arvuti on seejärel lihtne sihtmärk. WannaCry (mai 2017) kasutas viga, mille parandus oli avaldatud juba kaks kuud varem (märtsis) – nakatusid ainult uuendamata arvutid.
 
 **Kuidas organisatsioon uuendusi paigaldab?** Mitte kõigile korraga – kui uuendus põhjustab probleeme, peatuks kogu asutus. Kasutatakse **ringe**:
 
-1. **Testring** – IT-osakonna (IT – ingl *Information Technology*) arvutid (esimesed päevad);
+1. **Testring** – IT-osakonna (IT – *Information Technology*) arvutid (esimesed päevad);
 2. **Pilootring** – 5–10% kasutajatest eri osakondadest;
 3. **Lai ring** – kõik ülejäänud;
 4. **Kriitilised serverid** – hoolduse ajal, varundus enne.
@@ -361,13 +361,13 @@ Kõigil kolmel on kasutajad, rühmad ja failide õigused, kuid lisakaitsed on er
 
 |  | Windows | Linux | macOS |
 | --- | --- | --- | --- |
-| Kasutaja tunnus | SID | UID (ingl *User Identifier*), GID (ingl *Group Identifier*) | UID, GID |
+| Kasutaja tunnus | SID | UID (*User Identifier*), GID (*Group Identifier*) | UID, GID |
 | Administraator | Administrators; UAC / administraatori kaitse | `root`; `sudo` | admin-rühm; `sudo`, parooli või Touch ID kinnitus |
-| Failiõigused | DACL / SACL | `rwx` (omanik, rühm, teised) + POSIX (ingl *Portable Operating System Interface*) ACL | `rwx` + ACL |
+| Failiõigused | DACL / SACL | `rwx` (omanik, rühm, teised) + POSIX (*Portable Operating System Interface*) ACL | `rwx` + ACL |
 | Kohustuslik juurdepääsukontroll | terviklikkuse tasemed, AppContainer | SELinux, AppArmor | System Integrity Protection, liivakast (sandbox) |
 | Rakenduste usaldus | Smart App Control, App Control, SmartScreen | paketihalduri allkirjad, distro hoidlad | Gatekeeper, notariseerimine, XProtect |
-| Privaatsusload | Seaded → Privaatsus ja turve | sõltub distrost ja paketivormingust | TCC (ingl *Transparency, Consent, and Control*): kaamera, mikrofon, failid luba rakenduse kaupa |
-| Ketta krüpteerimine | BitLocker + TPM | LUKS (ingl *Linux Unified Key Setup*; + TPM) | FileVault + Secure Enclave |
+| Privaatsusload | Seaded → Privaatsus ja turve | sõltub distrost ja paketivormingust | TCC (*Transparency, Consent, and Control*): kaamera, mikrofon, failid luba rakenduse kaupa |
+| Ketta krüpteerimine | BitLocker + TPM | LUKS (*Linux Unified Key Setup*; + TPM) | FileVault + Secure Enclave |
 | Käivituse kaitse | Secure Boot, Measured Boot, TPM, Pluton | Secure Boot (shim), TPM | Apple Silicon Secure Boot, Secure Enclave |
 
 **Mida sellest õppida:** põhimõtted on samad – vähimad õigused, allkirjastatud kood, krüpteeritud ketas, riistvaraline usaldusahel. Linuxi `chmod 777` on sama vale nagu Windowsis õigus „Everyone: Full control“.
@@ -380,7 +380,7 @@ Kõigil kolmel on kasutajad, rühmad ja failide õigused, kuid lisakaitsed on er
 2. SRM loeb faili DACL-i: esimene sobiv kirje on „keela Õpilased – kirjuta“; lugemiseks sobib „luba Domain Users – loe“.
 3. Jaan saab faili avada ainult lugemiseks. Parem lahendus: õpilastele ei anta kausta kõige vähematki õigust (vähimate õiguste põhimõte) ja kausta lisatakse SACL, mis logib ebaõnnestunud katsed (sündmus 4656/4663).
 
-**Õiguste tõstmine.** Mari (kohalik administraator) laadib alla tasuta PDF-redaktori (PDF – ingl *Portable Document Format*) ja käivitab paigaldaja.
+**Õiguste tõstmine.** Mari (kohalik administraator) laadib alla tasuta PDF-redaktori (PDF – *Portable Document Format*) ja käivitab paigaldaja.
 
 - **UAC-ga:** ilmub „Kas lubate sellel rakendusel teha muudatusi?“ – Mari klõpsab „Jah“ ja paigaldaja saab täieliku administraatori tokeni. Pahavara, mis juba Mari kontol töötab, võib sama nuppu imiteerida või UAC-st mööda hiilida.
 - **Administraatori kaitsega:** Windows küsib Windows Hello kinnitust (PIN või nägu) ja käivitab paigaldaja eraldi ajutise süsteemi loodud kontoga. Kui paigaldus lõpeb, kaob ka administraatoriõigus. Mari igapäevaseanss ei hoia kunagi administraatori tokenit.

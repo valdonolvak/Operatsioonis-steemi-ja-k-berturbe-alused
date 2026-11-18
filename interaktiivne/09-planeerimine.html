@@ -119,10 +119,10 @@ table.t tr.avg td{font-weight:600;background:var(--card)}
 <!-- 2 -->
 <section id="liigid">
 <h2>2. Protsessorisõltuv või S/V-sõltuv?</h2>
-<p>Vali ülal programm ja klõpsa kastil, kuhu see kuulub. <strong>Protsessorisõltuv</strong> arvutab palju ja kasutab kogu kvandi. <strong>S/V-sõltuv</strong> ootab enamiku ajast ketast, võrku või kasutajat.</p>
+<p>Vali ülal programm ja klõpsa kastil, kuhu see kuulub. <strong>Protsessorisõltuv</strong> arvutab palju ja kasutab kogu kvandi. <strong>S/V-sõltuv (S/V – sisend-väljund, <i>input/output</i>)</strong> ootab enamiku ajast ketast, võrku või kasutajat.</p>
 <div class="pool" id="lpool"></div>
 <div class="buckets">
-  <div class="bucket" data-b="c"><h3>Protsessorisõltuv (CPU-bound)</h3><div class="chips"></div></div>
+  <div class="bucket" data-b="c"><h3>Protsessorisõltuv (<i>CPU-bound</i>; CPU – <i>Central Processing Unit</i>)</h3><div class="chips"></div></div>
   <div class="bucket" data-b="i"><h3>S/V-sõltuv (I/O-bound)</h3><div class="chips"></div></div>
 </div>
 <div class="row"><button class="btn" id="lnew">Uus komplekt</button><button class="btn primary" id="lcheck" disabled>Kontrolli</button></div>
@@ -184,7 +184,7 @@ const COL=['#185fa5','#854f0b','#3b6d11','#a32d2d','#5f4b8b','#0f6e6e','#9a4d00'
 
 /* ---------- 1. simulaator ---------- */
 const PRESETS={ch:[['A',0,8,1],['B',0,4,1],['C',0,2,1]],conv:[['Käru',0,20,1],['Piim1',0,1,1],['Piim2',0,1,1],['Piim3',0,1,1]],arr:[['A',0,7,1],['B',2,4,1],['C',4,1,1],['D',5,4,1]],prio:[['Taust',0,10,1],['Word',1,2,3],['Brauser',3,3,2],['Word2',5,2,3],['Word3',8,2,3]]};
-const ALG={fcfs:'FCFS',sjf:'SJF',srtf:'SRTF (eelistav SJF)',rr:'Round Robin',prio:'Prioriteet (eelistav)'};
+const ALG={fcfs:'FCFS',sjf:'SJF',srtf:'SRTF (eelistav SJF – <i>Shortest Job First</i>)',rr:'Round Robin',prio:'Prioriteet (eelistav)'};
 let jobs,alg='fcfs';
 function loadPreset(){jobs=PRESETS[$('preset').value].map(j=>j.slice());if($('preset').value==='prio')alg='prio';drawJobs();run()}
 function drawJobs(){
@@ -230,7 +230,7 @@ function run(){
   const all=Object.keys(ALG).map(k=>[k,schedule(k,+$('q').value)]);
   const bw=Math.min(...all.map(x=>x[1].aw)),br=Math.min(...all.map(x=>x[1].ar));
   $('cmp').innerHTML=all.map(([k,s])=>'<div class="'+(s.aw===bw||s.ar===br?'best':'')+'"><b>'+ALG[k]+'</b>ooteaeg '+f1(s.aw)+' · reageerimine '+f1(s.ar)+'<br>vahetusi '+s.sw+(s.aw===bw?' · <span style="color:var(--ok)">parim ooteaeg</span>':'')+(s.ar===br?' · <span style="color:var(--ok)">parim reageerimine</span>':'')+'</div>').join('');
-  let h={fcfs:'<b>FCFS</b> teeb tööd saabumise järjekorras. Kui ees on pikk töö, ootavad lühikesed selle taga (konvoiefekt).',sjf:'<b>SJF</b> valib alati lühima ootel töö ja laseb sel lõpuni töötada. Keskmine ooteaeg on väike, kuid OS peaks töö pikkust ette teadma.',srtf:'<b>SRTF</b> on eelistav SJF: kui saabub töö, mille järelejäänud aeg on lühem, katkestatakse jooksev töö. Teoreetiliselt väikseim keskmine ooteaeg.',rr:'<b>Round Robin</b> annab igale tööle kordamööda kvandi. Iga töö saab kiiresti esimese protsessoriaja (hea reageerimisaeg), kuid kontekstivahetusi on rohkem. Proovi muuta kvanti.',prio:'<b>Prioriteet</b>: alati töötab kõrgeima prioriteediga valmis töö. Vaata, kui kaua peab madala prioriteediga töö ootama, kui kõrgemaid tuleb pidevalt juurde (nälg).'}[alg];
+  let h={fcfs:'<b>FCFS (<i>First Come, First Served</i>)</b> teeb tööd saabumise järjekorras. Kui ees on pikk töö, ootavad lühikesed selle taga (konvoiefekt).',sjf:'<b>SJF</b> valib alati lühima ootel töö ja laseb sel lõpuni töötada. Keskmine ooteaeg on väike, kuid OS (<i>Operating System</i>) peaks töö pikkust ette teadma.',srtf:'<b>SRTF</b> on eelistav SJF: kui saabub töö, mille järelejäänud aeg on lühem, katkestatakse jooksev töö. Teoreetiliselt väikseim keskmine ooteaeg.',rr:'<b>Round Robin</b> annab igale tööle kordamööda kvandi. Iga töö saab kiiresti esimese protsessoriaja (hea reageerimisaeg), kuid kontekstivahetusi on rohkem. Proovi muuta kvanti.',prio:'<b>Prioriteet</b>: alati töötab kõrgeima prioriteediga valmis töö. Vaata, kui kaua peab madala prioriteediga töö ootama, kui kõrgemaid tuleb pidevalt juurde (nälg).'}[alg];
   if(alg==='rr'&&+$('q').value===1)h+=' Kvant 1 ms: väga hea reageerimine, kuid palju vahetusi. Päriselt maksab iga vahetus aega.';
   $('sinfo').innerHTML=h;
 }
@@ -239,10 +239,10 @@ $('q').onchange=run;$('addjob').onclick=()=>{if(jobs.length>=8)return;jobs.push(
 loadPreset();
 
 /* ---------- 2. liigid ---------- */
-const LI=[['HandBrake video kodeerimine','c','Arvutab pidevalt kaadreid ja kasutab kõik tuumad ära.'],['Visual Studio kompileerimine','c','Kompilaator töötleb lähtekoodi ja arvutab palju.'],['Blenderi 3D-renderdus','c','Iga piksli arvutamine nõuab palju protsessoriaega.'],['ZIP-arhiivi pakkimine (7-Zip, max tihendus)','c','Tihendusalgoritm arvutab palju. Kiire SSD korral on pudelikael protsessor.'],['Krüptoraha kaevandamine','c','Räsiarvutus käib katkematult.'],['Male-mootor analüüsib seisu','c','Otsib miljoneid käike sekundis.'],['Word, teksti kirjutamine','i','Ootab suurema osa ajast klahvivajutust.'],['Brauser loeb uudisteportaali','i','Ootab võrgust andmeid ja kasutaja kerimist.'],['Teams-i vestlus','i','Ootab sõnumeid võrgust.'],['Failide kopeerimine USB-pulgale','i','Ootab peamiselt aeglast USB-seadet.'],['Veebiserver, mis serveerib staatilisi faile','i','Ootab võrku ja ketast, arvutab vähe.'],['Notepad','i','Ootab kasutaja sisestust.']];
+const LI=[['HandBrake video kodeerimine','c','Arvutab pidevalt kaadreid ja kasutab kõik tuumad ära.'],['Visual Studio kompileerimine','c','Kompilaator töötleb lähtekoodi ja arvutab palju.'],['Blenderi 3D-renderdus','c','Iga piksli arvutamine nõuab palju protsessoriaega.'],['ZIP-arhiivi pakkimine (7-Zip, max tihendus)','c','Tihendusalgoritm arvutab palju. Kiire SSD (<i>Solid-State Drive</i>) korral on pudelikael protsessor.'],['Krüptoraha kaevandamine','c','Räsiarvutus käib katkematult.'],['Male-mootor analüüsib seisu','c','Otsib miljoneid käike sekundis.'],['Word, teksti kirjutamine','i','Ootab suurema osa ajast klahvivajutust.'],['Brauser loeb uudisteportaali','i','Ootab võrgust andmeid ja kasutaja kerimist.'],['Teams-i vestlus','i','Ootab sõnumeid võrgust.'],['Failide kopeerimine USB-pulgale (USB – <i>Universal Serial Bus</i>)','i','Ootab peamiselt aeglast USB-seadet.'],['Veebiserver, mis serveerib staatilisi faile','i','Ootab võrku ja ketast, arvutab vähe.'],['Notepad','i','Ootab kasutaja sisestust.']];
 let lset=[],lpl={},lsel=null,lchk=false;
 function newL(){const c=shuffle(LI.map((_,i)=>i).filter(i=>LI[i][1]==='c')).slice(0,4),io=shuffle(LI.map((_,i)=>i).filter(i=>LI[i][1]==='i')).slice(0,4);lset=shuffle([...c,...io]);lpl={};lsel=null;lchk=false;$('lres').innerHTML='';drawL()}
-function lchip(i,w){const b=document.createElement('button');let c='chip';if(lsel===i)c+=' sel';if(lchk&&w!=='pool')c+=LI[i][1]===w?' ok':' bad';b.className=c;b.textContent=LI[i][0];
+function lchip(i,w){const b=document.createElement('button');let c='chip';if(lsel===i)c+=' sel';if(lchk&&w!=='pool')c+=LI[i][1]===w?' ok':' bad';b.className=c;b.innerHTML=LI[i][0];
   b.onclick=e=>{e.stopPropagation();if(lchk)return;if(w==='pool')lsel=lsel===i?null:i;else{delete lpl[i];lsel=i}drawL()};return b}
 function drawL(){const pool=$('lpool');pool.innerHTML='';lset.filter(i=>!(i in lpl)).forEach(i=>pool.appendChild(lchip(i,'pool')));
   if(!pool.children.length)pool.innerHTML='<span class="hint">Kõik on paigutatud. Vajuta „Kontrolli“.</span>';
@@ -297,7 +297,7 @@ function simTick(){
   if(!runW&&pend===null&&boost&&wPr>8)wPr=Math.max(8,wPr-1);
   if(pend===null&&!boost)wPr=8;
   $('wst').textContent='prioriteet '+(pend!==null||runW?wPr:8)+' · '+wordState;
-  $('hst').textContent='prioriteet '+hb+($('hbp').value==='eco'?' · EcoQoS, E-tuum':'')+' · '+(runW?'katkestatud':'töötab');
+  $('hst').innerHTML='prioriteet '+hb+($('hbp').value==='eco'?' · EcoQoS (<i>Ecological Quality of Service</i>), E-tuum':'')+' · '+(runW?'katkestatud':'töötab');
   $('wpb').style.width=((pend!==null||runW?wPr:8)/15*100)+'%';$('hpb').style.width=(hb/15*100)+'%';
   $('thW').classList.toggle('run',runW);$('thH').classList.toggle('run',!runW);
   $('tline').innerHTML=hist.map(x=>'<div style="flex:1;background:'+(x==='W'?'#185fa5':'#854f0b')+'"></div>').join('');

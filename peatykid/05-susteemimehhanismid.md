@@ -2,20 +2,20 @@
 
 ## 5. Süsteemimehhanismid
 
-Süsteemimehhanismid on tuuma üldised tööriistad, mida kõik teised komponendid kasutavad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras ning WoW64 (ingl *Windows 32-bit on Windows 64-bit*) ja emulatsioon lasevad vanu või teise arhitektuuri rakendusi käitada.
+Süsteemimehhanismid on tuuma üldised tööriistad, mida kõik teised komponendid kasutavad: katkestused ja erindid suunavad protsessori tähelepanu, objektihaldur hoiab ressursse korras ning WoW64 (*Windows 32-bit on Windows 64-bit*) ja emulatsioon lasevad vanu või teise arhitektuuri rakendusi käitada.
 
 ### 5.1 Katkestused
 
-**Katkestus** (interrupt) on asünkroonne sündmus, millega seade (klaviatuur, võrgukaart, taimer, SSD – ingl *Solid-State Drive*) annab protsessorile märku. Protsessor katkestab jooksva töö, salvestab oleku ja käivitab **katkestuse teenindusrutiini** (ISR – ingl *Interrupt Service Routine*).
+**Katkestus** (interrupt) on asünkroonne sündmus, millega seade (klaviatuur, võrgukaart, taimer, SSD – *Solid-State Drive*) annab protsessorile märku. Protsessor katkestab jooksva töö, salvestab oleku ja käivitab **katkestuse teenindusrutiini** (ISR – *Interrupt Service Routine*).
 
-Iga seade saadab katkestuse oma **IRQ** kaudu (Interrupt Request ehk katkestusnõue). Vanades PC-arvutites (PC – ingl *Personal Computer*) oli IRQ-sid 16 (0–15): näiteks IRQ 0 oli süsteemitaimer, IRQ 1 klaviatuur ja IRQ 14 kõvaketta kontroller. Laiendkaartidel tuli IRQ sageli hüppelülitiga käsitsi valida ja kahel seadmel ei tohtinud olla sama number. Tänapäeval jagab need Windows ise ning PCIe-seadmed (PCIe – ingl *Peripheral Component Interconnect Express*) kasutavad MSI-katkestusi (MSI – ingl *Message Signaled Interrupts*), mida ei piira 16 liini (ptk 14.8). **IRQ ütleb, kes katkestuse saatis, IRQL ütleb, kui tähtis see on.**
+Iga seade saadab katkestuse oma **IRQ** kaudu (*Interrupt Request* ehk katkestusnõue). Vanades PC-arvutites (PC – *Personal Computer*) oli IRQ-sid 16 (0–15): näiteks IRQ 0 oli süsteemitaimer, IRQ 1 klaviatuur ja IRQ 14 kõvaketta kontroller. Laiendkaartidel tuli IRQ sageli hüppelülitiga käsitsi valida ja kahel seadmel ei tohtinud olla sama number. Tänapäeval jagab need Windows ise ning PCIe-seadmed (PCIe – *Peripheral Component Interconnect Express*) kasutavad MSI-katkestusi (MSI – *Message Signaled Interrupts*), mida ei piira 16 liini (ptk 14.8). **IRQ ütleb, kes katkestuse saatis, IRQL ütleb, kui tähtis see on.**
 
-Windows järjestab katkestused prioriteetide järgi, mida nimetatakse **IRQL**-iks (Interrupt Request Level). Kõrgema IRQL-iga katkestus võib madalama katkestada, mitte vastupidi. Tavaline kood töötab tasemel PASSIVE\_LEVEL, planeerija DISPATCH\_LEVEL-il, seadmekatkestused kõrgemal.
+Windows järjestab katkestused prioriteetide järgi, mida nimetatakse **IRQL**-iks (*Interrupt Request Level*). Kõrgema IRQL-iga katkestus võib madalama katkestada, mitte vastupidi. Tavaline kood töötab tasemel PASSIVE\_LEVEL, planeerija DISPATCH\_LEVEL-il, seadmekatkestused kõrgemal.
 
 Et ISR oleks lühike, lükkab Windows aeganeelava töö edasi:
 
-- **DPC** (Deferred Procedure Call) – täidetakse peagi madalamal IRQL-il;
-- **APC** (Asynchronous Procedure Call) – täidetakse kindla lõime kontekstis, nt S/V lõpetamisel.
+- **DPC** (*Deferred Procedure Call*) – täidetakse peagi madalamal IRQL-il;
+- **APC** (*Asynchronous Procedure Call*) – täidetakse kindla lõime kontekstis, nt S/V (sisend-väljund, *input/output*) lõpetamisel.
 
 ![katkestuse töötlus · seade, ISR, DPC, lõim](../pildid/05-a.png)
 
@@ -24,11 +24,11 @@ Joonis: ISR töötab kõrgel IRQL-il ja lükkab töö DPC-sse, mis omakorda ära
 > 🖱️ **Proovi ise:** [katkestuste ja IRQL-i simulaator](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#irql). Saada seadmetelt katkestusi ja vaata sammhaaval, kuidas kõrgem IRQL katkestab madalama ja kuidas ISR lükkab töö DPC-sse.
 
 
-Kaasaegsed seadmed kasutavad **MSI/MSI-X** katkestusi: seade kirjutab mällu sõnumi ja katkestused saab jagada eri protsessorituumade vahel. NVMe-SSD-l (NVMe – ingl *Non-Volatile Memory Express*) võib olla iga tuuma jaoks eraldi järjekord.
+Kaasaegsed seadmed kasutavad **MSI/MSI-X** (MSI-X – *Message Signaled Interrupts eXtended*) katkestusi: seade kirjutab mällu sõnumi ja katkestused saab jagada eri protsessorituumade vahel. NVMe-SSD-l (NVMe – *Non-Volatile Memory Express*) võib olla iga tuuma jaoks eraldi järjekord.
 
 ### 5.2 Erindid
 
-**Erind** (exception) on sünkroonne sündmus, mille põhjustab täidetav käsk ise: nulliga jagamine, keelatud mäluaadress, leheviga, katkestuspunkt (breakpoint). Windows kasutab **struktureeritud erinditetöötlust** (SEH – ingl *Structured Exception Handling*): programm saab koodiosa ümber panna `__try/__except` ploki. Kui rakendus erindit ei töötle, lõpetab Windows protsessi ja **Windows Error Reporting** salvestab krahhiaruande.
+**Erind** (exception) on sünkroonne sündmus, mille põhjustab täidetav käsk ise: nulliga jagamine, keelatud mäluaadress, leheviga, katkestuspunkt (breakpoint). Windows kasutab **struktureeritud erinditetöötlust** (SEH – *Structured Exception Handling*): programm saab koodiosa ümber panna `__try/__except` ploki. Kui rakendus erindit ei töötle, lõpetab Windows protsessi ja **Windows Error Reporting** salvestab krahhiaruande.
 
 Tuumarežiimis töötlemata erind on fataalne – tulemuseks on süsteemi seiskumine (ptk 19).
 
@@ -52,9 +52,9 @@ Objekti avamisel kontrollib objektihaldur turvaviitemonitori abil, kas küsijal 
 
 ### 5.4 32-bitised rakendused 64-bitises süsteemis ja ARM64
 
-**WoW64** (Windows-on-Windows 64) võimaldab käitada 32-bitiseid x86 programme 64-bitises Windowsis. WoW64 tõlgib süsteemikutsed, hoiab eraldi 32-bitiseid DLL-e (ingl *Dynamic-Link Library*) kaustas `C:\Windows\SysWOW64` ning suunab osa registri- ja failiteid ümber (nt `Program Files (x86)`). 16-bitiseid DOS- ja Windows 3.x programme (DOS – ingl *Disk Operating System*) 64-bitine Windows ei käita.
+**WoW64** (Windows-on-Windows 64) võimaldab käitada 32-bitiseid x86 programme 64-bitises Windowsis. WoW64 tõlgib süsteemikutsed, hoiab eraldi 32-bitiseid DLL-e (*Dynamic-Link Library*) kaustas `C:\Windows\SysWOW64` ning suunab osa registri- ja failiteid ümber (nt `Program Files (x86)`). 16-bitiseid DOS- ja Windows 3.x programme (DOS – *Disk Operating System*) 64-bitine Windows ei käita.
 
-Windows 11 jaoks on sama oluline **ARM64** (ARM – ingl *Advanced RISC Machines*). Snapdragon X protsessoriga sülearvutid käitavad ARM64 rakendusi omakeelselt ning x86/x64 rakendusi emulaatori **Prism** abil, mis tõlgib käske jooksvalt. Arendajad saavad koostada **ARM64EC** (ingl *ARM64 Emulation Compatible*) binaare, kus osa koodist on omakeelne ja osa emuleeritud. Emulatsioon ei toimi tuumadraiveritega: seadmel peab olema ARM64 draiver.
+Windows 11 jaoks on sama oluline **ARM64** (ARM – *Advanced RISC Machines*). Snapdragon X protsessoriga sülearvutid käitavad ARM64 rakendusi omakeelselt ning x86/x64 rakendusi emulaatori **Prism** abil, mis tõlgib käske jooksvalt. Arendajad saavad koostada **ARM64EC** (*ARM64 Emulation Compatible*) binaare, kus osa koodist on omakeelne ja osa emuleeritud. Emulatsioon ei toimi tuumadraiveritega: seadmel peab olema ARM64 draiver.
 
 > 🖱️ **Proovi ise:** [kas see programm käivitub?](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/05-susteemimehhanismid.html#wow) Otsusta, kas programm töötab omakeelselt, WoW64 kaudu, Prismi emulatsiooniga või üldse mitte.
 

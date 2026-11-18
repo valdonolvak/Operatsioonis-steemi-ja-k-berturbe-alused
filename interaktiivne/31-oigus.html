@@ -85,7 +85,7 @@ details.help h3{margin:1rem 0 .3rem}
 <body>
 <nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/31-oigus-ja-juhtimisraamistik.md">← Peatükk 31</a><a href="#nis2">1. NIS2 kuuluvus</a><a href="#tahtajad">2. Teavitamise tähtajad</a><a href="#risk">3. Riskimaatriks</a></nav>
 <h1>Õigus ja juhtimine praktikas</h1>
-<p>Sellel lehel on kolm tööriista, mis aitavad peatüki nõudeid praktikas läbi mõelda: kas organisatsioon kuulub küberturvalisuse seaduse (NIS2 – ingl <i>Network and Information Security Directive 2</i>) alla, millal ja kellele tuleb intsidendist teatada ning kuidas riske hinnata ja käsitleda.</p>
+<p>Sellel lehel on kolm tööriista, mis aitavad peatüki nõudeid praktikas läbi mõelda: kas organisatsioon kuulub küberturvalisuse seaduse (NIS2 – <i>Network and Information Security Directive 2</i>) alla, millal ja kellele tuleb intsidendist teatada ning kuidas riske hinnata ja käsitleda.</p>
 <p class="why"><b>NB!</b> Tööriistad on õppimiseks ja lihtsustavad. Need ei ole õigusnõu. Konkreetse organisatsiooni kohustused tuleb täpsustada RIA (Riigi Infosüsteemi Amet), Andmekaitse Inspektsiooni või juristiga.</p>
 
 <!-- ================= 1 ================= -->
@@ -121,7 +121,7 @@ details.help h3{margin:1rem 0 .3rem}
     <optgroup label="Muu">
       <option value="NONE">Muu sektor (nt jaekaubandus, ilusalong, ehitus)</option>
     </optgroup>
-  </select></div>
+  </select><small style="display:block;margin-top:4px;opacity:.8">CDN – <i>Content Delivery Network</i>; IKT – info- ja kommunikatsioonitehnoloogia; IT – <i>Information Technology</i>; DNS – <i>Domain Name System</i>.</small></div>
   <div><label for="emp">Töötajate arv</label><input id="emp" type="number" min="0" step="1" value="80"></div>
   <div><label for="rev">Aastakäive (mln €)</label><input id="rev" type="number" min="0" step="0.1" value="12"></div>
   <div><label for="bal">Bilansimaht (mln €)</label><input id="bal" type="number" min="0" step="0.1" value="8"></div>
@@ -137,7 +137,7 @@ details.help h3{margin:1rem 0 .3rem}
   <div><label for="sent">Millal saadeti RIA-le intsidendi teavitus? (tühi = veel mitte)</label><input id="sent" type="datetime-local"></div>
 </div>
 <div class="card">
-  <label class="cb"><input type="checkbox" id="q1" checked><span>Organisatsioon kuulub KüTS-i (NIS2) alla <small style="color:var(--muted)">(vt jaotis 1)</small></span></label>
+  <label class="cb"><input type="checkbox" id="q1" checked><span>Organisatsioon kuulub KüTS-i (küberturvalisuse seadus; NIS2) alla <small style="color:var(--muted)">(vt jaotis 1)</small></span></label>
   <label class="cb"><input type="checkbox" id="q2" checked><span>Intsident on oluline: põhjustab või võib põhjustada teenuse tõsise häire, rahalise kahju või kahju teistele</span></label>
   <label class="cb"><input type="checkbox" id="q3" checked><span>Puudutatud on isikuandmed (töötajate, klientide, õpilaste andmed)</span></label>
   <label class="cb"><input type="checkbox" id="q4"><span>Andmed olid tugevalt krüpteeritud ja võti ei lekkinud</span></label>
@@ -185,7 +185,7 @@ function runNIS(){
                 : 'töötajaid on alla 50 ja käive või bilanss on kuni 10 mln €';
   let cls, verdict, expl;
   if(sec==='ALWAYS_E'){ cls='bad'; verdict='Väga oluline üksus'; expl='See organisatsiooni tüüp kuulub NIS2 alla <b>suurusest olenemata</b>, sest selle teenused on teistele kriitilised (usaldus, nimeteenus, riigivalitsemine, elutähtsad teenused).'; }
-  else if(sec==='NONE'){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Sektor ei ole NIS2 I ega II lisas. Isikuandmete kaitse nõuded (IKÜM) kehtivad aga ikkagi ja head küberhügieeni (MFA – ingl Multi-Factor Authentication, varukoopiad, paikamine) on vaja igal organisatsioonil.'; }
+  else if(sec==='NONE'){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Sektor ei ole NIS2 I ega II lisas. Isikuandmete kaitse nõuded (IKÜM) kehtivad aga ikkagi ja head küberhügieeni (MFA – <i>Multi-Factor Authentication</i>, varukoopiad, paikamine) on vaja igal organisatsioonil.'; }
   else if(!large&&!medium){ cls='ok'; verdict='Üldjuhul ei kuulu NIS2 alla'; expl='Organisatsioon on '+size+' ('+sizeWhy+'). Väikesed ja mikroettevõtted on NIS2 üldreeglist välja jäetud, kui riik ei ole neid eraldi määranud, näiteks ainsa teenuseosutajana või elutähtsa teenuse osutajana.'; }
   else if(sec==='I'&&large){ cls='bad'; verdict='Väga oluline üksus'; expl='Suur organisatsioon ('+sizeWhy+') NIS2 I lisa sektoris.'; }
   else { cls='warn'; verdict='Oluline üksus'; expl=(sec==='I'?'Keskmise suurusega organisatsioon ('+sizeWhy+') I lisa sektoris.':'Organisatsioon on '+size+' ('+sizeWhy+') II lisa sektoris. II lisa sektoris on ka suured organisatsioonid „olulised“, mitte „väga olulised“.'); }
@@ -221,7 +221,7 @@ function runT(){
   ev.push({d:F,who:'',t:'Intsident avastatud',s:'Isoleeri süsteem, säilita logid ja tõendid, teavita juhtkonda (intsidendiplaan). Ära lülita serverit välja enne mälutõmmise tegemist.'});
   if(nis){
     ev.push({d:new Date(+F+24*H),who:'RIA (CERT-EE)',t:'Varajane hoiatus',s:'Mis juhtus, kas võib olla pahatahtlik, kas võib mõjutada teisi.'});
-    ev.push({d:new Date(+F+72*H),who:'RIA (CERT-EE)',t:'Intsidendi teavitus',s:'Esialgne hinnang: raskusaste, mõju, kompromiteerimise tunnused (IP-aadressid, failide räsid).'});
+    ev.push({d:new Date(+F+72*H),who:'RIA (CERT-EE)',t:'Intsidendi teavitus',s:'Esialgne hinnang: raskusaste, mõju, kompromiteerimise tunnused (IP-aadressid, failide räsid; IP – <i>Internet Protocol</i>).'});
     if(S) ev.push({d:addMonth(S),who:'RIA (CERT-EE)',t:'Lõpparuanne',s:'Põhjus, mõju, rakendatud ja kavandatud meetmed. Tähtaeg on 1 kuu pärast intsidendi teavitust ('+fmt(S)+').'});
     else ev.push({d:addMonth(new Date(+F+72*H)),who:'RIA (CERT-EE)',t:'Lõpparuanne (hiliseim)',s:'1 kuu pärast intsidendi teavitust. Kui teavitus saadetakse varem kui 72 h piiril, tuleb ka lõpparuanne varem. Sisesta teavituse aeg täpse tähtaja saamiseks.'});
   }
@@ -236,7 +236,7 @@ function runT(){
   ev.push({d:F,who:'politsei',t:'Kuriteoteade (soovitatav)',s:'Lunavara, sissetung ja andmevargus on kuriteod (KarS § 206, 217 jt). Teade aitab ka kindlustusega suhtlemisel.'});
   ev.sort((a,b)=>a.d-b.d);
   let h='';
-  if(!nis&&!pd) h+='<div class="verdict ok">Valitud vastuste põhjal ei teki RIA-le ega Andmekaitse Inspektsioonile teavitamise kohustust. Kahtluse korral on mõistlik siiski RIA-ga ühendust võtta: CERT-EE saab hoiatada teisi ja anda abi.</div>';
+  if(!nis&&!pd) h+='<div class="verdict ok">Valitud vastuste põhjal ei teki RIA-le ega Andmekaitse Inspektsioonile teavitamise kohustust. Kahtluse korral on mõistlik siiski RIA-ga ühendust võtta: CERT-EE (<i>Computer Emergency Response Team</i>, Eesti) saab hoiatada teisi ja anda abi.</div>';
   else if(!nis&&$('q1').checked) h+='<p class="why">Intsident ei ole oluline, seega kohustuslikku RIA teavitust ei teki. Vabatahtlik teade on siiski teretulnud.</p>';
   h+='<ul class="tl">'+ev.map(x=>'<li class="'+(x.d<new Date()?'done':'')+'"><span class="when">'+fmt(x.d)+'</span>'+(x.who?'<span class="who">'+x.who+'</span>':'')+'<br><b>'+x.t+'</b> <span style="color:var(--muted);font-size:13px">('+left(x.d)+')</span><small>'+x.s+'</small></li>').join('')+'</ul>';
   if(pdNote) h+='<p class="why">'+pdNote+'</p>';
@@ -250,7 +250,7 @@ const TCRIT={1:['madal','harv','Võib juhtuda harvem kui kord mitme aasta jooksu
  2:['keskmine','võimalik','Võib juhtuda umbes kord aastas. Nõrkus on teada, kuid süsteem ei ole otse internetis või osa kaitset on olemas.'],
  3:['kõrge','tõenäoline','Juhtub mitu korda aastas või on juba juhtunud. Süsteem on internetis, ekspluit on avalik või rünne käib automaatselt.']};
 const MCRIT={1:['väike','Katkestus kuni mõni tund, töö saab jätkuda muul viisil. Isikuandmeid ei puuduta. Kahju jääb eelarve piiresse ega paista väljapoole.'],
- 2:['keskmine','Katkestus kuni tööpäev, osa tööst seisab. Piiratud hulga tavaliste isikuandmete leke, AKI teavitamine võib olla vajalik. Märgatav rahaline kahju või ettekirjutuse oht.'],
+ 2:['keskmine','Katkestus kuni tööpäev, osa tööst seisab. Piiratud hulga tavaliste isikuandmete leke, AKI (Andmekaitse Inspektsioon) teavitamine võib olla vajalik. Märgatav rahaline kahju või ettekirjutuse oht.'],
  3:['suur','Mitme päeva seisak või andmed kaovad jäädavalt. Eriliigiliste andmete (tervis), paroolide või paljude inimeste andmete leke. Suur rahaline kahju, trahv, meediakajastus või oht inimeste tervisele.']};
 const ACT={lo:'Madal risk (1–2): võib aktsepteerida. Jälgitakse korralise ülevaatuse käigus.',
  mi:'Keskmine risk (3–4): meetmed lisatakse tegevuskavasse kindla tähtaja ja vastutajaga.',
@@ -264,8 +264,8 @@ const RISKS=[
   wt:'Lunavara on üks sagedasemaid intsidente. Failiserver on kõigile tööjaamadele nähtav ja nakatamiseks piisab ühest õngitsuskirjast.',
   wm:'Kõik ühiskaustad krüpteeritakse ja töö seisab päevi. Kui varukoopia on samas võrgus, võivad andmed kaduda jäädavalt.',
   wa:'MFA ja koolitus vähendavad tõenäosust ühe astme võrra (2). Võrgust eraldatud ja testitud varukoopia muudab mõju väikeseks (1): failid taastatakse tundidega ja andmeid ei kao.'},
- {n:'Internetis paikamata VPN-seade',t:3,m:3,k:'Vähendamine',t2:1,m2:3,hint:'Paikamine päevade jooksul ja haldusliides internetist peidetud.',
-  wt:'Seade on internetis, nõrkus on avalikult teada (KEV-loetelus) ja skannerid leiavad selle tundidega.',
+ {n:'Internetis paikamata VPN-seade (VPN – <i>Virtual Private Network</i>)',t:3,m:3,k:'Vähendamine',t2:1,m2:3,hint:'Paikamine päevade jooksul ja haldusliides internetist peidetud.',
+  wt:'Seade on internetis, nõrkus on avalikult teada (KEV-loetelus; KEV – <i>Known Exploited Vulnerabilities</i>) ja skannerid leiavad selle tundidega.',
   wm:'VPN-i kaudu pääseb otse sisevõrku, nii et ründaja saab ligi kõigile süsteemidele ja andmetele.',
   wa:'Paikamine viib tõenäosuse 1-ni. Mõju jääb 3-ks: kui keegi siiski sisse pääseb, on kahju sama suur. Mõju vähendaks võrgu segmentimine.'},
  {n:'Vana raamatupidamisprogramm, mida ei saa paigata',t:2,m:2,k:'Vältimine',t2:0,m2:0,hint:'Asendatakse toetatud programmiga.',
@@ -280,11 +280,11 @@ const RISKS=[
   wt:'Lehel on vana sisuhaldussüsteem ja lihtsate lehtede rikkumist juhtub aeg-ajalt.',
   wm:'Lehel on ainult avalik menüü. Kahju on väike ja leht parandatakse tunniga.',
   wa:'Kaitse (eraldi server, pidev hooldus) oleks kahjust kallim. Juhtkond aktsepteerib madala riski ja leht taastatakse vajadusel varukoopiast.'},
- {n:'Võltsarve või „juhi“ maksepalve raamatupidajale (BEC)',t:3,m:2,k:'Vähendamine',t2:1,m2:2,hint:'Makse kinnitatakse helistades teadaolevale numbrile.',
+ {n:'Võltsarve või „juhi“ maksepalve raamatupidajale (BEC – <i>Business Email Compromise</i>)',t:3,m:2,k:'Vähendamine',t2:1,m2:2,hint:'Makse kinnitatakse helistades teadaolevale numbrile.',
   wt:'Selliseid kirju tuleb mitu korda aastas ja tehisintellekt teeb need veatus keeles usutavaks (ptk 24.5).',
   wm:'Ühe ülekandega võib kaduda kümneid tuhandeid eurosid. Märgatav kahju, kuid isikuandmeid see ei puuduta.',
   wa:'Reegel: iga uus pangakonto või kiireloomuline makse kinnitatakse teise kanali kaudu. Kiri võib ikka tulla, aga makse jääb tegemata: tõenäosus 1. Mõju jääb samaks (2), kui makse siiski tehakse.'},
- {n:'Krüpteerimata mälupulk õpilaste hinnetega kaob',t:2,m:2,k:'Vähendamine',t2:2,m2:1,hint:'BitLocker To Go või krüpteerimata USB-le kirjutamise keelamine.',
+ {n:'Krüpteerimata mälupulk õpilaste hinnetega kaob',t:2,m:2,k:'Vähendamine',t2:2,m2:1,hint:'BitLocker To Go või krüpteerimata USB-le (<i>Universal Serial Bus</i>) kirjutamise keelamine.',
   wt:'Õpetajad kannavad faile kaasas ja mälupulk kaob umbes kord aastas.',
   wm:'Õpilaste nimed ja hinded: piiratud hulga isikuandmete leke. AKI teavitamine on tõenäoliselt vajalik.',
   wa:'Pulk võib ikka kaduda (tõenäosus 2), kuid leidja ei saa andmeid lugeda: mõju 1. Hea näide meetmest, mis vähendab mõju, mitte tõenäosust.'}
@@ -293,7 +293,7 @@ RISKS.forEach(r=>r.o={t:r.t,m:r.m,k:r.k,t2:r.t2,m2:r.m2});
 let selR=0, selCell=null;
 const lvl=s=>s===0?['–','']:s<=2?['madal','lo']:s<=4?['keskmine','mi']:['kõrge','hi'];
 const opt=(v,sel,txt)=>'<option value="'+v+'"'+(String(v)===String(sel)?' selected':'')+'>'+(txt||v)+'</option>';
-const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/&lt;(\/?)i>/g,'<$1i>');
 function drawCrit(){
   $('tcrit').innerHTML=[1,2,3].map(v=>'<tr><td>'+v+' – '+TCRIT[v][0]+'</td><td>'+TCRIT[v][2]+'</td></tr>').join('');
   $('mcrit').innerHTML=[1,2,3].map(v=>'<tr><td>'+v+' – '+MCRIT[v][0]+'</td><td>'+MCRIT[v][1]+'</td></tr>').join('');
@@ -343,8 +343,8 @@ function runRisk(){
   RISKS.forEach((r,i)=>{
     const s0=r.t*r.m, s1=r.t2*r.m2, L0=lvl(s0), L1=lvl(s1);
     $('res'+i).innerHTML='<span class="pill '+L0[1]+'">'+s0+'</span> →<br>'+(s1===0?'<span class="pill">0, risk kaob</span>':'<span class="pill '+L1[1]+'">'+s1+' '+L1[0]+'</span>');
-    (cells[r.t+','+r.m]=cells[r.t+','+r.m]||[]).push('<span class="dot before" title="'+esc(r.n)+' (praegu)">'+(i+1)+'</span>');
-    if(s1>0) (cells[r.t2+','+r.m2]=cells[r.t2+','+r.m2]||[]).push('<span class="dot" title="'+esc(r.n)+' (jääkrisk)">'+(i+1)+'</span>');
+    (cells[r.t+','+r.m]=cells[r.t+','+r.m]||[]).push('<span class="dot before" title="'+esc(r.n.replace(/<[^>]+>/g,''))+' (praegu)">'+(i+1)+'</span>');
+    if(s1>0) (cells[r.t2+','+r.m2]=cells[r.t2+','+r.m2]||[]).push('<span class="dot" title="'+esc(r.n.replace(/<[^>]+>/g,''))+' (jääkrisk)">'+(i+1)+'</span>');
     if(r.k==='Aktsepteerimine'&&s1>=6) warns.push('<b>Risk '+(i+1)+'</b>: kõrge riski aktsepteerimine. See on lubatud ainult juhtkonna allkirjastatud ja põhjendatud otsusena ning KüTS-i üksuses peab see olema kooskõlas nõutud turvameetmetega.');
     if(r.k==='Vähendamine'&&s1>=s0) warns.push('<b>Risk '+(i+1)+'</b>: vähendamine peab muutma tõenäosust või mõju väiksemaks. Määra „Uus T“ ja „Uus M“ selle järgi, mida meede muudab.');
     if(r.k==='Jagamine'&&r.t2<r.t) warns.push('<b>Risk '+(i+1)+'</b>: jagamine (kindlustus, leping) kannab üle kahju, kuid ei muuda tavaliselt rünnaku tõenäosust.');
