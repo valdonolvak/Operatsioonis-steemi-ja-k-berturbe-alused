@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="328" viewBox="0 0 640 328">
+<rect width="640" height="328" rx="8" fill="#1e1e1e"/>
+<rect width="640" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="640" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">deb-srv – VirtualBoxi konsool</text>
+<g transform="translate(548,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ip -br a</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">lo               UNKNOWN        127.0.0.1/8 ::1/128</text>
+<rect x="10" y="80" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">enp0s3           UP             10.0.10.4/24 fe80::a00:27ff:fe4e:66a1/64</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ip r</text>
+<rect x="10" y="118" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">default via 10.0.10.1 dev enp0s3</text>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">10.0.10.0/24 dev enp0s3 proto kernel scope link src 10.0.10.4</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ping -c 3 deb.debian.org</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">PING debian.map.fastlydns.net (151.101.86.132) 56(84) bytes of data.</text>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">64 bytes from 151.101.86.132: icmp_seq=1 ttl=58 time=6.21 ms</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">64 bytes from 151.101.86.132: icmp_seq=2 ttl=58 time=5.87 ms</text>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">64 bytes from 151.101.86.132: icmp_seq=3 ttl=58 time=6.04 ms</text>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve"></text>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">--- debian.map.fastlydns.net ping statistics ---</text>
+<rect x="10" y="289" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">3 packets transmitted, 3 received, 0% packet loss, time 2003ms</text>
+</svg>

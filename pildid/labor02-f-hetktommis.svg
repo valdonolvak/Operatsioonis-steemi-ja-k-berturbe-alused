@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="752" height="366" viewBox="0 0 752 366">
+<rect width="752" height="366" rx="8" fill="#1e1e1e"/>
+<rect width="752" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="752" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH)</text>
+<g transform="translate(660,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvcreate -s -n lv_projektid_snap -L 1G /dev/vg_andmed/lv_projektid</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Logical volume "lv_projektid_snap" created.</text>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvs</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  LV                VG        Attr       LSize Pool Origin       Data%</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  lv_logid          vg_andmed -wi-ao---- 2.00g</text>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  lv_projektid      vg_andmed owi-aos--- 6.00g</text>
+<rect x="10" y="156" width="732" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  lv_projektid_snap vg_andmed swi-a-s--- 1.00g      lv_projektid 0.01</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo rm -rf /srv/projektid/etc-koopia /srv/projektid/LOEMIND.txt</text>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ls /srv/projektid</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">lost+found  suur.bin</text>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo umount /srv/projektid</text>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvconvert --merge /dev/vg_andmed/lv_projektid_snap</text>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Merging of volume vg_andmed/lv_projektid_snap started.</text>
+<rect x="10" y="289" width="732" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  vg_andmed/lv_projektid: Merged: 100.00%</text>
+<text x="16" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo mount /srv/projektid &amp;&amp; ls /srv/projektid</text>
+<rect x="10" y="327" width="732" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="341" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">LOEMIND.txt  etc-koopia  lost+found  suur.bin</text>
+</svg>

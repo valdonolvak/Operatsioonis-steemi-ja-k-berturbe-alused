@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="442" viewBox="0 0 768 442">
+<rect width="768" height="442" rx="8" fill="#1e1e1e"/>
+<rect width="768" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="768" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH)</text>
+<g transform="translate(676,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo pvcreate /dev/sdb /dev/sdc</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Physical volume "/dev/sdb" successfully created.</text>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Physical volume "/dev/sdc" successfully created.</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo vgcreate vg_andmed /dev/sdb /dev/sdc</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Volume group "vg_andmed" successfully created</text>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvcreate -n lv_projektid -L 4G vg_andmed</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Logical volume "lv_projektid" created.</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvcreate -n lv_logid -L 2G vg_andmed</text>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  Logical volume "lv_logid" created.</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo pvs</text>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  PV         VG        Fmt  Attr PSize   PFree</text>
+<rect x="10" y="251" width="748" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  /dev/sdb   vg_andmed lvm2 a--  &lt;10.00g  &lt;4.00g</text>
+<rect x="10" y="270" width="748" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  /dev/sdc   vg_andmed lvm2 a--  &lt;10.00g &lt;10.00g</text>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo vgs</text>
+<text x="16" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  VG        #PV #LV #SN Attr   VSize  VFree</text>
+<rect x="10" y="327" width="748" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="341" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  vg_andmed   2   2   0 wz--n- 19.99g 13.99g</text>
+<text x="16" y="360" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="360" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo lvs</text>
+<text x="16" y="379" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">  LV           VG        Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert</text>
+<rect x="10" y="384" width="748" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="398" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  lv_logid     vg_andmed -wi-a----- 2.00g</text>
+<rect x="10" y="403" width="748" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="417" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">  lv_projektid vg_andmed -wi-a----- 4.00g</text>
+</svg>

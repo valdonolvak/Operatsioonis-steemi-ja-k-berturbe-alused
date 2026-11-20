@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="404" viewBox="0 0 640 404">
+<rect width="640" height="404" rx="8" fill="#1e1e1e"/>
+<rect width="640" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="640" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH)</text>
+<g transform="translate(548,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#7fb2ff" xml:space="preserve"># enne LVM-i</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">lsblk</text>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">sda      8:0    0   20G  0 disk</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">├─sda1   8:1    0   19G  0 part /</text>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">├─sda2   8:2    0    1K  0 part</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">└─sda5   8:5    0  975M  0 part [SWAP]</text>
+<rect x="10" y="175" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">sdb      8:16   0   10G  0 disk</text>
+<rect x="10" y="194" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">sdc      8:32   0   10G  0 disk</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">sr0     11:0    1 1024M  0 rom</text>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve"></text>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#7fb2ff" xml:space="preserve"># pärast osa E</text>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">lsblk /dev/sdb /dev/sdc</text>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">NAME                       MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS</text>
+<text x="16" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">sdb                          8:16   0  10G  0 disk</text>
+<rect x="10" y="327" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="341" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">├─vg_andmed-lv_projektid   254:0    0   4G  0 lvm  /srv/projektid</text>
+<rect x="10" y="346" width="620" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="360" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">└─vg_andmed-lv_logid       254:1    0   2G  0 lvm  /srv/logid</text>
+<text x="16" y="379" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">sdc                          8:32   0  10G  0 disk</text>
+</svg>

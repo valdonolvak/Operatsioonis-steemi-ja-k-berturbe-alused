@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="780" height="504" viewBox="0 0 780 504">
+<rect x="0.5" y="0.5" width="779" height="503" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="0.5" y="0.5" width="779" height="38" rx="8" fill="#e5e7eb"/><rect x="0.5" y="30" width="779" height="9" fill="#e5e7eb"/>
+<line x1="0" y1="39" x2="780" y2="39" stroke="#9ca3af"/>
+<text x="18" y="25" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="600" fill="#111827">VirtualBox – deb-klient: Settings (skeem)</text>
+<g transform="translate(688,9)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="24" y="72" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f2937">System → Motherboard → Boot Order</text>
+<line x1="24" y1="79" x2="756" y2="79" stroke="#d1d5db"/>
+<rect x="40" y="89" width="15" height="15" rx="2" fill="#2563eb" stroke="#4b5563"/>
+<path d="M43 96 l4 4 l7 -8" stroke="#fff" stroke-width="2" fill="none"/>
+<text x="64" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Network        ← esimene</text>
+<rect x="40" y="113" width="15" height="15" rx="2" fill="#2563eb" stroke="#4b5563"/>
+<path d="M43 120 l4 4 l7 -8" stroke="#fff" stroke-width="2" fill="none"/>
+<text x="64" y="126" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Hard Disk</text>
+<rect x="40" y="137" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="150" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Optical</text>
+<rect x="40" y="161" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="174" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Floppy</text>
+<rect x="40" y="191" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="204" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Enable EFI (special OSes only)</text>
+<text x="296" y="204" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-style="italic" fill="#b45309">← maas: BIOS-režiim, pxelinux.0</text>
+<text x="24" y="240" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Network → Adapter 1</text>
+<line x1="24" y1="247" x2="756" y2="247" stroke="#d1d5db"/>
+<rect x="40" y="257" width="15" height="15" rx="2" fill="#2563eb" stroke="#4b5563"/>
+<path d="M43 264 l4 4 l7 -8" stroke="#fff" stroke-width="2" fill="none"/>
+<text x="64" y="270" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Enable Network Adapter</text>
+<text x="40" y="298" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#374151">Attached to</text>
+<rect x="230" y="283" width="510" height="22" rx="3" fill="#fff" stroke="#9ca3af"/>
+<text x="238" y="298" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#111827">NAT Network</text>
+<text x="40" y="330" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#374151">Name</text>
+<rect x="230" y="315" width="510" height="22" rx="3" fill="#fff" stroke="#9ca3af"/>
+<text x="238" y="330" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#111827">LABOR</text>
+<text x="40" y="362" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#374151">Adapter Type (Advanced)</text>
+<rect x="230" y="347" width="510" height="22" rx="3" fill="#fff" stroke="#9ca3af"/>
+<text x="238" y="362" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#111827">Intel PRO/1000 MT Desktop (82540EM)</text>
+<text x="24" y="402" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Storage</text>
+<line x1="24" y1="409" x2="756" y2="409" stroke="#d1d5db"/>
+<text x="40" y="432" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#374151">Controller: IDE – Optical</text>
+<rect x="230" y="417" width="510" height="22" rx="3" fill="#fff" stroke="#9ca3af"/>
+<text x="238" y="432" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#111827">Empty  (ISO-tõmmist pole)</text>
+<text x="40" y="464" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-style="italic" fill="#b45309">Pärast paigaldust tõsta Hard Disk alglaadimisjärjekorras esimeseks.</text>
+</svg>

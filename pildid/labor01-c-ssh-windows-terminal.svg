@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="697" height="404" viewBox="0 0 697 404">
+<rect width="697" height="404" rx="8" fill="#012456"/>
+<rect width="697" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="697" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">Windows PowerShell</text>
+<g transform="translate(605,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffff66" xml:space="preserve">PS C:\Users\opilane&gt;</text>
+<text x="180.4" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ssh -p 2022 kasutaja@127.0.0.1</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">The authenticity of host '[127.0.0.1]:2022 ([127.0.0.1]:2022)' can't be established.</text>
+<rect x="10" y="80" width="677" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">ED25519 key fingerprint is SHA256:q8Xv0mJ3cR1yKf2N7bLwE4tZp9aUu6sHdG5iVo1YkTc.</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">This key is not known by any other names.</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">Are you sure you want to continue connecting (yes/no/[fingerprint])? yes</text>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">Warning: Permanently added '[127.0.0.1]:2022' (ED25519) to the list of known hosts.</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">kasutaja@127.0.0.1's password:</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">Linux deb-srv 6.12.57+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.57-1 x86_64</text>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve"></text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffff66" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">hostnamectl</text>
+<rect x="10" y="232" width="677" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">     Static hostname: deb-srv</text>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">           Icon name: computer-vm</text>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">             Chassis: vm</text>
+<rect x="10" y="289" width="677" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">    Operating System: Debian GNU/Linux 13 (trixie)</text>
+<text x="16" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">              Kernel: Linux 6.12.57+deb13-amd64</text>
+<text x="16" y="341" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">        Architecture: x86-64</text>
+<text x="16" y="360" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">     Hardware Vendor: innotek GmbH</text>
+<text x="16" y="379" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#eeedf0" xml:space="preserve">      Hardware Model: VirtualBox</text>
+</svg>

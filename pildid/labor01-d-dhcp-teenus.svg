@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="674" height="499" viewBox="0 0 674 499">
+<rect width="674" height="499" rx="8" fill="#1e1e1e"/>
+<rect width="674" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="674" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH)</text>
+<g transform="translate(582,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Internet Systems Consortium DHCP Server 4.4.3-P1</text>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Copyright 2004-2022 Internet Systems Consortium.</text>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">All rights reserved.</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">For info, please visit https://www.isc.org/software/dhcp/</text>
+<rect x="10" y="137" width="654" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">Config file: /etc/dhcp/dhcpd.conf</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Database file: /var/lib/dhcp/dhcpd.leases</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">PID file: /var/run/dhcpd.pid</text>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#7fb2ff" xml:space="preserve"># vigu ei ole: süntaksivea korral näidataks siin faili rida ja viga</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo systemctl restart isc-dhcp-server</text>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo systemctl status isc-dhcp-server --no-pager</text>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">● isc-dhcp-server.service - LSB: DHCP server</text>
+<text x="16" y="284" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">     Loaded: loaded (/etc/init.d/isc-dhcp-server; generated)</text>
+<rect x="10" y="289" width="654" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="303" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">     Active: active (running) since Fri 2026-11-20 10:15:02 EET; 5s ago</text>
+<text x="16" y="322" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">       Docs: man:systemd-sysv-generator(8)</text>
+<text x="16" y="341" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">      Tasks: 1 (limit: 2306)</text>
+<text x="16" y="360" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">     Memory: 4.1M</text>
+<text x="16" y="379" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">     CGroup: /system.slice/isc-dhcp-server.service</text>
+<rect x="10" y="384" width="654" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="398" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">             └─1250 /usr/sbin/dhcpd -4 -q -cf /etc/dhcp/dhcpd.conf enp0s3</text>
+<text x="16" y="417" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve"></text>
+<text x="16" y="436" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Nov 20 10:15:00 deb-srv isc-dhcp-server[1234]: Launching IPv4 server only.</text>
+<text x="16" y="455" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Nov 20 10:15:00 deb-srv dhcpd[1250]: Server starting service.</text>
+<text x="16" y="474" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Nov 20 10:15:02 deb-srv isc-dhcp-server[1234]: Starting ISC DHCPv4 server: dhcpd.</text>
+</svg>

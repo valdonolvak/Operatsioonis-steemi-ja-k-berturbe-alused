@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="846" height="290" viewBox="0 0 846 290">
+<rect width="846" height="290" rx="8" fill="#1e1e1e"/>
+<rect width="846" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="846" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH)</text>
+<g transform="translate(754,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">ls -l /srv/tftp</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">total 8</text>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">drwxr-xr-x 3 root root 4096 Sep  1 23:31 debian-installer</text>
+<rect x="10" y="99" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">lrwxrwxrwx 1 root root   47 Sep  1 23:31 ldlinux.c32 -&gt; debian-installer/amd64/boot-screens/ldlinux.c32</text>
+<rect x="10" y="118" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">lrwxrwxrwx 1 root root   33 Sep  1 23:31 pxelinux.0 -&gt; debian-installer/amd64/pxelinux.0</text>
+<rect x="10" y="137" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">lrwxrwxrwx 1 root root   35 Sep  1 23:31 pxelinux.cfg -&gt; debian-installer/amd64/pxelinux.cfg</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">-rw-r--r-- 1 root root   63 Sep  1 23:31 version.info</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">cd /tmp &amp;&amp; tftp 10.0.10.4 -c get pxelinux.0 &amp;&amp; ls -l pxelinux.0</text>
+<rect x="10" y="194" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">-rw-r--r-- 1 kasutaja kasutaja 42339 Nov 20 10:21 pxelinux.0</text>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:/tmp$</text>
+<text x="196.1" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">sudo ss -ulpn | grep -E ':67|:69'</text>
+<rect x="10" y="232" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="246" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">UNCONN 0      0            0.0.0.0:67        0.0.0.0:*    users:(("dhcpd",pid=1250,fd=7))</text>
+<rect x="10" y="251" width="826" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="265" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">UNCONN 0      0            0.0.0.0:69        0.0.0.0:*    users:(("in.tftpd",pid=1302,fd=4))</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="713" height="252" viewBox="0 0 713 252">
+<rect width="713" height="252" rx="8" fill="#1e1e1e"/>
+<rect width="713" height="34" rx="8" fill="#3c3c3c"/><rect y="26" width="713" height="8" fill="#3c3c3c"/>
+<circle cx="18" cy="17" r="6" fill="#ff5f56"/><circle cx="38" cy="17" r="6" fill="#ffbd2e"/><circle cx="58" cy="17" r="6" fill="#27c93f"/>
+<text x="80" y="22" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#e6e6e6">kasutaja@deb-srv (SSH) – pärast taaskäivitust</text>
+<g transform="translate(621,8)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="16" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="56" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">tail -3 /etc/fstab</text>
+<text x="16" y="75" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#7fb2ff" xml:space="preserve"># LVM andmeköited – labor 2</text>
+<rect x="10" y="80" width="693" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="94" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">UUID=6f1c2a3e-9b4d-4e1a-8c7f-2d5e0a9b3c11  /srv/projektid  ext4  defaults,nofail  0  2</text>
+<rect x="10" y="99" width="693" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="113" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">UUID=b84d7e20-1f3a-4c6b-9e2d-7a0c5f8e4d22  /srv/logid      ext4  defaults,nofail  0  2</text>
+<text x="16" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="132" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">findmnt --verify</text>
+<rect x="10" y="137" width="693" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="151" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">Success, no errors or warnings detected</text>
+<text x="16" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#4ec94e" xml:space="preserve">kasutaja@deb-srv:~$</text>
+<text x="172.6" y="170" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#ffffff" xml:space="preserve">df -hT /srv/projektid /srv/logid</text>
+<text x="16" y="189" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#d4d4d4" xml:space="preserve">Filesystem                         Type  Size  Used Avail Use% Mounted on</text>
+<rect x="10" y="194" width="693" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="208" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">/dev/mapper/vg_andmed-lv_projektid ext4  3.9G  524M  3.2G  14% /srv/projektid</text>
+<rect x="10" y="213" width="693" height="19" fill="#4d4400" opacity="0.85"/>
+<text x="16" y="227" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" fill="#ffe680" xml:space="preserve">/dev/mapper/vg_andmed-lv_logid     ext4  1.9G   24K  1.8G   1% /srv/logid</text>
+</svg>

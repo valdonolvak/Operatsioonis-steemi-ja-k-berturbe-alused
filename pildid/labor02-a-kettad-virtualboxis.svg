@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="272" viewBox="0 0 900 272">
+<rect x="0.5" y="0.5" width="899" height="271" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="0.5" y="0.5" width="899" height="38" rx="8" fill="#e5e7eb"/><rect x="0.5" y="30" width="899" height="9" fill="#e5e7eb"/>
+<line x1="0" y1="39" x2="900" y2="39" stroke="#9ca3af"/>
+<text x="18" y="25" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="600" fill="#111827">VirtualBox – deb-srv: Settings → Storage (skeem)</text>
+<g transform="translate(808,9)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="24" y="72" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Storage Devices</text>
+<line x1="24" y1="79" x2="876" y2="79" stroke="#d1d5db"/>
+<rect x="32" y="86" width="836" height="24" fill="#e5e7eb" stroke="#9ca3af"/>
+<text x="40" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#111827">Kontroller</text>
+<text x="207" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#111827">Port</text>
+<text x="374" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#111827">Kettatõmmis</text>
+<text x="542" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#111827">Suurus</text>
+<text x="709" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#111827">Linuxis</text>
+<rect x="32" y="110" width="836" height="24" fill="#fff" stroke="#9ca3af"/>
+<text x="40" y="126" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">SATA</text>
+<text x="207" y="126" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">0</text>
+<text x="374" y="126" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">deb-srv.vdi</text>
+<text x="542" y="126" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">20 GB</text>
+<text x="709" y="126" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">/dev/sda</text>
+<rect x="32" y="134" width="836" height="24" fill="#fff" stroke="#9ca3af"/>
+<text x="40" y="150" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">SATA</text>
+<text x="207" y="150" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">1</text>
+<text x="374" y="150" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">deb-srv-andmed1.vdi</text>
+<text x="542" y="150" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">10 GB</text>
+<text x="709" y="150" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">/dev/sdb</text>
+<rect x="32" y="158" width="836" height="24" fill="#fff" stroke="#9ca3af"/>
+<text x="40" y="174" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">SATA</text>
+<text x="207" y="174" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">2</text>
+<text x="374" y="174" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">deb-srv-andmed2.vdi</text>
+<text x="542" y="174" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">10 GB</text>
+<text x="709" y="174" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">/dev/sdc</text>
+<rect x="32" y="182" width="836" height="24" fill="#fff" stroke="#9ca3af"/>
+<text x="40" y="198" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">IDE</text>
+<text x="207" y="198" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">–</text>
+<text x="374" y="198" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">Optical: Empty</text>
+<text x="542" y="198" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">–</text>
+<text x="709" y="198" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="12" fill="#111827">/dev/sr0</text>
+<text x="40" y="232" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-style="italic" fill="#b45309">Uued kettad: VDI, Dynamically allocated. Lisa kettad ainult siis, kui VM on välja lülitatud.</text>
+</svg>

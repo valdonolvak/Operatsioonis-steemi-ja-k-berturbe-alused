@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="292" viewBox="0 0 760 292">
+<rect x="0.5" y="0.5" width="759" height="291" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<rect x="0.5" y="0.5" width="759" height="38" rx="8" fill="#e5e7eb"/><rect x="0.5" y="30" width="759" height="9" fill="#e5e7eb"/>
+<line x1="0" y1="39" x2="760" y2="39" stroke="#9ca3af"/>
+<text x="18" y="25" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="600" fill="#111827">deb-klient – Debiani paigaldaja menüü pärast võrgust käivitumist (skeem)</text>
+<g transform="translate(668,9)"><rect width="80" height="20" rx="4" fill="#d9480f"/><text x="40" y="14.5" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">NÄIDIS</text></g>
+<text x="24" y="72" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#1f2937">Debian GNU/Linux installer menu (BIOS mode)</text>
+<line x1="24" y1="79" x2="736" y2="79" stroke="#d1d5db"/>
+<rect x="40" y="89" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="102" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Graphical install</text>
+<rect x="40" y="113" width="15" height="15" rx="2" fill="#2563eb" stroke="#4b5563"/>
+<path d="M43 120 l4 4 l7 -8" stroke="#fff" stroke-width="2" fill="none"/>
+<text x="64" y="126" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Install          ← vali see</text>
+<rect x="40" y="137" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="150" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Advanced options  &gt;</text>
+<rect x="40" y="161" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="174" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Accessible dark contrast installer menu  &gt;</text>
+<rect x="40" y="185" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="198" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Help</text>
+<rect x="40" y="209" width="15" height="15" rx="2" fill="#fff" stroke="#4b5563"/>
+<text x="64" y="222" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="13" fill="#111827">Install with speech synthesis</text>
+<text x="40" y="252" font-family="Segoe UI, DejaVu Sans, Arial, sans-serif" font-size="12" font-style="italic" fill="#b45309">Menüü tuleb failist pxelinux.cfg/default, mille klient laadis TFTP-ga serverist 10.0.10.4.</text>
+</svg>
