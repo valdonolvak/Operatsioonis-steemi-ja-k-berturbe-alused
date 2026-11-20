@@ -36,6 +36,8 @@ Sümmeetriline šiffer on kaks funktsiooni: krüpteerimine **C = E(K, P)** ja de
 
 Seetõttu kasutatakse päris süsteemides **hübriidkrüpteerimist**: asümmeetrilise krüptograafiaga lepitakse kokku juhuslikus seansivõtmes ja andmed krüpteeritakse sümmeetriliselt (ptk 28.5).
 
+> 🖱️ **Proovi ise:** [sümmeetriline krüpteerimine brauseris](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html). Lehel krüpteerib brauser päriselt AES-iga: võtmete arvu kalkulaator, paroolist tuletatud võti ja AES-GCM, laviiniefekt, ECB muster, täidis, bitti ümberpöörav rünne, nonce’i kordumine ja BitLockeri võtmehierarhia.
+
 ### 26.2 Plokk- ja voošifrid
 
 **Plokkšiffer** (block cipher) krüpteerib korraga kindla suurusega ploki, AES-i puhul 128 bitti ehk 16 baiti. Iga võtme jaoks on plokkšiffer justkui hiiglaslik asendustabel, mis seab igale 16-baidisele sisendile vastavusse ühe 16-baidise väljundi. Võimalikke sisendeid on 2¹²⁸, nii et tabelit ei saa kirja panna ega sagedusanalüüsiga murda. Pikem sõnum jagatakse plokkideks ja nende sidumise reegel on **töörežiim** (26.4).
@@ -108,6 +110,8 @@ Kui server ütleb vastuseks erinevalt, kas täidis oli vale või oli viga mujal,
 
 **AEAD** (*authenticated encryption with associated data*) tähendab, et lisaks krüpteerimisele kontrollitakse terviklust ja autentsust. Miks see on oluline? CTR- ja CBC-režiimis saab ründaja šifriteksti sihipäraselt muuta. CTR-is muudab šifriteksti biti ümberpööramine täpselt sama biti avatekstis. Kui ründaja teab, et krüpteeritud sõnum algab `Summa: 100`, võib ta muuta selle `Summa: 900`-ks ilma võtit teadmata (bitti ümberpöörav rünne, bit-flipping). Krüpteerimine kaitseb konfidentsiaalsust, aga mitte terviklust – selleks on vaja autentimissilti.
 
+> 🖱️ **Proovi ise:** [ECB muster](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html#ecb), [PKCS#7 täidis](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html#taidis), [bitti ümberpöörav rünne CTR- ja GCM-režiimis](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html#flip) ja [nonce’i kordumine](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html#nonce). Vaata, kuidas Eve muudab summa 100 summaks 900 ilma võtit teadmata ja miks GCM selle avastab.
+
 **Nonce** (number used once) ja **IV** ei ole saladused, kuid need peavad iga krüpteerimise jaoks olema erinevad. GCM-is on nonce 96 bitti. Kui kasutada sama võtit ja nonce’i kaks korda, tekib sama võtmevoog: ründaja saab kahe avateksti XOR-i (nagu ptk 25.3 ühekordse ploki näites) ja võib lisaks taastada sildi arvutamise saladuse ning võltsida sõnumeid. Seepärast genereerivad teegid nonce’i ise ja sama võtmega krüpteeritakse piiratud arv sõnumeid.
 
 ### 26.5 Võtmed tulevad juhuslikkusest või paroolist
@@ -136,6 +140,8 @@ Miks nii keeruliselt?
 - **Kiire kustutamine.** Kui kustutada kõik võtmed, on andmed hetkega loetamatud ilma ketast üle kirjutamata (krüptograafiline kustutamine, crypto erase).
 
 **TPM** (*Trusted Platform Module*) on kiip, mis annab VMK välja ainult siis, kui käivitusahel (UEFI – *Unified Extensible Firmware Interface*, Secure Boot, alglaadur) on muutmata (ptk 18). Kui keegi käivitab arvuti oma USB-pulgalt (USB – *Universal Serial Bus*), TPM võtit ei anna. Ainult TPM-iga kaitstud arvuti käivitub aga Windowsi sisselogimisekraanini ise. Füüsilise ligipääsuga ründaja võib siis proovida võtit käivitamise ajal TPM-i ja protsessori vahelisest siinist pealt kuulata. Seetõttu soovitatakse sülearvutitel **TPM + PIN**.
+
+> 🖱️ **Proovi ise:** [BitLockeri võtmehierarhia](https://valdonolvak.github.io/Operatsioonis-steemi-ja-k-berturbe-alused/interaktiivne/26-aes.html#bitlocker). Vali olukord (PIN-i muutmine, emaplaadi vahetus, ketas teises arvutis, krüptograafiline kustutamine) ja vaata, milline tasand avaneb või muutub.
 
 Võtmehalduse põhireeglid:
 
