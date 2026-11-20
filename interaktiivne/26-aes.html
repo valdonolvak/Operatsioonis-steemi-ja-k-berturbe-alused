@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 26 – sümmeetriline krüpteerimine brauseris: AES, töörežiimid ja võtmed</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--bad:#a32d2d;--bad-bg:#fcebeb;--warn:#854f0b;--warn-bg:#faeeda;
+--mari:#0f6e56;--mari-bg:#e1f5ee;--eve:#993c1d;--eve-bg:#faece7;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--bad:#f7c1c1;--bad-bg:#791f1f;--warn:#fac775;--warn-bg:#633806;
+--mari:#9fe1cb;--mari-bg:#085041;--eve:#f5c4b3;--eve-bg:#712b13}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:24px;font-weight:500;margin:0 0 .5rem}
+h2{font-size:20px;font-weight:500;margin:2.5rem 0 .5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+h3{font-size:16px;font-weight:500;margin:1.25rem 0 .4rem}
+nav{display:flex;flex-wrap:wrap;gap:4px 14px}
+nav a{color:var(--accent);font-size:14px}
+p{margin:.5rem 0}
+code{font-family:var(--mono);font-size:.92em;background:var(--card);padding:0 4px;border-radius:4px}
+.inputs{display:flex;flex-wrap:wrap;gap:12px;margin:1rem 0 .5rem;align-items:flex-end}
+.inputs>div{flex:1;min-width:150px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+input,select{width:100%;height:38px;padding:0 10px;font-family:var(--mono);font-size:15px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text)}
+input[type=range]{padding:0;height:auto}
+button{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);cursor:pointer}
+button:hover{background:var(--card)}
+button.main{background:var(--accent-bg);color:var(--accent);border-color:transparent}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:.5rem 0 1rem}
+.card{background:var(--card);border-radius:12px;padding:1rem 1.25rem;margin:0 0 12px;overflow-x:auto}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:14px}
+.kv>div:nth-child(odd){color:var(--muted)}
+.hex{font-family:var(--mono);font-size:13px;word-break:break-all}
+.hex .ch{background:var(--bad-bg);color:var(--bad);border-radius:3px}
+.big{font-size:28px;font-weight:500;font-family:var(--mono)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.muted{color:var(--muted)}
+.msg{border-radius:8px;padding:.6rem .9rem;margin:.5rem 0;font-size:14px}
+.msg.ok{background:var(--ok-bg)}.msg.bad{background:var(--bad-bg)}.msg.warn{background:var(--warn-bg);color:var(--warn)}
+.note{border-left:3px solid var(--accent);padding:.25rem .9rem;margin:1rem 0;font-size:15px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.who{border-radius:12px;padding:.8rem 1rem}
+.who h4{margin:0 0 .3rem;font-size:14px;font-weight:500}
+.mari{background:var(--mari-bg);color:var(--mari)}
+.eve{background:var(--eve-bg);color:var(--eve)}
+/* bitid */
+.bits{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;max-width:520px;margin:.5rem 0}
+.bits span{aspect-ratio:1;border-radius:2px;background:var(--border)}
+.bits span.d{background:var(--bad)}
+/* plokid */
+.blocks{display:flex;flex-wrap:wrap;gap:10px;margin:.5rem 0}
+.block{display:grid;grid-template-columns:repeat(16,26px);gap:2px;padding:6px;border:1px solid var(--border);border-radius:8px}
+.block span{height:26px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;background:var(--bg);border-radius:3px}
+.block span.pad{background:var(--warn-bg);color:var(--warn);font-weight:600}
+.block span.mb{background:var(--accent-bg);color:var(--accent)}
+.blabel{font-size:12px;color:var(--muted);margin-bottom:2px}
+/* pildid */
+.imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:.5rem 0}
+.imgs figure{margin:0;text-align:center}
+.imgs canvas{width:100%;max-width:256px;border-radius:8px;border:1px solid var(--border)}
+.imgs figcaption{font-size:13px;color:var(--muted)}
+/* hierarhia */
+.hier{display:grid;gap:8px;margin:.75rem 0}
+.hrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.node{border:2px solid var(--border);border-radius:10px;padding:.5rem .8rem;min-width:170px;text-align:center;font-size:14px;background:var(--bg);transition:all .2s}
+.node small{display:block;color:var(--muted);font-size:12px}
+.node.ok{border-color:var(--ok);background:var(--ok-bg)}
+.node.bad{border-color:var(--bad);background:var(--bad-bg)}
+.node.chg{border-color:var(--warn);background:var(--warn-bg)}
+.node.off{opacity:.35;text-decoration:line-through}
+.arrow{text-align:center;color:var(--muted);font-size:13px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+th{font-weight:500;color:var(--muted)}
+</style>
+</head>
+<body>
+<nav>
+<a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/26-summeetriline-kruptograafia.md">← Peatükk 26</a>
+<a href="#votmed">1. Võtmete arv</a><a href="#gcm">2. AES-GCM ja parool</a><a href="#laviin">3. Laviiniefekt</a><a href="#ecb">4. ECB muster</a><a href="#taidis">5. Täidis</a><a href="#flip">6. Bitivahetus</a><a href="#nonce">7. Nonce’i kordumine</a><a href="#bitlocker">8. BitLocker</a>
+</nav>
+<h1>Sümmeetriline krüpteerimine brauseris</h1>
+<p>Sellel lehel krüpteerib brauser päriselt: kasutusel on brauseri sisseehitatud Web Crypto API (API – <i>Application Programming Interface</i>), sama AES (<i>Advanced Encryption Standard</i>), mida kasutavad TLS (<i>Transport Layer Security</i>), BitLocker ja OpenSSL. Ükski sisestatud tekst ega võti ei lahku sinu arvutist. Võtmed luuakse iga lehe laadimisel juhuslikult uuesti.</p>
+<p id="nocrypto" class="msg bad" hidden>Sinu brauser ei luba siin Web Crypto API-t kasutada. Ava leht HTTPS-aadressilt (GitHub Pages) või uuemas brauseris.</p>
+
+<!-- ================= 1 ================= -->
+<h2 id="votmed">1. Mitu võtit on vaja?</h2>
+<p>Sümmeetrilises krüptograafias vajab iga suhtlev paar oma salajast võtit. Kui võtit jagaks kolm inimest, saaks igaüks lugeda ka teiste kahe omavahelisi sõnumeid. n inimese jaoks on vaja <strong>n(n − 1) / 2</strong> võtit.</p>
+<div class="inputs"><div><label for="kn">Inimesi: <b id="knv">20</b></label><input type="range" id="kn" min="2" max="1000" value="20"></div></div>
+<div class="card">
+  <div class="big" id="kres"></div>
+  <div class="hex" id="kcalc"></div>
+  <p id="kwhy" style="font-size:14px;margin-top:.5rem"></p>
+</div>
+<div class="note">Seetõttu kasutatakse päris süsteemides <strong>hübriidkrüpteerimist</strong>: asümmeetrilise võtmevahetusega (ptk 28) lepitakse kokku juhuslik seansivõti ja andmed krüpteeritakse sümmeetriliselt. Iga inimene vajab siis ainult ühte võtmepaari, mitte n − 1 salajast võtit.</div>
+
+<!-- ================= 2 ================= -->
+<h2 id="gcm">2. AES-GCM ja paroolist tuletatud võti</h2>
+<p>Mari krüpteerib sõnumi parooliga. Parool ei ole võti: brauser tuletab sellest 256-bitise võtme funktsiooniga PBKDF2 (<i>Password-Based Key Derivation Function 2</i>), mis kasutab SHA-256 (<i>Secure Hash Algorithm 256</i>) räsi ja juhuslikku soola. Seejärel krüpteeritakse sõnum režiimis AES-GCM (GCM – <i>Galois/Counter Mode</i>), mis lisab šifritekstile 128-bitise autentimissildi.</p>
+<div class="inputs">
+  <div><label for="gpw">Parool</label><input id="gpw" value="Kevad2026"></div>
+  <div><label for="git">PBKDF2 kordusi</label><select id="git"><option value="1000">1 000 (liiga vähe)</option><option value="100000">100 000</option><option value="600000" selected>600 000 (soovitatav)</option></select></div>
+</div>
+<div class="inputs"><div><label for="gpt">Avatekst</label><input id="gpt" value="Hinded: Mari 5, Jaan 4"></div></div>
+<div class="btns"><button class="main" id="genc">Krüpteeri</button><button id="genc2">Krüpteeri sama tekst uuesti</button></div>
+<div class="card" id="gout"><span class="muted">Vajuta „Krüpteeri“.</span></div>
+<h3>Jaan dekrüpteerib</h3>
+<p>Jaan saab salvestatud faili: sool, nonce, šifritekst ja silt. Sool ja nonce ei ole saladused. Jaan peab teadma ainult parooli.</p>
+<div class="inputs"><div><label for="gpw2">Jaani sisestatud parool</label><input id="gpw2" value="Kevad2026"></div></div>
+<div class="btns"><button class="main" id="gdec">Dekrüpteeri</button><button id="gtamper">Ründaja muudab šifritekstis ühe biti</button><button id="greset">Taasta algne šifritekst</button></div>
+<div id="gdout"></div>
+<div class="note"><strong>Mõtle:</strong> mitu korda pikemaks muutub parooli proovimine, kui kordusi on 1 000 asemel 600 000? Kas see teeb parooli <code>Kevad2026</code> turvaliseks? (Vihje: ptk 26.5 ja 27.)</div>
+
+<!-- ================= 3 ================= -->
+<h2 id="laviin">3. Laviiniefekt: üks bitt muudab poolt šifriteksti</h2>
+<p>AES krüpteerib korraga ühe 16-baidise (128-bitise) ploki. Sisesta 16 märki. Teine plokk on sama, kuid ühes kohas on üks bitt ümber pööratud. Mõlemad krüpteeritakse sama võtmega.</p>
+<div class="inputs">
+  <div><label for="apt">Avatekst (16 märki, puuduolevad täidetakse tühikutega)</label><input id="apt" value="Summa: 100 eurot" maxlength="16"></div>
+  <div style="flex:0 0 130px"><label for="abit">Pööratav bitt (0–127)</label><input id="abit" type="number" min="0" max="127" value="7"></div>
+</div>
+<div class="btns"><button id="arnd">Juhuslik bitt</button><button id="akey">Uus juhuslik võti</button></div>
+<div class="card" id="aout"></div>
+
+<!-- ================= 4 ================= -->
+<h2 id="ecb">4. ECB lekitab mustreid</h2>
+<p>Pilt on 256 × 256 pikslit, iga piksel üks bait. Ühes 16-baidises plokis on seega 16 kõrvutist pikslit. ECB (<i>Electronic Codebook</i>) režiimis krüpteeritakse iga plokk eraldi, nii et ühesugused valged või mustad plokid annavad ühesuguse šifriteksti. CBC (<i>Cipher Block Chaining</i>) režiimis seotakse iga plokk eelmisega ja algusesse pannakse juhuslik IV (<i>Initialization Vector</i>), mistõttu muster kaob.</p>
+<div class="btns"><button class="main" id="ecbrun">Krüpteeri pilt</button><button id="ecbshape">Vaheta kujund</button></div>
+<div class="imgs">
+  <figure><canvas id="cv0" width="256" height="256"></canvas><figcaption>Avatekst (tõmmis)</figcaption></figure>
+  <figure><canvas id="cv1" width="256" height="256"></canvas><figcaption>AES-ECB šifritekst</figcaption></figure>
+  <figure><canvas id="cv2" width="256" height="256"></canvas><figcaption>AES-CBC šifritekst</figcaption></figure>
+</div>
+<p id="ecbinfo" class="muted" style="font-size:14px"></p>
+
+<!-- ================= 5 ================= -->
+<h2 id="taidis">5. PKCS#7 täidis</h2>
+<p>CBC vajab täisplokke. PKCS#7 (PKCS – <i>Public-Key Cryptography Standards</i>) täidis lisab nii mitu baiti, kui plokist puudu on, ja iga lisatud baidi väärtus on puuduolevate baitide arv. Kui sõnum täidab ploki täpselt, lisatakse terve plokk baitidega <code>10</code> (kümnendis 16). Täpitähed võtavad UTF-8 (<i>Unicode Transformation Format – 8-bit</i>) kodeeringus kaks baiti.</p>
+<div class="inputs"><div><label for="ppt">Sõnum</label><input id="ppt" value="Tere, Jaan!"></div></div>
+<div class="btns"><button data-p="A">1 bait</button><button data-p="Hinded: Mari 5">13 baiti</button><button data-p="Summa: 100 euro">15 baiti</button><button data-p="Summa: 100 eurot">16 baiti</button><button data-p="Õun ja äädikas">täpitähed</button></div>
+<div class="card" id="pout"></div>
+
+<!-- ================= 6 ================= -->
+<h2 id="flip">6. Bitti ümberpöörav rünne: CTR ilma sildita ja GCM sildiga</h2>
+<p>Mari saadab pangale krüpteeritud korralduse. Ründaja Eve ei tea võtit, kuid teab sõnumi vormingut: summa on baitidel 21–23. CTR (<i>Counter Mode</i>) režiimis on šifritekst = avatekst ⊕ võtmevoog (⊕ on XOR – <i>Exclusive OR</i>). Kui Eve pöörab šifritekstis ümber mingid bitid, pöörduvad avatekstis ümber täpselt samad bitid.</p>
+<div class="cols">
+  <div class="who mari"><h4>Mari sõnum (avatekst)</h4><div class="hex" id="fpt">Maksa Jaanile summa: 100 EUR</div></div>
+  <div class="who eve"><h4>Eve soovitud summa</h4><input id="fwant" value="900" maxlength="3" style="width:90px"></div>
+</div>
+<div class="btns"><button class="main" id="frun">Krüpteeri ja ründa</button></div>
+<div id="fout"></div>
+
+<!-- ================= 7 ================= -->
+<h2 id="nonce">7. Sama võti ja nonce kaks korda</h2>
+<p>Nonce (<i>number used once</i>) ei ole saladus, kuid sama võtmega ei tohi see korduda. Kui korduvad nii võti kui ka nonce, tekib sama võtmevoog. Siis kehtib C₁ ⊕ C₂ = P₁ ⊕ P₂ ja kui ründaja teab või arvab ära ühe sõnumi, saab ta teise kätte ilma võtmeta. Nii murti WEP (<i>Wired Equivalent Privacy</i>), mille 24-bitised IV-d hakkasid kiiresti korduma.</p>
+<div class="inputs">
+  <div><label for="np1">Sõnum 1 (Eve teab seda, nt standardne päis)</label><input id="np1" value="Tere! Koosolek algab kell 10.00."></div>
+  <div><label for="np2">Sõnum 2 (salajane)</label><input id="np2" value="Uus WiFi parool: Sinine-Karu-77"></div>
+</div>
+<div class="btns"><button class="main" id="nsame">Krüpteeri mõlemad SAMA nonce’iga</button><button id="ndiff">Krüpteeri ERI nonce’iga</button></div>
+<div id="nout"></div>
+
+<!-- ================= 8 ================= -->
+<h2 id="bitlocker">8. BitLockeri võtmehierarhia</h2>
+<p>Ketast krüpteerib FVEK (<i>Full Volume Encryption Key</i>) režiimis XTS-AES (XTS – <i>XEX-based Tweaked-codebook mode with ciphertext Stealing</i>). FVEK on krüpteeritud VMK-ga (<i>Volume Master Key</i>) ja VMK on krüpteeritud iga kaitsjaga eraldi. Vali olukord ja vaata, milline tasand muutub või avaneb.</p>
+<div class="btns" id="bscen">
+  <button data-s="boot" class="main">Tavaline käivitus</button>
+  <button data-s="pin">Kasutaja muudab PIN-i</button>
+  <button data-s="board">Emaplaat vahetati</button>
+  <button data-s="usb">Ründaja käivitab oma USB-pulgalt</button>
+  <button data-s="train">Ketas jäi rongi ja pannakse teise arvutisse</button>
+  <button data-s="erase">Krüptograafiline kustutamine</button>
+</div>
+<div class="hier">
+  <div class="hrow"><div class="node" id="nTPM">TPM + PIN<small>TPM – <i>Trusted Platform Module</i>; PIN – <i>Personal Identification Number</i></small></div><div class="node" id="nREC">Taasteparool<small>48 numbrit, Entra ID-s või AD-s (<i>Active Directory</i>)</small></div></div>
+  <div class="arrow">▼ kumbki kaitsja avab eraldi oma koopia VMK-st</div>
+  <div class="hrow"><div class="node" id="nVMK">VMK<small>256 bitti</small></div></div>
+  <div class="arrow">▼ VMK dekrüpteerib</div>
+  <div class="hrow"><div class="node" id="nFVEK">FVEK<small>XTS-AES-128 vaikimisi</small></div></div>
+  <div class="arrow">▼ FVEK dekrüpteerib sektoreid</div>
+  <div class="hrow"><div class="node" id="nDISK">Ketas, 512 GB<small>õppijate hinded ja isikuandmed</small></div></div>
+</div>
+<div class="card" id="bout"></div>
+
+<hr style="border:0;border-top:2px solid var(--border,#d6d4cc);margin:3.5rem 0 0">
+<div class="teadmiste-kontroll" id="teadmiste-kontroll" style="margin:1.5rem 0 1rem"><h2 style="margin-top:0">Pane oma teadmised proovile</h2><p>Kui oled lehe ülesanded läbi teinud, kontrolli peatüki teadmisi testiga: <a href="26-test.html" target="_blank" rel="noopener" onclick="window.open(this.href,'_blank','popup=yes,width=1100,height=850');return false">peatüki 26 test (25 küsimust)</a>. Test avaneb eraldi aknas.</p></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const C=window.crypto&&window.crypto.subtle;
+if(!C){$('nocrypto').hidden=false;}
+const te=new TextEncoder(), td=new TextDecoder('utf-8',{fatal:false});
+const hex=(u,mark)=>Array.from(u,(b,i)=>{const h=b.toString(16).padStart(2,'0');return mark&&mark.has(i)?'<span class="ch">'+h+'</span>':h}).join(' ');
+const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+const xor=(a,b)=>{const n=Math.min(a.length,b.length),r=new Uint8Array(n);for(let i=0;i<n;i++)r[i]=a[i]^b[i];return r};
+const g3=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const printable=u=>Array.from(u,b=>b>=32&&b<127?String.fromCharCode(b):'·').join('');
+async function rawKey(bytes,alg){return C.importKey('raw',bytes,alg,false,['encrypt','decrypt'])}
+
+/* ---------- 1. võtmete arv ---------- */
+function runKeys(){
+  const n=+$('kn').value; $('knv').textContent=g3(n);
+  const k=n*(n-1)/2;
+  $('kres').textContent=g3(k)+' võtit';
+  $('kcalc').textContent=n+' × ('+n+' − 1) / 2 = '+g3(n*(n-1))+' / 2 = '+g3(k);
+  $('kwhy').innerHTML='Iga inimene peab turvaliselt hoidma <b>'+g3(n-1)+'</b> salajast võtit. Kui üks inimene lisandub, tuleb luua ja kuidagi turvaliselt üle anda veel <b>'+g3(n)+'</b> uut võtit.';
+}
+$('kn').addEventListener('input',runKeys); runKeys();
+
+/* ---------- 2. AES-GCM + PBKDF2 ---------- */
+let G=null; // {salt,iv,ct,orig,iter}
+async function deriveKey(pw,salt,iter){
+  const base=await C.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);
+  return C.deriveKey({name:'PBKDF2',salt,iterations:iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+async function gEnc(){
+  const iter=+$('git').value, salt=rnd(16), iv=rnd(12);
+  const t0=performance.now(); const key=await deriveKey($('gpw').value,salt,iter); const ms=performance.now()-t0;
+  const out=new Uint8Array(await C.encrypt({name:'AES-GCM',iv},key,te.encode($('gpt').value)));
+  const ct=out.slice(0,out.length-16), tag=out.slice(out.length-16);
+  G={salt,iv,out,orig:out.slice(),iter};
+  const perPw=ms/1000, guesses=1e9;
+  $('gout').innerHTML='<div class="kv">'+
+    '<div>Sool (16 B)</div><div class="hex">'+hex(salt)+'</div>'+
+    '<div>Nonce (12 B)</div><div class="hex">'+hex(iv)+'</div>'+
+    '<div>Šifritekst ('+ct.length+' B)</div><div class="hex">'+hex(ct)+'</div>'+
+    '<div>Silt (16 B)</div><div class="hex">'+hex(tag)+'</div>'+
+    '<div>Võtme tuletamine</div><div>'+g3(iter)+' kordust, '+ms.toFixed(0)+' ms</div>'+
+    '<div>Ründaja aeg</div><div>miljardi parooli proovimiseks ühel tuumal ≈ '+human(perPw*guesses)+'</div></div>'+
+    '<p style="font-size:14px;margin-top:.6rem">Šifritekst on sama pikk kui avatekst ('+te.encode($('gpt').value).length+' baiti): GCM ei vaja täidist. Vajuta „Krüpteeri sama tekst uuesti“: sool ja nonce on uued, seega on ka võti ja šifritekst täiesti erinevad.</p>';
+  $('gdout').innerHTML='';
+}
+function human(s){
+  if(s<1) return (s*1000).toFixed(0)+' ms';
+  if(s<120) return s.toFixed(1)+' s';
+  if(s<7200) return (s/60).toFixed(0)+' min';
+  if(s<172800) return (s/3600).toFixed(0)+' h';
+  if(s<3.15e7*2) return (s/86400).toFixed(0)+' päeva';
+  return g3(Math.round(s/3.15e7))+' aastat';
+}
+async function gDec(){
+  if(!G){$('gdout').innerHTML='<div class="msg warn">Krüpteeri kõigepealt sõnum.</div>';return}
+  try{
+    const key=await deriveKey($('gpw2').value,G.salt,G.iter);
+    const pt=await C.decrypt({name:'AES-GCM',iv:G.iv},key,G.out);
+    $('gdout').innerHTML='<div class="msg ok">Silt klappis. Avatekst: <b>'+esc(td.decode(pt))+'</b></div>';
+  }catch(e){
+    const tampered=G.out.some((b,i)=>b!==G.orig[i]);
+    $('gdout').innerHTML='<div class="msg bad"><b>Dekrüpteerimine ebaõnnestus</b> ('+e.name+'). Silt ei klapi, seega ei anta välja ühtki baiti avateksti.<br>'+
+      (tampered?'Põhjus: šifriteksti on muudetud. GCM avastab ka ühe biti muutuse.':'Põhjus: vale parool annab vale võtme ja sellega arvutatud silt ei klapi. Kas parool oli õige, saab teada alles sildi kontrollis.')+'</div>';
+  }
+}
+$('genc').onclick=gEnc; $('genc2').onclick=gEnc; $('gdec').onclick=gDec;
+$('gtamper').onclick=()=>{ if(!G){gDec();return} G.out[0]^=0x01; $('gdout').innerHTML='<div class="msg warn">Ründaja pööras šifriteksti esimeses baidis ümber ühe biti: '+G.orig[0].toString(16).padStart(2,'0')+' → '+G.out[0].toString(16).padStart(2,'0')+'. Vajuta „Dekrüpteeri“.</div>'; };
+$('greset').onclick=()=>{ if(G){G.out=G.orig.slice(); $('gdout').innerHTML='<div class="msg ok">Algne šifritekst taastatud.</div>';} };
+
+/* ---------- 3. laviiniefekt ---------- */
+let AK=rnd(16);
+async function ecbBlock(key,block){ // üks AES-plokk: CBC nullise IV-ga = ECB esimese ploki jaoks
+  const out=new Uint8Array(await C.encrypt({name:'AES-CBC',iv:new Uint8Array(16)},key,block));
+  return out.slice(0,16);
+}
+async function runAval(){
+  let s=$('apt').value; let b=te.encode(s);
+  const p=new Uint8Array(16); p.fill(32); p.set(b.slice(0,16));
+  let bit=Math.max(0,Math.min(127,(+$('abit').value)|0));
+  const q=p.slice(); q[bit>>3]^=(0x80>>(bit&7));
+  const key=await rawKey(AK,'AES-CBC');
+  const c1=await ecbBlock(key,p), c2=await ecbBlock(key,q);
+  let diff=0, cells='';
+  for(let i=0;i<128;i++){const d=((c1[i>>3]^c2[i>>3])>>(7-(i&7)))&1; diff+=d; cells+='<span'+(d?' class="d"':'')+'></span>';}
+  const pm=new Set([bit>>3]), cm=new Set(); for(let i=0;i<16;i++) if(c1[i]!==c2[i]) cm.add(i);
+  $('aout').innerHTML='<div class="kv">'+
+   '<div>Avatekst A</div><div class="hex">'+hex(p)+' <span class="muted">„'+esc(printable(p))+'“</span></div>'+
+   '<div>Avatekst B</div><div class="hex">'+hex(q,pm)+' <span class="muted">„'+esc(printable(q))+'“</span></div>'+
+   '<div>Šifritekst A</div><div class="hex">'+hex(c1)+'</div>'+
+   '<div>Šifritekst B</div><div class="hex">'+hex(c2,cm)+'</div></div>'+
+   '<p style="margin-top:.6rem">Avatekstis erineb <b>1 bitt</b> (bait '+(bit>>3)+'), šifritekstis erineb <b>'+diff+' bitti 128-st</b> ('+(diff/1.28).toFixed(0)+' %). Punased ruudud on erinevad bitid:</p><div class="bits">'+cells+'</div>'+
+   '<p style="font-size:14px">Ootus on umbes 64 bitti ehk pool. Mustrit, millised bitid muutusid, ei ole: just see takistab avateksti ja šifriteksti seose kaudu võtit ära arvata.</p>';
+}
+['apt','abit'].forEach(i=>$(i).addEventListener('input',runAval));
+$('arnd').onclick=()=>{$('abit').value=Math.floor(Math.random()*128);runAval()};
+$('akey').onclick=()=>{AK=rnd(16);runAval()};
+
+/* ---------- 4. ECB muster ---------- */
+let shape=0;
+const W=256;
+function drawPlain(){
+  const cv=$('cv0'),x=cv.getContext('2d');
+  x.setTransform(1,0,0,1,0,0);x.fillStyle='#fff';x.fillRect(0,0,W,W);x.scale(2,2);x.fillStyle='#000';
+  if(shape===0){ // tabalukk
+    x.fillRect(32,60,64,52);
+    x.fillRect(40,28,10,36);x.fillRect(78,28,10,36);x.fillRect(40,20,48,10);
+    x.fillStyle='#fff';x.fillRect(58,76,12,24);
+  }else if(shape===1){ // ruudustik
+    for(let i=0;i<4;i++)for(let j=0;j<4;j++) if((i+j)%2===0) x.fillRect(i*32,j*32,32,32);
+  }else{ // tekst
+    x.font='bold 44px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('AES',64,46);
+    x.fillRect(16,86,96,16);
+  }
+  x.setTransform(1,0,0,1,0,0);
+  const d=x.getImageData(0,0,W,W).data, g=new Uint8Array(W*W);
+  for(let i=0;i<g.length;i++) g[i]=d[i*4]>127?255:0; // kaks tooni
+  return g;
+}
+function paint(id,bytes){
+  const cv=$(id),x=cv.getContext('2d'),im=x.createImageData(W,W);
+  for(let i=0;i<W*W;i++){im.data[i*4]=im.data[i*4+1]=im.data[i*4+2]=bytes[i];im.data[i*4+3]=255;}
+  x.putImageData(im,0,0);
+}
+async function runEcb(){
+  const g=drawPlain(); paint('cv0',g);
+  const key=await rawKey(rnd(16),'AES-CBC');
+  const n=g.length/16, ecb=new Uint8Array(g.length);
+  const parts=await Promise.all(Array.from({length:n},(_,i)=>ecbBlock(key,g.slice(i*16,i*16+16))));
+  parts.forEach((p,i)=>ecb.set(p,i*16));
+  paint('cv1',ecb);
+  const cbc=new Uint8Array(await C.encrypt({name:'AES-CBC',iv:rnd(16)},key,g));
+  paint('cv2',cbc.slice(0,g.length));
+  const uniq=new Set(parts.map(p=>hex(p))).size;
+  $('ecbinfo').textContent='Pildis on '+n+' plokki, ECB šifritekstis on ainult '+uniq+' erinevat plokki. Ühesugune avateksti plokk annab alati ühesuguse šifriteksti ploki, seega jääb kujund näha. CBC šifritekstis on kõik '+n+' plokki erinevad.';
+}
+$('ecbrun').onclick=runEcb;
+$('ecbshape').onclick=()=>{shape=(shape+1)%3;runEcb()};
+
+/* ---------- 5. täidis ---------- */
+function runPad(){
+  const b=te.encode($('ppt').value), padn=16-(b.length%16), all=new Uint8Array(b.length+padn);
+  all.set(b); all.fill(padn,b.length);
+  // märgi mitmebaidised märgid
+  const mb=new Set(); for(let i=0;i<b.length;i++) if(b[i]>=0x80) mb.add(i);
+  let html='<div class="blocks">';
+  for(let k=0;k<all.length/16;k++){
+    html+='<div><div class="blabel">Plokk '+(k+1)+'</div><div class="block">';
+    for(let i=k*16;i<k*16+16;i++){
+      const cls=i>=b.length?'pad':(mb.has(i)?'mb':'');
+      const lab=i>=b.length?all[i].toString(16).padStart(2,'0'):(b[i]>=32&&b[i]<127?esc(String.fromCharCode(b[i])):b[i].toString(16));
+      html+='<span class="'+cls+'" title="0x'+all[i].toString(16).padStart(2,'0')+'">'+lab+'</span>';
+    }
+    html+='</div></div>';
+  }
+  html+='</div>';
+  $('pout').innerHTML='<p>Sõnumis on <b>'+[...$('ppt').value].length+' märki</b>, mis on UTF-8-s <b>'+b.length+' baiti</b>. Lisatakse <b>'+padn+' täidisebaiti</b> väärtusega <code>'+padn.toString(16).padStart(2,'0')+'</code> (kümnendis '+padn+'). Šifritekst tuleb <b>'+all.length+' baiti</b> ('+all.length/16+' plokki).'+(padn===16?' Sõnum täitis ploki täpselt, seetõttu lisandus terve täidiseplokk.':'')+'</p>'+html+
+   '<p class="muted" style="font-size:13px">Kollased: täidis. Sinised: mitmebaidise märgi baidid (näidatud kuueteistkümnendsüsteemis).</p>'+
+   '<p style="font-size:14px">Dekrüpteerija loeb viimase baidi väärtuse ja eemaldab nii mitu baiti. Kui server ütleb erinevalt, kas täidis oli vale või oli viga mujal, saab ründaja seda <b>täidiseoraaklina</b> kasutada (ptk 26.4).</p>';
+}
+$('ppt').addEventListener('input',runPad);
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{$('ppt').value=b.dataset.p;runPad()});
+runPad();
+
+/* ---------- 6. bitivahetus ---------- */
+async function runFlip(){
+  const msg='Maksa Jaanile summa: 100 EUR', P=te.encode(msg), pos=msg.indexOf('100');
+  let want=($('fwant').value+'   ').slice(0,3);
+  if(!/^\d{3}$/.test(want)){$('fout').innerHTML='<div class="msg warn">Sisesta kolm numbrit, nt 900.</div>';return}
+  const kb=rnd(16), ctrKey=await rawKey(kb,'AES-CTR'), gcmKey=await rawKey(kb,'AES-GCM');
+  const ctr=rnd(16), iv=rnd(12);
+  const c=new Uint8Array(await C.encrypt({name:'AES-CTR',counter:ctr,length:64},ctrKey,P));
+  const delta=xor(te.encode('100'),te.encode(want));
+  const m=c.slice(), mark=new Set(); for(let i=0;i<3;i++){m[pos+i]^=delta[i]; if(delta[i]) mark.add(pos+i);}
+  const dec=td.decode(await C.decrypt({name:'AES-CTR',counter:ctr,length:64},ctrKey,m));
+  const g=new Uint8Array(await C.encrypt({name:'AES-GCM',iv},gcmKey,P));
+  const gm=g.slice(); for(let i=0;i<3;i++) gm[pos+i]^=delta[i];
+  let gres; try{await C.decrypt({name:'AES-GCM',iv},gcmKey,gm); gres='<div class="msg bad">GCM võttis muudetud sõnumi vastu (ootamatu).</div>'}
+  catch(e){gres='<div class="msg ok"><b>GCM: dekrüpteerimine ebaõnnestus</b> ('+e.name+'). Eve muutis samad baidid, kuid autentimissilt ei klapi. Pank ei näe ühtki baiti avateksti ja lükkab korralduse tagasi.</div>'}
+  $('fout').innerHTML='<div class="card"><div class="kv">'+
+   '<div>Eve arvutab</div><div class="hex">„100“ ⊕ „'+esc(want)+'“ = '+hex(delta)+'</div>'+
+   '<div>Algne šifritekst</div><div class="hex">'+hex(c)+'</div>'+
+   '<div>Eve muudetud</div><div class="hex">'+hex(m,mark)+'</div></div></div>'+
+   '<div class="msg bad"><b>CTR: pank dekrüpteerib</b> „'+esc(dec)+'“. Eve muutis summat ilma võtit teadmata ja keegi ei märganud midagi.</div>'+gres+
+   '<p style="font-size:14px">Krüpteerimine kaitseb konfidentsiaalsust, mitte terviklust. Seepärast eelistatakse AEAD-režiime (AEAD – <i>Authenticated Encryption with Associated Data</i>), nagu GCM ja ChaCha20-Poly1305.</p>';
+}
+$('frun').onclick=runFlip;
+
+/* ---------- 7. nonce kordumine ---------- */
+async function runNonce(same){
+  const p1=te.encode($('np1').value), p2=te.encode($('np2').value);
+  const key=await rawKey(rnd(16),'AES-CTR'), n1=rnd(16), n2=same?n1:rnd(16);
+  const c1=new Uint8Array(await C.encrypt({name:'AES-CTR',counter:n1,length:64},key,p1));
+  const c2=new Uint8Array(await C.encrypt({name:'AES-CTR',counter:n2,length:64},key,p2));
+  const x=xor(c1,c2), rec=xor(x,p1), len=Math.min(p1.length,p2.length);
+  const ok=same;
+  $('nout').innerHTML='<div class="card"><div class="kv">'+
+   '<div>Nonce 1</div><div class="hex">'+hex(n1)+'</div>'+
+   '<div>Nonce 2</div><div class="hex">'+hex(n2)+(same?' <b class="bad">(sama!)</b>':'')+'</div>'+
+   '<div>C₁</div><div class="hex">'+hex(c1)+'</div>'+
+   '<div>C₂</div><div class="hex">'+hex(c2)+'</div>'+
+   '<div>C₁ ⊕ C₂</div><div class="hex">'+hex(x)+'</div>'+
+   '<div>(C₁ ⊕ C₂) ⊕ P₁</div><div class="hex">'+esc(printable(rec))+'</div></div></div>'+
+   (ok?'<div class="msg bad"><b>Eve sai sõnumi 2 kätte ilma võtmeta</b> (esimesed '+len+' baiti): „'+esc(printable(rec))+'“. Võtmevoog taandus XOR-is välja.</div>'
+      :'<div class="msg ok">Nonce’id on erinevad, seega on ka võtmevood erinevad. C₁ ⊕ C₂ ei ole enam P₁ ⊕ P₂ ja tulemus on juhuslik müra.</div>')+
+   '<p style="font-size:14px">Kui sõnum 2 on pikem kui sõnum 1, jääb ülejäänud osa Eve’ile teadmata: ta saab ainult nii palju, kui palju avateksti ta teab. GCM-is lekiks lisaks sildi arvutamise saladus ja Eve saaks sõnumeid võltsida. Seepärast loovad teegid nonce’i ise.</p>';
+}
+$('nsame').onclick=()=>runNonce(true); $('ndiff').onclick=()=>runNonce(false);
+
+/* ---------- 8. BitLocker ---------- */
+const S={
+ boot:{TPM:'ok',REC:'',VMK:'ok',FVEK:'ok',DISK:'ok',t:'<b>Tavaline käivitus.</b> TPM mõõdab käivitusahelat (UEFI – <i>Unified Extensible Firmware Interface</i>, Secure Boot, alglaadur). Kui mõõtmised klapivad ja kasutaja sisestab õige PIN-i, annab TPM välja VMK. VMK dekrüpteerib FVEK-i ja FVEK dekrüpteerib sektoreid lennult. Kasutaja seda ei märka.'},
+ pin:{TPM:'chg',REC:'',VMK:'ok',FVEK:'',DISK:'',t:'<b>PIN-i muutmine.</b> VMK jääb samaks. Uue PIN-iga krüpteeritakse uuesti ainult TPM + PIN kaitsja koopia VMK-st: umbes paarsada baiti. 512 GB andmeid ja FVEK-i ei puudutata, seega võtab muutmine sekundi. Ilma hierarhiata tuleks kogu ketas uuesti krüpteerida.'},
+ board:{TPM:'bad',REC:'ok',VMK:'ok',FVEK:'ok',DISK:'ok',t:'<b>Emaplaat vahetati.</b> Uues emaplaadis on teine TPM, mis seda VMK-d ei tunne, ja mõõtmised ei klapi. BitLocker küsib taasteparooli. IT-tugi leiab selle Entra ID-st või AD-st, kasutaja sisestab 48 numbrit ja taasteparooli kaitsja avab VMK. Seejärel saab TPM-kaitsja uue emaplaadi jaoks uuesti luua. Kui taasteparooli pole salvestatud, on andmed kadunud.'},
+ usb:{TPM:'bad',REC:'off',VMK:'bad',FVEK:'bad',DISK:'bad',t:'<b>Ründaja käivitab oma USB-pulgalt.</b> Käivitusahel on teistsugune, seega TPM-i mõõtmised ei klapi ja TPM ei anna VMK-d välja. Taasteparooli ründaja ei tea. Ketas on ründaja jaoks ainult XTS-AES šifritekst. (Ainult TPM-iga kaitstud arvuti käivituks sisselogimisekraanini ise. Siis võiks füüsilise ligipääsuga ründaja proovida võtit TPM-i siinilt pealt kuulata. Seetõttu soovitatakse sülearvutitel TPM + PIN.)'},
+ train:{TPM:'off',REC:'off',VMK:'bad',FVEK:'bad',DISK:'bad',t:'<b>Ketas teises arvutis.</b> Leidja paneb ketta oma arvutisse. Selle arvuti TPM ei tea midagi algse arvuti VMK-st ning PIN-i ja taasteparooli leidja ei tea. Ta näeb ainult šifriteksti. Juhtum dokumenteeritakse, kuid kui võti ei lekkinud, ei ole andmesubjektide teavitamine üldjuhul vajalik (ptk 31). IT-tugi blokeerib seadme ja kontrollib, et taasteparool on Entra ID-s olemas.'},
+ erase:{TPM:'off',REC:'off',VMK:'off',FVEK:'bad',DISK:'bad',t:'<b>Krüptograafiline kustutamine.</b> Kõik kaitsjad ja VMK kustutatakse. FVEK-i ei saa enam keegi dekrüpteerida, seega on 512 GB andmeid loetamatud sekundiga, ilma et ketast oleks vaja tunde üle kirjutada. Nii kustutatakse andmeid SSD-delt ja pilvekettalt (SSD – <i>Solid-State Drive</i>), kus ülekirjutamine ei taba alati kõiki füüsilisi plokke.'}
+};
+function runBit(k){
+  const s=S[k];
+  ['TPM','REC','VMK','FVEK','DISK'].forEach(n=>{$('n'+n).className='node'+(s[n]?' '+s[n]:'')});
+  $('bout').innerHTML='<p style="margin:0">'+s.t+'</p>';
+  document.querySelectorAll('#bscen button').forEach(b=>b.classList.toggle('main',b.dataset.s===k));
+}
+document.querySelectorAll('#bscen button').forEach(b=>b.onclick=()=>runBit(b.dataset.s));
+runBit('boot');
+
+if(C){ runAval(); runEcb(); }
+</script>
+</body>
+</html>
