@@ -207,8 +207,12 @@ Kui viimane jääk on 1, on 17-l ja 3120-l suurim ühistegur 1, seega e = 17 sob
 | Avaldis | Mis tehti | Arvutus |
 | --- | --- | --- |
 | 1 = 2 × (3120 − 183 × 17) − 17 | 9 asendati avaldisega 3120 − 183 × 17 | 2 × (3120 − 3111) − 17 = 2 × 9 − 17 = 18 − 17 = **1** |
-| = 2 × 3120 − 366 × 17 − 1 × 17 | sulud lahti: 2 × 183 = 366 | 6240 − 6222 − 17 = **1** |
-| = **2 × 3120 − 367 × 17** | 366 + 1 = 367 (366 korda 17 ja veel üks 17) | 6240 − 6239 = **1** |
+| = 2 × 3120 − 366 × 17 − 1 × 17 | sulud lahti: 2 × 183 = 366; üksik 17 on sama mis 1 × 17 | 6240 − 6222 − 17 = **1** |
+| = 2 × 3120 − (366 × 17 + 1 × 17) | mõlemad lahutatavad pannakse sulgudesse kokku | 6240 − (6222 + 17) = 6240 − 6239 = **1** |
+| = 2 × 3120 − (366 + 1) × 17 | sulgudes on 366 tükki 17 ja veel 1 tükk 17, kokku 367 tükki | 6240 − 367 × 17 = 6240 − 6239 = **1** |
+| = **2 × 3120 − 367 × 17** | 366 + 1 = 367 | 6240 − 6239 = **1** |
+
+Sama võte väikeste arvudega: 3 × 17 + 1 × 17 = 51 + 17 = 68 ja 4 × 17 = 68. Kui sama arvu (17) võetakse kõigepealt 3 korda ja siis veel 1 kord, on see kokku 4 korda.
 
 Kui võtame mõlemast poolest jäägi 3120-ga jagamisel, kaob 2 × 3120 ära, sest see jagub 3120-ga. Järele jääb (−367 × 17) mod 3120 = 1, seega −367 on sobiv d. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
 
