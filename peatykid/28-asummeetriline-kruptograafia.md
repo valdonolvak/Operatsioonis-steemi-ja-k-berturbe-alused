@@ -212,7 +212,14 @@ Kui viimane jääk on 1, on 17-l ja 3120-l suurim ühistegur 1, seega e = 17 sob
 | = 2 × 3120 − (366 + 1) × 17 | sulgudes on 366 tükki 17 ja veel 1 tükk 17, kokku 367 tükki | 6240 − 367 × 17 = 6240 − 6239 = **1** |
 | = **2 × 3120 − 367 × 17** | 366 + 1 = 367 | 6240 − 6239 = **1** |
 
-Sama võte väikeste arvudega: 3 × 17 + 1 × 17 = 51 + 17 = 68 ja 4 × 17 = 68. Kui sama arvu (17) võetakse kõigepealt 3 korda ja siis veel 1 kord, on see kokku 4 korda.
+**Kust tuleb 367?** Arv 366 ei muutu ise 367-ks. Juurde tuleb avaldise lõpus olev üksik „− 17“. Avaldises 2 × 3120 − 366 × 17 − 17 lahutatakse 17 kaks korda:
+
+- kõigepealt 366 korda: 366 × 17 = 6222;
+- seejärel veel üks kord: 17 = 1 × 17.
+
+Kokku lahutatakse 17 seega 366 + 1 = **367 korda**. Kontroll: 6222 + 17 = 6239 ja 367 × 17 = 6239.
+
+Sama võte väikeste arvudega: 3 × 17 + 1 × 17 = 51 + 17 = 68 ja 4 × 17 = 68. Kui sama arvu (17) võetakse kõigepealt 3 korda ja siis veel 1 kord, on see kokku 4 korda. Meie avaldises on 3 asemel 366, seega tuleb 367.
 
 Kui võtame mõlemast poolest jäägi 3120-ga jagamisel, kaob 2 × 3120 ära, sest see jagub 3120-ga. Järele jääb (−367 × 17) mod 3120 = 1, seega −367 on sobiv d. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
 
