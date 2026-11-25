@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peatükk 28 – test: asümmeetriline krüptograafia ja Diffie–Hellmani võtmevahetus</title>
+<style>
+:root{--bg:#fff;--card:#f6f5f1;--text:#1f1f1d;--muted:#6b6a65;--border:#d6d4cc;--accent:#185fa5;--accent-bg:#e6f1fb;
+--ok:#3b6d11;--ok-bg:#eaf3de;--ok-line:#639922;--bad:#a32d2d;--bad-bg:#fcebeb;--bad-line:#e24b4a;--todo:#e4e2da;
+--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1b;--card:#262624;--text:#ecebe6;--muted:#a3a29c;--border:#44443f;--accent:#85b7eb;--accent-bg:#0c447c;
+--ok:#c0dd97;--ok-bg:#27500a;--ok-line:#97c459;--bad:#f7c1c1;--bad-bg:#791f1f;--bad-line:#f09595;--todo:#3a3a37}}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6}
+h1{font-size:22px;font-weight:500;margin:0 0 .25rem}
+.sub{color:var(--muted);font-size:14px;margin:0 0 1.5rem}
+nav a{color:var(--accent);font-size:14px}
+code{font-family:var(--mono);font-size:.9em;background:var(--card);padding:0 4px;border-radius:4px}
+.bar{display:flex;gap:3px;margin:0 0 .5rem}
+.seg{flex:1;height:8px;border-radius:2px;background:var(--todo);border:0;padding:0;cursor:pointer}
+.seg.ok{background:var(--ok-line)}.seg.bad{background:var(--bad-line)}.seg.cur{outline:2px solid var(--accent);outline-offset:1px}
+.stats{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin:0 0 1.5rem}
+.stats b{color:var(--text);font-weight:500}
+.card{background:var(--card);border-radius:12px;padding:1.25rem 1.5rem}
+.qnum{font-size:13px;color:var(--muted);margin:0 0 .25rem}
+.qtext{font-size:18px;font-weight:500;margin:0 0 1rem;line-height:1.5}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.7rem 1rem;margin:0 0 8px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:disabled{cursor:default}
+.opt .k{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--muted)}
+.opt.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok)}
+.opt.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad)}
+.opt.ok .k,.opt.bad .k{border-color:currentColor;color:inherit}
+.opt.dim{opacity:.55}
+.fb{margin:1rem 0 0;padding:.75rem 1rem;border-left:3px solid;border-radius:0;background:var(--bg);font-size:15px}
+.fb.ok{border-color:var(--ok-line)}.fb.bad{border-color:var(--bad-line)}
+.fb strong{display:block;margin-bottom:2px}
+.fb.ok strong{color:var(--ok)}.fb.bad strong{color:var(--bad)}
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;gap:8px;flex-wrap:wrap}
+button.btn{font:inherit;font-size:15px;padding:.5rem 1.1rem;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){button.btn.primary{color:#042c53}}
+button.btn:disabled{opacity:.4;cursor:default}
+.hint{font-size:13px;color:var(--muted)}
+.big{font-size:40px;font-weight:500;margin:0}
+.grade{font-size:18px;margin:.25rem 0 1rem}
+.review{margin:1rem 0 0;padding:0;list-style:none}
+.review li{padding:.6rem 0;border-top:1px solid var(--border);font-size:15px}
+.review .ans{color:var(--ok);font-size:14px}
+</style>
+</head>
+<body>
+<nav><a href="https://github.com/valdonolvak/Operatsioonis-steemi-ja-k-berturbe-alused/blob/main/peatykid/28-asummeetriline-kruptograafia.md">← Peatükk 28</a></nav>
+<h1>Test: asümmeetriline krüptograafia ja Diffie–Hellman</h1>
+<p class="sub">Vali vastus ja näed kohe, kas see oli õige ning miks. Klaviatuuriga: <code>1</code>–<code>4</code> valib, <code>Enter</code> viib edasi.</p>
+
+<div class="bar" id="bar" aria-label="Edenemine"></div>
+<div class="stats"><span>Küsimus <b id="pos">1</b> / <b id="tot">0</b></span><span>Õigeid <b id="okc">0</b> · Valesid <b id="badc">0</b></span></div>
+
+<div class="card" id="card" aria-live="polite"></div>
+
+<script>
+/* Küsimused: q = küsimus (HTML), o = vastusevariandid, c = õige variandi indeks (0-põhine), e = selgitus */
+const KYSIMUSED=[
+{"q": "Mari tahab saata Jaanile krüpteeritud sõnumi. Millise võtmega ta krüpteerib?", "o": ["Mari privaatvõtmega", "Jaani avaliku võtmega", "Jaani privaatvõtmega", "Mari avaliku võtmega"], "c": 1, "e": "Krüpteeritakse saaja avaliku võtmega, sest see on kõigile teada. Avada saab sõnumi ainult Jaan oma privaatvõtmega."},
+{"q": "Millise võtmega allkirjastad dokumendi digitaalselt?", "o": ["Oma privaatvõtmega", "Oma avaliku võtmega", "Saaja avaliku võtmega", "Ühise sümmeetrilise võtmega"], "c": 0, "e": "Allkiri tehakse privaatvõtmega, mida teab ainult omanik. Igaüks saab allkirja kontrollida omaniku avaliku võtmega."},
+{"q": "Mis on lõksuuksefunktsioon (<i>trapdoor function</i>)?", "o": ["Funktsioon, mis kustutab võtme pärast kasutamist", "Funktsioon, mis on ühes suunas lihtne, kuid vastupidi praktiliselt võimatu ilma salajase lisateabeta", "Räsifunktsioon, millel ei ole kokkupõrkeid", "Funktsioon, mis krüpteerib ja dekrüpteerib sama võtmega"], "c": 1, "e": "Näiteks 61 × 53 = 3233 on lihtne arvutada, kuid 3233 algteguriteks lahutamine on raske. Suurte arvudega on see praktiliselt võimatu, kui algtegureid ei tea."},
+{"q": "Mis on 15 625 mod 23?", "o": ["679", "3", "8", "17"], "c": 2, "e": "15 625 ÷ 23 = 679,3…, täisosa 679. 679 × 23 = 15 617 ja 15 625 − 15 617 = 8."},
+{"q": "Arvuta 3⁴ mod 7.", "o": ["4", "5", "1", "3"], "c": 0, "e": "3⁴ = 81. 81 = 11 × 7 + 4, seega 3⁴ mod 7 = 4."},
+{"q": "Arvuta 2¹⁰ mod 11.", "o": ["10", "1", "2", "9"], "c": 1, "e": "2¹⁰ = 1024 = 93 × 11 + 1, seega jääk on 1. (Fermat’ väikese teoreemi järgi aᵖ⁻¹ mod p = 1, kui p on algarv ja a ei jagu p-ga.)"},
+{"q": "Miks on astendamine moodulis arvutile kiire ka tuhandebitiste arvudega?", "o": ["Arvuti kasutab eelarvutatud tabelit", "Ruutu tõstmise võttega piisab umbes nii mitmest ruutu tõstmisest, kui astendajas on bitte, ja jääk võetakse pärast iga korrutamist", "Moodul on alati väike", "Astendaja on alati 65 537"], "c": 1, "e": "Ruutu tõstmise võte (<i>square-and-multiply</i>): g¹, g², g⁴, g⁸ … ja jääk pärast iga tehet. 3072-bitise astendaja jaoks kulub umbes 3072 ruutu tõstmist, mitte 2³⁰⁷² korrutamist."},
+{"q": "Diffie–Hellman: p = 23, g = 5, Mari salajane a = 6. Mis on Mari avalik väärtus A = gᵃ mod p?", "o": ["2", "19", "8", "6"], "c": 2, "e": "5⁶ = 15 625 ja 15 625 mod 23 = 8. See väärtus liigub võrgus avalikult."},
+{"q": "Diffie–Hellman: p = 23, g = 5, a = 4, b = 9. Mis on ühine saladus?", "o": ["4", "11", "13", "2"], "c": 2, "e": "A = 5⁴ mod 23 = 4, B = 5⁹ mod 23 = 11. Mari: 11⁴ mod 23 = 13. Jaan: 4⁹ mod 23 = 13. Mõlemal tuleb 13."},
+{"q": "Millist rasket matemaatilist ülesannet peaks pealtkuulaja lahendama, et Diffie–Hellmani saladust leida?", "o": ["Suure arvu tegurdamist", "Diskreetset logaritmi: teades g, p ja A = gᵃ mod p, leida a", "Räsi pööramist", "Võreprobleemi"], "c": 1, "e": "Pealtkuulaja näeb p, g, A ja B. Saladuse arvutamiseks peab ta leidma a või b ehk lahendama diskreetse logaritmi. Tegurdamine on RSA raske ülesanne."},
+{"q": "Miks vajab Diffie–Hellman lisaks autentimist?", "o": ["Muidu on võtmevahetus liiga aeglane", "Ilma autentimiseta saab vahendaja (MITM – <i>Man-in-the-Middle</i>) teha mõlema osapoolega eraldi võtmevahetuse ja lugeda kogu liiklust", "Muidu tuleb ühine saladus erinev", "Autentimine lühendab võtit"], "c": 1, "e": "Diffie–Hellman tagab, et pealtkuulaja ei saa saladust teada, kuid ei tõesta, kellega võti kokku lepiti. Seepärast allkirjastab TLS-server (TLS – <i>Transport Layer Security</i>) võtmevahetuse sertifikaadiga ja SSH-klient (SSH – <i>Secure Shell</i>) kontrollib serveri võtme sõrmejälge."},
+{"q": "Mida tähendab edasine salastatus (<i>forward secrecy</i>)?", "o": ["Sõnumeid saab hiljem uuesti krüpteerida", "Kui serveri privaatvõti hiljem lekib, ei saa varem salvestatud liiklust dekrüpteerida", "Sertifikaat kehtib edasi ka pärast aegumist", "Võti on pikem kui sõnum"], "c": 1, "e": "Ajutised võtmed (ECDHE – <i>Elliptic Curve Diffie–Hellman Ephemeral</i>) luuakse iga ühenduse jaoks ja kustutatakse pärast seda. Seansivõtmeid ei ole enam kusagil, seega ei aita ka hiljem lekkinud serveri võti."},
+{"q": "Milline TLS-i versioon kasutab ainult ajutisi võtmevahetusi?", "o": ["SSL 3.0", "TLS 1.0", "TLS 1.2", "TLS 1.3"], "c": 3, "e": "TLS 1.3 eemaldas staatilise RSA võtmevahetuse, kus seansivõti krüpteeriti otse serveri RSA-võtmega. Seetõttu on TLS 1.3-s edasine salastatus alati olemas."},
+{"q": "RSA näites p = 61 ja q = 53. Mis on moodul n ja φ(n)?", "o": ["n = 3233, φ(n) = 3120", "n = 114, φ(n) = 3233", "n = 3120, φ(n) = 3233", "n = 3233, φ(n) = 3232"], "c": 0, "e": "n = 61 × 53 = 3233 (avalik). φ(n) = (61 − 1)(53 − 1) = 60 × 52 = 3120 (salajane)."},
+{"q": "Miks on RSA-s φ(n) salajane?", "o": ["Sellest saab arvutada privaatse eksponendi d", "Sellest saab arvutada avaliku eksponendi e", "See on sama mis moodul n", "Selleta ei saa sõnumit krüpteerida"], "c": 0, "e": "d leitakse tingimusest e × d mod φ(n) = 1. Kes teab φ(n), saab d arvutada. φ(n) arvutamiseks on vaja teada p-d ja q-d ehk n-i tegurdada."},
+{"q": "RSA: e = 17 ja φ(n) = 3120. Milline d sobib privaatseks eksponendiks?", "o": ["17", "3233", "2753", "65 537"], "c": 2, "e": "17 × 2753 = 46 801 = 15 × 3120 + 1, seega 17 × 2753 mod 3120 = 1. Selle leiab laiendatud Eukleidese algoritmiga või Pythonis <code>pow(17, -1, 3120)</code>."},
+{"q": "Millele põhineb RSA turvalisus?", "o": ["Diskreetse logaritmi raskusel elliptkõveral", "Suure arvu algteguriteks lahutamise raskusel", "Räsifunktsiooni kokkupõrkekindlusel", "Juhusliku nonce’i kordumatusel"], "c": 1, "e": "Kes teab n-i algtegureid p ja q, saab arvutada φ(n) ja sellest d. Ründaja teab ainult n-i. 2048-bitine n on 617 kümnendkohta pikk ja seda ei suudeta klassikaliste arvutitega tegurdada."},
+{"q": "Miks ei krüpteerita päris RSA-s sõnumit otse ilma täidiseta („<i>textbook RSA</i>“)?", "o": ["Ilma täidiseta on krüpteerimine liiga aeglane", "Sama sõnum annab alati sama šifriteksti, nii et ründaja saab võimalikud sõnumid ise krüpteerida ja võrrelda", "Ilma täidiseta ei saa dekrüpteerida", "Täidis teeb võtme pikemaks"], "c": 1, "e": "Kui vastus on kas „jah“ või „ei“, krüpteerib ründaja mõlemad avaliku võtmega ja võrdleb. Juhuslik täidis OAEP (<i>Optimal Asymmetric Encryption Padding</i>) teeb iga krüpteerimise erinevaks."},
+{"q": "Milline täidis on RSA allkirjade jaoks soovitatav?", "o": ["PKCS#1 v1.5", "PSS (<i>Probabilistic Signature Scheme</i>)", "PKCS#7", "Täidist pole vaja"], "c": 1, "e": "Allkirjadel kasutatakse PSS-i ja krüpteerimisel OAEP-d. Vana PKCS#1 v1.5 (PKCS – <i>Public-Key Cryptography Standards</i>) täidis on haavatav oraaklirünnakutele (Bleichenbacher 1998, ROBOT 2017)."},
+{"q": "Miks piisab elliptkõverkrüptograafias (ECC – <i>Elliptic Curve Cryptography</i>) palju lühemast võtmest kui RSA-s?", "o": ["ECC kasutab sümmeetrilist võtit", "Parim teadaolev rünne elliptkõvera diskreetse logaritmi vastu on palju aeglasem kui parim tegurdamismeetod RSA vastu", "ECC võtmeid ei saa kunagi murda", "ECC võti on räsitud"], "c": 1, "e": "RSA vastu on olemas alameksponentsiaalsed tegurdamismeetodid, ECC vastu ei ole kiiret meetodit teada. Seetõttu on 256-bitine ECC-võti sama tugev kui 3072-bitine RSA-võti."},
+{"q": "Milline RSA-võtme pikkus annab ligikaudu sama turvalisuse (128 bitti) kui AES-128 või 256-bitine ECC-võti?", "o": ["1024 bitti", "2048 bitti", "3072 bitti", "15 360 bitti"], "c": 2, "e": "NIST SP 800-57 (NIST – <i>National Institute of Standards and Technology</i>) järgi vastab 128-bitisele turvatasemele RSA 3072 bitti. 2048 bitti annab umbes 112 bitti ja sobib kuni 2030. aastani."},
+{"q": "Mis oli ROCA (<i>Return of Coppersmith’s Attack</i>) viga?", "o": ["ID-kaardi PIN-koodid lekkisid", "Kiibi võtmegeneraator valis RSA algarve liiga kitsast ja ennustatavast hulgast, nii et avalikust võtmest sai arvutada privaatvõtme", "Sertifikaadid aegusid enne tähtaega", "ID-kaardi elliptkõver oli murtud"], "c": 1, "e": "2017. aastal leitud viga puudutas ligi 750 000 Eesti ID-kaarti, mida uuendati kaugteel. Alates 2018. aastast kasutab ID-kaart elliptkõvervõtmeid (P-384)."},
+{"q": "Miks ei krüpteerita suuri faile otse asümmeetrilise algoritmiga?", "o": ["Asümmeetriline krüptograafia on sadu kuni tuhandeid kordi aeglasem ja RSA-ga saab korraga krüpteerida vähem andmeid, kui on mooduli pikkus", "Asümmeetrilist krüpteerimist ei saa dekrüpteerida", "Avalik võti on salajane", "Asümmeetriline krüptograafia ei tööta failidega"], "c": 0, "e": "Kasutatakse hübriidkrüpteerimist: fail krüpteeritakse juhusliku AES-võtmega (AES – <i>Advanced Encryption Standard</i>) ja ainult see 32-baidine võti krüpteeritakse saaja avaliku võtmega."},
+{"q": "Mari saadab sama krüpteeritud faili kolmele inimesele hübriidkrüpteerimisega. Mitu korda krüpteeritakse fail ise ja mitu korda AES-võti?", "o": ["Fail 3 korda, võti 1 kord", "Fail 1 kord, võti 3 korda (iga saaja avaliku võtmega)", "Fail ja võti mõlemad 3 korda", "Fail 1 kord, võti 1 kord ühise avaliku võtmega"], "c": 1, "e": "Fail krüpteeritakse ühe AES-võtmega üks kord. Sama AES-võti krüpteeritakse iga saaja avaliku võtmega eraldi. Nii töötavad GPG, S/MIME ja DigiDoc-i krüpteeritud konteiner (CDOC)."},
+{"q": "SSH-klient näitab hoiatust <code>REMOTE HOST IDENTIFICATION HAS CHANGED</code>. Mida teha?", "o": ["Kustutada rida failist known_hosts ja kohe edasi ühenduda", "Mitte jätkata enne, kui on teise kanali kaudu selgitatud, kas server paigaldati uuesti või on ühenduse vahel ründaja", "Lülitada serveris välja PasswordAuthentication", "Luua uus võtmepaar ssh-keygen-iga"], "c": 1, "e": "Serveri võti erineb salvestatud sõrmejäljest. Põhjus võib olla uuesti paigaldatud server, kuid ka MITM-ründaja. Sõrmejälge tuleb võrrelda administraatorilt saadud väärtusega."}
+
+];
+
+const $=id=>document.getElementById(id);
+let order=[],state=[],cur=0,shuffled=[];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function start(indexes){
+  order=indexes;cur=0;
+  state=order.map(()=>({picked:null,ok:null}));
+  shuffled=order.map(i=>shuffle(KYSIMUSED[i].o.map((t,k)=>({t,k}))));
+  $('tot').textContent=order.length;
+  renderBar();render();
+}
+function renderBar(){
+  const bar=$('bar');bar.innerHTML='';
+  order.forEach((_,n)=>{const s=document.createElement('button');s.className='seg'+(state[n].ok===true?' ok':state[n].ok===false?' bad':'')+(n===cur?' cur':'');
+    s.title='Küsimus '+(n+1);s.setAttribute('aria-label','Küsimus '+(n+1));s.onclick=()=>{cur=n;render();renderBar()};bar.appendChild(s)});
+  $('okc').textContent=state.filter(s=>s.ok===true).length;
+  $('badc').textContent=state.filter(s=>s.ok===false).length;
+}
+function render(){
+  if(cur>=order.length)return renderEnd();
+  $('pos').textContent=cur+1;
+  const Q=KYSIMUSED[order[cur]],st=state[cur],opts=shuffled[cur],L='ABCD';
+  let h='<p class="qnum">Küsimus '+(cur+1)+'</p><p class="qtext">'+Q.q+'</p>';
+  opts.forEach((o,n)=>{
+    let cls='opt';
+    if(st.picked!==null){if(o.k===Q.c)cls+=' ok';else if(n===st.picked)cls+=' bad';else cls+=' dim'}
+    h+='<button class="'+cls+'" data-n="'+n+'"'+(st.picked!==null?' disabled':'')+'><span class="k">'+L[n]+'</span><span>'+o.t+'</span></button>';
+  });
+  if(st.picked!==null){
+    h+='<div class="fb '+(st.ok?'ok':'bad')+'"><strong>'+(st.ok?'Õige!':'Vale. Õige vastus: '+L[opts.findIndex(o=>o.k===Q.c)])+'</strong>'+Q.e+'</div>';
+  }
+  const answered=state.filter(s=>s.picked!==null).length;
+  h+='<div class="actions"><button class="btn" id="prev"'+(cur===0?' disabled':'')+'>← Eelmine</button>';
+  h+='<span class="hint">'+(st.picked===null?'Vali üks vastus':'')+'</span>';
+  h+='<button class="btn primary" id="next"'+(st.picked===null?' disabled':'')+'>'+(answered===order.length?'Vaata tulemust':'Järgmine →')+'</button></div>';
+  $('card').innerHTML=h;
+  $('card').querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+  $('prev').onclick=()=>{cur--;render();renderBar()};
+  $('next').onclick=next;
+}
+function pick(n){
+  const st=state[cur];if(st.picked!==null)return;
+  st.picked=n;st.ok=shuffled[cur][n].k===KYSIMUSED[order[cur]].c;
+  render();renderBar();$('next').focus();
+}
+function next(){
+  if(state.every(s=>s.picked!==null)){cur=order.length;renderBar();return render()}
+  let n=cur+1;while(n<order.length&&state[n].picked!==null)n++;
+  if(n>=order.length)n=state.findIndex(s=>s.picked===null);
+  cur=n;render();renderBar();
+}
+function renderEnd(){
+  $('pos').textContent=order.length;
+  const ok=state.filter(s=>s.ok).length,tot=order.length,pct=Math.round(ok/tot*100);
+  const grade=pct>=90?'Suurepärane! Peatüki põhimõisted on selged.':pct>=70?'Hea tulemus. Vaata valesti vastatud küsimused üle.':pct>=50?'Arvestatav, aga loe vastavad alapeatükid uuesti läbi.':'Loe peatükk uuesti läbi ja proovi siis veel kord.';
+  const wrong=order.map((q,n)=>({q,n})).filter(x=>state[x.n].ok===false);
+  let h='<p class="qnum">Tulemus</p><p class="big">'+ok+' / '+tot+'</p><p class="grade">'+pct+'% · '+grade+'</p>';
+  if(wrong.length){
+    h+='<p class="qnum" style="margin-top:1rem">Valesti vastatud</p><ul class="review">';
+    wrong.forEach(x=>{const Q=KYSIMUSED[x.q];h+='<li>'+Q.q+'<br><span class="ans">Õige: '+Q.o[Q.c]+'</span></li>'});
+    h+='</ul>';
+  }
+  h+='<div class="actions"><button class="btn" id="again">Alusta uuesti</button>'+(wrong.length?'<button class="btn primary" id="retry">Korda valesid ('+wrong.length+')</button>':'')+'</div>';
+  $('card').innerHTML=h;
+  $('again').onclick=()=>start(KYSIMUSED.map((_,i)=>i));
+  if(wrong.length)$('retry').onclick=()=>start(wrong.map(x=>x.q));
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(cur<order.length&&state[cur].picked===null&&['1','2','3','4'].includes(e.key))pick(+e.key-1);
+  else if(e.key==='Enter'&&cur<order.length&&state[cur].picked!==null){e.preventDefault();next()}
+});
+start(KYSIMUSED.map((_,i)=>i));
+</script>
+</body>
+</html>
