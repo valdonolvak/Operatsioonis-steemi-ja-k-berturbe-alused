@@ -50,15 +50,44 @@ Asümmeetriline krüptograafia arvutab **moodularitmeetikas** ehk „kellaaritme
 - 679 × 23 = 15 617
 - 15 625 − 15 617 = **8**, seega 15 625 mod 23 = 8
 
-**Võta jääk pärast iga korrutamist.** Suuri astmeid ei pea lõpuni välja arvutama, sest (x × y) mod n = ((x mod n) × (y mod n)) mod n. Kui jääk võetakse vahepeal, jäävad arvud väikeseks ja tulemus on sama.
+Telefoni kalkulaatoris ei ole tavaliselt mod-nuppu, kuid need kolm sammu töötavad alati: **jaga, jäta komakohad ära, korruta tagasi ja lahuta.** Jääk on alati vahemikus 0 … n − 1. Kui a on n-st väiksem, on jääk a ise.
 
-**Ruutu tõstmise võte** (square-and-multiply). Arvuta järjest ruudud g¹, g², g⁴, g⁸ … (iga järgmine on eelmise ruut) ja korruta kokku need, mille astendajad annavad summana vajaliku astme. Näide: 19⁶ mod 23, kus 6 = 4 + 2.
+| Tehe | a ÷ n | Täisosa × n | Jääk |
+| --- | --- | --- | --- |
+| 15 625 mod 23 | 679,35… | 679 × 23 = 15 617 | 15 625 − 15 617 = **8** |
+| 361 mod 23 | 15,69… | 15 × 23 = 345 | 361 − 345 = **16** |
+| 984 064 mod 3233 | 304,38… | 304 × 3233 = 982 832 | 984 064 − 982 832 = **1232** |
+| 20 mod 23 | 0,86… | 0 × 23 = 0 | 20 − 0 = **20** |
+
+**Võta jääk pärast iga korrutamist.** Suuri astmeid ei pea lõpuni välja arvutama, sest (x × y) mod n = ((x mod n) × (y mod n)) mod n. Kui jääk võetakse vahepeal, jäävad arvud väikeseks ja tulemus on sama. Näide (17 × 19) mod 5:
+
+- otse: 17 × 19 = 323 ja 323 mod 5 = **3**;
+- jääkidega: 17 mod 5 = 2 ja 19 mod 5 = 4, siis 2 × 4 = 8 ja 8 mod 5 = **3**.
+
+Tulemus on sama, kuid teisel juhul ei tulnud ühtegi arvu, mis oleks suurem kui 8.
+
+**Ruutu tõstmise võte** (*square-and-multiply*). Suurt astet ei arvutata korrutades g-d iseendaga ükshaaval, vaid kolmes sammus:
+
+1. **Kirjuta astendaja kahe astmete summana.** Võta suurim kahe aste (1, 2, 4, 8, 16, 32 …), mis astendajasse mahub, lahuta see ja korda jäägiga. See on sama mis astendaja kahendkuju: iga 1-bitt tähistab ühte liidetavat.
+2. **Arvuta ruudud.** g² = g × g, g⁴ = g² × g², g⁸ = g⁴ × g⁴ jne. Iga järgmine rida on eelmise rea tulemus ruudus, sest g²ᵏ = (gᵏ)². Võta jääk pärast iga ruutu tõstmist.
+3. **Korruta kokku need read, mis on summas.** Astmete korrutamisel astendajad liituvad (g⁴ × g² = g⁶). Võta jääk pärast iga korrutamist.
+
+| Astendaja | Kahe astmete summa | Kahendkuju | Ruutu tõstmisi + korrutamisi |
+| --- | --- | --- | --- |
+| 6 | 4 + 2 | 110 | 2 + 1 |
+| 15 | 8 + 4 + 2 + 1 | 1111 | 3 + 3 |
+| 17 | 16 + 1 | 10001 | 4 + 1 |
+| 2753 | 2048 + 512 + 128 + 64 + 1 | 101011000001 | 11 + 4 |
+
+Näide: 19⁶ mod 23, kus 6 = 4 + 2.
 
 | Aste | Arvutus | Jääk 23-ga jagamisel |
 | --- | --- | --- |
 | 19² | 19 × 19 = 361 | 361 − 15 × 23 = **16** |
 | 19⁴ | 16 × 16 = 256 | 256 − 11 × 23 = **3** |
 | 19⁶ = 19⁴ × 19² | 3 × 16 = 48 | 48 − 2 × 23 = **2** |
+
+Teise rea 16 × 16 ei ole juhuslik: 19⁴ = (19²)² ja 19² jääk oli eelmises reas 16. Viimases reas korrutame 19⁴ jäägi (3) ja 19² jäägi (16), sest 4 + 2 = 6.
 
 Kolme väikese korrutamisega saime 19⁶ mod 23 = 2, ilma et peaksime arvutama 19⁶ = 47 045 881. Arvuti teeb sama: 3072-bitise astendaja korral kulub umbes 3072 ruutu tõstmist, mitte 2³⁰⁷² korrutamist. Seepärast on astendamine moodulis kiire ka väga suurte arvudega.
 
@@ -78,7 +107,26 @@ Arvutame samm-sammult. Avalikud parameetrid on algarv p = 23 ja alus g = 5.
 | 2. Avalik väärtus | A = 5⁶ mod 23 = 8 | A = 8 ja B = 19 liiguvad võrgus | B = 5¹⁵ mod 23 = 19 |
 | 3. Ühine saladus | s = Bᵃ mod 23 = 19⁶ mod 23 = 2 | – | s = Aᵇ mod 23 = 8¹⁵ mod 23 = 2 |
 
-Mari arvutuse 19⁶ mod 23 = 2 tegime käsitsi läbi eespool (28.1). Kontrollime ka Jaani arvutust 8¹⁵ mod 23. Astendaja 15 = 8 + 4 + 2 + 1:
+**Samm 2: avalikud väärtused.** Mari arvutab A = 5⁶ mod 23. Astendaja 6 = 4 + 2:
+
+- 5² = 25 ja 25 − 23 = **2**;
+- 5⁴ = 2 × 2 = **4**;
+- 5⁶ = 5⁴ × 5² = 4 × 2 = **8**. Seega A = 8.
+
+Jaan arvutab B = 5¹⁵ mod 23. Astendaja 15 = 8 + 4 + 2 + 1. Esmalt ruudud, siis korrutame need ükshaaval kokku ja võtame jäägi pärast iga korrutamist:
+
+| Samm | Arvutus | Jääk 23-ga jagamisel |
+| --- | --- | --- |
+| 5² | 5 × 5 = 25 | 25 − 1 × 23 = **2** |
+| 5⁴ | 2 × 2 = 4 | **4** |
+| 5⁸ | 4 × 4 = 16 | **16** |
+| 5⁸ × 5⁴ = 5¹² | 16 × 4 = 64 | 64 − 2 × 23 = **18** |
+| 5¹² × 5² = 5¹⁴ | 18 × 2 = 36 | 36 − 1 × 23 = **13** |
+| 5¹⁴ × 5¹ = 5¹⁵ | 13 × 5 = 65 | 65 − 2 × 23 = **19** |
+
+Seega B = 19. Mari saadab Jaanile 8 ja Jaan Marile 19.
+
+**Samm 3: ühine saladus.** Mari tõstab Jaanilt saadud B astmesse oma salajase a-ga: 19⁶ mod 23 = 2. Selle tegime käsitsi läbi eespool (28.1). Jaan tõstab Marilt saadud A astmesse oma salajase b-ga: 8¹⁵ mod 23. Astendaja 15 = 8 + 4 + 2 + 1:
 
 | Aste | Arvutus | Jääk 23-ga jagamisel |
 | --- | --- | --- |
@@ -87,7 +135,23 @@ Mari arvutuse 19⁶ mod 23 = 2 tegime käsitsi läbi eespool (28.1). Kontrollime
 | 8⁸ | 2 × 2 = 4 | **4** |
 | 8¹⁵ = 8⁸ × 8⁴ × 8² × 8¹ | 4 × 2 × 18 × 8 = 1152 | 1152 − 50 × 23 = **2** |
 
-Mõlemad said 2, sest (gᵃ)ᵇ = (gᵇ)ᵃ = gᵃᵇ mod p. Pealtkuulaja teab p, g, A ja B. Saladuse arvutamiseks peaks ta leidma a või b, ehk lahendama diskreetse logaritmi. Siin piisab 22 katsest, päris DH-s on p vähemalt 2048-bitine ja elliptkõveral (X25519) 255-bitine.
+Siin korrutasime neli jääki korraga, sest arvud on väikesed. Suuremate arvude puhul korruta ükshaaval nagu 5¹⁵ tabelis.
+
+Mõlemad said 2, sest (gᵃ)ᵇ = (gᵇ)ᵃ = gᵃᵇ mod p. Mari arvutas tegelikult (5¹⁵)⁶ ja Jaan (5⁶)¹⁵. Mõlemal juhul on tulemus 5⁹⁰ mod 23, sest 15 × 6 = 6 × 15 = 90. Kumbki ei pidanud teise salajast arvu teadma.
+
+**Mida näeb pealtkuulaja?** Eve teab p = 23, g = 5, A = 8 ja B = 19. Saladuse arvutamiseks peab ta leidma a või b ehk lahendama diskreetse logaritmi. Nii väikese p korral teeb ta lihtsalt tabeli kõigist astmetest:
+
+| x | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 5ˣ mod 23 | 5 | 2 | 10 | 4 | 20 | **8** | 17 | 16 | 11 | 9 | 22 |
+
+| x | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 5ˣ mod 23 | 18 | 21 | 13 | **19** | 3 | 15 | 6 | 7 | 12 | 14 | 1 |
+
+Tabelist näeb Eve, et 5⁶ mod 23 = 8, seega a = 6, ja arvutab saladuse 19⁶ mod 23 = 2. Pane tähele, et väärtused hüppavad ilma nähtava mustrita. Kui teada on 5ˣ, ei aita see ära arvata x-i. Kõik 22 väärtust on ka erinevad, nii et iga A vastab täpselt ühele a-le (g = 5 on 23 jaoks **algjuur**, *primitive root*).
+
+Päris DH-s on p vähemalt 2048-bitine ja elliptkõveral (X25519) 255-bitine. Tabelis oleks siis umbes 2²⁰⁴⁸ või 2²⁵² rida. Parimad teadaolevad meetodid on küll kiiremad kui kõigi väärtuste läbiproovimine, kuid ka nendega on sellise suurusega ülesanne praktiliselt lahendamatu.
 
 Kaks olulist täpsustust:
 
@@ -107,22 +171,42 @@ Joonis: RSA põhimõte nii väikeste arvudega, et neid saab kalkulaatoriga kontr
 1. Vali kaks suurt juhuslikku algarvu p ja q. Näites p = 61 ja q = 53.
 2. Arvuta moodul n = p × q = 3233. See on avalik.
 3. Arvuta φ(n) = (p − 1)(q − 1) = 60 × 52 = 3120. See on salajane, sest selle arvutamiseks on vaja p-d ja q-d.
-4. Vali avalik eksponent e, millel pole φ-ga ühiseid tegureid. Näites e = 17: 3120 = 2⁴ × 3 × 5 × 13 ja algarv 17 nende hulgas ei ole, seega sobib. Päris RSA-s on e peaaegu alati 65 537.
+4. Vali avalik eksponent e, millel pole φ-ga ühiseid tegureid. Näites e = 17: 3120 = 2⁴ × 3 × 5 × 13 ja algarv 17 nende hulgas ei ole, seega sobib. Päris RSA-s on e peaaegu alati 65 537. Ühiste tegurite puudumine on vajalik, sest muidu ei leidu sammus 5 sobivat d-d. Näiteks e = 15 ei sobiks, sest 3120 jagub nii 3 kui ka 5-ga.
 5. Leia privaatne eksponent d, mille korral e × d mod φ = 1. Näites d = 2753, sest 17 × 2753 = 46 801 = 15 × 3120 + 1. Selle leiab laiendatud Eukleidese algoritmiga (Pythonis `pow(17, -1, 3120)`).
 
-**Kuidas d leitakse (laiendatud Eukleidese algoritm).** Otsime d, mille korral 17 × d annab 3120-ga jagades jäägi 1. Kõigepealt jagame jäägiga, kuni jääk on 1:
+**Kuidas d leitakse proovimisega.** Väikeste arvudega on kõige lihtsam mõte selline: e × d mod φ = 1 tähendab, et e × d = k × φ + 1 mingi täisarvu k korral. Proovime k = 1, 2, 3 … ja vaatame, millal k × 3120 + 1 jagub 17-ga:
 
-- 3120 = 183 × 17 + 9
-- 17 = 1 × 9 + 8
-- 9 = 1 × 8 + 1
+| k | k × 3120 + 1 | ÷ 17 |
+| --- | --- | --- |
+| 1 | 3121 | 183,59… ei jagu |
+| 2 | 6241 | 367,12… ei jagu |
+| 3 | 9361 | 550,65… ei jagu |
+| … | … | … |
+| 15 | 46 801 | **2753** jagub täpselt |
 
-Seejärel avaldame jäägi 1 alt üles, asendades iga kord eelmise rea jäägi:
+Seega d = 2753. Kuna k < e, piisab alati kuni e − 1 katsest. Päris RSA-s on aga e = 65 537 ja φ sadu kohti pikk, seega kasutatakse laiendatud Eukleidese algoritmi, mis leiab d mõne kümne jagamisega.
 
-- 1 = 9 − 8
-- 1 = 9 − (17 − 9) = 2 × 9 − 17
-- 1 = 2 × (3120 − 183 × 17) − 17 = 2 × 3120 − 367 × 17
+**Kuidas d leitakse laiendatud Eukleidese algoritmiga.** Otsime d, mille korral 17 × d annab 3120-ga jagades jäägi 1. Algoritmil on kaks poolt.
 
-Seega −367 × 17 annab 3120-ga jagades jäägi 1. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
+*Esimene pool: jagamine jäägiga.* Jagame suurema arvu väiksemaga. Järgmisel real saab eelmine jagaja jagatavaks ja eelmine jääk jagajaks. Jätkame, kuni jääk on 1:
+
+| Rida | Jagatav = jagatis × jagaja + jääk | Selgitus |
+| --- | --- | --- |
+| 1 | 3120 = 183 × 17 + **9** | 17 mahub 3120 sisse 183 korda (183 × 17 = 3111), üle jääb 9 |
+| 2 | 17 = 1 × 9 + **8** | 9 mahub 17 sisse 1 kord, üle jääb 8 |
+| 3 | 9 = 1 × 8 + **1** | 8 mahub 9 sisse 1 kord, üle jääb 1 |
+
+Kui viimane jääk on 1, on 17-l ja 3120-l suurim ühistegur 1, seega e = 17 sobib (samm 4). Kui jääk oleks 0 enne 1-ni jõudmist, ei leiduks d-d.
+
+*Teine pool: tagasi asendamine.* Avaldame igast reast jäägi (jääk = jagatav − jagatis × jagaja) ja liigume alt üles:
+
+1. Reast 3: **1 = 9 − 1 × 8**.
+2. Reast 2 on 8 = 17 − 9. Asendame selle 8 asemele: 1 = 9 − (17 − 9) = 9 − 17 + 9 = **2 × 9 − 17**.
+3. Reast 1 on 9 = 3120 − 183 × 17. Asendame selle 9 asemele: 1 = 2 × (3120 − 183 × 17) − 17 = 2 × 3120 − 366 × 17 − 17 = **2 × 3120 − 367 × 17**.
+
+Kontroll: 2 × 3120 = 6240 ja 367 × 17 = 6239, nende vahe on 1.
+
+Kui võtame mõlemast poolest jäägi 3120-ga jagamisel, kaob 2 × 3120 ära, sest see jagub 3120-ga. Järele jääb (−367 × 17) mod 3120 = 1, seega −367 on sobiv d. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
 
 Avalik võti on (n = 3233, e = 17), privaatvõti (n = 3233, d = 2753).
 
@@ -130,17 +214,49 @@ Avalik võti on (n = 3233, e = 17), privaatvõti (n = 3233, d = 2753).
 
 | Aste | Arvutus | Jääk 3233-ga jagamisel |
 | --- | --- | --- |
-| 65² | 65 × 65 = 4225 | **992** |
-| 65⁴ | 992 × 992 = 984 064 | **1232** |
-| 65⁸ | 1232 × 1232 = 1 517 824 | **1547** |
-| 65¹⁶ | 1547 × 1547 = 2 393 209 | **789** |
-| 65¹⁷ = 65¹⁶ × 65 | 789 × 65 = 51 285 | **2790** |
+| 65² | 65 × 65 = 4225 | 4225 − 1 × 3233 = **992** |
+| 65⁴ | 992 × 992 = 984 064 | 984 064 − 304 × 3233 = **1232** |
+| 65⁸ | 1232 × 1232 = 1 517 824 | 1 517 824 − 469 × 3233 = **1547** |
+| 65¹⁶ | 1547 × 1547 = 2 393 209 | 2 393 209 − 740 × 3233 = **789** |
+| 65¹⁷ = 65¹⁶ × 65 | 789 × 65 = 51 285 | 51 285 − 15 × 3233 = **2790** |
 
-Dekrüpteerimine 2790²⁷⁵³ mod 3233 käib samamoodi: 2753 = 2048 + 512 + 128 + 64 + 1, seega kulub 11 ruutu tõstmist ja 4 korrutamist. Käsitsi on see tüütu, Pythonis üks rida: `pow(2790, 2753, 3233)`.
+Kolmanda veeru täisosa (nt 304) leiad nii nagu eespool: 984 064 ÷ 3233 = 304,38…, komakohad jäävad ära.
 
-**Dekrüpteerimine:** m = cᵈ mod n = 2790²⁷⁵³ mod 3233 = 65.
+**Dekrüpteerimine:** m = cᵈ mod n = 2790²⁷⁵³ mod 3233. Astendaja 2753 = 2048 + 512 + 128 + 64 + 1, seega kulub 11 ruutu tõstmist ja 4 korrutamist. Käsitsi on see tüütu, kuid põhimõte on täpselt sama:
 
-**Allkirjastamine** käib vastupidi: s = mᵈ mod n = 65²⁷⁵³ mod 3233 = 588. Igaüks saab kontrollida avaliku võtmega: 588¹⁷ mod 3233 = 65. Kuna d-d teab ainult omanik, saab ainult tema luua sellise s, mis avaliku võtmega tagasi m-ks muutub.
+| Samm | Arvutus | Jääk 3233-ga jagamisel |
+| --- | --- | --- |
+| 2790² | 2790 × 2790 = 7 784 100 | 7 784 100 − 2407 × 3233 = **2269** |
+| 2790⁴ | 2269 × 2269 = 5 148 361 | 5 148 361 − 1592 × 3233 = **1425** |
+| 2790⁸ | 1425 × 1425 = 2 030 625 | 2 030 625 − 628 × 3233 = **301** |
+| 2790¹⁶ | 301 × 301 = 90 601 | 90 601 − 28 × 3233 = **77** |
+| 2790³² | 77 × 77 = 5929 | 5929 − 1 × 3233 = **2696** |
+| 2790⁶⁴ | 2696 × 2696 = 7 268 416 | 7 268 416 − 2248 × 3233 = **632** |
+| 2790¹²⁸ | 632 × 632 = 399 424 | 399 424 − 123 × 3233 = **1765** |
+| 2790²⁵⁶ | 1765 × 1765 = 3 115 225 | 3 115 225 − 963 × 3233 = **1846** |
+| 2790⁵¹² | 1846 × 1846 = 3 407 716 | 3 407 716 − 1054 × 3233 = **134** |
+| 2790¹⁰²⁴ | 134 × 134 = 17 956 | 17 956 − 5 × 3233 = **1791** |
+| 2790²⁰⁴⁸ | 1791 × 1791 = 3 207 681 | 3 207 681 − 992 × 3233 = **545** |
+| 2790²⁰⁴⁸ × 2790⁵¹² | 545 × 134 = 73 030 | 73 030 − 22 × 3233 = **1904** |
+| … × 2790¹²⁸ | 1904 × 1765 = 3 360 560 | 3 360 560 − 1039 × 3233 = **1473** |
+| … × 2790⁶⁴ | 1473 × 632 = 930 936 | 930 936 − 287 × 3233 = **3065** |
+| … × 2790¹ = 2790²⁷⁵³ | 3065 × 2790 = 8 551 350 | 8 551 350 − 2645 × 3233 = **65** |
+
+Tulemus on 65 – algne sõnum tuli tagasi. Pythonis on sama arvutus üks rida: `pow(2790, 2753, 3233)`.
+
+**Miks dekrüpteerimine annab tagasi m-i?** Krüpteerimine ja dekrüpteerimine kokku tõstavad m-i astmesse e × d: (mᵉ)ᵈ = mᵉᵈ. Valisime d nii, et e × d = 46 801 = 15 × φ(n) + 1. Euleri teoreemi järgi on m^φ(n) mod n = 1 (kui m ja n ühiseid tegureid ei oma). Seega mᵉᵈ = m^(15 × φ(n) + 1) = (m^φ(n))¹⁵ × m ja moodulis n on see 1¹⁵ × m = m. Iga täisarvkordne φ(n) astendajas „kaob ära“ ja alles jääb ainult + 1.
+
+**Allkirjastamine** käib vastupidi: s = mᵈ mod n = 65²⁷⁵³ mod 3233 = 588 (arvutus käib nagu dekrüpteerimisel, ainult alus on 65). Igaüks saab kontrollida avaliku võtmega, astendaja 17 = 16 + 1:
+
+| Samm | Arvutus | Jääk 3233-ga jagamisel |
+| --- | --- | --- |
+| 588² | 588 × 588 = 345 744 | 345 744 − 106 × 3233 = **3046** |
+| 588⁴ | 3046 × 3046 = 9 278 116 | 9 278 116 − 2869 × 3233 = **2639** |
+| 588⁸ | 2639 × 2639 = 6 964 321 | 6 964 321 − 2154 × 3233 = **439** |
+| 588¹⁶ | 439 × 439 = 192 721 | 192 721 − 59 × 3233 = **1974** |
+| 588¹⁷ = 588¹⁶ × 588 | 1974 × 588 = 1 160 712 | 1 160 712 − 359 × 3233 = **65** |
+
+Kontroll andis 65, seega allkiri on õige. Kuna d-d teab ainult omanik, saab ainult tema luua sellise s, mis avaliku võtmega tagasi m-ks muutub. Pane tähele, et kontrollimine (e = 17) on palju kiirem kui allkirjastamine (d = 2753). Seepärast valitakse päris RSA-s väike e = 65 537.
 
 **Miks see turvaline on?** Kes teab p-d ja q-d, saab arvutada φ ja sellest d. Ründaja teab ainult n-i ja peab selle teguriteks lahutama. 3233 puhul on see lihtne, kuid 2048-bitine n on 617 kümnendkohta pikk. Suurim avalikult tegurdatud RSA-arv on 829-bitine RSA-250 (2020), mille jaoks kulus umbes 2700 protsessoriaastat. 2048-bitise arvu tegurdamine on klassikaliste arvutitega miljardeid kordi raskem. Päris RSA-s on n vähemalt 2048, soovitatavalt 3072 bitti.
 
