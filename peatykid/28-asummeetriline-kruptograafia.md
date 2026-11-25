@@ -192,9 +192,9 @@ Seega d = 2753. Kuna k < e, piisab alati kuni e − 1 katsest. Päris RSA-s on a
 
 | Rida | Jagatav = jagatis × jagaja + jääk | Selgitus |
 | --- | --- | --- |
-| 1 | 3120 = 183 × 17 + **9** | 17 mahub 3120 sisse 183 korda (183 × 17 = 3111), üle jääb 9 |
-| 2 | 17 = 1 × 9 + **8** | 9 mahub 17 sisse 1 kord, üle jääb 8 |
-| 3 | 9 = 1 × 8 + **1** | 8 mahub 9 sisse 1 kord, üle jääb 1 |
+| 1 | 3120 = 183 × 17 + **9** | 3120 ÷ 17 = 183,52… → täisosa 183 → 183 × 17 = 3111 → 3120 − 3111 = 9 |
+| 2 | 17 = 1 × 9 + **8** | 17 ÷ 9 = 1,88… → täisosa 1 → 1 × 9 = 9 → 17 − 9 = 8 |
+| 3 | 9 = 1 × 8 + **1** | 9 ÷ 8 = 1,125 → täisosa 1 → 1 × 8 = 8 → 9 − 8 = 1 |
 
 Kui viimane jääk on 1, on 17-l ja 3120-l suurim ühistegur 1, seega e = 17 sobib (samm 4). Kui jääk oleks 0 enne 1-ni jõudmist, ei leiduks d-d.
 
@@ -202,9 +202,13 @@ Kui viimane jääk on 1, on 17-l ja 3120-l suurim ühistegur 1, seega e = 17 sob
 
 1. Reast 3: **1 = 9 − 1 × 8**.
 2. Reast 2 on 8 = 17 − 9. Asendame selle 8 asemele: 1 = 9 − (17 − 9) = 9 − 17 + 9 = **2 × 9 − 17**.
-3. Reast 1 on 9 = 3120 − 183 × 17. Asendame selle 9 asemele: 1 = 2 × (3120 − 183 × 17) − 17 = 2 × 3120 − 366 × 17 − 17 = **2 × 3120 − 367 × 17**.
+3. Reast 1 on 9 = 3120 − 183 × 17. Asendame selle 9 asemele ja lihtsustame. Iga rea väärtus peab olema 1:
 
-Kontroll: 2 × 3120 = 6240 ja 367 × 17 = 6239, nende vahe on 1.
+| Avaldis | Mis tehti | Arvutus |
+| --- | --- | --- |
+| 1 = 2 × (3120 − 183 × 17) − 17 | 9 asendati avaldisega 3120 − 183 × 17 | 2 × (3120 − 3111) − 17 = 2 × 9 − 17 = 18 − 17 = **1** |
+| = 2 × 3120 − 366 × 17 − 1 × 17 | sulud lahti: 2 × 183 = 366 | 6240 − 6222 − 17 = **1** |
+| = **2 × 3120 − 367 × 17** | 366 + 1 = 367 (366 korda 17 ja veel üks 17) | 6240 − 6239 = **1** |
 
 Kui võtame mõlemast poolest jäägi 3120-ga jagamisel, kaob 2 × 3120 ära, sest see jagub 3120-ga. Järele jääb (−367 × 17) mod 3120 = 1, seega −367 on sobiv d. Negatiivsest arvust saame positiivse, kui liidame φ: d = 3120 − 367 = **2753**. Kontroll: 17 × 2753 = 46 801 = 15 × 3120 + 1.
 
